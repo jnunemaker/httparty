@@ -8,14 +8,12 @@ require 'active_support'
 $:.unshift(File.dirname(__FILE__)) unless
   $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
 
-
 dir = File.expand_path(File.join(File.dirname(__FILE__), 'web'))
-require dir + '/entities'
+require dir + '/core_ext'
   
 module Web
   def self.included(base)
     base.extend ClassMethods
-    base.send(:include, Web::Entities)
   end
   
   module ClassMethods
@@ -62,8 +60,8 @@ module Web
       send_request 'delete', path, options
     end
     
-    def response
-      @response
+    def format(f=nil)
+      @format = f.to_s
     end
     
     private
@@ -72,6 +70,7 @@ module Web
       #   body    => string for raw post data
       #   headers => hash of headers to send request with
       def send_request(method, path, options={})
+        @format      = format_from_path(path) unless @format
         uri          = URI.join(base_uri, path)
         uri.query    = options[:query].to_query unless options[:query].blank?
         klass        = Net::HTTP.const_get method.to_s.downcase.capitalize
@@ -80,19 +79,38 @@ module Web
         request.initialize_http_header headers.merge(options[:headers] || {})
         request.basic_auth(@auth[:username], @auth[:password]) if @auth
         @response    = http.start() { |conn| conn.request(request) }
-        
-        if !options[:entity] || options[:entity].blank?
-          @response.body
+        parse(@response.body)
+      end
+      
+      def parse(body)
+        case @format
+        when 'xml'
+          Hash.from_xml(body)
+        when 'json'
+          ActiveSupport::JSON.decode(body)
         else
-          entity = @entities.detect { |e| e.name.to_s == options[:entity].to_s }
-          raise 'Entity not found' if entity.blank?
-          entity.parse(@response.body)
+          body
         end
       end
     
       # Makes it so uri is sure to parse stuff like google.com with the http
       def ensure_http(str)
         str =~ /^https?:\/\// ? str : "http#{'s' if str.include?(':443')}://#{str}"
+      end
+      
+      # Returns a format that we can handle from the path if possible. 
+      # Just does simple pattern matching on file extention:
+      #   /foobar.xml => 'xml'
+      #   /foobar.json => 'json'
+      def format_from_path(path)
+        return case path
+        when /\.xml$/
+          'xml'
+        when /\.json$/
+          'json'
+        else
+          nil
+        end
       end
   end
 end
