@@ -1,15 +1,21 @@
 require 'net/http'
 require 'net/https'
 require 'uri'
+require 'ostruct'
 require 'rubygems'
 require 'active_support'
 
 $:.unshift(File.dirname(__FILE__)) unless
   $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
 
+
+dir = File.expand_path(File.join(File.dirname(__FILE__), 'web'))
+require dir + '/entities'
+  
 module Web
   def self.included(base)
     base.extend ClassMethods
+    base.send(:include, Web::Entities)
   end
   
   module ClassMethods
@@ -73,8 +79,15 @@ module Web
         request.body = options[:body] unless options[:body].blank?
         request.initialize_http_header headers.merge(options[:headers] || {})
         request.basic_auth(@auth[:username], @auth[:password]) if @auth
-        @response = http.start() { |conn| conn.request(request) }
-        @response.body
+        @response    = http.start() { |conn| conn.request(request) }
+        
+        if !options[:entity] || options[:entity].blank?
+          @response.body
+        else
+          entity = @entities.detect { |e| e.name.to_s == options[:entity].to_s }
+          raise 'Entity not found' if entity.blank?
+          entity.parse(@response.body)
+        end
       end
     
       # Makes it so uri is sure to parse stuff like google.com with the http
@@ -83,6 +96,3 @@ module Web
       end
   end
 end
-
-dir = File.expand_path(File.join(File.dirname(__FILE__), 'web'))
-require dir + '/entity'
