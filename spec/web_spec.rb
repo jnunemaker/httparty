@@ -14,16 +14,16 @@ describe Web do
   
   describe 'base_uri' do
     it 'should allow getting' do
-      Foo.base_uri.host.should == 'api.foo.com'
+      Foo.base_uri.should == 'http://api.foo.com/v1'
     end
     
     it 'should allow setting' do
       Foo.base_uri('api.foobar.com')
-      Foo.base_uri.host.should == 'api.foobar.com'
+      Foo.base_uri.should == 'http://api.foobar.com'
     end
     
     it 'should set to https if port 443' do
-      FooWithHttps.base_uri.scheme.should == 'https'
+      FooWithHttps.base_uri.should == 'https://api.foo.com/v1:443'
     end
   end
   
@@ -41,8 +41,4 @@ describe Web do
   describe 'GET' do
     
   end
-  
-  
-  
-  
 end
