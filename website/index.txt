@@ -1,0 +1,83 @@
+h1. web
+
+h1. &#x2192; 'web'
+
+
+h2. What
+
+
+h2. Installing
+
+<pre syntax="ruby">sudo gem install web</pre>
+
+h2. The basics
+
+
+h2. Demonstration of usage
+
+
+
+h2. Forum
+
+"http://groups.google.com/group/web":http://groups.google.com/group/web
+
+TODO - create Google Group - web
+
+h2. How to submit patches
+
+Read the "8 steps for fixing other people's code":http://drnicwilliams.com/2007/06/01/8-steps-for-fixing-other-peoples-code/ and for section "8b: Submit patch to Google Groups":http://drnicwilliams.com/2007/06/01/8-steps-for-fixing-other-peoples-code/#8b-google-groups, use the Google Group above.
+
+TODO - pick SVN or Git instructions
+
+The trunk repository is <code>svn://rubyforge.org/var/svn/web/trunk</code> for anonymous access.
+
+OOOORRRR
+
+You can fetch the source from either:
+
+<% if rubyforge_project_id %>
+
+* rubyforge: "http://rubyforge.org/scm/?group_id=<%= rubyforge_project_id %>":http://rubyforge.org/scm/?group_id=<%= rubyforge_project_id %>
+
+<pre>git clone git://rubyforge.org/web.git</pre>
+
+<% else %>
+
+* rubyforge: MISSING IN ACTION
+
+TODO - You can not created a RubyForge project, OR have not run <code>rubyforge config</code>
+yet to refresh your local rubyforge data with this projects' id information.
+
+When you do this, this message will magically disappear!
+
+Or you can hack website/index.txt and make it all go away!!
+
+<% end %>
+
+* github: "http://github.com/GITHUB_USERNAME/web/tree/master":http://github.com/GITHUB_USERNAME/web/tree/master
+
+<pre>git clone git://github.com/GITHUB_USERNAME/web.git</pre>
+
+
+TODO - add "github_username: username" to ~/.rubyforge/user-config.yml and newgem will reuse it for future projects.
+
+
+* gitorious: "git://gitorious.org/web/mainline.git":git://gitorious.org/web/mainline.git
+
+<pre>git clone git://gitorious.org/web/mainline.git</pre>
+
+h3. Build and test instructions
+
+<pre>cd web
+rake test
+rake install_gem</pre>
+
+
+h2. License
+
+This code is free to use under the terms of the MIT license. 
+
+h2. Contact
+
+Comments are welcome. Send an email to "FIXME full name":mailto:FIXME email via the "forum":http://groups.google.com/group/web
+
