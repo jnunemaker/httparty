@@ -19,6 +19,8 @@ module Web
   module ClassMethods
     def base_uri(base_uri=nil)
       return @base_uri unless base_uri
+      # don't want this to ever end with /
+      base_uri = base_uri.ends_with?('/') ? base_uri.chop : base_uri
       @base_uri = ensure_http(base_uri)
     end
     
@@ -31,6 +33,8 @@ module Web
         uri = URI.parse(base_uri)
         @http = Net::HTTP.new(uri.host, uri.port)
         @http.use_ssl = (uri.port == 443)
+        # so we can avoid ssl warnings
+        @http.verify_mode = OpenSSL::SSL::VERIFY_NONE
       end
       @http
     end
@@ -70,8 +74,10 @@ module Web
       #   body    => string for raw post data
       #   headers => hash of headers to send request with
       def send_request(method, path, options={})
+        # we always want path that begins with /
+        path = path.starts_with?('/') ? path : "/#{path}"
         @format      = format_from_path(path) unless @format
-        uri          = URI.join(base_uri, path)
+        uri          = URI.parse("#{base_uri}#{path}")
         uri.query    = options[:query].to_query unless options[:query].blank?
         klass        = Net::HTTP.const_get method.to_s.downcase.capitalize
         request      = klass.new(uri.request_uri)
