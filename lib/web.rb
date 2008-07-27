@@ -38,3 +38,4 @@ module Web
 end
 
 dir = File.expand_path(File.join(File.dirname(__FILE__), 'web'))
+require dir + '/callbacks'
