@@ -2,7 +2,7 @@ require 'httparty/version'
 
 AUTHOR = 'John Nunemaker'  # can also be an array of Authors
 EMAIL = "nunemaker@gmail.com"
-DESCRIPTION = "Makes http fun again!"
+DESCRIPTION = "Makes http fun! Also, makes consuming restful web services dead easy."
 GEM_NAME = 'httparty' # what ppl will type to install your gem
 RUBYFORGE_PROJECT = 'httparty' # The unix name for your project
 HOMEPATH = "http://#{RUBYFORGE_PROJECT}.rubyforge.org"

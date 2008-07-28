@@ -9,6 +9,8 @@ config/requirements.rb
 examples/aaws.rb
 examples/delicious.rb
 examples/twitter.rb
+examples/whoismyrep.rb
+httparty.gemspec
 lib/httparty.rb
 lib/httparty/core_ext.rb
 lib/httparty/core_ext/hash.rb
