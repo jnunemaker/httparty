@@ -5,14 +5,19 @@ config = YAML::load(File.read(File.join(ENV['HOME'], '.twitter')))
 
 class Twitter
   include HTTParty
+  
+  # sets the base url for each request
   base_uri 'twitter.com'
   
   def initialize(user, pass)
+    # set basic http authentication for all requests
     self.class.basic_auth user, pass
   end
   
+  # which can be :friends, :user or :public
+  # options[:query] can be things like since, since_id, count, etc.
   def timeline(which=:friends, options={})
-    self.class.get("/statuses/#{which}_timeline.xml", options)['statuses'].map(&:to_struct)
+    self.class.get("/statuses/#{which}_timeline.xml", options)['statuses'].map { |s| s.to_struct }
   end
   
   def post(text)

@@ -6,10 +6,14 @@ config = YAML::load(File.read(File.join(ENV['HOME'], '.delicious')))
 class Delicious
   include HTTParty
   
+  # sets the base url for each request
   base_uri 'https://api.del.icio.us/v1'
+  
+  # parse xml automatically
   format :xml
   
   def initialize(user, pass)
+    # set basic http authentication for all requests
     self.class.basic_auth(user, pass)
   end
   
@@ -19,6 +23,7 @@ class Delicious
   #   url (optional). Filter by this url.
   #   ie: posts(:query => {:tag => 'ruby'})
   def posts(options={})
+    # get posts and convert to structs so we can do .key instead of ['key'] with results
     self.class.get('/posts/get', options)['posts']['post'].map { |b| b.to_struct }
   end
   
@@ -30,8 +35,11 @@ class Delicious
   end
 end
 
-pp Delicious.new(config['username'], config['password']).posts
+delicious = Delicious.new(config['username'], config['password'])
 
-puts '', 'RECENT'
-pp Delicious.new(config['username'], config['password']).recent
+pp delicious.posts(:query => {:tag => 'ruby'})
+
+puts '', '*' * 50, ''
+
+pp delicious.recent
 
