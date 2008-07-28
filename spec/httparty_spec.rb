@@ -83,12 +83,11 @@ describe HTTParty do
   
   describe 'http' do
     it "should use ssl for port 443" do
-      FooWithHttps.http.use_ssl?.should == true
+      FooWithHttps.send(:http, URI.parse('https://api.foo.com/v1:443')).use_ssl?.should == true
     end
     
     it 'should not use ssl for port 80' do
-      Foo.base_uri('foobar.com')
-      Foo.http.use_ssl?.should == false
+      Foo.send(:http, URI.parse('http://foobar.com')).use_ssl?.should == false
     end
   end
   

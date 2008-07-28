@@ -52,17 +52,6 @@ module HTTParty
       @format = f
     end
     
-    def http
-      if @http.blank?
-        uri = URI.parse(base_uri)
-        @http = Net::HTTP.new(uri.host, uri.port)
-        @http.use_ssl = (uri.port == 443)
-        # so we can avoid ssl warnings
-        @http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-      end
-      @http
-    end
-    
     # TODO: spec out this
     def get(path, options={})
       send_request 'get', path, options
@@ -84,6 +73,16 @@ module HTTParty
     end
     
     private
+      def http(uri)
+        if @http.blank?
+          @http = Net::HTTP.new(uri.host, uri.port)
+          @http.use_ssl = (uri.port == 443)
+          # so we can avoid ssl warnings
+          @http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+        end
+        @http
+      end
+      
       # options can be any or all of:
       #   query   => hash of keys/values to be converted to query string
       #   body    => string for raw post data
@@ -93,16 +92,17 @@ module HTTParty
         raise ArgumentError, ':query must be a hash' if options[:query] && !options[:query].is_a?(Hash)
         raise ArgumentError, ':headers must be a hash' if options[:headers] && !options[:headers].is_a?(Hash)
         # we always want path that begins with /
-        path         = path.starts_with?('/') ? path : "/#{path}"
+        path         = path =~ /^(\/|https?:\/\/)/ ? path : "/#{path}"
         @format    ||= format_from_path(path)
         uri          = URI.parse("#{base_uri}#{path}")
-        uri.query    = default_params.merge(options[:query] || {}).to_query
+        current_qs   = uri.query ? "#{uri.query}&" : ''
+        uri.query    = current_qs + default_params.merge(options[:query] || {}).to_query
         klass        = Net::HTTP.const_get method.to_s.downcase.capitalize
         request      = klass.new(uri.request_uri)
         request.body = options[:body] unless options[:body].blank?
         request.initialize_http_header headers.merge(options[:headers] || {})
         request.basic_auth(@auth[:username], @auth[:password]) if @auth
-        response     = http.start() { |conn| conn.request(request) }
+        response     = http(uri).start() { |conn| conn.request(request) }
         parse_response(response.body)
       end
       
