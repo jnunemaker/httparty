@@ -1,16 +1,16 @@
 require File.join(File.dirname(__FILE__), 'spec_helper')
 
 class Foo
-  include Web
+  include HTTParty
   base_uri 'api.foo.com/v1'
 end
 
 class FooWithHttps
-  include Web
+  include HTTParty
   base_uri 'api.foo.com/v1:443'
 end
 
-describe Web do
+describe HTTParty do
   
   describe 'base_uri' do
     it 'should allow getting' do

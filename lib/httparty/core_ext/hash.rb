@@ -1,4 +1,4 @@
-module Web
+module HTTParty
   module CoreExt
     module HashConversions
       def to_struct
@@ -18,4 +18,4 @@ module Web
   end
 end
 
-Hash.send :include, Web::CoreExt::HashConversions
+Hash.send :include, HTTParty::CoreExt::HashConversions

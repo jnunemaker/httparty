@@ -1,4 +1,4 @@
-= web
+= httparty
 
 * FIX (url)
 

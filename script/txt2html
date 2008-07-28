@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
-GEM_NAME = 'web' # what ppl will type to install your gem
-RUBYFORGE_PROJECT = 'web'
+GEM_NAME = 'httparty' # what ppl will type to install your gem
+RUBYFORGE_PROJECT = 'httparty'
 
 require 'rubygems'
 begin
@@ -17,7 +17,7 @@ require 'syntax/convertors/html'
 require 'erb'
 require File.dirname(__FILE__) + "/../lib/#{GEM_NAME}/version.rb"
 
-version  = Web::VERSION::STRING
+version  = HTTParty::VERSION::STRING
 download = "http://rubyforge.org/projects/#{RUBYFORGE_PROJECT}"
 
 def rubyforge_project_id

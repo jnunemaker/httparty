@@ -1,10 +1,10 @@
-require 'web/version'
+require 'httparty/version'
 
-AUTHOR = 'FIXME full name'  # can also be an array of Authors
-EMAIL = "FIXME email"
-DESCRIPTION = "description of gem"
-GEM_NAME = 'web' # what ppl will type to install your gem
-RUBYFORGE_PROJECT = 'web' # The unix name for your project
+AUTHOR = 'John Nunemaker'  # can also be an array of Authors
+EMAIL = "nunemaker@gmail.com"
+DESCRIPTION = "Makes http fun again!"
+GEM_NAME = 'httparty' # what ppl will type to install your gem
+RUBYFORGE_PROJECT = 'httparty' # The unix name for your project
 HOMEPATH = "http://#{RUBYFORGE_PROJECT}.rubyforge.org"
 DOWNLOAD_PATH = "http://rubyforge.org/projects/#{RUBYFORGE_PROJECT}"
 EXTRA_DEPENDENCIES = [
@@ -34,8 +34,8 @@ end
 REV = nil
 # UNCOMMENT IF REQUIRED:
 # REV = YAML.load(`svn info`)['Revision']
-VERS = Web::VERSION::STRING + (REV ? ".#{REV}" : "")
-RDOC_OPTS = ['--quiet', '--title', 'web documentation',
+VERS = HTTParty::VERSION::STRING + (REV ? ".#{REV}" : "")
+RDOC_OPTS = ['--quiet', '--title', 'httparty documentation',
     "--opname", "index.html",
     "--line-numbers",
     "--main", "README",

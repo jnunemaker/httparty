@@ -1,10 +1,10 @@
 dir = File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
-require File.join(dir, 'web')
+require File.join(dir, 'httparty')
 require 'pp'
 config = YAML::load(File.read(File.join(ENV['HOME'], '.delicious')))
 
 class Delicious
-  include Web
+  include HTTParty
   
   base_uri 'https://api.del.icio.us/v1'
   format :xml

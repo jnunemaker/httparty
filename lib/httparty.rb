@@ -8,10 +8,10 @@ require 'active_support'
 $:.unshift(File.dirname(__FILE__)) unless
   $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
 
-dir = File.expand_path(File.join(File.dirname(__FILE__), 'web'))
+dir = File.expand_path(File.join(File.dirname(__FILE__), 'httparty'))
 require dir + '/core_ext'
   
-module Web
+module HTTParty
   def self.included(base)
     base.extend ClassMethods
   end

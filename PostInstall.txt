@@ -1,5 +1,5 @@
 
-For more information on web, see http://web.rubyforge.org
+For more information on httparty, see http://httparty.rubyforge.org
 
 NOTE: Change this information in PostInstall.txt 
 You can also delete it if you don't want it.
