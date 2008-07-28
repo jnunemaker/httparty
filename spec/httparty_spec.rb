@@ -44,6 +44,18 @@ describe HTTParty do
     end
   end
   
+  describe "default params" do
+    it "should default to empty hash" do
+      Foo.default_params.should == {}
+    end
+    
+    it "should be able to be updated" do
+      new_defaults = {:foo => 'bar', :baz => 'spax'}
+      Foo.default_params new_defaults
+      Foo.default_params.should == new_defaults
+    end
+  end
+  
   describe "basic http authentication" do
     it "should work" do
       Foo.basic_auth 'foobar', 'secret'

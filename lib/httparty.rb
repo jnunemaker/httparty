@@ -32,8 +32,8 @@ module HTTParty
       @auth = {:username => u, :password => p}
     end
     
-    def default_params(h)
-      raise ArgumentError, 'Headers must be a hash' unless h.is_a?(Hash)
+    def default_params(h={})
+      raise ArgumentError, 'Default params must be a hash' unless h.is_a?(Hash)
       @default_params ||= {}
       return @default_params if h.blank?
       @default_params.merge!(h)
@@ -44,6 +44,12 @@ module HTTParty
       @headers ||= {}
       return @headers if h.blank?
       @headers.merge!(h)
+    end
+    
+    def format(f)
+      f = f.to_s
+      raise UnsupportedFormat, "Must be one of: #{AllowedFormats.join(', ')}" unless AllowedFormats.include?(f)
+      @format = f
     end
     
     def http
@@ -57,26 +63,24 @@ module HTTParty
       @http
     end
     
+    # TODO: spec out this
     def get(path, options={})
       send_request 'get', path, options
     end
-    
+
+    # TODO: spec out this    
     def post(path, options={})
       send_request 'post', path, options
     end
-    
+
+    # TODO: spec out this    
     def put(path, options={})
       send_request 'put', path, options
     end
-    
+
+    # TODO: spec out this    
     def delete(path, options={})
       send_request 'delete', path, options
-    end
-    
-    def format(f)
-      f = f.to_s
-      raise UnsupportedFormat, "Must be one of: #{AllowedFormats.join(', ')}" unless AllowedFormats.include?(f)
-      @format = f
     end
     
     private
@@ -89,7 +93,9 @@ module HTTParty
         path = path.starts_with?('/') ? path : "/#{path}"
         @format      = format_from_path(path) unless @format
         uri          = URI.parse("#{base_uri}#{path}")
-        uri.query    = options[:query].to_query unless options[:query].blank?
+        params       = default_params
+        params.merge!(options[:query] || {})
+        uri.query    = params.to_query
         klass        = Net::HTTP.const_get method.to_s.downcase.capitalize
         request      = klass.new(uri.request_uri)
         request.body = options[:body] unless options[:body].blank?
