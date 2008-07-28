@@ -12,43 +12,43 @@ end
 
 describe HTTParty do
   
-  it 'should be able to get the base_uri' do
-    Foo.base_uri.should == 'http://api.foo.com/v1'
-  end
-  
-  it 'should be able to set the base_uri' do
-    Foo.base_uri('api.foobar.com')
-    Foo.base_uri.should == 'http://api.foobar.com'
-  end
-  
-  it 'should set scheme to https if port 443' do
-    FooWithHttps.base_uri.should == 'https://api.foo.com/v1:443'
-  end
-  
-  describe 'http' do
-    it "should use ssl for port 443" do
-      FooWithHttps.http.use_ssl?.should == true
+  describe "base uri" do
+    it "should be gettable" do
+      Foo.base_uri.should == 'http://api.foo.com/v1'
     end
     
-    it 'should not use ssl for port 80' do
-      Foo.base_uri('foobar.com')
-      Foo.http.use_ssl?.should == false
+    it 'should be setable' do
+      Foo.base_uri('http://api.foobar.com')
+      Foo.base_uri.should == 'http://api.foobar.com'
+    end
+    
+    it "should add http if not present for non ssl requests" do
+      Foo.base_uri('api.foobar.com')
+      Foo.base_uri.should == 'http://api.foobar.com'
+    end
+    
+    it "should add https if not present for ssl requests" do
+      FooWithHttps.base_uri.should == 'https://api.foo.com/v1:443'
     end
   end
   
-  it "should initialize headers to empty hash" do
-    Foo.headers.should == {}
+  describe "headers" do
+    it "should default to empty hash" do
+      Foo.headers.should == {}
+    end
+    
+    it "should be able to be updated" do
+      init_headers = {:foo => 'bar', :baz => 'spax'}
+      Foo.headers init_headers
+      Foo.headers.should == init_headers
+    end
   end
   
-  it "should allow updating the headers" do
-    init_headers = {:foo => 'bar', :baz => 'spax'}
-    Foo.headers init_headers
-    Foo.headers.should == init_headers
-  end
-  
-  it 'should be able to set basic authentication' do
-    Foo.basic_auth 'foobar', 'secret'
-    Foo.instance_variable_get("@auth").should == {:username => 'foobar', :password => 'secret'}
+  describe "basic http authentication" do
+    it "should work" do
+      Foo.basic_auth 'foobar', 'secret'
+      Foo.instance_variable_get("@auth").should == {:username => 'foobar', :password => 'secret'}
+    end
   end
   
   describe "format" do
@@ -66,6 +66,17 @@ describe HTTParty do
       lambda do
         Foo.format :foobar
       end.should raise_error(HTTParty::UnsupportedFormat)
+    end
+  end
+  
+  describe 'http' do
+    it "should use ssl for port 443" do
+      FooWithHttps.http.use_ssl?.should == true
+    end
+    
+    it 'should not use ssl for port 80' do
+      Foo.base_uri('foobar.com')
+      Foo.http.use_ssl?.should == false
     end
   end
   
@@ -88,20 +99,13 @@ describe HTTParty do
   end
   
   describe 'parsing responses' do
-    it 'should parse xml automatically' do
-      xml = <<EOF
-<books>
-  <book>
-    <id>1234</id>
-    <name>Foo Bar!</name>
-  </book>
-</books>
-EOF
+    it 'should handle xml automatically' do
+      xml = %q[<books><book><id>1234</id><name>Foo Bar!</name></book></books>]
       Foo.format :xml
       Foo.send(:parse_response, xml).should == {'books' => {'book' => {'id' => '1234', 'name' => 'Foo Bar!'}}}
     end
     
-    it 'should parse json automatically' do
+    it 'should handle json automatically' do
       json = %q[{"books": {"book": {"name": "Foo Bar!", "id": "1234"}}}]
       Foo.format :json
       Foo.send(:parse_response, json).should == {'books' => {'book' => {'id' => '1234', 'name' => 'Foo Bar!'}}}

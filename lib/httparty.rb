@@ -32,6 +32,20 @@ module HTTParty
       @auth = {:username => u, :password => p}
     end
     
+    def default_params(h)
+      raise ArgumentError, 'Headers must be a hash' unless h.is_a?(Hash)
+      @default_params ||= {}
+      return @default_params if h.blank?
+      @default_params.merge!(h)
+    end
+
+    def headers(h={})
+      raise ArgumentError, 'Headers must be a hash' unless h.is_a?(Hash)
+      @headers ||= {}
+      return @headers if h.blank?
+      @headers.merge!(h)
+    end
+    
     def http
       if @http.blank?
         uri = URI.parse(base_uri)
@@ -41,13 +55,6 @@ module HTTParty
         @http.verify_mode = OpenSSL::SSL::VERIFY_NONE
       end
       @http
-    end
-    
-    def headers(h={})
-      raise ArgumentError, 'Headers must be a hash' unless h.is_a?(Hash)
-      @headers ||= {}
-      return @headers if h.blank?
-      @headers.merge!(h)
     end
     
     def get(path, options={})
