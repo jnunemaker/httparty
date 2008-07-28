@@ -123,4 +123,24 @@ describe HTTParty do
       Foo.send(:parse_response, json).should == {'books' => {'book' => {'id' => '1234', 'name' => 'Foo Bar!'}}}
     end
   end
+  
+  describe "sending requests" do
+    it "should not work with request method other than get, post, put, delete" do
+      lambda do
+        Foo.send(:send_request, 'foo', '/foo')
+      end.should raise_error(ArgumentError)
+    end
+    
+    it 'should require that :query is a hash if present' do
+      lambda do
+        Foo.send(:send_request, 'get', '/foo', :query => 'string')
+      end.should raise_error(ArgumentError)
+    end
+    
+    it 'should require that :headers is a hash if present' do
+      lambda do
+        Foo.send(:send_request, 'get', '/foo', :headers => 'string')
+      end.should raise_error(ArgumentError)
+    end
+  end
 end

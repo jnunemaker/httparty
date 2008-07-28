@@ -89,13 +89,14 @@ module HTTParty
       #   body    => string for raw post data
       #   headers => hash of headers to send request with
       def send_request(method, path, options={})
+        raise ArgumentError, 'only get, post, put and delete methods are supported' unless %w[get post put delete].include?(method.to_s)
+        raise ArgumentError, ':query must be a hash' if options[:query] && !options[:query].is_a?(Hash)
+        raise ArgumentError, ':headers must be a hash' if options[:headers] && !options[:headers].is_a?(Hash)
         # we always want path that begins with /
-        path = path.starts_with?('/') ? path : "/#{path}"
-        @format      = format_from_path(path) unless @format
+        path         = path.starts_with?('/') ? path : "/#{path}"
+        @format    ||= format_from_path(path)
         uri          = URI.parse("#{base_uri}#{path}")
-        params       = default_params
-        params.merge!(options[:query] || {})
-        uri.query    = params.to_query
+        uri.query    = default_params.merge(options[:query] || {}).to_query
         klass        = Net::HTTP.const_get method.to_s.downcase.capitalize
         request      = klass.new(uri.request_uri)
         request.body = options[:body] unless options[:body].blank?
