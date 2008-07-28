@@ -16,12 +16,16 @@ module HTTParty
     base.extend ClassMethods
   end
   
-  module ClassMethods
+  class UnsupportedFormat < StandardError; end
+  
+  AllowedFormats = %w[xml json]
+  
+  module ClassMethods    
     def base_uri(base_uri=nil)
       return @base_uri unless base_uri
       # don't want this to ever end with /
       base_uri = base_uri.ends_with?('/') ? base_uri.chop : base_uri
-      @base_uri = ensure_http(base_uri)
+      @base_uri = normalize_base_uri(base_uri)
     end
     
     def basic_auth(u, p)
@@ -39,13 +43,11 @@ module HTTParty
       @http
     end
     
-    def headers
-      @headers ||= {}
-    end
-    
-    def headers=(h)
+    def headers(h={})
       raise ArgumentError, 'Headers must be a hash' unless h.is_a?(Hash)
-      headers.merge!(h)
+      @headers ||= {}
+      return @headers if h.blank?
+      @headers.merge!(h)
     end
     
     def get(path, options={})
@@ -64,8 +66,10 @@ module HTTParty
       send_request 'delete', path, options
     end
     
-    def format(f=nil)
-      @format = f.to_s
+    def format(f)
+      f = f.to_s
+      raise UnsupportedFormat, "Must be one of: #{AllowedFormats.join(', ')}" unless AllowedFormats.include?(f)
+      @format = f
     end
     
     private
@@ -84,23 +88,24 @@ module HTTParty
         request.body = options[:body] unless options[:body].blank?
         request.initialize_http_header headers.merge(options[:headers] || {})
         request.basic_auth(@auth[:username], @auth[:password]) if @auth
-        @response    = http.start() { |conn| conn.request(request) }
-        parse(@response.body)
+        response     = http.start() { |conn| conn.request(request) }
+        parse_response(response.body)
       end
       
-      def parse(body)
+      def parse_response(body)
         case @format
         when 'xml'
           Hash.from_xml(body)
         when 'json'
           ActiveSupport::JSON.decode(body)
         else
+          # just return the response if no format 
           body
         end
       end
     
       # Makes it so uri is sure to parse stuff like google.com with the http
-      def ensure_http(str)
+      def normalize_base_uri(str)
         str =~ /^https?:\/\// ? str : "http#{'s' if str.include?(':443')}://#{str}"
       end
       
@@ -109,14 +114,8 @@ module HTTParty
       #   /foobar.xml => 'xml'
       #   /foobar.json => 'json'
       def format_from_path(path)
-        return case path
-        when /\.xml$/
-          'xml'
-        when /\.json$/
-          'json'
-        else
-          nil
-        end
+        ext = File.extname(path)[1..-1]
+        !ext.blank? && AllowedFormats.include?(ext) ? ext : nil
       end
   end
 end
