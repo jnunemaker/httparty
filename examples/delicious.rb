@@ -5,15 +5,10 @@ config = YAML::load(File.read(File.join(ENV['HOME'], '.delicious')))
 
 class Delicious
   include HTTParty
-  
-  # sets the base url for each request
   base_uri 'https://api.del.icio.us/v1'
-  
-  # parse xml automatically
   format :xml
   
   def initialize(user, pass)
-    # set basic http authentication for all requests
     self.class.basic_auth(user, pass)
   end
   

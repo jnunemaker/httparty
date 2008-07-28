@@ -5,12 +5,9 @@ config = YAML::load(File.read(File.join(ENV['HOME'], '.twitter')))
 
 class Twitter
   include HTTParty
-  
-  # sets the base url for each request
   base_uri 'twitter.com'
   
   def initialize(user, pass)
-    # set basic http authentication for all requests
     self.class.basic_auth user, pass
   end
   
