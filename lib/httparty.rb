@@ -28,7 +28,7 @@ module HTTParty
       @auth = {:username => u, :password => p}
     end
     
-    def http(&block)
+    def http
       if @http.blank?
         uri = URI.parse(base_uri)
         @http = Net::HTTP.new(uri.host, uri.port)
