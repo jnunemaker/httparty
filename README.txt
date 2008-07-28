@@ -1,48 +1,51 @@
 = httparty
 
-* FIX (url)
-
 == DESCRIPTION:
 
-FIX (describe your package)
+Makes http fun again!
 
 == FEATURES/PROBLEMS:
 
-* FIX (list of features or problems)
+* Easy get, post, put, delete requests
+* Basic http authentication
+* Default request query string parameters (ie: for api keys that are needed on each request)
+* Automatic parsing of JSON and XML into ruby hashes
 
 == SYNOPSIS:
 
-  FIX (code sample of usage)
+The following is a simple example of wrapping Twitter's API for posting updates.
+
+	class Twitter
+		include HTTParty
+		base_uri 'twitter.com'
+		basic_auth 'username', 'password'
+	end
+	
+	Twitter.post('/statuses/udpate.json', :query => {:status => "It's an HTTParty and everyone is invited!"})
+
+That is really it! The object returned is a ruby hash that is decoded from Twitter's json response. JSON parsing is used because of the .json extension in the path of the request. You can also explicitly set a format (see the examples). 
+
+That works and all but what if you don't want to embed your username and password in the class? Below is an example to fix that:
+
+	class Twitter
+	  include HTTParty
+	  base_uri 'twitter.com'
+  
+	  def initialize(user, pass)
+	    self.class.basic_auth user, pass
+	  end
+  
+	  def post(text)
+	    self.class.post('/statuses/update.json', :query => {:status => text})
+	  end
+	end
+	
+	Twitter.new('username', 'password').post("It's an HTTParty and everyone is invited!")
 
 == REQUIREMENTS:
 
-* FIX (list of requirements)
+* Active Support >= 2.1
 
 == INSTALL:
 
-* FIX (sudo gem install, anything else)
-
-== LICENSE:
-
-(The MIT License)
-
-Copyright (c) 2008 FIXME full name
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-'Software'), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+* sudo gem install httparty
