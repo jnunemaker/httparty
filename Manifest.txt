@@ -27,3 +27,5 @@ spec/spec_helper.rb
 tasks/deployment.rake
 tasks/environment.rake
 tasks/website.rake
+website/css/common.css
+website/index.html
