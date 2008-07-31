@@ -1,7 +1,8 @@
 == 0.1.1 2008-07-30
 
-* 1 major enhancement:
+* 2 major enhancement:
 	* Added :basic_auth key for options when making a request
+	* :query and :body both now work with query string or hash
 
 == 0.1.0 2008-07-27
 

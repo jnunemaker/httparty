@@ -1,10 +1,10 @@
 Gem::Specification.new do |s|
   s.name = %q{httparty}
-  s.version = "0.1.0"
+  s.version = "0.1.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["John Nunemaker"]
-  s.date = %q{2008-07-29}
+  s.date = %q{2008-07-31}
   s.description = %q{Makes http fun! Also, makes consuming restful web services dead easy.}
   s.email = ["nunemaker@gmail.com"]
   s.extra_rdoc_files = ["History.txt", "License.txt", "Manifest.txt", "PostInstall.txt", "README.txt"]
