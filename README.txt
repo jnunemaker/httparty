@@ -30,13 +30,14 @@ That works and all but what if you don't want to embed your username and passwor
 	class Twitter
 	  include HTTParty
 	  base_uri 'twitter.com'
-  
-	  def initialize(user, pass)
-	    self.class.basic_auth user, pass
+
+	  def initialize(u, p)
+	    @auth = {:username => u, :password => p}
 	  end
-  
+
 	  def post(text)
-	    self.class.post('/statuses/update.json', :query => {:status => text})
+	    options = { :query => {:status => text}, :basic_auth => @auth }
+	    self.class.post('/statuses/update.json', options)
 	  end
 	end
 	

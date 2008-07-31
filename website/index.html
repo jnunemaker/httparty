@@ -15,6 +15,7 @@
 		<ul id="nav">
 			<li><a href="rdoc/">Docs</a></li> 
 			<li><a href="http://github.com/jnunemaker/httparty">Github</a></li>
+			<li><a href="http://jnunemaker.lighthouseapp.com/projects/14842-httparty/tickets">Lighthouse</a></li>
 			<li><a href="http://rubyforge.org/projects/httparty/">Rubyforge</a></li> 
 		</ul> 
 	</div> 
@@ -43,12 +44,13 @@ Twitter.post('/statuses/update.json', :query => {:status => "It's an HTTParty an
   include HTTParty
   base_uri 'twitter.com'
 
-  def initialize(user, pass)
-    self.class.basic_auth user, pass
+  def initialize(u, p)
+    @auth = {:username => u, :password => p}
   end
 
   def post(text)
-    self.class.post('/statuses/update.json', :query => {:status => text})
+    options = { :query => {:status => text}, :basic_auth => @auth }
+    self.class.post('/statuses/update.json', options)
   end
 end
 
@@ -66,12 +68,16 @@ Twitter.new('username', 'password').post("It's an HTTParty and everyone is invit
 		<p>Created by <a href="http://addictedtonew.com/about/">John Nunemaker</a></p> 
 	</div> 
 </div> 
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-85301-19");
+pageTracker._initData();
+pageTracker._trackPageview();
+</script>
  
-<script src="http://www.google-analytics.com/urchin.js" type="text/javascript"></script> 
-<script type="text/javascript">_uacct = "UA-85301-9"; urchinTracker();</script> 
- 
-<!-- 103bees.com 'bee' code v1.11 - please do not make any changes! --> 
-<script type="text/javascript" src="http://103bees.com/bees/?bee=3672&amp;fid=5643"></script> 
-<!-- 103bees.com 'bee' code --> 
 </body> 
 </html>
