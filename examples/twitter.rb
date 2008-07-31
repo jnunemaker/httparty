@@ -27,4 +27,5 @@ end
 twitter = Twitter.new(config['email'], config['password'])
 pp twitter.timeline
 # pp twitter.timeline(:friends, :query => {:since_id => 868482746})
+# pp twitter.timeline(:friends, :query => 'since_id=868482746')
 # pp twitter.post('this is a test')

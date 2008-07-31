@@ -130,12 +130,6 @@ describe HTTParty do
       end.should raise_error(ArgumentError)
     end
     
-    it 'should require that :query is a hash if present' do
-      lambda do
-        Foo.send(:send_request, 'get', '/foo', :query => 'string')
-      end.should raise_error(ArgumentError)
-    end
-    
     it 'should require that :headers is a hash if present' do
       lambda do
         Foo.send(:send_request, 'get', '/foo', :headers => 'string')

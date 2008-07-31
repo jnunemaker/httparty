@@ -90,29 +90,32 @@ module HTTParty
       
       # FIXME: this method is doing way to much and needs to be split up
       # options can be any or all of:
-      #   query       => hash of keys/values to be converted to query string
-      #   body        => string for raw post data
+      #   query       => hash of keys/values or a query string (foo=bar&baz=poo)
+      #   body        => hash of keys/values or a query string (foo=bar&baz=poo)
       #   headers     => hash of headers to send request with
       #   basic_auth  => :username and :password to use as basic http authentication (overrides @auth class instance variable)
       def send_request(method, path, options={})
         raise ArgumentError, 'only get, post, put and delete methods are supported' unless %w[get post put delete].include?(method.to_s)
-        raise ArgumentError, ':query must be a hash' if options[:query] && !options[:query].is_a?(Hash)
         raise ArgumentError, ':headers must be a hash' if options[:headers] && !options[:headers].is_a?(Hash)
         raise ArgumentError, ':basic_auth must be a hash' if options[:basic_auth] && !options[:basic_auth].is_a?(Hash)
         # we always want path that begins with /
-        path         = path =~ /^(\/|https?:\/\/)/ ? path : "/#{path}"
-        @format    ||= format_from_path(path)
-        uri          = URI.parse("#{base_uri}#{path}")
-        current_qs   = uri.query ? "#{uri.query}&" : ''
-        uri.query    = current_qs + default_params.merge(options[:query] || {}).to_query
-        klass        = Net::HTTP.const_get method.to_s.downcase.capitalize
-        request      = klass.new(uri.request_uri)
-        request.body = options[:body] unless options[:body].blank?
-        basic_auth   = options.delete(:basic_auth) || @auth
+        path           = path =~ /^(\/|https?:\/\/)/ ? path : "/#{path}"
+        @format      ||= format_from_path(path)
+        uri            = URI.parse("#{base_uri}#{path}")
+        existing_query = uri.query ? "#{uri.query}&" : ''
+        uri.query      = if options[:query].blank?
+          existing_query
+        else
+          existing_query + (options[:query].is_a?(Hash) ? default_params.merge(options[:query]).to_query : options[:query])
+        end
+        klass          = Net::HTTP.const_get method.to_s.downcase.capitalize
+        request        = klass.new(uri.request_uri)
+        request.body   = options[:body].is_a?(Hash) ? options[:body].to_query : options[:body] unless options[:body].blank?
+        basic_auth     = options.delete(:basic_auth) || @auth
         request.initialize_http_header headers.merge(options[:headers] || {})
         # note to self: self, do not put basic auth above headers because it removes basic auth
         request.basic_auth(basic_auth[:username], basic_auth[:password]) if basic_auth
-        response     = http(uri).request(request)
+        response       = http(uri).request(request)
         parse_response(response.body)
       end
       
