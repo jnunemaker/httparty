@@ -8,8 +8,8 @@ class Delicious
   base_uri 'https://api.del.icio.us/v1'
   format :xml
   
-  def initialize(user, pass)
-    self.class.basic_auth(user, pass)
+  def initialize(u, p)
+    @auth = {:username => u, :password => p}
   end
   
   # query params that filter the posts are:
@@ -18,23 +18,21 @@ class Delicious
   #   url (optional). Filter by this url.
   #   ie: posts(:query => {:tag => 'ruby'})
   def posts(options={})
+    options.merge!({:basic_auth => @auth})
     # get posts and convert to structs so we can do .key instead of ['key'] with results
-    self.class.get('/posts/get', options)['posts']['post'].map { |b| b.to_struct }
+    self.class.get('/posts/get', options)
   end
   
   # query params that filter the posts are:
   #   tag (optional). Filter by this tag.
   #   count (optional). Number of items to retrieve (Default:15, Maximum:100).
   def recent(options={})
-    self.class.get('/posts/recent', options)['posts']['post'].map { |b| b.to_struct }
+    options.merge!({:basic_auth => @auth})
+    self.class.get('/posts/recent', options)
   end
 end
 
 delicious = Delicious.new(config['username'], config['password'])
-
 pp delicious.posts(:query => {:tag => 'ruby'})
-
-puts '', '*' * 50, ''
-
 pp delicious.recent
 

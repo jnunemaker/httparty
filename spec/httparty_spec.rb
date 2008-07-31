@@ -141,5 +141,11 @@ describe HTTParty do
         Foo.send(:send_request, 'get', '/foo', :headers => 'string')
       end.should raise_error(ArgumentError)
     end
+    
+    it 'should require that :basic_auth is a hash if present' do
+      lambda do
+        Foo.send(:send_request, 'get', '/foo', :basic_auth => 'string')
+      end.should raise_error(ArgumentError)
+    end
   end
 end

@@ -28,10 +28,15 @@ module HTTParty
       @base_uri = normalize_base_uri(base_uri)
     end
     
+    # Warning: This is not thread safe most likely and
+    # only works if you use one set of credentials. I
+    # leave it because it is convenient on some occasions.
     def basic_auth(u, p)
       @auth = {:username => u, :password => p}
     end
     
+    # Updates the default query string parameters
+    # that should be appended to each request.
     def default_params(h={})
       raise ArgumentError, 'Default params must be a hash' unless h.is_a?(Hash)
       @default_params ||= {}
@@ -83,14 +88,17 @@ module HTTParty
         @http
       end
       
+      # FIXME: this method is doing way to much and needs to be split up
       # options can be any or all of:
-      #   query   => hash of keys/values to be converted to query string
-      #   body    => string for raw post data
-      #   headers => hash of headers to send request with
+      #   query       => hash of keys/values to be converted to query string
+      #   body        => string for raw post data
+      #   headers     => hash of headers to send request with
+      #   basic_auth  => :username and :password to use as basic http authentication (overrides @auth class instance variable)
       def send_request(method, path, options={})
         raise ArgumentError, 'only get, post, put and delete methods are supported' unless %w[get post put delete].include?(method.to_s)
         raise ArgumentError, ':query must be a hash' if options[:query] && !options[:query].is_a?(Hash)
         raise ArgumentError, ':headers must be a hash' if options[:headers] && !options[:headers].is_a?(Hash)
+        raise ArgumentError, ':basic_auth must be a hash' if options[:basic_auth] && !options[:basic_auth].is_a?(Hash)
         # we always want path that begins with /
         path         = path =~ /^(\/|https?:\/\/)/ ? path : "/#{path}"
         @format    ||= format_from_path(path)
@@ -100,9 +108,11 @@ module HTTParty
         klass        = Net::HTTP.const_get method.to_s.downcase.capitalize
         request      = klass.new(uri.request_uri)
         request.body = options[:body] unless options[:body].blank?
+        basic_auth   = options.delete(:basic_auth) || @auth
         request.initialize_http_header headers.merge(options[:headers] || {})
-        request.basic_auth(@auth[:username], @auth[:password]) if @auth
-        response     = http(uri).start() { |conn| conn.request(request) }
+        # note to self: self, do not put basic auth above headers because it removes basic auth
+        request.basic_auth(basic_auth[:username], basic_auth[:password]) if basic_auth
+        response     = http(uri).request(request)
         parse_response(response.body)
       end
       

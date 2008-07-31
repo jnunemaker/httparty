@@ -7,30 +7,24 @@ class Twitter
   include HTTParty
   base_uri 'twitter.com'
   
-  def initialize(user, pass)
-    self.class.basic_auth user, pass
+  def initialize(u, p)
+    @auth = {:username => u, :password => p}
   end
   
   # which can be :friends, :user or :public
   # options[:query] can be things like since, since_id, count, etc.
   def timeline(which=:friends, options={})
-    self.class.get("/statuses/#{which}_timeline.xml", options)['statuses'].map { |s| s.to_struct }
+    options.merge!({:basic_auth => @auth})
+    self.class.get("/statuses/#{which}_timeline.json", options)
   end
   
   def post(text)
-    self.class.post('/statuses/update.xml', :query => {:status => text})['status'].to_struct
+    options = { :query => {:status => text}, :basic_auth => @auth }
+    self.class.post('/statuses/update.json', options)
   end
 end
 
-
 twitter = Twitter.new(config['email'], config['password'])
-
-twitter.timeline.each do |s|
-  puts s.user.name, s.text, "#{s.created_at} #{s.id}", ''
-end
-
-# twitter.timeline(:friends, :query => {:since_id => 868482746}).each do |s|
-#   puts s.user.name, s.text, "#{s.created_at} #{s.id}", ''
-# end
-# 
+pp twitter.timeline
+# pp twitter.timeline(:friends, :query => {:since_id => 868482746})
 # pp twitter.post('this is a test')
