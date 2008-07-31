@@ -78,7 +78,7 @@ module HTTParty
     end
     
     private
-      def http(uri)
+      def http(uri) #:nodoc:
         if @http.blank?
           @http = Net::HTTP.new(uri.host, uri.port)
           @http.use_ssl = (uri.port == 443)
@@ -94,7 +94,7 @@ module HTTParty
       #   body        => hash of keys/values or a query string (foo=bar&baz=poo)
       #   headers     => hash of headers to send request with
       #   basic_auth  => :username and :password to use as basic http authentication (overrides @auth class instance variable)
-      def send_request(method, path, options={})
+      def send_request(method, path, options={}) #:nodoc:
         raise ArgumentError, 'only get, post, put and delete methods are supported' unless %w[get post put delete].include?(method.to_s)
         raise ArgumentError, ':headers must be a hash' if options[:headers] && !options[:headers].is_a?(Hash)
         raise ArgumentError, ':basic_auth must be a hash' if options[:basic_auth] && !options[:basic_auth].is_a?(Hash)
@@ -119,7 +119,7 @@ module HTTParty
         parse_response(response.body)
       end
       
-      def parse_response(body)
+      def parse_response(body) #:nodoc:
         case @format
         when 'xml'
           Hash.from_xml(body)
@@ -132,7 +132,7 @@ module HTTParty
       end
     
       # Makes it so uri is sure to parse stuff like google.com with the http
-      def normalize_base_uri(str)
+      def normalize_base_uri(str) #:nodoc:
         str =~ /^https?:\/\// ? str : "http#{'s' if str.include?(':443')}://#{str}"
       end
       
@@ -140,7 +140,7 @@ module HTTParty
       # Just does simple pattern matching on file extention:
       #   /foobar.xml => 'xml'
       #   /foobar.json => 'json'
-      def format_from_path(path)
+      def format_from_path(path) #:nodoc:
         ext = File.extname(path)[1..-1]
         !ext.blank? && AllowedFormats.include?(ext) ? ext : nil
       end

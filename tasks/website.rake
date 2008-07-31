@@ -14,4 +14,4 @@ task :website_upload do
 end
 
 desc 'Generate and upload website files'
-task :website => [:website_generate, :website_upload, :publish_docs]
+task :website => [:website_upload, :publish_docs]
