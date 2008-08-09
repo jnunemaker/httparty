@@ -104,7 +104,7 @@ module HTTParty
         uri            = URI.parse("#{base_uri}#{path}")
         existing_query = uri.query ? "#{uri.query}&" : ''
         uri.query      = if options[:query].blank?
-          existing_query
+          existing_query + default_params.to_query
         else
           existing_query + (options[:query].is_a?(Hash) ? default_params.merge(options[:query]).to_query : options[:query])
         end
