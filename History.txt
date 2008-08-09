@@ -1,3 +1,8 @@
+== 0.1.2 2008-08-09
+
+* 1 major enhancement:
+	* default_params were not being appended to query string if option[:query] was blank
+
 == 0.1.1 2008-07-30
 
 * 2 major enhancement:

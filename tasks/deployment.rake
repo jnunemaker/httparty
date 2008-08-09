@@ -1,3 +1,12 @@
+desc 'Preps the gem for a new release'
+task :prep_for_release do
+  require 'rio'
+  Rake::Task['manifest:refresh'].invoke
+  gemspec = %x[rake debug_gem]
+  lines = gemspec.split("\n")
+  rio('httparty.gemspec') < lines[1, lines.length-1].join("\n")
+end
+
 desc 'Release the website and new gem version'
 task :deploy => [:check_version, :website, :release] do
   puts "Remember to create SVN tag:"
