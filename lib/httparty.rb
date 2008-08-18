@@ -21,6 +21,18 @@ module HTTParty
   AllowedFormats = %w[xml json]
   
   module ClassMethods    
+    #
+    # Set an http proxy
+    #
+    #	class Twitter
+    #	  include HTTParty
+    #	  http_proxy http://myProxy, 1080
+    # ....
+    def http_proxy(addr=nil, port = nil)
+	   @http_proxyaddr = addr
+	   @http_proxyport = port
+    end
+
     def base_uri(base_uri=nil)
       return @base_uri unless base_uri
       # don't want this to ever end with /
@@ -80,7 +92,7 @@ module HTTParty
     private
       def http(uri) #:nodoc:
         if @http.blank?
-          @http = Net::HTTP.new(uri.host, uri.port)
+          @http = Net::HTTP.new(uri.host, uri.port, @http_proxyaddr, @http_proxyport)
           @http.use_ssl = (uri.port == 443)
           # so we can avoid ssl warnings
           @http.verify_mode = OpenSSL::SSL::VERIFY_NONE
@@ -94,6 +106,7 @@ module HTTParty
       #   body        => hash of keys/values or a query string (foo=bar&baz=poo)
       #   headers     => hash of headers to send request with
       #   basic_auth  => :username and :password to use as basic http authentication (overrides @auth class instance variable)
+      # Raises exception Net::XXX (http error code) if an http error occured
       def send_request(method, path, options={}) #:nodoc:
         raise ArgumentError, 'only get, post, put and delete methods are supported' unless %w[get post put delete].include?(method.to_s)
         raise ArgumentError, ':headers must be a hash' if options[:headers] && !options[:headers].is_a?(Hash)
@@ -116,7 +129,16 @@ module HTTParty
         # note to self: self, do not put basic auth above headers because it removes basic auth
         request.basic_auth(basic_auth[:username], basic_auth[:password]) if basic_auth
         response       = http(uri).request(request)
-        parse_response(response.body)
+
+        case response
+        when Net::HTTPSuccess     then
+          parse_response(response.body)
+        else
+          response.instance_eval { class << self; attr_accessor :body_parsed; end }
+          begin; response.body_parsed = parse_response(response.body); rescue; end
+          response.error! # raises  exception corresponding to http error Net::XXX
+        end
+
       end
       
       def parse_response(body) #:nodoc:
