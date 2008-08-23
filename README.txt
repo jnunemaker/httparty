@@ -9,7 +9,7 @@ Makes http fun again!
 * Easy get, post, put, delete requests
 * Basic http authentication
 * Default request query string parameters (ie: for api keys that are needed on each request)
-* Automatic parsing of JSON and XML into ruby hashes
+* Automatic parsing of JSON and XML into ruby hashes based on response content-type
 
 == SYNOPSIS:
 
