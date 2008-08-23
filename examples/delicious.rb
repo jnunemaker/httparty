@@ -6,7 +6,6 @@ config = YAML::load(File.read(File.join(ENV['HOME'], '.delicious')))
 class Delicious
   include HTTParty
   base_uri 'https://api.del.icio.us/v1'
-  format :xml
   
   def initialize(u, p)
     @auth = {:username => u, :password => p}

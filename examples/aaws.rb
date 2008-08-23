@@ -8,7 +8,6 @@ module AAWS
     include HTTParty
     base_uri 'http://ecs.amazonaws.com'
     default_params :Service => 'AWSECommerceService', :Operation => 'ItemSearch', :SearchIndex => 'Books'
-    format :xml
     
     def initialize(key)
       self.class.default_params :AWSAccessKeyId => key

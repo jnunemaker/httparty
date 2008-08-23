@@ -12,13 +12,13 @@ dir = File.expand_path(File.join(File.dirname(__FILE__), 'httparty'))
 require dir + '/core_ext'
   
 module HTTParty
+  class UnsupportedFormat < StandardError; end
+  
   def self.included(base)
     base.extend ClassMethods
   end
   
-  class UnsupportedFormat < StandardError; end
-  
-  AllowedFormats = %w[xml json]
+  AllowedFormats = {:xml => 'text/xml', :json => 'application/json'}
   
   module ClassMethods    
     #
@@ -64,8 +64,7 @@ module HTTParty
     end
     
     def format(f)
-      f = f.to_s
-      raise UnsupportedFormat, "Must be one of: #{AllowedFormats.join(', ')}" unless AllowedFormats.include?(f)
+      raise UnsupportedFormat, "Must be one of: #{AllowedFormats.keys.join(', ')}" unless AllowedFormats.key?(f)
       @format = f
     end
     
@@ -111,9 +110,6 @@ module HTTParty
         raise ArgumentError, 'only get, post, put and delete methods are supported' unless %w[get post put delete].include?(method.to_s)
         raise ArgumentError, ':headers must be a hash' if options[:headers] && !options[:headers].is_a?(Hash)
         raise ArgumentError, ':basic_auth must be a hash' if options[:basic_auth] && !options[:basic_auth].is_a?(Hash)
-        # we always want path that begins with /
-        path           = path =~ /^(\/|https?:\/\/)/ ? path : "/#{path}"
-        @format      ||= format_from_path(path)
         uri            = URI.parse("#{base_uri}#{path}")
         existing_query = uri.query ? "#{uri.query}&" : ''
         uri.query      = if options[:query].blank?
@@ -129,9 +125,10 @@ module HTTParty
         # note to self: self, do not put basic auth above headers because it removes basic auth
         request.basic_auth(basic_auth[:username], basic_auth[:password]) if basic_auth
         response       = http(uri).request(request)
-
+        @format      ||= format_from_mimetype(response['content-type'])
+        
         case response
-        when Net::HTTPSuccess     then
+        when Net::HTTPSuccess
           parse_response(response.body)
         else
           response.instance_eval { class << self; attr_accessor :body_parsed; end }
@@ -143,9 +140,9 @@ module HTTParty
       
       def parse_response(body) #:nodoc:
         case @format
-        when 'xml'
+        when :xml
           Hash.from_xml(body)
-        when 'json'
+        when :json
           ActiveSupport::JSON.decode(body)
         else
           # just return the response if no format 
@@ -158,13 +155,10 @@ module HTTParty
         str =~ /^https?:\/\// ? str : "http#{'s' if str.include?(':443')}://#{str}"
       end
       
-      # Returns a format that we can handle from the path if possible. 
-      # Just does simple pattern matching on file extention:
-      #   /foobar.xml => 'xml'
-      #   /foobar.json => 'json'
-      def format_from_path(path) #:nodoc:
-        ext = File.extname(path)[1..-1]
-        !ext.blank? && AllowedFormats.include?(ext) ? ext : nil
+      # Uses the HTTP Content-Type header to determine the format of the response
+      # It compares the MIME type returned to the types stored in the AllowedFormats hash
+      def format_from_mimetype(mimetype) #:nodoc:
+        AllowedFormats.each { |k, v| return k if mimetype.include?(v) }
       end
   end
 end
