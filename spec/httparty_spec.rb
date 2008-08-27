@@ -141,5 +141,20 @@ describe HTTParty do
         Foo.send(:send_request, 'get', '/foo', :basic_auth => 'string')
       end.should raise_error(ArgumentError)
     end
+
+    it "should not attempt to parse empty responses" do
+      http = Net::HTTP.new('localhost', 80)
+      Foo.stub!(:http).and_return(http)
+      response = Net::HTTPNoContent.new("1.1", 204, "No content for you")
+      response.stub!(:body).and_return(nil)
+      http.stub!(:request).and_return(response)
+
+      Foo.headers.clear # clear out bogus settings from other specs
+      Foo.format :xml
+      Foo.send(:send_request, 'get', '/bar').should be_nil
+
+      response.stub!(:body).and_return("")
+      Foo.send(:send_request, 'get', 'bar').should be_nil
+    end
   end
 end

@@ -139,6 +139,7 @@ module HTTParty
       end
       
       def parse_response(body) #:nodoc:
+        return nil if body.nil? or body.empty?
         case @format
         when :xml
           Hash.from_xml(body)
