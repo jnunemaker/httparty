@@ -138,5 +138,78 @@ describe HTTParty do
       response.stub!(:body).and_return("")
       Foo.send(:send_request, 'get', 'bar').should be_nil
     end
+
+    describe "that respond with redirects" do
+      def setup_http
+        @http = Net::HTTP.new('localhost', 80)
+        Foo.stub!(:http).and_return(@http)
+        @redirect = Net::HTTPFound.new("1.1", 302, "")
+        @redirect.stub!(:[]).with('location').and_return('/foo')
+        @ok = Net::HTTPOK.new("1.1", 200, "Content for you")
+        @ok.stub!(:body).and_return({"foo" => "bar"}.to_xml)
+        @http.should_receive(:request).and_return(@redirect, @ok)
+        Foo.headers.clear
+        Foo.format :xml
+      end
+
+      it "should handle redirects for GET transparently" do
+        setup_http
+        Foo.get('/foo/').should == {"hash" => {"foo" => "bar"}}
+      end
+
+      it "should handle redirects for POST transparently" do
+        setup_http
+        Foo.post('/foo/', {:foo => :bar}).should == {"hash" => {"foo" => "bar"}}
+      end
+
+      it "should handle redirects for DELETE transparently" do
+        setup_http
+        Foo.delete('/foo/').should == {"hash" => {"foo" => "bar"}}
+      end
+
+      it "should handle redirects for PUT transparently" do
+        setup_http
+        Foo.put('/foo/').should == {"hash" => {"foo" => "bar"}}
+      end
+
+      it "should prevent infinite loops" do
+        http = Net::HTTP.new('localhost', 80)
+        Foo.stub!(:http).and_return(http)
+        redirect = Net::HTTPFound.new("1.1", "302", "Look, over there!")
+        redirect.stub!(:[]).with('location').and_return('/foo')
+        http.stub!(:request).and_return(redirect)
+
+        lambda do
+          Foo.send(:send_request, 'get', '/foo')
+        end.should raise_error(HTTParty::RedirectionTooDeep)
+      end
+
+      describe "with explicit override of automatic redirect handling" do
+
+        it "should fail with redirected GET" do
+          lambda do
+            Foo.get('/foo', :no_follow => true)
+          end.should raise_error(HTTParty::RedirectionTooDeep)
+        end
+
+        it "should fail with redirected POST" do
+          lambda do
+            Foo.post('/foo', :no_follow => true)
+          end.should raise_error(HTTParty::RedirectionTooDeep)
+        end
+
+        it "should fail with redirected DELETE" do
+          lambda do
+            Foo.delete('/foo', :no_follow => true)
+          end
+        end
+
+        it "should fail with redirected PUT" do
+          lambda do
+            Foo.put('/foo', :no_follow => true)
+          end
+        end
+      end
+    end
   end
 end

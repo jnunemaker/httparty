@@ -10,9 +10,11 @@ $:.unshift(File.dirname(__FILE__)) unless
 
 dir = File.expand_path(File.join(File.dirname(__FILE__), 'httparty'))
 require dir + '/core_ext'
-  
+
 module HTTParty
   class UnsupportedFormat < StandardError; end
+
+  class RedirectionTooDeep < StandardError; end
   
   def self.included(base)
     base.extend ClassMethods
@@ -107,6 +109,9 @@ module HTTParty
       #   basic_auth  => :username and :password to use as basic http authentication (overrides @auth class instance variable)
       # Raises exception Net::XXX (http error code) if an http error occured
       def send_request(method, path, options={}) #:nodoc:
+        options = {:limit => 5}.merge(options)
+        options[:limit] = 0 if options.delete(:no_follow)
+        raise HTTParty::RedirectionTooDeep, 'HTTP redirects too deep' if options[:limit].to_i <= 0
         raise ArgumentError, 'only get, post, put and delete methods are supported' unless %w[get post put delete].include?(method.to_s)
         raise ArgumentError, ':headers must be a hash' if options[:headers] && !options[:headers].is_a?(Hash)
         raise ArgumentError, ':basic_auth must be a hash' if options[:basic_auth] && !options[:basic_auth].is_a?(Hash)
@@ -130,6 +135,9 @@ module HTTParty
         case response
         when Net::HTTPSuccess
           parse_response(response.body)
+        when Net::HTTPRedirection
+          options[:limit] -= 1
+          send_request(method, response['location'], options)
         else
           response.instance_eval { class << self; attr_accessor :body_parsed; end }
           begin; response.body_parsed = parse_response(response.body); rescue; end
