@@ -43,6 +43,20 @@ That works and all but what if you don't want to embed your username and passwor
 	
 	Twitter.new('username', 'password').post("It's an HTTParty and everyone is invited!")
 
+=== REQUEST OPTIONS
+
+Each of the HTTP method (get, post, put and delete) each take a hash of options.
+The following keys can be specified in the options:
+
+headers::       A <tt>Hash</tt> of header key/value pairs
+query::         A <tt>Hash</tt> of query key/value pairs
+body::          The body of the request. If it's a <tt>Hash</tt>, it is
+                converted into query-string format, otherwise it is sent
+                as-is.
+basic_auth::    A <tt>Hash</tt> containing keys for <tt>:username</tt> and
+                <tt>:password</tt>.
+no_follow::     Turns off automatic redirect following
+
 == REQUIREMENTS:
 
 * Active Support >= 2.1
