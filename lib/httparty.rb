@@ -115,7 +115,8 @@ module HTTParty
         raise ArgumentError, 'only get, post, put and delete methods are supported' unless %w[get post put delete].include?(method.to_s)
         raise ArgumentError, ':headers must be a hash' if options[:headers] && !options[:headers].is_a?(Hash)
         raise ArgumentError, ':basic_auth must be a hash' if options[:basic_auth] && !options[:basic_auth].is_a?(Hash)
-        uri            = URI.parse("#{base_uri}#{path}")
+        path           = URI.parse(path)
+        uri            = path.relative? ? URI.parse("#{base_uri}#{path}") : path
         existing_query = uri.query ? "#{uri.query}&" : ''
         uri.query      = if options[:query].blank?
           existing_query + default_params.to_query
