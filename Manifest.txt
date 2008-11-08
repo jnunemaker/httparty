@@ -8,12 +8,11 @@ config/hoe.rb
 config/requirements.rb
 examples/aaws.rb
 examples/delicious.rb
+examples/google.rb
 examples/twitter.rb
 examples/whoismyrep.rb
 httparty.gemspec
 lib/httparty.rb
-lib/httparty/core_ext.rb
-lib/httparty/core_ext/hash.rb
 lib/httparty/version.rb
 script/console
 script/destroy
