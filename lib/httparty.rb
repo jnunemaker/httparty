@@ -88,13 +88,10 @@ module HTTParty
     
     private
       def http(uri) #:nodoc:
-        if @http.blank?
-          @http = Net::HTTP.new(uri.host, uri.port, @http_proxyaddr, @http_proxyport)
-          @http.use_ssl = (uri.port == 443)
-          # so we can avoid ssl warnings
-          @http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-        end
-        @http
+        http = Net::HTTP.new(uri.host, uri.port, @http_proxyaddr, @http_proxyport)
+        http.use_ssl = (uri.port == 443)
+        http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+        http
       end
       
       # FIXME: this method is doing way to much and needs to be split up
@@ -107,10 +104,12 @@ module HTTParty
       def send_request(method, path, options={}) #:nodoc:
         options = {:limit => 5}.merge(options)
         options[:limit] = 0 if options.delete(:no_follow)
+        
         raise HTTParty::RedirectionTooDeep, 'HTTP redirects too deep' if options[:limit].to_i <= 0
         raise ArgumentError, 'only get, post, put and delete methods are supported' unless %w[get post put delete].include?(method.to_s)
         raise ArgumentError, ':headers must be a hash' if options[:headers] && !options[:headers].is_a?(Hash)
         raise ArgumentError, ':basic_auth must be a hash' if options[:basic_auth] && !options[:basic_auth].is_a?(Hash)
+        
         path           = URI.parse(path)
         uri            = path.relative? ? URI.parse("#{base_uri}#{path}") : path
         existing_query = uri.query ? "#{uri.query}&" : ''
@@ -119,12 +118,12 @@ module HTTParty
         else
           existing_query + (options[:query].is_a?(Hash) ? default_params.merge(options[:query]).to_query : options[:query])
         end
+        
         klass          = Net::HTTP.const_get method.to_s.downcase.capitalize
         request        = klass.new(uri.request_uri)
         request.body   = options[:body].is_a?(Hash) ? options[:body].to_query : options[:body] unless options[:body].blank?
         basic_auth     = options.delete(:basic_auth) || @auth
         request.initialize_http_header headers.merge(options[:headers] || {})
-        # note to self: self, do not put basic auth above headers because it removes basic auth
         request.basic_auth(basic_auth[:username], basic_auth[:password]) if basic_auth
         response       = http(uri).request(request)
         @format      ||= format_from_mimetype(response['content-type'])
