@@ -17,6 +17,7 @@ module HTTParty
   end
   
   AllowedFormats = {:xml => 'text/xml', :json => 'application/json'}
+  SupportedHTTPMethods = [Net::HTTP::Get, Net::HTTP::Post, Net::HTTP::Put, Net::HTTP::Delete]
   
   module ClassMethods    
     #
@@ -66,22 +67,22 @@ module HTTParty
     
     # TODO: spec out this
     def get(path, options={})
-      send_request 'get', path, options
+      send_request Net::HTTP::Get, path, options
     end
 
     # TODO: spec out this    
     def post(path, options={})
-      send_request 'post', path, options
+      send_request Net::HTTP::Post, path, options
     end
 
     # TODO: spec out this    
     def put(path, options={})
-      send_request 'put', path, options
+      send_request Net::HTTP::Put, path, options
     end
 
     # TODO: spec out this    
     def delete(path, options={})
-      send_request 'delete', path, options
+      send_request Net::HTTP::Delete, path, options
     end
     
     private
@@ -99,12 +100,12 @@ module HTTParty
       #   headers     => hash of headers to send request with
       #   basic_auth  => :username and :password to use as basic http authentication (overrides @auth class instance variable)
       # Raises exception Net::XXX (http error code) if an http error occured
-      def send_request(method, path, options={}) #:nodoc:
+      def send_request(klass, path, options={}) #:nodoc:
         options = {:limit => 5}.merge(options)
         options[:limit] = 0 if options.delete(:no_follow)
         
         raise HTTParty::RedirectionTooDeep, 'HTTP redirects too deep' if options[:limit].to_i <= 0
-        raise ArgumentError, 'only get, post, put and delete methods are supported' unless %w[get post put delete].include?(method.to_s)
+        raise ArgumentError, 'only get, post, put and delete methods are supported' unless SupportedHTTPMethods.include?(klass)
         raise ArgumentError, ':headers must be a hash' if options[:headers] && !options[:headers].is_a?(Hash)
         raise ArgumentError, ':basic_auth must be a hash' if options[:basic_auth] && !options[:basic_auth].is_a?(Hash)
         
@@ -117,7 +118,6 @@ module HTTParty
           existing_query + (options[:query].is_a?(Hash) ? default_params.merge(options[:query]).to_query : options[:query])
         end
         
-        klass          = Net::HTTP.const_get method.to_s.downcase.capitalize
         request        = klass.new(uri.request_uri)
         request.body   = options[:body].is_a?(Hash) ? options[:body].to_query : options[:body] unless options[:body].blank?
         basic_auth     = options.delete(:basic_auth) || @auth
@@ -131,7 +131,7 @@ module HTTParty
           parse_response(response.body)
         when Net::HTTPRedirection
           options[:limit] -= 1
-          send_request(method, response['location'], options)
+          send_request(klass, response['location'], options)
         else
           response.instance_eval { class << self; attr_accessor :body_parsed; end }
           begin; response.body_parsed = parse_response(response.body); rescue; end

@@ -139,10 +139,10 @@ describe HTTParty do
 
       Foo.headers.clear # clear out bogus settings from other specs
       Foo.format :xml
-      Foo.send(:send_request, 'get', '/bar').should be_nil
+      Foo.get('/bar').should be_nil
 
       response.stub!(:body).and_return("")
-      Foo.send(:send_request, 'get', 'bar').should be_nil
+      Foo.get('bar').should be_nil
     end
 
     describe "that respond with redirects" do
@@ -186,7 +186,7 @@ describe HTTParty do
         http.stub!(:request).and_return(redirect)
 
         lambda do
-          Foo.send(:send_request, 'get', '/foo')
+          Foo.get('/foo')
         end.should raise_error(HTTParty::RedirectionTooDeep)
       end
 
