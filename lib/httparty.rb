@@ -33,8 +33,6 @@ module HTTParty
 
     def base_uri(base_uri=nil)
       return @base_uri unless base_uri
-      # don't want this to ever end with /
-      base_uri = base_uri.ends_with?('/') ? base_uri.chop : base_uri
       @base_uri = normalize_base_uri(base_uri)
     end
     
@@ -150,14 +148,16 @@ module HTTParty
         when :json
           ActiveSupport::JSON.decode(body)
         else
-          # just return the response if no format 
           body
         end
       end
     
       # Makes it so uri is sure to parse stuff like google.com with the http
-      def normalize_base_uri(str) #:nodoc:
-        str =~ /^https?:\/\// ? str : "http#{'s' if str.include?(':443')}://#{str}"
+      def normalize_base_uri(url) #:nodoc:
+        use_ssl = (url =~ /^https/) || url.include?(':443')
+        url.chop! if url.ends_with?('/')
+        url.gsub!(/^https?:\/\//i, '')
+        "http#{'s' if use_ssl}://#{url}"
       end
       
       # Uses the HTTP Content-Type header to determine the format of the response

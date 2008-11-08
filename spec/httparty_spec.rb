@@ -13,11 +13,11 @@ end
 describe HTTParty do
   
   describe "base uri" do
-    it "should be gettable" do
+    it "should have reader" do
       Foo.base_uri.should == 'http://api.foo.com/v1'
     end
     
-    it 'should be setable' do
+    it 'should have writer' do
       Foo.base_uri('http://api.foobar.com')
       Foo.base_uri.should == 'http://api.foobar.com'
     end
@@ -28,7 +28,13 @@ describe HTTParty do
     end
     
     it "should add https if not present for ssl requests" do
-      FooWithHttps.base_uri.should == 'https://api.foo.com/v1:443'
+      Foo.base_uri('api.foo.com/v1:443')
+      Foo.base_uri.should == 'https://api.foo.com/v1:443'
+    end
+    
+    it "should not remove https for ssl requests" do
+      Foo.base_uri('https://api.foo.com/v1:443')
+      Foo.base_uri.should == 'https://api.foo.com/v1:443'
     end
   end
   
