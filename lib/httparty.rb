@@ -5,15 +5,11 @@ require 'ostruct'
 require 'rubygems'
 require 'active_support'
 
-$:.unshift(File.dirname(__FILE__)) unless
-  $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
-
-dir = File.expand_path(File.join(File.dirname(__FILE__), 'httparty'))
-require dir + '/core_ext'
+directory = File.dirname(__FILE__)
+$:.unshift(directory) unless $:.include?(directory) || $:.include?(File.expand_path(directory))
 
 module HTTParty
   class UnsupportedFormat < StandardError; end
-
   class RedirectionTooDeep < StandardError; end
   
   def self.included(base)
