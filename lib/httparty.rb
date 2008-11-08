@@ -8,18 +8,23 @@ require 'active_support'
 directory = File.dirname(__FILE__)
 $:.unshift(directory) unless $:.include?(directory) || $:.include?(File.expand_path(directory))
 
+require 'httparty/request'
+
 module HTTParty
   class UnsupportedFormat < StandardError; end
   class RedirectionTooDeep < StandardError; end
+
+  AllowedFormats = {:xml => 'text/xml', :json => 'application/json'}
   
   def self.included(base)
     base.extend ClassMethods
   end
   
-  AllowedFormats = {:xml => 'text/xml', :json => 'application/json'}
-  SupportedHTTPMethods = [Net::HTTP::Get, Net::HTTP::Post, Net::HTTP::Put, Net::HTTP::Delete]
-  
   module ClassMethods    
+    def default_options
+      @@default_options ||= {}
+    end
+
     #
     # Set an http proxy
     #
@@ -28,42 +33,41 @@ module HTTParty
     #	  http_proxy http://myProxy, 1080
     # ....
     def http_proxy(addr=nil, port = nil)
-	   @http_proxyaddr = addr
-	   @http_proxyport = port
+      default_options[:http_proxyaddr] = addr
+      default_options[:http_proxyport] = port
     end
 
-    def base_uri(base_uri=nil)
-      return @base_uri unless base_uri
-      @base_uri = normalize_base_uri(base_uri)
+    def base_uri(uri=nil)
+      return default_options[:base_uri] unless uri
+      default_options[:base_uri] = normalize_base_uri(uri)
     end
-    
+
     # Warning: This is not thread safe most likely and
     # only works if you use one set of credentials. I
     # leave it because it is convenient on some occasions.
     def basic_auth(u, p)
-      @auth = {:username => u, :password => p}
+      default_options[:basic_auth] = {:username => u, :password => p}
     end
     
     # Updates the default query string parameters
     # that should be appended to each request.
     def default_params(h={})
       raise ArgumentError, 'Default params must be a hash' unless h.is_a?(Hash)
-      @default_params ||= {}
-      return @default_params if h.blank?
-      @default_params.merge!(h)
+      default_options[:default_params] ||= {}
+      default_options[:default_params].merge!(h)
     end
 
     def headers(h={})
       raise ArgumentError, 'Headers must be a hash' unless h.is_a?(Hash)
-      @headers ||= {}
-      return @headers if h.blank?
-      @headers.merge!(h)
+      default_options[:headers] ||= {}
+      default_options[:headers].merge!(h)
     end
     
     def format(f)
       raise UnsupportedFormat, "Must be one of: #{AllowedFormats.keys.join(', ')}" unless AllowedFormats.key?(f)
-      @format = f
+      default_options[:format] = f
     end
+    
     
     # TODO: spec out this
     def get(path, options={})
@@ -84,72 +88,11 @@ module HTTParty
     def delete(path, options={})
       send_request Net::HTTP::Delete, path, options
     end
-    
-    private
-      def http(uri) #:nodoc:
-        http = Net::HTTP.new(uri.host, uri.port, @http_proxyaddr, @http_proxyport)
-        http.use_ssl = (uri.port == 443)
-        http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-        http
-      end
-      
-      # FIXME: this method is doing way to much and needs to be split up
-      # options can be any or all of:
-      #   query       => hash of keys/values or a query string (foo=bar&baz=poo)
-      #   body        => hash of keys/values or a query string (foo=bar&baz=poo)
-      #   headers     => hash of headers to send request with
-      #   basic_auth  => :username and :password to use as basic http authentication (overrides @auth class instance variable)
-      # Raises exception Net::XXX (http error code) if an http error occured
-      def send_request(klass, path, options={}) #:nodoc:
-        options = {:limit => 5}.merge(options)
-        options[:limit] = 0 if options.delete(:no_follow)
-        
-        raise HTTParty::RedirectionTooDeep, 'HTTP redirects too deep' if options[:limit].to_i <= 0
-        raise ArgumentError, 'only get, post, put and delete methods are supported' unless SupportedHTTPMethods.include?(klass)
-        raise ArgumentError, ':headers must be a hash' if options[:headers] && !options[:headers].is_a?(Hash)
-        raise ArgumentError, ':basic_auth must be a hash' if options[:basic_auth] && !options[:basic_auth].is_a?(Hash)
-        
-        path           = URI.parse(path)
-        uri            = path.relative? ? URI.parse("#{base_uri}#{path}") : path
-        existing_query = uri.query ? "#{uri.query}&" : ''
-        uri.query      = if options[:query].blank?
-          existing_query + default_params.to_query
-        else
-          existing_query + (options[:query].is_a?(Hash) ? default_params.merge(options[:query]).to_query : options[:query])
-        end
-        
-        request        = klass.new(uri.request_uri)
-        request.body   = options[:body].is_a?(Hash) ? options[:body].to_query : options[:body] unless options[:body].blank?
-        basic_auth     = options.delete(:basic_auth) || @auth
-        request.initialize_http_header headers.merge(options[:headers] || {})
-        request.basic_auth(basic_auth[:username], basic_auth[:password]) if basic_auth
-        response       = http(uri).request(request)
-        @format      ||= format_from_mimetype(response['content-type'])
-        
-        case response
-        when Net::HTTPSuccess
-          parse_response(response.body)
-        when Net::HTTPRedirection
-          options[:limit] -= 1
-          send_request(klass, response['location'], options)
-        else
-          response.instance_eval { class << self; attr_accessor :body_parsed; end }
-          begin; response.body_parsed = parse_response(response.body); rescue; end
-          response.error! # raises  exception corresponding to http error Net::XXX
-        end
 
-      end
-      
-      def parse_response(body) #:nodoc:
-        return nil if body.nil? or body.empty?
-        case @format
-        when :xml
-          Hash.from_xml(body)
-        when :json
-          ActiveSupport::JSON.decode(body)
-        else
-          body
-        end
+    private
+
+      def send_request(http_method, path, options)
+        Request.send_request(http_method, path, default_options.merge(options))
       end
     
       # Makes it so uri is sure to parse stuff like google.com with the http
@@ -158,12 +101,6 @@ module HTTParty
         url.chop! if url.ends_with?('/')
         url.gsub!(/^https?:\/\//i, '')
         "http#{'s' if use_ssl}://#{url}"
-      end
-      
-      # Uses the HTTP Content-Type header to determine the format of the response
-      # It compares the MIME type returned to the types stored in the AllowedFormats hash
-      def format_from_mimetype(mimetype) #:nodoc:
-        AllowedFormats.each { |k, v| return k if mimetype.include?(v) }
       end
   end
 end
