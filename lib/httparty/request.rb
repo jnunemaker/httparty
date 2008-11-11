@@ -9,14 +9,12 @@ module HTTParty
     attr_accessor :http_method, :path, :options
     
     def initialize(http_method, path, options={})
-      options = {:limit => 5}.merge(options)
-      options[:limit] = 0 if options.delete(:no_follow)
-      options[:default_params] ||= {}
-
-      @http_method   = http_method
-
-      @path    = URI.parse(path)
-      @options = options
+      self.http_method = http_method
+      self.path = path
+      self.options = {
+        :limit => options.delete(:no_follow) ? 0 : 5, 
+        :default_params => {},
+      }.merge(options.dup)
     end
 
     def path=(uri)
@@ -24,7 +22,7 @@ module HTTParty
     end
 
     def uri
-      @uri ||= path.relative? ? URI.parse("#{options[:base_uri]}#{path}") : path
+      path.relative? ? URI.parse("#{options[:base_uri]}#{path}") : path
     end
 
     # FIXME: this method is doing way to much and needs to be split up
