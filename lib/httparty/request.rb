@@ -7,6 +7,7 @@ module HTTParty
     end
 
     attr_accessor :http_method, :path, :options
+    
     def initialize(http_method, path, options={})
       options = {:limit => 5}.merge(options)
       options[:limit] = 0 if options.delete(:no_follow)
@@ -48,9 +49,8 @@ module HTTParty
       
       request        = http_method.new(uri.request_uri)
       request.body   = options[:body].is_a?(Hash) ? options[:body].to_query : options[:body] unless options[:body].blank?
-      basic_auth     = options.delete(:basic_auth)
       request.initialize_http_header options[:headers]
-      request.basic_auth(basic_auth[:username], basic_auth[:password]) if options[:basic_auth]
+      request.basic_auth(options[:basic_auth][:username], options[:basic_auth][:password]) if options[:basic_auth]
       response       = http(uri).request(request)
       
       options[:format] ||= format_from_mimetype(response['content-type'])
