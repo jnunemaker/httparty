@@ -21,10 +21,6 @@ module HTTParty
       @path = URI.parse(uri)
     end
 
-    def uri
-      path.relative? ? URI.parse("#{options[:base_uri]}#{path}") : path
-    end
-
     # FIXME: this method is doing way to much and needs to be split up
     # options can be any or all of:
     #   query       => hash of keys/values or a query string (foo=bar&baz=poo)
@@ -38,12 +34,20 @@ module HTTParty
       raise ArgumentError, ':headers must be a hash' if options[:headers] && !options[:headers].is_a?(Hash)
       raise ArgumentError, ':basic_auth must be a hash' if options[:basic_auth] && !options[:basic_auth].is_a?(Hash)
       
-      existing_query = uri.query ? "#{uri.query}&" : ''
-      uri.query      = if options[:query].blank?
-        existing_query + options[:default_params].to_query
+      uri = path.relative? ? URI.parse("#{options[:base_uri]}#{path}") : path
+      
+      
+      query_string_parts = []
+      query_string_parts << uri.query unless uri.query.blank?
+      
+      if options[:query].is_a?(Hash)
+        query_string_parts << options[:default_params].merge(options[:query]).to_query
       else
-        existing_query + (options[:query].is_a?(Hash) ? options[:default_params].merge(options[:query]).to_query : options[:query])
+        query_string_parts << options[:default_params].to_query unless options[:default_params].blank?
+        query_string_parts << options[:query] unless options[:query].blank?
       end
+      
+      uri.query = query_string_parts.join('&') if query_string_parts.size > 0
       
       request        = http_method.new(uri.request_uri)
       request.body   = options[:body].is_a?(Hash) ? options[:body].to_query : options[:body] unless options[:body].blank?
