@@ -20,7 +20,7 @@ module HTTParty
     base.extend ClassMethods
   end
   
-  module ClassMethods    
+  module ClassMethods
     def default_options
       @@default_options ||= {}
     end
@@ -30,7 +30,7 @@ module HTTParty
     #
     #	class Twitter
     #	  include HTTParty
-    #	  http_proxy http://myProxy, 1080
+    #	  http_proxy 'http://myProxy', 1080
     # ....
     def http_proxy(addr=nil, port = nil)
       default_options[:http_proxyaddr] = addr
@@ -42,15 +42,10 @@ module HTTParty
       default_options[:base_uri] = normalize_base_uri(uri)
     end
 
-    # Warning: This is not thread safe most likely and
-    # only works if you use one set of credentials. I
-    # leave it because it is convenient on some occasions.
     def basic_auth(u, p)
       default_options[:basic_auth] = {:username => u, :password => p}
     end
     
-    # Updates the default query string parameters
-    # that should be appended to each request.
     def default_params(h={})
       raise ArgumentError, 'Default params must be a hash' unless h.is_a?(Hash)
       default_options[:default_params] ||= {}
@@ -68,23 +63,18 @@ module HTTParty
       default_options[:format] = f
     end
     
-    
-    # TODO: spec out this
     def get(path, options={})
       perform_request Net::HTTP::Get, path, options
     end
 
-    # TODO: spec out this
     def post(path, options={})
       perform_request Net::HTTP::Post, path, options
     end
 
-    # TODO: spec out this
     def put(path, options={})
       perform_request Net::HTTP::Put, path, options
     end
 
-    # TODO: spec out this
     def delete(path, options={})
       perform_request Net::HTTP::Delete, path, options
     end
