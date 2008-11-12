@@ -71,28 +71,28 @@ module HTTParty
     
     # TODO: spec out this
     def get(path, options={})
-      send_request Net::HTTP::Get, path, options
+      perform_request Net::HTTP::Get, path, options
     end
 
     # TODO: spec out this    
     def post(path, options={})
-      send_request Net::HTTP::Post, path, options
+      perform_request Net::HTTP::Post, path, options
     end
 
     # TODO: spec out this    
     def put(path, options={})
-      send_request Net::HTTP::Put, path, options
+      perform_request Net::HTTP::Put, path, options
     end
 
     # TODO: spec out this    
     def delete(path, options={})
-      send_request Net::HTTP::Delete, path, options
+      perform_request Net::HTTP::Delete, path, options
     end
 
     private
 
-      def send_request(http_method, path, options)
-        Request.send_request(http_method, path, default_options.merge(options))
+      def perform_request(http_method, path, options)
+        Request.perform_request(http_method, path, default_options.merge(options))
       end
     
       # Makes it so uri is sure to parse stuff like google.com with the http

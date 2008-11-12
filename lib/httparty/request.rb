@@ -2,8 +2,8 @@ module HTTParty
   class Request
     SupportedHTTPMethods = [Net::HTTP::Get, Net::HTTP::Post, Net::HTTP::Put, Net::HTTP::Delete]
 
-    def self.send_request(http_method, path, options={})
-      new(http_method, path, options).send_request
+    def self.perform_request(http_method, path, options={})
+      new(http_method, path, options).perform
     end
 
     attr_accessor :http_method, :path, :options
@@ -28,14 +28,13 @@ module HTTParty
     #   headers     => hash of headers to send request with
     #   basic_auth  => :username and :password to use as basic http authentication (overrides basic_auth setting)
     # Raises exception Net::XXX (http error code) if an http error occured
-    def send_request #:nodoc:
+    def perform #:nodoc:
       raise HTTParty::RedirectionTooDeep, 'HTTP redirects too deep' if options[:limit].to_i <= 0
       raise ArgumentError, 'only get, post, put and delete methods are supported' unless SupportedHTTPMethods.include?(http_method)
       raise ArgumentError, ':headers must be a hash' if options[:headers] && !options[:headers].is_a?(Hash)
       raise ArgumentError, ':basic_auth must be a hash' if options[:basic_auth] && !options[:basic_auth].is_a?(Hash)
       
       uri = path.relative? ? URI.parse("#{options[:base_uri]}#{path}") : path
-      
       
       query_string_parts = []
       query_string_parts << uri.query unless uri.query.blank?
@@ -63,13 +62,12 @@ module HTTParty
       when Net::HTTPRedirection
         options[:limit] -= 1
         self.path = response['location']
-        send_request
+        perform
       else
         response.instance_eval { class << self; attr_accessor :body_parsed; end }
         begin; response.body_parsed = parse_response(response.body); rescue; end
         response.error! # raises  exception corresponding to http error Net::XXX
       end
-
     end
 
     private
