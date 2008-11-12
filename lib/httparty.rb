@@ -80,11 +80,11 @@ module HTTParty
     end
 
     private
-      def perform_request(http_method, path, options)
+      def perform_request(http_method, path, options) #:nodoc:
         Request.new(http_method, path, default_options.merge(options)).perform
       end
     
-      # Makes it so uri is sure to parse stuff like google.com with the http
+      # Makes it so uri is sure to parse stuff like google.com without the http
       def normalize_base_uri(url) #:nodoc:
         use_ssl = (url =~ /^https/) || url.include?(':443')
         url.chop! if url.ends_with?('/')

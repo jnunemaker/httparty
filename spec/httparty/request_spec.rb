@@ -37,16 +37,17 @@ describe HTTParty::Request do
     http.stub!(:request).and_return(response)
 
     @request.options[:format] = :xml
-    @request.send_request.should be_nil
+    @request.perform.should be_nil
 
     response.stub!(:body).and_return("")
-    @request.send_request.should be_nil
+    @request.perform.should be_nil
   end
 
   describe "that respond with redirects" do
     def setup_redirect
       @http = Net::HTTP.new('localhost', 80)
       @request.stub!(:http).and_return(@http)
+      @request.stub!(:uri).and_return(URI.parse("http://foo.com/foobar"))
       @redirect = Net::HTTPFound.new("1.1", 302, "")
       @redirect['location'] = '/foo'
     end
@@ -74,32 +75,32 @@ describe HTTParty::Request do
 
     it "should handle redirects for GET transparently" do
       setup_successful_redirect
-      @request.send_request.should == {"hash" => {"foo" => "bar"}}
+      @request.perform.should == {"hash" => {"foo" => "bar"}}
     end
 
     it "should handle redirects for POST transparently" do
       setup_successful_redirect
       @request.http_method = Net::HTTP::Post
-      @request.send_request.should == {"hash" => {"foo" => "bar"}}
+      @request.perform.should == {"hash" => {"foo" => "bar"}}
     end
 
     it "should handle redirects for DELETE transparently" do
       setup_successful_redirect
       @request.http_method = Net::HTTP::Delete
-      @request.send_request.should == {"hash" => {"foo" => "bar"}}
+      @request.perform.should == {"hash" => {"foo" => "bar"}}
     end
 
     it "should handle redirects for PUT transparently" do
       setup_successful_redirect
       @request.http_method = Net::HTTP::Put
-      @request.send_request.should == {"hash" => {"foo" => "bar"}}
+      @request.perform.should == {"hash" => {"foo" => "bar"}}
     end
 
     it "should prevent infinite loops" do
       setup_infinite_redirect
 
       lambda do
-        @request.send_request
+        @request.perform
       end.should raise_error(HTTParty::RedirectionTooDeep)
     end
   end
