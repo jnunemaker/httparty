@@ -4,6 +4,7 @@ require 'pp'
 
 class Google
   include HTTParty
+  format :html
 end
 
 # google.com redirects to www.google.com so this is live test for redirection

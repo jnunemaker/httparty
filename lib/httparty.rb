@@ -14,7 +14,7 @@ module HTTParty
   class UnsupportedFormat < StandardError; end
   class RedirectionTooDeep < StandardError; end
 
-  AllowedFormats = {:xml => 'text/xml', :json => 'application/json'}
+  AllowedFormats = {:xml => 'text/xml', :json => 'application/json', :html => 'text/html'}
   
   def self.included(base)
     base.extend ClassMethods
