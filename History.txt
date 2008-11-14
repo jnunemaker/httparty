@@ -1,5 +1,9 @@
+== 0.1.5 2008-11-14
+* 1 major enhancement
+  * Refactored send request method out into its own object.
+  
 == 0.1.4 2008-11-08
-* 2 major enhancements:
+* 3 major enhancements:
   * Removed some cruft
   * Added ability to follow redirects automatically and turn that off (Alex Vollmer)
 

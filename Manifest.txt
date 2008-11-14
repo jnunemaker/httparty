@@ -13,13 +13,14 @@ examples/twitter.rb
 examples/whoismyrep.rb
 httparty.gemspec
 lib/httparty.rb
+lib/httparty/request.rb
 lib/httparty/version.rb
 script/console
 script/destroy
 script/generate
 script/txt2html
 setup.rb
-spec/hash_spec.rb
+spec/httparty/request_spec.rb
 spec/httparty_spec.rb
 spec/spec.opts
 spec/spec_helper.rb
