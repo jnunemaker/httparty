@@ -1,6 +1,7 @@
 == 0.1.5 2008-11-14
-* 1 major enhancement
+* 2 major enhancements
   * Refactored send request method out into its own object.
+  * Added :html format if you just want to do that.
   
 == 0.1.4 2008-11-08
 * 3 major enhancements:
