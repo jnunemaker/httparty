@@ -37,7 +37,8 @@ module HTTParty
       end
       
       def get_response(uri) #:nodoc:
-        request = http_method.new(uri.request_uri)
+        request = http_method.new(uri.request_uri)   
+        request.set_form_data(options[:query]) if post? && options[:query]
         request.body = options[:body].is_a?(Hash) ? options[:body].to_query : options[:body] unless options[:body].blank?
         request.initialize_http_header options[:headers]
         request.basic_auth(options[:basic_auth][:username], options[:basic_auth][:password]) if options[:basic_auth]
@@ -99,6 +100,11 @@ module HTTParty
         raise ArgumentError, 'only get, post, put and delete methods are supported' unless SupportedHTTPMethods.include?(http_method)
         raise ArgumentError, ':headers must be a hash' if options[:headers] && !options[:headers].is_a?(Hash)
         raise ArgumentError, ':basic_auth must be a hash' if options[:basic_auth] && !options[:basic_auth].is_a?(Hash)
+        raise ArgumentError, ':query must be hash if using HTTP Post' if post? && !options[:query].nil? && !options[:query].is_a?(Hash)
+      end
+      
+      def post?
+        Net::HTTP::Post == http_method
       end
   end
 end

@@ -9,6 +9,7 @@ config/requirements.rb
 examples/aaws.rb
 examples/delicious.rb
 examples/google.rb
+examples/rubyurl.rb
 examples/twitter.rb
 examples/whoismyrep.rb
 httparty.gemspec
