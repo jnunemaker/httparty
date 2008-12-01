@@ -1,3 +1,7 @@
+== 0.1.7 2008-11-30
+* 1 major enhancement
+  * fixed multiple class definitions overriding each others options
+  
 == 0.1.6 2008-11-26
 * 1 major enhancement
   * now passing :query to set_form_data if post request to avoid content length errors
