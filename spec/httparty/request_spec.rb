@@ -4,6 +4,30 @@ describe HTTParty::Request do
   before do
     @request = HTTParty::Request.new(Net::HTTP::Get, 'http://api.foo.com/v1', :format => :xml)
   end
+  
+  describe "#normalize_base_uri" do
+    it "should add http if not present for non ssl requests" do
+      uri = HTTParty::Request.normalize_base_uri('api.foobar.com')
+      uri.should == 'http://api.foobar.com'
+    end
+    
+    it "should add https if not present for ssl requests" do
+      uri = HTTParty::Request.normalize_base_uri('api.foo.com/v1:443')
+      uri.should == 'https://api.foo.com/v1:443'
+    end
+    
+    it "should not remove https for ssl requests" do
+      uri = HTTParty::Request.normalize_base_uri('https://api.foo.com/v1:443')
+      uri.should == 'https://api.foo.com/v1:443'
+    end
+  end
+  
+  describe "uri" do
+    it "should be normalized" do
+      request = HTTParty::Request.new(Net::HTTP::Get, '', :base_uri => 'api.foo.com')
+      request.uri.to_s.should == 'http://api.foo.com'
+    end
+  end
 
   describe 'http' do
     it "should use ssl for port 443" do

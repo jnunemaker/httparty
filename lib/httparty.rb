@@ -68,7 +68,7 @@ module HTTParty
 
     def base_uri(uri=nil)
       return default_options[:base_uri] unless uri
-      default_options[:base_uri] = normalize_base_uri(uri)
+      default_options[:base_uri] = uri
     end
 
     def basic_auth(u, p)
@@ -111,14 +111,6 @@ module HTTParty
     private
       def perform_request(http_method, path, options) #:nodoc:
         Request.new(http_method, path, default_options.merge(options)).perform
-      end
-    
-      # Makes it so uri is sure to parse stuff like google.com without the http
-      def normalize_base_uri(url) #:nodoc:
-        use_ssl = (url =~ /^https/) || url.include?(':443')
-        url.chop! if url.ends_with?('/')
-        url.gsub!(/^https?:\/\//i, '')
-        "http#{'s' if use_ssl}://#{url}"
       end
   end
 end

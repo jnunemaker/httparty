@@ -1,7 +1,15 @@
 module HTTParty
   class Request
+    # Makes it so uri is sure to parse stuff like google.com without the http
+    def self.normalize_base_uri(url) #:nodoc:
+      use_ssl = (url =~ /^https/) || url.include?(':443')
+      url.chop! if url.ends_with?('/')
+      url.gsub!(/^https?:\/\//i, '')
+      "http#{'s' if use_ssl}://#{url}"
+    end
+    
     SupportedHTTPMethods = [Net::HTTP::Get, Net::HTTP::Post, Net::HTTP::Put, Net::HTTP::Delete]
-
+    
     attr_accessor :http_method, :path, :options
     
     def initialize(http_method, path, options={})
@@ -18,6 +26,7 @@ module HTTParty
     end
     
     def uri
+      options[:base_uri] = self.class.normalize_base_uri(options[:base_uri]) unless options[:base_uri].nil?
       uri = path.relative? ? URI.parse("#{options[:base_uri]}#{path}") : path
       uri.query = query_string(uri)
       uri
