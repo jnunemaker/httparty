@@ -5,9 +5,16 @@ class Foo
   base_uri 'api.foo.com/v1'
 end
 
-class FooWithHttps
+class GRest
   include HTTParty
-  base_uri 'api.foo.com/v1:443'
+  base_uri "grest.com"
+  default_params :one => 'two'
+end
+
+class HRest
+  include HTTParty
+  base_uri "hrest.com"
+  default_params :two => 'three'
 end
 
 describe HTTParty do
@@ -115,6 +122,13 @@ describe HTTParty do
       lambda do
         Foo.put('/foo', :no_follow => true)
       end.should raise_error(HTTParty::RedirectionTooDeep)
+    end
+  end
+  
+  describe "with multiple class definitions" do
+    it "should not run over each others options" do
+      HRest.default_options.should == {:base_uri => 'http://hrest.com', :default_params => {:two => 'three'}}
+      GRest.default_options.should == {:base_uri => 'http://grest.com', :default_params => {:one => 'two'}}
     end
   end
 end

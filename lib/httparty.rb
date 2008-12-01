@@ -10,19 +10,48 @@ $:.unshift(directory) unless $:.include?(directory) || $:.include?(File.expand_p
 
 require 'httparty/request'
 
+module ModuleLevelInheritableAttributes
+  def self.included(base)
+    base.extend(ClassMethods)
+  end
+  
+  module ClassMethods
+    def mattr_inheritable(*args)
+      @mattr_inheritable_attrs ||= [:mattr_inheritable_attrs]
+      @mattr_inheritable_attrs += args
+      args.each do |arg|
+        module_eval %(
+          class << self; attr_accessor :#{arg} end
+        )
+      end
+      @mattr_inheritable_attrs
+    end
+
+    def inherited(subclass)
+      @mattr_inheritable_attrs.each do |inheritable_attribute|
+        instance_var = "@#{inheritable_attribute}" 
+        subclass.instance_variable_set(instance_var, instance_variable_get(instance_var))
+      end
+    end
+  end
+end
+
 module HTTParty
   class UnsupportedFormat < StandardError; end
   class RedirectionTooDeep < StandardError; end
-
+  
   AllowedFormats = {:xml => 'text/xml', :json => 'application/json', :html => 'text/html'}
   
   def self.included(base)
     base.extend ClassMethods
+    base.send :include, ModuleLevelInheritableAttributes
+    base.send(:mattr_inheritable, :default_options)
+    base.instance_variable_set("@default_options", {})
   end
   
-  module ClassMethods
+  module ClassMethods    
     def default_options
-      @@default_options ||= {}
+      @default_options
     end
 
     #
