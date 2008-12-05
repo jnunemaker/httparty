@@ -1,12 +1,11 @@
 require 'net/http'
 require 'net/https'
 require 'uri'
-require 'ostruct'
 require 'rubygems'
 require 'active_support'
 
-directory = File.dirname(__FILE__)
-$:.unshift(directory) unless $:.include?(directory) || $:.include?(File.expand_path(directory))
+dir = File.dirname(__FILE__)
+$:.unshift(dir) unless $:.include?(dir) || $:.include?(File.expand_path(dir))
 
 require 'httparty/request'
 
