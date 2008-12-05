@@ -33,5 +33,4 @@ end
 
 delicious = Delicious.new(config['username'], config['password'])
 pp delicious.posts(:query => {:tag => 'ruby'})
-pp delicious.recent
 
