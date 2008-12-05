@@ -121,4 +121,25 @@ module HTTParty
         "http#{'s' if use_ssl}://#{url}"
       end
   end
+
+  class Basement
+    include HTTParty
+  end
+  
+  def self.get(*args)
+    Basement.get(*args)
+  end
+  
+  def self.post(*args)
+    Basement.post(*args)
+  end
+
+  def self.put(*args)
+    Basement.put(*args)
+  end
+
+  def self.delete(*args)
+    Basement.delete(*args)
+  end
+
 end
