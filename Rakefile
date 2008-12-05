@@ -8,13 +8,14 @@ require 'spec/rake/spectask'
 require "lib/#{ProjectName}/version"
 
 Echoe.new(ProjectName, HTTParty::Version) do |p|
-  p.description = "Makes http fun! Also, makes consuming restful web services dead easy."
-  p.url         = "http://#{ProjectName}.rubyforge.org"
-  p.author      = "John Nunemaker"
-  p.email       = "nunemaker@gmail.com"
-  p.extra_deps  = [['activesupport', '>= 2.1']]
-  p.need_tar_gz = false
-  p.docs_host   = WebsitePath
+  p.description     = "Makes http fun! Also, makes consuming restful web services dead easy."
+  p.install_message = "When you HTTParty, you must party hard!"
+  p.url             = "http://#{ProjectName}.rubyforge.org"
+  p.author          = "John Nunemaker"
+  p.email           = "nunemaker@gmail.com"
+  p.extra_deps      = [['activesupport', '>= 2.1']]
+  p.need_tar_gz     = false
+  p.docs_host       = WebsitePath
 end
 
 desc 'Upload website files to rubyforge'
