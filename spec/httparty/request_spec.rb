@@ -22,6 +22,12 @@ describe HTTParty::Request do
     end
   end
   
+  describe "#format" do
+    it "should return the correct parsing format" do
+      @request.format.should == :xml
+    end
+  end
+  
   describe "uri" do
     it "should be normalized" do
       request = HTTParty::Request.new(Net::HTTP::Get, '', :base_uri => 'api.foo.com')
