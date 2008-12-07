@@ -1,14 +1,10 @@
+$:.unshift(File.dirname(__FILE__))
+
 require 'net/http'
 require 'net/https'
-require 'uri'
 require 'rubygems'
 require 'active_support'
-
-dir = File.dirname(__FILE__)
-$:.unshift(dir) unless $:.include?(dir) || $:.include?(File.expand_path(dir))
-
 require 'module_level_inheritable_attributes'
-require 'httparty/request'
 
 module HTTParty
   class UnsupportedFormat < StandardError; end
@@ -101,3 +97,5 @@ module HTTParty
     Basement.delete(*args)
   end
 end
+
+require 'httparty/request'

@@ -1,11 +1,6 @@
-begin
-  require 'spec'
-rescue LoadError
-  require 'rubygems'
-  gem 'rspec'
-  require 'spec'
-end
-
+require 'rubygems'
+gem 'rspec'
+require 'spec'
 require File.join(File.dirname(__FILE__), '..', 'lib', 'httparty')
 
 def file_fixture(filename)

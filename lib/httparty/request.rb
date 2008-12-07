@@ -1,3 +1,5 @@
+require 'uri'
+
 module HTTParty
   class Request
     # Makes it so uri is sure to parse stuff like google.com without the http
