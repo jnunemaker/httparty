@@ -5,6 +5,7 @@ require 'net/https'
 require 'rubygems'
 gem 'json', '>= 1.1.3'
 require 'json'
+
 require 'module_level_inheritable_attributes'
 require 'core_extensions'
 
@@ -99,4 +100,3 @@ end
 
 require 'httparty/exceptions'
 require 'httparty/request'
-require 'httparty/xml'

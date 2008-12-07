@@ -107,7 +107,7 @@ module HTTParty
         return nil if body.nil? or body.empty?
         case format
         when :xml
-          ToHashParser.from_xml(body)
+          Hash.from_xml(body)
         when :json
           JSON.parse(body)
         else
