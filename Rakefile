@@ -13,7 +13,7 @@ Echoe.new(ProjectName, HTTParty::Version) do |p|
   p.url             = "http://#{ProjectName}.rubyforge.org"
   p.author          = "John Nunemaker"
   p.email           = "nunemaker@gmail.com"
-  p.extra_deps      = [['activesupport', '>= 2.1']]
+  p.extra_deps      = [['json', '~> 1.1']]
   p.need_tar_gz     = false
   p.docs_host       = WebsitePath
 end

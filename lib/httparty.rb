@@ -5,8 +5,8 @@ require 'net/https'
 require 'rubygems'
 gem 'json', '>= 1.1.3'
 require 'json'
-require 'active_support'
 require 'module_level_inheritable_attributes'
+require 'core_extensions'
 
 module HTTParty  
   AllowedFormats = {:xml => 'text/xml', :json => 'application/json', :html => 'text/html'}
@@ -18,7 +18,7 @@ module HTTParty
     base.instance_variable_set("@default_options", {})
   end
   
-  module ClassMethods    
+  module ClassMethods
     def default_options
       @default_options
     end

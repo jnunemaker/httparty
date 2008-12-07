@@ -5,8 +5,11 @@ module HTTParty
     # Makes it so uri is sure to parse stuff like google.com without the http
     def self.normalize_base_uri(url) #:nodoc:
       use_ssl = (url =~ /^https/) || url.include?(':443')
-      url.chop! if url.ends_with?('/')
+      ends_with_slash = url =~ /\/$/
+      
+      url.chop! if ends_with_slash
       url.gsub!(/^https?:\/\//i, '')
+      
       "http#{'s' if use_ssl}://#{url}"
     end
     

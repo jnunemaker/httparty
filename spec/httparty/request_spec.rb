@@ -84,7 +84,7 @@ describe HTTParty::Request do
 
     def setup_ok_response
       @ok = Net::HTTPOK.new("1.1", 200, "Content for you")
-      @ok.stub!(:body).and_return({"foo" => "bar"}.to_xml)
+      @ok.stub!(:body).and_return('<hash><foo>bar</foo></hash>')
       @http.should_receive(:request).and_return(@redirect, @ok)
       @request.options[:format] = :xml
     end

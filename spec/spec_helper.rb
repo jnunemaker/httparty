@@ -7,9 +7,9 @@ def file_fixture(filename)
   open(File.join(File.dirname(__FILE__), 'fixtures', "#{filename.to_s}")).read
 end
 
-def stub_http_response_with(fixture_name)
-  format = fixture_name.split('.').last.intern
-  data = file_fixture(fixture_name)
+def stub_http_response_with(filename)
+  format = filename.split('.').last.intern
+  data = file_fixture(filename)
   http = Net::HTTP.new('localhost', 80)
   
   response = Net::HTTPOK.new("1.1", 200, "Content for you")
