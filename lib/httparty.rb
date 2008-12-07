@@ -6,10 +6,7 @@ require 'rubygems'
 require 'active_support'
 require 'module_level_inheritable_attributes'
 
-module HTTParty
-  class UnsupportedFormat < StandardError; end
-  class RedirectionTooDeep < StandardError; end
-  
+module HTTParty  
   AllowedFormats = {:xml => 'text/xml', :json => 'application/json', :html => 'text/html'}
   
   def self.included(base)
@@ -98,4 +95,5 @@ module HTTParty
   end
 end
 
+require 'httparty/exceptions'
 require 'httparty/request'
