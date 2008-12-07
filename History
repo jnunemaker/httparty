@@ -1,3 +1,7 @@
+== 0.2.0 2008-12-07
+* 1 major enhancement
+  * Removed ActiveSupport as a dependency. Now requires json gem for json deserialization and uses an included class to do the xml parsing.
+
 == 0.1.8 2008-11-30
 * 3 major enhancements
   * Moved base_uri normalization into request class and out of httparty module, fixing 
