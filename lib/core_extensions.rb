@@ -322,7 +322,7 @@ class Hash
     elsif value.is_a?(Hash)
       stack << [key,value]
     else
-      param << "#{key}=#{value}&"
+      param << "#{key}=#{URI.encode(value)}&"
     end
 
     stack.each do |parent, hash|
