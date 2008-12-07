@@ -32,6 +32,10 @@ module HTTParty
       uri
     end
     
+    def format
+      options[:format]
+    end
+    
     def perform
       validate!
       handle_response!(get_response(uri))
@@ -47,10 +51,18 @@ module HTTParty
       
       def get_response(uri) #:nodoc:
         request = http_method.new(uri.request_uri)   
-        request.set_form_data(options[:query]) if post? && options[:query]
+        
+        if post? && options[:query]
+          request.set_form_data(options[:query])
+        end
+        
         request.body = options[:body].is_a?(Hash) ? options[:body].to_query : options[:body] unless options[:body].blank?
         request.initialize_http_header options[:headers]
-        request.basic_auth(options[:basic_auth][:username], options[:basic_auth][:password]) if options[:basic_auth]
+        
+        if options[:basic_auth]
+          request.basic_auth(options[:basic_auth][:username], options[:basic_auth][:password])
+        end
+        
         response = http(uri).request(request)
         options[:format] ||= format_from_mimetype(response['content-type'])
         response
@@ -88,7 +100,7 @@ module HTTParty
       
       def parse_response(body) #:nodoc:
         return nil if body.nil? or body.empty?
-        case options[:format]
+        case format
         when :xml
           Hash.from_xml(body)
         when :json

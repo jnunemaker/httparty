@@ -116,4 +116,45 @@ describe HTTParty do
       GRest.default_options.should == {:base_uri => 'grest.com', :default_params => {:one => 'two'}}
     end
   end
+  
+  describe "#get" do
+    it "should be able to get html" do
+      stub_http_response_with('google.html')
+      HTTParty.get('http://www.google.com').should == file_fixture('google.html')
+    end
+    
+    it "should be able parse response type json automatically" do
+      stub_http_response_with('twitter.json')
+      tweets = HTTParty.get('http://twitter.com/statuses/public_timeline.json')
+      tweets.size.should == 20
+      tweets.first['user'].should == {
+        "name"              => "Pyk", 
+        "url"               => nil, 
+        "id"                => "7694602", 
+        "description"       => nil, 
+        "protected"         => false, 
+        "screen_name"       => "Pyk", 
+        "followers_count"   => 1, 
+        "location"          => "Opera Plaza, California", 
+        "profile_image_url" => "http://static.twitter.com/images/default_profile_normal.png"
+      }
+    end
+    
+    it "should be able parse response type xml automatically" do
+      stub_http_response_with('twitter.xml')
+      tweets = HTTParty.get('http://twitter.com/statuses/public_timeline.xml')
+      tweets['statuses'].size.should == 20
+      tweets['statuses'].first['user'].should == {
+        "name"              => "Magic 8 Bot", 
+        "url"               => nil, 
+        "id"                => "17656026", 
+        "description"       => "ask me a question", 
+        "protected"         => "false", 
+        "screen_name"       => "magic8bot", 
+        "followers_count"   => "90", 
+        "profile_image_url" => "http://s3.amazonaws.com/twitter_production/profile_images/65565851/8ball_large_normal.jpg", 
+        "location"          => nil
+      }
+    end
+  end
 end
