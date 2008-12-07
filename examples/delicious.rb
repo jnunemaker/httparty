@@ -18,7 +18,6 @@ class Delicious
   #   ie: posts(:query => {:tag => 'ruby'})
   def posts(options={})
     options.merge!({:basic_auth => @auth})
-    # get posts and convert to structs so we can do .key instead of ['key'] with results
     self.class.get('/posts/get', options)
   end
   
@@ -33,4 +32,5 @@ end
 
 delicious = Delicious.new(config['username'], config['password'])
 pp delicious.posts(:query => {:tag => 'ruby'})
+pp delicious.recent
 

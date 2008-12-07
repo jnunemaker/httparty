@@ -1,29 +1,18 @@
 require 'uri'
 
 module HTTParty
-  class Request
-    # Makes it so uri is sure to parse stuff like google.com without the http
-    def self.normalize_base_uri(url) #:nodoc:
-      use_ssl = (url =~ /^https/) || url.include?(':443')
-      ends_with_slash = url =~ /\/$/
-      
-      url.chop! if ends_with_slash
-      url.gsub!(/^https?:\/\//i, '')
-      
-      "http#{'s' if use_ssl}://#{url}"
-    end
-    
+  class Request    
     SupportedHTTPMethods = [Net::HTTP::Get, Net::HTTP::Post, Net::HTTP::Put, Net::HTTP::Delete]
     
     attr_accessor :http_method, :path, :options
     
-    def initialize(http_method, path, options={})
+    def initialize(http_method, path, o={})
       self.http_method = http_method
       self.path = path
       self.options = {
-        :limit => options.delete(:no_follow) ? 0 : 5, 
+        :limit => o.delete(:no_follow) ? 0 : 5, 
         :default_params => {},
-      }.merge(options.dup)
+      }.merge(o)
     end
 
     def path=(uri)
@@ -31,7 +20,6 @@ module HTTParty
     end
     
     def uri
-      options[:base_uri] = self.class.normalize_base_uri(options[:base_uri]) unless options[:base_uri].nil?
       uri = path.relative? ? URI.parse("#{options[:base_uri]}#{path}") : path
       uri.query = query_string(uri)
       uri
@@ -61,7 +49,7 @@ module HTTParty
           request.set_form_data(options[:query])
         end
         
-        request.body = options[:body].is_a?(Hash) ? options[:body].to_query : options[:body] unless options[:body].blank?
+        request.body = options[:body].is_a?(Hash) ? options[:body].to_params : options[:body] unless options[:body].blank?
         request.initialize_http_header options[:headers]
         
         if options[:basic_auth]
@@ -78,9 +66,9 @@ module HTTParty
         query_string_parts << uri.query unless uri.query.blank?
 
         if options[:query].is_a?(Hash)
-          query_string_parts << options[:default_params].merge(options[:query]).to_query
+          query_string_parts << options[:default_params].merge(options[:query]).to_params
         else
-          query_string_parts << options[:default_params].to_query unless options[:default_params].blank?
+          query_string_parts << options[:default_params].to_params unless options[:default_params].blank?
           query_string_parts << options[:query] unless options[:query].blank?
         end
         

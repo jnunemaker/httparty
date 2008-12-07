@@ -31,7 +31,7 @@ module HTTParty
 
     def base_uri(uri=nil)
       return default_options[:base_uri] unless uri
-      default_options[:base_uri] = uri
+      default_options[:base_uri] = HTTParty.normalize_base_uri(uri)
     end
 
     def basic_auth(u, p)
@@ -73,10 +73,20 @@ module HTTParty
 
     private
       def perform_request(http_method, path, options) #:nodoc:
-        Request.new(http_method, path, default_options.merge(options)).perform
+        Request.new(http_method, path, default_options.dup.merge(options)).perform
       end
   end
 
+  def self.normalize_base_uri(url) #:nodoc:
+    use_ssl = (url =~ /^https/) || url.include?(':443')
+    ends_with_slash = url =~ /\/$/
+    
+    url.chop! if ends_with_slash
+    url.gsub!(/^https?:\/\//i, '')
+    
+    "http#{'s' if use_ssl}://#{url}"
+  end
+  
   class Basement
     include HTTParty
   end

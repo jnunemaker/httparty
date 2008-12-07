@@ -2,15 +2,15 @@
 
 Gem::Specification.new do |s|
   s.name = %q{httparty}
-  s.version = "0.1.8"
+  s.version = "0.2.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 1.2") if s.respond_to? :required_rubygems_version=
   s.authors = ["John Nunemaker"]
-  s.date = %q{2008-12-05}
+  s.date = %q{2008-12-06}
   s.description = %q{Makes http fun! Also, makes consuming restful web services dead easy.}
   s.email = %q{nunemaker@gmail.com}
-  s.extra_rdoc_files = ["lib/httparty/request.rb", "lib/httparty/version.rb", "lib/httparty.rb", "README"]
-  s.files = ["examples/aaws.rb", "examples/basic.rb", "examples/delicious.rb", "examples/google.rb", "examples/rubyurl.rb", "examples/twitter.rb", "examples/whoismyrep.rb", "History", "httparty.gemspec", "lib/httparty/request.rb", "lib/httparty/version.rb", "lib/httparty.rb", "Manifest", "MIT-LICENSE", "Rakefile", "README", "setup.rb", "spec/httparty/request_spec.rb", "spec/httparty_spec.rb", "spec/spec.opts", "spec/spec_helper.rb", "website/css/common.css", "website/index.html"]
+  s.extra_rdoc_files = ["lib/core_extensions.rb", "lib/httparty/exceptions.rb", "lib/httparty/request.rb", "lib/httparty/version.rb", "lib/httparty.rb", "lib/module_level_inheritable_attributes.rb", "README"]
+  s.files = ["examples/aaws.rb", "examples/basic.rb", "examples/delicious.rb", "examples/google.rb", "examples/rubyurl.rb", "examples/twitter.rb", "examples/whoismyrep.rb", "History", "httparty.gemspec", "lib/core_extensions.rb", "lib/httparty/exceptions.rb", "lib/httparty/request.rb", "lib/httparty/version.rb", "lib/httparty.rb", "lib/module_level_inheritable_attributes.rb", "Manifest", "MIT-LICENSE", "Rakefile", "README", "setup.rb", "spec/fixtures/delicious.xml", "spec/fixtures/google.html", "spec/fixtures/twitter.json", "spec/fixtures/twitter.xml", "spec/httparty/request_spec.rb", "spec/httparty_spec.rb", "spec/spec.opts", "spec/spec_helper.rb", "website/css/common.css", "website/index.html"]
   s.has_rdoc = true
   s.homepage = %q{http://httparty.rubyforge.org}
   s.post_install_message = %q{When you HTTParty, you must party hard!}
@@ -25,14 +25,14 @@ Gem::Specification.new do |s|
     s.specification_version = 2
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<activesupport>, [">= 2.1"])
+      s.add_runtime_dependency(%q<json>, ["~> 1.1"])
       s.add_development_dependency(%q<echoe>, [">= 0"])
     else
-      s.add_dependency(%q<activesupport>, [">= 2.1"])
+      s.add_dependency(%q<json>, ["~> 1.1"])
       s.add_dependency(%q<echoe>, [">= 0"])
     end
   else
-    s.add_dependency(%q<activesupport>, [">= 2.1"])
+    s.add_dependency(%q<json>, ["~> 1.1"])
     s.add_dependency(%q<echoe>, [">= 0"])
   end
 end

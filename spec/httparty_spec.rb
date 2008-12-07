@@ -25,12 +25,29 @@ describe HTTParty do
     end
 
     it "should have reader" do
-      Foo.base_uri.should == 'api.foo.com/v1'
+      Foo.base_uri.should == 'http://api.foo.com/v1'
     end
     
     it 'should have writer' do
       Foo.base_uri('http://api.foobar.com')
       Foo.base_uri.should == 'http://api.foobar.com'
+    end
+  end
+  
+  describe "#normalize_base_uri" do
+    it "should add http if not present for non ssl requests" do
+      uri = HTTParty.normalize_base_uri('api.foobar.com')
+      uri.should == 'http://api.foobar.com'
+    end
+    
+    it "should add https if not present for ssl requests" do
+      uri = HTTParty.normalize_base_uri('api.foo.com/v1:443')
+      uri.should == 'https://api.foo.com/v1:443'
+    end
+    
+    it "should not remove https for ssl requests" do
+      uri = HTTParty.normalize_base_uri('https://api.foo.com/v1:443')
+      uri.should == 'https://api.foo.com/v1:443'
     end
   end
   
@@ -112,8 +129,8 @@ describe HTTParty do
   
   describe "with multiple class definitions" do
     it "should not run over each others options" do
-      HRest.default_options.should == {:base_uri => 'hrest.com', :default_params => {:two => 'three'}}
-      GRest.default_options.should == {:base_uri => 'grest.com', :default_params => {:one => 'two'}}
+      HRest.default_options.should == {:base_uri => 'http://hrest.com', :default_params => {:two => 'three'}}
+      GRest.default_options.should == {:base_uri => 'http://grest.com', :default_params => {:one => 'two'}}
     end
   end
   
