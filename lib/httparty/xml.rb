@@ -198,8 +198,8 @@ class REXMLUtilityNode
   end
 end
 
-class HashFromXml
-  def self.create(xml)
+class ToHashParser
+  def self.from_xml(xml)
     stack = []
     parser = REXML::Parsers::BaseParser.new(xml)
 

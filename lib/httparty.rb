@@ -3,6 +3,8 @@ $:.unshift(File.dirname(__FILE__))
 require 'net/http'
 require 'net/https'
 require 'rubygems'
+gem 'json', '>= 1.1.3'
+require 'json'
 require 'active_support'
 require 'module_level_inheritable_attributes'
 
@@ -97,3 +99,4 @@ end
 
 require 'httparty/exceptions'
 require 'httparty/request'
+require 'httparty/xml'
