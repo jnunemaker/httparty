@@ -285,11 +285,7 @@ class ToHashParser
   end
 end
 
-class Hash
-  def self.from_xml(xml)
-    ToHashParser.from_xml(xml)
-  end
-  
+class Hash  
   # @return <String> This hash as a query string
   #
   # @example
