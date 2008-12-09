@@ -1,3 +1,7 @@
+== 0.2.1 2008-12-08
+* 1 bug fix
+  * Fixed that HTTParty was borking ActiveSupport and as such Rails (thanks to Rob Sanheim)
+
 == 0.2.0 2008-12-07
 * 1 major enhancement
   * Removed ActiveSupport as a dependency. Now requires json gem for json deserialization and uses an included class to do the xml parsing.

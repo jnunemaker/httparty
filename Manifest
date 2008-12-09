@@ -6,6 +6,7 @@ examples/rubyurl.rb
 examples/twitter.rb
 examples/whoismyrep.rb
 History
+httparty.gemspec
 lib/core_extensions.rb
 lib/httparty/exceptions.rb
 lib/httparty/request.rb
@@ -17,6 +18,7 @@ MIT-LICENSE
 Rakefile
 README
 setup.rb
+spec/as_buggery_spec.rb
 spec/fixtures/delicious.xml
 spec/fixtures/google.html
 spec/fixtures/twitter.json
