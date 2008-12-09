@@ -1,3 +1,7 @@
+== 0.2.2 2008-12-08
+* 1 bug fix
+  * Added the missing core extension hash method to_xml_attributes
+
 == 0.2.1 2008-12-08
 * 1 bug fix
   * Fixed that HTTParty was borking ActiveSupport and as such Rails (thanks to Rob Sanheim)
