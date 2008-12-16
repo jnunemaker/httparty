@@ -106,6 +106,7 @@ module HTTParty
       # Uses the HTTP Content-Type header to determine the format of the response
       # It compares the MIME type returned to the types stored in the AllowedFormats hash
       def format_from_mimetype(mimetype) #:nodoc:
+        return nil unless mimetype
         AllowedFormats.each { |k, v| return k if mimetype.include?(v) }
       end
       
