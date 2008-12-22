@@ -21,13 +21,11 @@ describe HTTParty::Request do
       request = HTTParty::Request.new(Net::HTTP::Get, 'http://foobar.com')
       @request.send(:http).use_ssl?.should == false
     end
-  end
 
-  describe 'http basic auth' do
-    it "should use basic auth" do
+    it "should use basic auth when configured" do
       @request.options[:basic_auth] = {:username => 'foobar', :password => 'secret'}
-      xml = %q[<books><book><id>1234</id><name>Foo Bar!</name></book></books>]
-      @request.send(:parse_response, xml)
+      @request.should_receive(:configure_basic_auth)
+      @request.send(:setup_raw_request)
     end
   end
 
