@@ -31,18 +31,18 @@ module HTTParty
     
     def perform
       validate!
-      handle_response!(get_response(uri))
+      handle_response!(get_response)
     end
 
     private
-      def http(uri) #:nodoc:
+      def http #:nodoc:
         http = Net::HTTP.new(uri.host, uri.port, options[:http_proxyaddr], options[:http_proxyport])
         http.use_ssl = (uri.port == 443)
         http.verify_mode = OpenSSL::SSL::VERIFY_NONE
         http
       end
       
-      def get_response(uri) #:nodoc:
+      def get_response #:nodoc:
         request = http_method.new(uri.request_uri)   
         
         if post? && options[:query]

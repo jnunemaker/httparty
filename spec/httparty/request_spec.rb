@@ -13,11 +13,21 @@ describe HTTParty::Request do
 
   describe 'http' do
     it "should use ssl for port 443" do
-      @request.send(:http, URI.parse('https://api.foo.com/v1:443')).use_ssl?.should == true
+      request = HTTParty::Request.new(Net::HTTP::Get, 'https://api.foo.com/v1:443')
+      request.send(:http).use_ssl?.should == true
     end
     
     it 'should not use ssl for port 80' do
-      @request.send(:http, URI.parse('http://foobar.com')).use_ssl?.should == false
+      request = HTTParty::Request.new(Net::HTTP::Get, 'http://foobar.com')
+      @request.send(:http).use_ssl?.should == false
+    end
+  end
+
+  describe 'http basic auth' do
+    it "should use basic auth" do
+      @request.options[:basic_auth] = {:username => 'foobar', :password => 'secret'}
+      xml = %q[<books><book><id>1234</id><name>Foo Bar!</name></book></books>]
+      @request.send(:parse_response, xml)
     end
   end
 
