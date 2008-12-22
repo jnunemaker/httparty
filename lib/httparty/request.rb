@@ -31,6 +31,7 @@ module HTTParty
     
     def perform
       validate!
+      setup_raw_request
       handle_response!(get_response)
     end
 
@@ -41,22 +42,28 @@ module HTTParty
         http.verify_mode = OpenSSL::SSL::VERIFY_NONE
         http
       end
-      
-      def get_response #:nodoc:
-        request = http_method.new(uri.request_uri)   
+
+      def setup_raw_request
+        @raw_request = http_method.new(uri.request_uri)
         
         if post? && options[:query]
-          request.set_form_data(options[:query])
+          @raw_request.set_form_data(options[:query])
         end
         
-        request.body = options[:body].is_a?(Hash) ? options[:body].to_params : options[:body] unless options[:body].blank?
-        request.initialize_http_header options[:headers]
+        @raw_request.body = options[:body].is_a?(Hash) ? options[:body].to_params : options[:body] unless options[:body].blank?
+        @raw_request.initialize_http_header options[:headers]
         
         if options[:basic_auth]
-          request.basic_auth(options[:basic_auth][:username], options[:basic_auth][:password])
+          @raw_request.basic_auth(options[:basic_auth][:username], options[:basic_auth][:password])
         end
-        
-        response = http(uri).request(request)
+      end
+
+      def perform_actual_request
+        http(uri).request(@raw_request)
+      end
+
+      def get_response #:nodoc:
+        response = perform_actual_request
         options[:format] ||= format_from_mimetype(response['content-type'])
         response
       end
