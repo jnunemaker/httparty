@@ -24,8 +24,8 @@ describe HTTParty::Request do
 
     it "should use basic auth when configured" do
       @request.options[:basic_auth] = {:username => 'foobar', :password => 'secret'}
-      @request.should_receive(:configure_basic_auth)
       @request.send(:setup_raw_request)
+      @request.instance_variable_get(:@raw_request)['authorization'].should_not be_nil
     end
   end
 
