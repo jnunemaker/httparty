@@ -6,7 +6,7 @@ Makes http fun again!
 
 == FEATURES:
 
-* Easy get, post, put, delete requests
+* Easy get, post requests
 * Basic http authentication
 * Default request query string parameters (ie: for api keys that are needed on each request)
 * Automatic parsing of JSON and XML into ruby hashes based on response content-type
@@ -17,7 +17,7 @@ See http://github.com/jnunemaker/httparty/tree/master/examples
 
 == REQUIREMENTS:
 
-* Active Support >= 2.1
+* JSON ~> 1.1
 
 == INSTALL:
 
