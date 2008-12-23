@@ -1,3 +1,7 @@
+== 0.2.3 2008-12-23
+* 1 bug fix
+  * Fixed typecasting class variable naming issue
+
 == 0.2.2 2008-12-08
 * 1 bug fix
   * Added the missing core extension hash method to_xml_attributes

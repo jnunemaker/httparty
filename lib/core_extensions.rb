@@ -100,11 +100,11 @@ class REXMLUtilityNode
   end
   
   def self.available_typecasts
-    @@typecasts
+    @@available_typecasts
   end
   
   def self.available_typecasts=(obj)
-    @@typecasts = obj
+    @@available_typecasts = obj
   end
 
   self.typecasts = {}
