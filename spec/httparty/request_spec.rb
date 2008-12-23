@@ -48,6 +48,20 @@ describe HTTParty::Request do
     response.stub!(:body).and_return("")
     @request.perform.should be_nil
   end
+  
+  it "should not fail for missing mime type" do
+    http = Net::HTTP.new('localhost', 80)
+    @request.stub!(:http).and_return(http)
+    
+    response = Net::HTTPOK.new("1.1", 200, "Content for you")
+    response.stub!(:[]).with('content-type').and_return(nil)
+    response.stub!(:body).and_return('Content for you')
+    
+    http.stub!(:request).and_return(response)
+    
+    @request.options[:format] = :html
+    @request.perform.should == 'Content for you'
+  end
 
   describe "that respond with redirects" do
     def setup_redirect
