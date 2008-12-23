@@ -1,3 +1,6 @@
+== 0.2.4 2008-12-23
+* 1 bug fix
+  * Fixed that mimetype detection was failing if no mimetype was returned from service (skippy)
 == 0.2.3 2008-12-23
 * 1 bug fix
   * Fixed typecasting class variable naming issue
