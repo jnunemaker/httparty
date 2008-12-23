@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{httparty}
-  s.version = "0.2.2"
+  s.version = "0.2.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 1.2") if s.respond_to? :required_rubygems_version=
   s.authors = ["John Nunemaker"]
-  s.date = %q{2008-12-08}
+  s.date = %q{2008-12-23}
   s.description = %q{Makes http fun! Also, makes consuming restful web services dead easy.}
   s.email = %q{nunemaker@gmail.com}
   s.extra_rdoc_files = ["lib/core_extensions.rb", "lib/httparty/exceptions.rb", "lib/httparty/request.rb", "lib/httparty/version.rb", "lib/httparty.rb", "lib/module_level_inheritable_attributes.rb", "README"]
