@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{httparty}
-  s.version = "0.2.5"
+  s.version = "0.2.6"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 1.2") if s.respond_to? :required_rubygems_version=
   s.authors = ["John Nunemaker"]
@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.email = %q{nunemaker@gmail.com}
   s.executables = ["httparty"]
   s.extra_rdoc_files = ["bin/httparty", "lib/core_extensions.rb", "lib/httparty/exceptions.rb", "lib/httparty/request.rb", "lib/httparty/version.rb", "lib/httparty.rb", "lib/module_level_inheritable_attributes.rb", "README"]
-  s.files = ["bin/httparty", "examples/aaws.rb", "examples/basic.rb", "examples/delicious.rb", "examples/google.rb", "examples/rubyurl.rb", "examples/twitter.rb", "examples/whoismyrep.rb", "History", "lib/core_extensions.rb", "lib/httparty/exceptions.rb", "lib/httparty/request.rb", "lib/httparty/version.rb", "lib/httparty.rb", "lib/module_level_inheritable_attributes.rb", "Manifest", "MIT-LICENSE", "Rakefile", "README", "setup.rb", "spec/as_buggery_spec.rb", "spec/fixtures/delicious.xml", "spec/fixtures/google.html", "spec/fixtures/twitter.json", "spec/fixtures/twitter.xml", "spec/httparty/request_spec.rb", "spec/httparty_spec.rb", "spec/spec.opts", "spec/spec_helper.rb", "website/css/common.css", "website/index.html", "httparty.gemspec"]
+  s.files = ["bin/httparty", "examples/aaws.rb", "examples/basic.rb", "examples/delicious.rb", "examples/google.rb", "examples/rubyurl.rb", "examples/twitter.rb", "examples/whoismyrep.rb", "History", "httparty.gemspec", "lib/core_extensions.rb", "lib/httparty/exceptions.rb", "lib/httparty/request.rb", "lib/httparty/version.rb", "lib/httparty.rb", "lib/module_level_inheritable_attributes.rb", "Manifest", "MIT-LICENSE", "Rakefile", "README", "setup.rb", "spec/as_buggery_spec.rb", "spec/fixtures/delicious.xml", "spec/fixtures/google.html", "spec/fixtures/twitter.json", "spec/fixtures/twitter.xml", "spec/httparty/request_spec.rb", "spec/httparty_spec.rb", "spec/spec.opts", "spec/spec_helper.rb", "website/css/common.css", "website/index.html"]
   s.has_rdoc = true
   s.homepage = %q{http://httparty.rubyforge.org}
   s.post_install_message = %q{When you HTTParty, you must party hard!}

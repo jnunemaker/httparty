@@ -1,3 +1,7 @@
+== 0.2.6 2009-01-05
+* 1 minor bug fix
+  * added explicit require of time as Time#parse failed outside of rails (willcodeforfoo)
+  
 == 0.2.5 2009-01-05
 * 1 major enhancement
   * Add command line interface to HTTParty (Alex Vollmer)
