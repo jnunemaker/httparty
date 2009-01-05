@@ -7,7 +7,6 @@ examples/rubyurl.rb
 examples/twitter.rb
 examples/whoismyrep.rb
 History
-httparty.gemspec
 lib/core_extensions.rb
 lib/httparty/exceptions.rb
 lib/httparty/request.rb

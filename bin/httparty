@@ -80,18 +80,24 @@ module REXML
   end
 end
 
-response = HTTParty.send(opts[:action], ARGV.first, opts.merge(:format => :plain))
-
-if opts[:pretty_print]
-  pp response
+if opts[:pretty_print] || opts[:format].nil?
+  pp HTTParty.send(opts[:action], ARGV.first, opts)
 else
-  case opts[:format]
-  when :json
-    puts JSON.pretty_generate(JSON.parse(response))
-  when :xml
-    REXML::Document.new(response).write(STDOUT, 2)
-    puts
+  print_format = opts[:format]
+  opts.merge!(:format => :plain) if opts[:format]
+  response = HTTParty.send(opts[:action], ARGV.first, opts)
+
+  if print_format.nil?
+    pp response
   else
-    puts response
+    case print_format
+    when :json
+      puts JSON.pretty_generate(JSON.parse(response))
+    when :xml
+      REXML::Document.new(response).write(STDOUT, 2)
+      puts
+    else
+      puts response
+    end
   end
 end
