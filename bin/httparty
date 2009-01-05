@@ -59,17 +59,38 @@ if ARGV.empty?
   STDERR.puts "USAGE: #{$0} [options] [url]"
 end
 
-response = HTTParty.send(opts[:action], ARGV.first, opts)
+# 1.8.6 has mistyping of transitive in if statement
+module REXML
+  class Document < Element
+    def write( output=$stdout, indent=-1, transitive=false, ie_hack=false )
+      if xml_decl.encoding != "UTF-8" && !output.kind_of?(Output)
+        output = Output.new( output, xml_decl.encoding )
+      end
+      formatter = if indent > -1
+          if transitive
+            REXML::Formatters::Transitive.new( indent, ie_hack )
+          else
+            REXML::Formatters::Pretty.new( indent, ie_hack )
+          end
+        else
+          REXML::Formatters::Default.new( ie_hack )
+        end
+      formatter.write( self, output )
+		end
+  end
+end
+
+response = HTTParty.send(opts[:action], ARGV.first, opts.merge(:format => :plain))
 
 if opts[:pretty_print]
-  response.delete('_body')
   pp response
 else
   case opts[:format]
   when :json
-    puts JSON.pretty_generate(response['_body'])
+    puts JSON.pretty_generate(JSON.parse(response))
   when :xml
-    REXML::Document.new(response['_body']).write(STDOUT, 2)
+    REXML::Document.new(response).write(STDOUT, 2)
+    puts
   else
     puts response
   end

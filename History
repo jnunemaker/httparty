@@ -1,3 +1,7 @@
+== 0.2.5 2009-01-05
+* 1 major enhancement
+  * Add command line interface to HTTParty (Alex Vollmer)
+  
 == 0.2.4 2008-12-23
 * 1 bug fix
   * Fixed that mimetype detection was failing if no mimetype was returned from service (skippy)
