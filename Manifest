@@ -1,3 +1,4 @@
+bin/httparty
 examples/aaws.rb
 examples/basic.rb
 examples/delicious.rb

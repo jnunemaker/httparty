@@ -1,0 +1,76 @@
+#!/usr/bin/env ruby
+
+require "optparse"
+require "pp"
+require "rexml/document"
+
+$:.unshift(File.join(File.dirname(__FILE__), "/../lib"))
+require "httparty"
+
+opts = {
+  :action => :get,
+  :headers => {},
+  :keep_body => true,
+  :verbose => false,
+  :pretty_print => false
+}
+
+OptionParser.new do |o|
+  o.banner = "USAGE: #{$0} [options] [url]"
+  o.on("-f",
+       "--format [FORMAT]",
+       "Body format: plain, json or xml") do |f|
+    opts[:format] = f.downcase.to_sym
+  end
+  o.on("-r", "--ruby", "Dump output in Ruby pretty-print format") do |r|
+    opts[:pretty_print] = true
+  end
+  o.on("-a",
+       "--action [ACTION]",
+       "HTTP action: get (default), post, put or delete") do |a|
+    opts[:action] = a.downcase.to_sym
+  end
+  o.on("-d",
+       "--data [BODY]",
+       "Data to put in request body (prefix with '@' for file)") do |d|
+    if d =~ /^@/
+      opts[:data] = open(d).read
+    else
+      opts[:data] = d
+    end
+  end
+  o.on("-H", "--header [NAME=VALUE]", "Additional HTTP headers in NAME=VALUE form") do |h|
+    name, value = h.split('=')
+    opts[:headers][name] = value
+  end
+  o.on("-v", "--verbose", "If set, print verbose output") do |v|
+    opts[:verbose] = true
+  end
+  o.on("-h", "--help", "Show help documentation") do |h|
+    puts o
+    exit
+  end
+end.parse!
+
+puts "Querying #{ARGV.first} with options: #{opts.inspect}" if opts[:verbose]
+
+if ARGV.empty?
+  STDERR.puts "You need to provide a URL"
+  STDERR.puts "USAGE: #{$0} [options] [url]"
+end
+
+response = HTTParty.send(opts[:action], ARGV.first, opts)
+
+if opts[:pretty_print]
+  response.delete('_body')
+  pp response
+else
+  case opts[:format]
+  when :json
+    puts JSON.pretty_generate(response['_body'])
+  when :xml
+    REXML::Document.new(response['_body']).write(STDOUT, 2)
+  else
+    puts response
+  end
+end
