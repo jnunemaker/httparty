@@ -1,3 +1,5 @@
+require 'time'
+
 # Copyright (c) 2008 Sam Smoot.
 # 
 # Permission is hereby granted, free of charge, to any person obtaining
