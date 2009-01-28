@@ -1,7 +1,8 @@
 == 0.2.7 2009-01-28
-* 2 minor fixes
+* 2 minor fixes, 1 minor enhancement
   * fixed undefined method add_node for nil class error that occasionally happened (juliocesar)
   * Handle nil or unexpected values better when typecasting. (Brian Landau)
+  * More robust handling of mime types (Alex Vollmer)
 
 == 0.2.6 2009-01-05
 * 1 minor bug fix

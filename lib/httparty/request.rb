@@ -116,7 +116,7 @@ module HTTParty
       # It compares the MIME type returned to the types stored in the AllowedFormats hash
       def format_from_mimetype(mimetype) #:nodoc:
         return nil if mimetype.nil?
-        AllowedFormats.each { |k, v| return k if mimetype.include?(v) }
+        AllowedFormats.each { |k, v| return v if mimetype.include?(k) }
       end
       
       def validate! #:nodoc:

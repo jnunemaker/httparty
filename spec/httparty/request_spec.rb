@@ -28,6 +28,44 @@ describe HTTParty::Request do
       @request.instance_variable_get(:@raw_request)['authorization'].should_not be_nil
     end
   end
+  
+  describe '#format_from_mimetype' do
+    it 'should handle text/xml' do
+      ["text/xml", "text/xml; charset=iso8859-1"].each do |ct|
+        @request.send(:format_from_mimetype, ct).should == :xml
+      end
+    end
+
+    it 'should handle application/xml' do
+      ["application/xml", "application/xml; charset=iso8859-1"].each do |ct|
+        @request.send(:format_from_mimetype, ct).should == :xml
+      end
+    end
+
+    it 'should handle text/json' do
+      ["text/json", "text/json; charset=iso8859-1"].each do |ct|
+        @request.send(:format_from_mimetype, ct).should == :json
+      end
+    end
+
+    it 'should handle application/json' do
+      ["application/json", "application/json; charset=iso8859-1"].each do |ct|
+        @request.send(:format_from_mimetype, ct).should == :json
+      end
+    end
+
+    it 'should handle text/javascript' do
+      ["text/javascript", "text/javascript; charset=iso8859-1"].each do |ct|
+        @request.send(:format_from_mimetype, ct).should == :json
+      end
+    end
+
+    it 'should handle application/javascript' do
+      ["application/javascript", "application/javascript; charset=iso8859-1"].each do |ct|
+        @request.send(:format_from_mimetype, ct).should == :json
+      end
+    end
+  end
 
   describe 'parsing responses' do
     it 'should handle xml automatically' do

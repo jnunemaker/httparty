@@ -9,8 +9,17 @@ require 'json'
 require 'module_level_inheritable_attributes'
 require 'core_extensions'
 
-module HTTParty  
-  AllowedFormats = {:xml => 'text/xml', :json => 'application/json', :html => 'text/html'}
+module HTTParty
+  
+  AllowedFormats = {
+    'text/xml'               => :xml,
+    'application/xml'        => :xml,
+    'application/json'       => :json,
+    'text/json'              => :json,
+    'application/javascript' => :json,
+    'text/javascript'        => :json,
+    'text/html'              => :html
+  }
   
   def self.included(base)
     base.extend ClassMethods
@@ -51,7 +60,7 @@ module HTTParty
     end
     
     def format(f)
-      raise UnsupportedFormat, "Must be one of: #{AllowedFormats.keys.join(', ')}" unless AllowedFormats.key?(f)
+      raise UnsupportedFormat, "Must be one of: #{AllowedFormats.values.join(', ')}" unless AllowedFormats.value?(f)
       default_options[:format] = f
     end
     
