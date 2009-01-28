@@ -10,26 +10,30 @@ require "httparty"
 opts = {
   :action => :get,
   :headers => {},
-  :keep_body => true,
-  :verbose => false,
-  :pretty_print => false
+  :verbose => false
 }
+
+def die(msg)
+  STDERR.puts(msg)
+  exit 1
+end
 
 OptionParser.new do |o|
   o.banner = "USAGE: #{$0} [options] [url]"
+  
   o.on("-f",
        "--format [FORMAT]",
-       "Body format: plain, json or xml") do |f|
-    opts[:format] = f.downcase.to_sym
+       "Output format to use instead of pretty-print ruby: " +
+       "plain, json or xml") do |f|
+    opts[:output_format] = f.downcase.to_sym
   end
-  o.on("-r", "--ruby", "Dump output in Ruby pretty-print format") do |r|
-    opts[:pretty_print] = true
-  end
+  
   o.on("-a",
        "--action [ACTION]",
        "HTTP action: get (default), post, put or delete") do |a|
     opts[:action] = a.downcase.to_sym
   end
+  
   o.on("-d",
        "--data [BODY]",
        "Data to put in request body (prefix with '@' for file)") do |d|
@@ -39,13 +43,23 @@ OptionParser.new do |o|
       opts[:data] = d
     end
   end
+  
   o.on("-H", "--header [NAME=VALUE]", "Additional HTTP headers in NAME=VALUE form") do |h|
-    name, value = h.split('=')
-    opts[:headers][name] = value
+    die "Invalid header specification, should be Name:Value" unless h =~ /.+:.+/
+    name, value = h.split(':')
+    opts[:headers][name.strip] = value.strip
   end
+  
   o.on("-v", "--verbose", "If set, print verbose output") do |v|
     opts[:verbose] = true
   end
+  
+  o.on("-u", "--user [CREDS]", "Use basic authentication. Value should be user:password") do |u|
+    die "Invalid credentials format. Must be user:password" unless u =~ /.+:.+/
+    user, password = u.split(':')
+    opts[:basic_auth] = { :username => user, :password => password }
+  end
+  
   o.on("-h", "--help", "Show help documentation") do |h|
     puts o
     exit
@@ -76,28 +90,25 @@ module REXML
           REXML::Formatters::Default.new( ie_hack )
         end
       formatter.write( self, output )
-		end
+    end
   end
 end
 
-if opts[:pretty_print] || opts[:format].nil?
-  pp HTTParty.send(opts[:action], ARGV.first, opts)
-else
-  print_format = opts[:format]
-  opts.merge!(:format => :plain) if opts[:format]
+if opts[:output_format].nil?
   response = HTTParty.send(opts[:action], ARGV.first, opts)
-
-  if print_format.nil?
-    pp response
+  puts "Status: #{response.code}"
+  pp response
+else
+  print_format = opts[:output_format]
+  response = HTTParty.send(opts[:action], ARGV.first, opts)
+  puts "Status: #{response.code}"
+  case opts[:output_format]
+  when :json
+    puts JSON.pretty_generate(response)
+  when :xml
+    REXML::Document.new(response.body).write(STDOUT, 2)
+    puts
   else
-    case print_format
-    when :json
-      puts JSON.pretty_generate(JSON.parse(response))
-    when :xml
-      REXML::Document.new(response).write(STDOUT, 2)
-      puts
-    else
-      puts response
-    end
+    puts response
   end
 end
