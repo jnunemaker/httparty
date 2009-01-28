@@ -20,9 +20,9 @@ module HTTParty
     end
     
     def uri
-      uri = path.relative? ? URI.parse("#{options[:base_uri]}#{path}") : path
-      uri.query = query_string(uri)
-      uri
+      new_uri = path.relative? ? URI.parse("#{options[:base_uri]}#{path}") : path
+      new_uri.query = query_string(new_uri)
+      new_uri
     end
     
     def format
@@ -61,7 +61,7 @@ module HTTParty
       end
 
       def perform_actual_request
-        http(uri).request(@raw_request)
+        http.request(@raw_request)
       end
 
       def get_response #:nodoc:
