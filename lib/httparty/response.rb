@@ -8,8 +8,8 @@ module HTTParty
       @code = code
     end
 
-    def method_missing(name, *args)
-      @delegate.send(name, *args)
+    def method_missing(name, *args, &block)
+      @delegate.send(name, *args, &block)
     end
 
     def ==(other)
