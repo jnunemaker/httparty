@@ -179,5 +179,11 @@ describe HTTParty do
       result = HTTParty.get('http://foobar.com')
       result.should == {"Entities"=>{"href"=>"https://s3-sandbox.parature.com/api/v1/5578/5633/Account", "results"=>"0", "total"=>"0", "page_size"=>"25", "page"=>"1"}}
     end
+    
+    it "should parse empty response fine" do
+      stub_http_response_with('empty.xml')
+      result = HTTParty.get('http://foobar.com')
+      result.should == nil
+    end
   end
 end
