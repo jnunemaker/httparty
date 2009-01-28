@@ -1,3 +1,7 @@
+== 0.2.7 2009-01-28
+* 1 minor fix
+  * fixed undefined method add_node for nil class error that occasionally happened (juliocesar)
+
 == 0.2.6 2009-01-05
 * 1 minor bug fix
   * added explicit require of time as Time#parse failed outside of rails (willcodeforfoo)

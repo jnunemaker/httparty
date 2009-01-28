@@ -173,5 +173,11 @@ describe HTTParty do
         "location"          => nil
       }
     end
+    
+    it "should not get undefined method add_node for nil class for the following xml" do
+      stub_http_response_with('undefined_method_add_node_for_nil.xml')
+      result = HTTParty.get('http://foobar.com')
+      result.should == {"Entities"=>{"href"=>"https://s3-sandbox.parature.com/api/v1/5578/5633/Account", "results"=>"0", "total"=>"0", "page_size"=>"25", "page"=>"1"}}
+    end
   end
 end
