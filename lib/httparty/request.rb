@@ -87,29 +87,26 @@ module HTTParty
       # Raises exception Net::XXX (http error code) if an http error occured
       def handle_response!(response) #:nodoc:
         case response
-        when Net::HTTPSuccess
-          parse_response(response.body)
-        when Net::HTTPRedirection
-          options[:limit] -= 1
-          self.path = response['location']
-          perform
-        else
-          response.instance_eval { class << self; attr_accessor :body_parsed; end }
-          begin; response.body_parsed = parse_response(response.body); rescue; end
-          response.error! # raises  exception corresponding to http error Net::XXX
-        end
+          when Net::HTTPRedirection
+            options[:limit] -= 1
+            self.path = response['location']
+            perform
+          else
+            parsed_response = parse_response(response.body)
+            Response.new(parsed_response, response.body, response.code)
+          end
       end
       
       def parse_response(body) #:nodoc:
         return nil if body.nil? or body.empty?
         case format
-        when :xml
-          ToHashParser.from_xml(body)
-        when :json
-          JSON.parse(body)
-        else
-          body
-        end
+          when :xml
+            ToHashParser.from_xml(body)
+          when :json
+            JSON.parse(body)
+          else
+            body
+          end
       end
   
       # Uses the HTTP Content-Type header to determine the format of the response

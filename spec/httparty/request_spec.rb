@@ -79,6 +79,32 @@ describe HTTParty::Request do
       @request.options[:format] = :json
       @request.send(:parse_response, json).should == {'books' => {'book' => {'id' => '1234', 'name' => 'Foo Bar!'}}}
     end
+    
+    describe 'with non-200 responses' do
+
+      it 'should return a valid object for 4xx response' do
+        http_response = Net::HTTPUnauthorized.new('1.1', 401, '')
+        http_response.stub!(:body).and_return('<foo><bar>yes</bar></foo>')
+        
+        @request.should_receive(:get_response).and_return(http_response)
+        resp = @request.perform
+        resp.code.should == 401
+        resp.body.should == "<foo><bar>yes</bar></foo>"
+        resp['foo']['bar'].should == "yes"
+      end
+
+      it 'should return a valid object for 5xx response' do
+        http_response = Net::HTTPUnauthorized.new('1.1', 500, '')
+        http_response.stub!(:body).and_return('<foo><bar>error</bar></foo>')
+        
+        @request.should_receive(:get_response).and_return(http_response)
+        resp = @request.perform
+        resp.code.should == 500
+        resp.body.should == "<foo><bar>error</bar></foo>"
+        resp['foo']['bar'].should == "error"
+      end
+
+    end
   end
 
   it "should not attempt to parse empty responses" do
@@ -87,7 +113,7 @@ describe HTTParty::Request do
     response = Net::HTTPNoContent.new("1.1", 204, "No content for you")
     response.stub!(:body).and_return(nil)
     http.stub!(:request).and_return(response)
-
+    
     @request.options[:format] = :xml
     @request.perform.should be_nil
 

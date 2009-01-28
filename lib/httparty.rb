@@ -19,7 +19,7 @@ module HTTParty
     'application/javascript' => :json,
     'text/javascript'        => :json,
     'text/html'              => :html
-  }
+  } unless defined?(AllowedFormats)
   
   def self.included(base)
     base.extend ClassMethods
@@ -119,3 +119,4 @@ end
 
 require 'httparty/exceptions'
 require 'httparty/request'
+require 'httparty/response'
