@@ -1,3 +1,7 @@
+== 0.2.8 2009-01-28
+* 1 major fix
+  * fixed major bug with response where it wouldn't iterate or really work at all with parsed responses
+  
 == 0.2.7 2009-01-28
 * 2 minor fixes, 2 minor enhancements, 2 major enhancements
   * fixed undefined method add_node for nil class error that occasionally happened (juliocesar)
