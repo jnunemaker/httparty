@@ -93,6 +93,14 @@ describe HTTParty::Request do
       @request.options[:format] = :json
       @request.send(:parse_response, json).should == {'books' => {'book' => {'id' => '1234', 'name' => 'Foo Bar!'}}}
     end
+
+    it "should include any HTTP headers in the returned response" do
+      @request.options[:format] = :html
+      response = stub_response "Content"
+      response.initialize_http_header("key" => "value")
+
+      @request.perform.headers.should eql({ "key" => ["value"] })
+    end
     
     describe 'with non-200 responses' do
 

@@ -1,11 +1,12 @@
 module HTTParty
   class Response < BlankSlate
-    attr_accessor :body, :code
+    attr_accessor :body, :code, :headers
 
-    def initialize(delegate, body, code)
+    def initialize(delegate, body, code, headers)
       @delegate = delegate
       @body = body
       @code = code
+      @headers = headers
     end
 
     def method_missing(name, *args, &block)
