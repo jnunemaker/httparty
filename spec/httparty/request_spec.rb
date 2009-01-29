@@ -99,7 +99,7 @@ describe HTTParty::Request do
       response = stub_response "Content"
       response.initialize_http_header("key" => "value")
 
-      @request.perform.headers.should eql({ "key" => ["value"] })
+      @request.perform.headers.should == { "key" => ["value"] }
     end
     
     describe 'with non-200 responses' do
