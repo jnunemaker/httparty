@@ -1,14 +1,18 @@
 require File.join(File.dirname(__FILE__), '..', 'spec_helper')
 
 describe HTTParty::Request do
-  def stub_response(body, type = Net::HTTPOK, code = 200)
-    http = Net::HTTP.new('localhost', 80)
-    @request.stub!(:http).and_return(http)
+  def stub_response(body, code = 200)
+    unless @http
+      @http = Net::HTTP.new('localhost', 80)
+      @request.stub!(:http).and_return(@http)
+      @request.stub!(:uri).and_return(URI.parse("http://foo.com/foobar"))
+    end
 
-    @response = type.new("1.1", code, body)
-    @response.stub!(:body).and_return(body)
+    response = Net::HTTPResponse::CODE_TO_OBJ[code.to_s].new("1.1", code, body)
+    response.stub!(:body).and_return(body)
 
-    http.stub!(:request).and_return(@response)
+    @http.stub!(:request).and_return(response)
+    response
   end
 
   before do
@@ -93,7 +97,7 @@ describe HTTParty::Request do
     describe 'with non-200 responses' do
 
       it 'should return a valid object for 4xx response' do
-        stub_response '<foo><bar>yes</bar></foo>', Net::HTTPUnauthorized, 401
+        stub_response '<foo><bar>yes</bar></foo>', 401
         resp = @request.perform
         resp.code.should == 401
         resp.body.should == "<foo><bar>yes</bar></foo>"
@@ -101,7 +105,7 @@ describe HTTParty::Request do
       end
 
       it 'should return a valid object for 5xx response' do
-        stub_response '<foo><bar>error</bar></foo>', Net::HTTPInternalServerError, 500
+        stub_response '<foo><bar>error</bar></foo>', 500
         resp = @request.perform
         resp.code.should == 500
         resp.body.should == "<foo><bar>error</bar></foo>"
@@ -112,12 +116,9 @@ describe HTTParty::Request do
   end
 
   it "should not attempt to parse empty responses" do
-    stub_response nil, Net::HTTPNoContent, 204
+    stub_response "", 204
 
     @request.options[:format] = :xml
-    @request.perform.should be_nil
-
-    @response.stub!(:body).and_return("")
     @request.perform.should be_nil
   end
   
@@ -129,15 +130,10 @@ describe HTTParty::Request do
 
   describe "a request that redirects" do
     before(:each) do
-      @http = Net::HTTP.new('localhost', 80)
-      @request.stub!(:http).and_return(@http)
-      @request.stub!(:uri).and_return(URI.parse("http://foo.com/foobar"))
-
-      @redirect = Net::HTTPFound.new("1.1", 302, "")
+      @redirect = stub_response("", 302)
       @redirect['location'] = '/foo'
 
-      @ok = Net::HTTPOK.new("1.1", 200, "Content for you")
-      @ok.stub!(:body).and_return('<hash><foo>bar</foo></hash>')
+      @ok = stub_response('<hash><foo>bar</foo></hash>', 200)
     end
 
     describe "once" do
