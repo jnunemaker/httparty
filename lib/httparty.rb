@@ -58,6 +58,12 @@ module HTTParty
       default_options[:headers] ||= {}
       default_options[:headers].merge!(h)
     end
+
+    def cookies(h={})
+      raise ArgumentError, 'Cookies must be a hash' unless h.is_a?(Hash)
+      default_options[:cookies] ||= CookieHash.new
+      default_options[:cookies].add_cookies(h)
+    end
     
     def format(f)
       raise UnsupportedFormat, "Must be one of: #{AllowedFormats.values.join(', ')}" unless AllowedFormats.value?(f)
@@ -82,7 +88,17 @@ module HTTParty
 
     private
       def perform_request(http_method, path, options) #:nodoc:
+        process_cookies(options)
         Request.new(http_method, path, default_options.dup.merge(options)).perform
+      end
+
+      def process_cookies(options) #:nodoc:
+        return unless options[:cookies] || default_options[:cookies]
+        options[:headers] ||= {}
+        options[:headers]["cookie"] = cookies(options[:cookies] || {}).to_cookie_string
+
+        default_options.delete(:cookies)
+        options.delete(:cookies)
       end
   end
 
@@ -120,3 +136,4 @@ end
 require 'httparty/exceptions'
 require 'httparty/request'
 require 'httparty/response'
+require 'httparty/cookie_hash'

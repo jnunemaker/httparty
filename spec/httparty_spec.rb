@@ -49,6 +49,70 @@ describe HTTParty do
       @klass.headers.should == init_headers
     end
   end
+
+  describe "cookies" do
+    def expect_cookie_header(s)
+      HTTParty::Request.should_receive(:new) \
+        .with(anything, anything, hash_including({ :headers => { "cookie" => s } })) \
+        .and_return(mock("mock response", :perform => nil))
+    end
+
+    it "should not be in the headers by default" do
+      HTTParty::Request.stub!(:new).and_return(stub(nil, :perform => nil))
+      @klass.get("")
+      @klass.headers.keys.should_not include("cookie")
+    end
+
+    it "should raise an ArgumentError if passed a non-Hash" do
+      lambda do
+        @klass.cookies("nonsense")
+      end.should raise_error(ArgumentError)
+    end
+
+    it "should allow a cookie to be specified with a one-off request" do
+      expect_cookie_header "type=snickerdoodle"
+      @klass.get("", :cookies => { :type => "snickerdoodle" })
+    end
+
+    describe "when a cookie is set at the class level" do
+      before(:each) do
+        @klass.cookies({ :type => "snickerdoodle" })
+      end
+
+      it "should include that cookie in the request" do
+        expect_cookie_header "type=snickerdoodle"
+        @klass.get("")
+      end
+
+      it "should allow the class defaults to be overridden" do
+        expect_cookie_header "type=chocolate_chip"
+
+        @klass.get("", :cookies => { :type => "chocolate_chip" })
+      end
+    end
+
+    describe "in a class with multiple methods that use different cookies" do
+      before(:each) do
+        @klass.instance_eval do
+          def first_method
+            get("first_method", :cookies => { :first_method_cookie => "foo" })
+          end
+
+          def second_method
+            get("second_method", :cookies => { :second_method_cookie => "foo" })
+          end
+        end
+      end
+
+      it "should not allow cookies used in one method to carry over into other methods" do
+        expect_cookie_header "first_method_cookie=foo"
+        @klass.first_method
+
+        expect_cookie_header "second_method_cookie=foo"
+        @klass.second_method
+      end
+    end
+  end
   
   describe "default params" do
     it "should default to empty hash" do
