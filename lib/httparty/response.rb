@@ -1,5 +1,5 @@
 module HTTParty
-  class Response
+  class Response < BlankSlate
     attr_accessor :body, :code
 
     def initialize(delegate, body, code)
@@ -10,18 +10,6 @@ module HTTParty
 
     def method_missing(name, *args, &block)
       @delegate.send(name, *args, &block)
-    end
-
-    def ==(other)
-      @delegate == other
-    end
-    
-    def nil?
-      @delegate.nil?
-    end
-
-    def pretty_print(q)
-      @delegate.pretty_print(q)
     end
   end
 end
