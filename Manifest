@@ -1,4 +1,5 @@
 bin/httparty
+cucumber.yml
 examples/aaws.rb
 examples/basic.rb
 examples/delicious.rb
@@ -6,6 +7,16 @@ examples/google.rb
 examples/rubyurl.rb
 examples/twitter.rb
 examples/whoismyrep.rb
+features/basic_authentication.feature
+features/command_line.feature
+features/deals_with_http_error_codes.feature
+features/handles_multiple_formats.feature
+features/steps/env.rb
+features/steps/httparty_response_steps.rb
+features/steps/httparty_steps.rb
+features/steps/mongrel_helper.rb
+features/steps/remote_service_steps.rb
+features/supports_redirection.feature
 History
 httparty.gemspec
 lib/core_extensions.rb

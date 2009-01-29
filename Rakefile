@@ -6,6 +6,7 @@ require 'rake'
 require 'echoe'
 require 'spec/rake/spectask'
 require "lib/#{ProjectName}/version"
+require 'cucumber/rake/task'
 
 Echoe.new(ProjectName, HTTParty::Version) do |p|
   p.description     = "Makes http fun! Also, makes consuming restful web services dead easy."
@@ -40,4 +41,8 @@ Rake::Task[:default].prerequisites.clear
 task :default => :spec
 Spec::Rake::SpecTask.new do |t|
   t.spec_files = FileList["spec/**/*_spec.rb"]
+end
+
+Cucumber::Rake::Task.new(:features) do |t|
+  t.cucumber_opts = "--format pretty" 
 end
