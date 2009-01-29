@@ -1,3 +1,7 @@
+== 0.2.9 2009-01-29
+* 1 minor enhancement
+  * Added a 'headers' accessor to the response with a hash of any HTTP headers. (Don Peterson)
+  * Add support for a ":cookies" option to be used at the class level, or as an option on any individual call.  It should be passed a hash, which will be converted to the proper format and added to the request headers when the call is made. (Don Peterson)
 == 0.2.8 2009-01-28
 * 1 major fix
   * fixed major bug with response where it wouldn't iterate or really work at all with parsed responses

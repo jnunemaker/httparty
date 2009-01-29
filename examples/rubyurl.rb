@@ -11,4 +11,4 @@ class Rubyurl
   end
 end
 
-pp Rubyurl.shorten( 'http://istwitterdown.com/' )
+pp Rubyurl.shorten( 'http://istwitterdown.com/')
