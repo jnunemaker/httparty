@@ -1,36 +1,23 @@
 require File.join(File.dirname(__FILE__), 'spec_helper')
 
-class Foo
-  include HTTParty
-  base_uri 'api.foo.com/v1'
-end
-
-class GRest
-  include HTTParty
-  base_uri "grest.com"
-  default_params :one => 'two'
-end
-
-class HRest
-  include HTTParty
-  base_uri "hrest.com"
-  default_params :two => 'three'
-end
-
 describe HTTParty do
-  
+  before(:each) do
+    @klass = Class.new
+    @klass.instance_eval { include HTTParty }
+  end
+
   describe "base uri" do
-    before do
-      Foo.base_uri('api.foo.com/v1')
+    before(:each) do
+      @klass.base_uri('api.foo.com/v1')
     end
 
     it "should have reader" do
-      Foo.base_uri.should == 'http://api.foo.com/v1'
+      @klass.base_uri.should == 'http://api.foo.com/v1'
     end
     
     it 'should have writer' do
-      Foo.base_uri('http://api.foobar.com')
-      Foo.base_uri.should == 'http://api.foobar.com'
+      @klass.base_uri('http://api.foobar.com')
+      @klass.base_uri.should == 'http://api.foobar.com'
     end
   end
   
@@ -53,49 +40,49 @@ describe HTTParty do
   
   describe "headers" do
     it "should default to empty hash" do
-      Foo.headers.should == {}
+      @klass.headers.should == {}
     end
     
     it "should be able to be updated" do
       init_headers = {:foo => 'bar', :baz => 'spax'}
-      Foo.headers init_headers
-      Foo.headers.should == init_headers
+      @klass.headers init_headers
+      @klass.headers.should == init_headers
     end
   end
   
   describe "default params" do
     it "should default to empty hash" do
-      Foo.default_params.should == {}
+      @klass.default_params.should == {}
     end
     
     it "should be able to be updated" do
       new_defaults = {:foo => 'bar', :baz => 'spax'}
-      Foo.default_params new_defaults
-      Foo.default_params.should == new_defaults
+      @klass.default_params new_defaults
+      @klass.default_params.should == new_defaults
     end
   end
   
   describe "basic http authentication" do
     it "should work" do
-      Foo.basic_auth 'foobar', 'secret'
-      Foo.default_options[:basic_auth].should == {:username => 'foobar', :password => 'secret'}
+      @klass.basic_auth 'foobar', 'secret'
+      @klass.default_options[:basic_auth].should == {:username => 'foobar', :password => 'secret'}
     end
   end
   
   describe "format" do
     it "should allow xml" do
-      Foo.format :xml
-      Foo.default_options[:format].should == :xml
+      @klass.format :xml
+      @klass.default_options[:format].should == :xml
     end
     
     it "should allow json" do
-      Foo.format :json
-      Foo.default_options[:format].should == :json
+      @klass.format :json
+      @klass.default_options[:format].should == :json
     end
     
     it 'should not allow funky format' do
       lambda do
-        Foo.format :foobar
+        @klass.format :foobar
       end.should raise_error(HTTParty::UnsupportedFormat)
     end
   end
@@ -104,33 +91,47 @@ describe HTTParty do
 
     it "should fail with redirected GET" do
       lambda do
-        Foo.get('/foo', :no_follow => true)
+        @klass.get('/foo', :no_follow => true)
       end.should raise_error(HTTParty::RedirectionTooDeep)
     end
 
     it "should fail with redirected POST" do
       lambda do
-        Foo.post('/foo', :no_follow => true)
+        @klass.post('/foo', :no_follow => true)
       end.should raise_error(HTTParty::RedirectionTooDeep)
     end
 
     it "should fail with redirected DELETE" do
       lambda do
-        Foo.delete('/foo', :no_follow => true)
+        @klass.delete('/foo', :no_follow => true)
       end.should raise_error(HTTParty::RedirectionTooDeep)
     end
 
     it "should fail with redirected PUT" do
       lambda do
-        Foo.put('/foo', :no_follow => true)
+        @klass.put('/foo', :no_follow => true)
       end.should raise_error(HTTParty::RedirectionTooDeep)
     end
   end
   
   describe "with multiple class definitions" do
+    before(:each) do
+      @klass.instance_eval do
+        base_uri "http://first.com"
+        default_params :one => 1
+      end
+
+      @additional_klass = Class.new
+      @additional_klass.instance_eval do
+        include HTTParty
+        base_uri "http://second.com"
+        default_params :two => 2
+      end
+    end
+
     it "should not run over each others options" do
-      HRest.default_options.should == {:base_uri => 'http://hrest.com', :default_params => {:two => 'three'}}
-      GRest.default_options.should == {:base_uri => 'http://grest.com', :default_params => {:one => 'two'}}
+      @klass.default_options.should == { :base_uri => 'http://first.com', :default_params => { :one => 1 } }
+      @additional_klass.default_options.should == { :base_uri => 'http://second.com', :default_params => { :two => 2 } }
     end
   end
   
