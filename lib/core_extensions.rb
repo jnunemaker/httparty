@@ -310,7 +310,7 @@ class Hash
   #
   # @return <String> This key value pair as a param
   #
-  # @example normalize_param(:name, "Bob") #=> "name=Bob&"
+  # @example normalize_param(:name, "Bob Jones") #=> "name=Bob%20Jones&"
   def normalize_param(key, value)
     param = ''
     stack = []
