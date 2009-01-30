@@ -1,11 +1,8 @@
 require File.join(File.dirname(__FILE__), 'spec_helper')
 
-describe "Core Extensions" do
-  
+describe "Core Extensions" do  
   describe Hash do
-    
     describe "#to_params" do
-      
       def should_be_same_params(query_string, expected)
         query_string.split(/&/).sort.should == expected.split(/&/).sort
       end
@@ -19,7 +16,8 @@ describe "Core Extensions" do
       end
       
       it "should handle nested hashes like rails does" do
-        should_be_same_params({ :name => "Bob",
+        should_be_same_params({
+          :name => "Bob",
             :address => {
               :street => '111 Ruby Ave.',
               :city => 'Ruby Central',
@@ -29,5 +27,4 @@ describe "Core Extensions" do
       end
     end
   end
-
 end

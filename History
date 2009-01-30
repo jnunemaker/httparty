@@ -1,3 +1,7 @@
+== 0.2.10 2009-01-29
+* 1 minor enhancement
+  * Made encoding on query parameters treat everything except URI::PATTERN::UNRESERVED as UNSAFE to force encoding of '+' character (Julian Russell)
+  
 == 0.2.9 2009-01-29
 * 3 minor enhancements
   * Added a 'headers' accessor to the response with a hash of any HTTP headers. (Don Peterson)

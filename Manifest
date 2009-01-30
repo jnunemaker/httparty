@@ -33,6 +33,7 @@ Rakefile
 README
 setup.rb
 spec/as_buggery_spec.rb
+spec/core_extensions_spec.rb
 spec/fixtures/delicious.xml
 spec/fixtures/empty.xml
 spec/fixtures/google.html
