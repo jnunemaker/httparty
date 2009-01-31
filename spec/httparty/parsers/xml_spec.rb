@@ -1,12 +1,12 @@
-require File.join(File.dirname(__FILE__), '..', 'spec_helper')
+require File.join(File.dirname(__FILE__), '..', '..', 'spec_helper')
 
 require "date"
 require 'bigdecimal'
 
-describe HTTParty::XML, "#parse" do
+describe HTTParty::Parsers::XML, "#parse" do
   it "should transform a simple tag with content" do
     xml = "<tag>This is the contents</tag>"
-    HTTParty::XML.parse(xml).should == { 'tag' => 'This is the contents' }
+    HTTParty::Parsers::XML.parse(xml).should == { 'tag' => 'This is the contents' }
   end
 
   it "should work with cdata tags" do
@@ -17,13 +17,13 @@ describe HTTParty::XML, "#parse" do
       ]]>
       </tag>
     END
-    HTTParty::XML.parse(xml)["tag"].strip.should == "text inside cdata"
+    HTTParty::Parsers::XML.parse(xml)["tag"].strip.should == "text inside cdata"
   end
 
   it "should transform a simple tag with attributes" do
     xml = "<tag attr1='1' attr2='2'></tag>"
     hash = { 'tag' => { 'attr1' => '1', 'attr2' => '2' } }
-    HTTParty::XML.parse(xml).should == hash
+    HTTParty::Parsers::XML.parse(xml).should == hash
   end
 
   it "should transform repeating siblings into an array" do
@@ -34,7 +34,7 @@ describe HTTParty::XML, "#parse" do
       </opt>
     XML
 
-    HTTParty::XML.parse(xml)['opt']['user'].should be_an_instance_of(Array)
+    HTTParty::Parsers::XML.parse(xml)['opt']['user'].should be_an_instance_of(Array)
 
     hash = {
       'opt' => {
@@ -48,7 +48,7 @@ describe HTTParty::XML, "#parse" do
       }
     }
 
-    HTTParty::XML.parse(xml).should == hash
+    HTTParty::Parsers::XML.parse(xml).should == hash
   end
 
   it "should not transform non-repeating siblings into an array" do
@@ -58,7 +58,7 @@ describe HTTParty::XML, "#parse" do
       </opt>
     XML
 
-    HTTParty::XML.parse(xml)['opt']['user'].should be_an_instance_of(Hash)
+    HTTParty::Parsers::XML.parse(xml)['opt']['user'].should be_an_instance_of(Hash)
 
     hash = {
       'opt' => {
@@ -69,33 +69,33 @@ describe HTTParty::XML, "#parse" do
       }
     }
 
-    HTTParty::XML.parse(xml).should == hash
+    HTTParty::Parsers::XML.parse(xml).should == hash
   end
 
   it "should typecast an integer" do
     xml = "<tag type='integer'>10</tag>"
-    HTTParty::XML.parse(xml)['tag'].should == 10
+    HTTParty::Parsers::XML.parse(xml)['tag'].should == 10
   end
 
   it "should typecast a true boolean" do
     xml = "<tag type='boolean'>true</tag>"
-    HTTParty::XML.parse(xml)['tag'].should be_true
+    HTTParty::Parsers::XML.parse(xml)['tag'].should be_true
   end
 
   it "should typecast a false boolean" do
     ["false"].each do |w|
-      HTTParty::XML.parse("<tag type='boolean'>#{w}</tag>")['tag'].should be_false
+      HTTParty::Parsers::XML.parse("<tag type='boolean'>#{w}</tag>")['tag'].should be_false
     end
   end
 
   it "should typecast a datetime" do
     xml = "<tag type='datetime'>2007-12-31 10:32</tag>"
-    HTTParty::XML.parse(xml)['tag'].should == Time.parse( '2007-12-31 10:32' ).utc
+    HTTParty::Parsers::XML.parse(xml)['tag'].should == Time.parse( '2007-12-31 10:32' ).utc
   end
 
   it "should typecast a date" do
     xml = "<tag type='date'>2007-12-31</tag>"
-    HTTParty::XML.parse(xml)['tag'].should == Date.parse('2007-12-31')
+    HTTParty::Parsers::XML.parse(xml)['tag'].should == Date.parse('2007-12-31')
   end
 
   it "should unescape html entities" do
@@ -108,44 +108,44 @@ describe HTTParty::XML, "#parse" do
     }
     values.each do |k,v|
       xml = "<tag>Some content #{v}</tag>"
-      HTTParty::XML.parse(xml)['tag'].should match(Regexp.new(k))
+      HTTParty::Parsers::XML.parse(xml)['tag'].should match(Regexp.new(k))
     end
   end
 
   it "should undasherize keys as tags" do
     xml = "<tag-1>Stuff</tag-1>"
-    HTTParty::XML.parse(xml).keys.should include( 'tag_1' )
+    HTTParty::Parsers::XML.parse(xml).keys.should include( 'tag_1' )
   end
 
   it "should undasherize keys as attributes" do
     xml = "<tag1 attr-1='1'></tag1>"
-    HTTParty::XML.parse(xml)['tag1'].keys.should include( 'attr_1')
+    HTTParty::Parsers::XML.parse(xml)['tag1'].keys.should include( 'attr_1')
   end
 
   it "should undasherize keys as tags and attributes" do
     xml = "<tag-1 attr-1='1'></tag-1>"
-    HTTParty::XML.parse(xml).keys.should include( 'tag_1' )
-    HTTParty::XML.parse(xml)['tag_1'].keys.should include( 'attr_1')
+    HTTParty::Parsers::XML.parse(xml).keys.should include( 'tag_1' )
+    HTTParty::Parsers::XML.parse(xml)['tag_1'].keys.should include( 'attr_1')
   end
 
   it "should render nested content correctly" do
     xml = "<root><tag1>Tag1 Content <em><strong>This is strong</strong></em></tag1></root>"
-    HTTParty::XML.parse(xml)['root']['tag1'].should == "Tag1 Content <em><strong>This is strong</strong></em>"
+    HTTParty::Parsers::XML.parse(xml)['root']['tag1'].should == "Tag1 Content <em><strong>This is strong</strong></em>"
   end
 
   it "should render nested content with split text nodes correctly" do
     xml = "<root>Tag1 Content<em>Stuff</em> Hi There</root>"
-    HTTParty::XML.parse(xml)['root'].should == "Tag1 Content<em>Stuff</em> Hi There"
+    HTTParty::Parsers::XML.parse(xml)['root'].should == "Tag1 Content<em>Stuff</em> Hi There"
   end
 
   it "should ignore attributes when a child is a text node" do
     xml = "<root attr1='1'>Stuff</root>"
-    HTTParty::XML.parse(xml).should == { "root" => "Stuff" }
+    HTTParty::Parsers::XML.parse(xml).should == { "root" => "Stuff" }
   end
 
   it "should ignore attributes when any child is a text node" do
     xml = "<root attr1='1'>Stuff <em>in italics</em></root>"
-    HTTParty::XML.parse(xml).should == { "root" => "Stuff <em>in italics</em>" }
+    HTTParty::Parsers::XML.parse(xml).should == { "root" => "Stuff <em>in italics</em>" }
   end
 
   it "should correctly transform multiple children" do
@@ -170,7 +170,7 @@ describe HTTParty::XML, "#parse" do
       }
     }
 
-    HTTParty::XML.parse(xml).should == hash
+    HTTParty::Parsers::XML.parse(xml).should == hash
   end
 
   it "should properly handle nil values (ActiveSupport Compatible)" do
@@ -195,7 +195,7 @@ describe HTTParty::XML, "#parse" do
       'content'    => nil,
       'parent_id'  => nil
     }
-    HTTParty::XML.parse(topic_xml)["topic"].should == expected_topic_hash
+    HTTParty::Parsers::XML.parse(topic_xml)["topic"].should == expected_topic_hash
   end
 
   it "should handle a single record from xml (ActiveSupport Compatible)" do
@@ -238,7 +238,7 @@ describe HTTParty::XML, "#parse" do
       'resident' => :yes
     }
 
-    HTTParty::XML.parse(topic_xml)["topic"].each do |k,v|
+    HTTParty::Parsers::XML.parse(topic_xml)["topic"].each do |k,v|
       v.should == expected_topic_hash[k]
     end
   end
@@ -288,8 +288,8 @@ describe HTTParty::XML, "#parse" do
       'author_email_address' => "david@loudthinking.com",
       'parent_id' => nil
     }
-    # puts HTTParty::XML.parse(topics_xml)['topics'].first.inspect
-    HTTParty::XML.parse(topics_xml)["topics"].first.each do |k,v|
+    # puts HTTParty::Parsers::XML.parse(topics_xml)['topics'].first.inspect
+    HTTParty::Parsers::XML.parse(topics_xml)["topics"].first.each do |k,v|
       v.should == expected_topic_hash[k]
     end
   end
@@ -313,7 +313,7 @@ describe HTTParty::XML, "#parse" do
       'isfriend' => "0",
       'isfamily' => "0",
     }
-    HTTParty::XML.parse(topic_xml)["rsp"]["photos"]["photo"].each do |k,v|
+    HTTParty::Parsers::XML.parse(topic_xml)["rsp"]["photos"]["photo"].each do |k,v|
       v.should == expected_topic_hash[k]
     end
   end
@@ -325,7 +325,7 @@ describe HTTParty::XML, "#parse" do
       </blog>
     XML
     expected_blog_hash = {"blog" => {"posts" => []}}
-    HTTParty::XML.parse(blog_xml).should == expected_blog_hash
+    HTTParty::Parsers::XML.parse(blog_xml).should == expected_blog_hash
   end
 
   it "should handle empty array with whitespace from xml (ActiveSupport Compatible)" do
@@ -336,7 +336,7 @@ describe HTTParty::XML, "#parse" do
       </blog>
     XML
     expected_blog_hash = {"blog" => {"posts" => []}}
-    HTTParty::XML.parse(blog_xml).should == expected_blog_hash
+    HTTParty::Parsers::XML.parse(blog_xml).should == expected_blog_hash
   end
 
   it "should handle array with one entry from_xml (ActiveSupport Compatible)" do
@@ -348,7 +348,7 @@ describe HTTParty::XML, "#parse" do
       </blog>
     XML
     expected_blog_hash = {"blog" => {"posts" => ["a post"]}}
-    HTTParty::XML.parse(blog_xml).should == expected_blog_hash
+    HTTParty::Parsers::XML.parse(blog_xml).should == expected_blog_hash
   end
 
   it "should handle array with multiple entries from xml (ActiveSupport Compatible)" do
@@ -361,7 +361,7 @@ describe HTTParty::XML, "#parse" do
       </blog>
     XML
     expected_blog_hash = {"blog" => {"posts" => ["a post", "another post"]}}
-    HTTParty::XML.parse(blog_xml).should == expected_blog_hash
+    HTTParty::Parsers::XML.parse(blog_xml).should == expected_blog_hash
   end
 
   it "should handle file types (ActiveSupport Compatible)" do
@@ -371,7 +371,7 @@ describe HTTParty::XML, "#parse" do
         </logo>
       </blog>
     XML
-    hash = HTTParty::XML.parse(blog_xml)
+    hash = HTTParty::Parsers::XML.parse(blog_xml)
     hash.should have_key('blog')
     hash['blog'].should have_key('logo')
 
@@ -387,7 +387,7 @@ describe HTTParty::XML, "#parse" do
         </logo>
       </blog>
     XML
-    file = HTTParty::XML.parse(blog_xml)['blog']['logo']
+    file = HTTParty::Parsers::XML.parse(blog_xml)['blog']['logo']
     file.original_filename.should == 'untitled'
     file.content_type.should == 'application/octet-stream'
   end
@@ -413,7 +413,7 @@ describe HTTParty::XML, "#parse" do
       'illustration' => "babe.png"
     }
 
-    HTTParty::XML.parse(bacon_xml)["bacon"].should == expected_bacon_hash
+    HTTParty::Parsers::XML.parse(bacon_xml)["bacon"].should == expected_bacon_hash
   end
 
   it "should let type trickle through when unknown (ActiveSupport Compatible)" do
@@ -430,7 +430,7 @@ describe HTTParty::XML, "#parse" do
       'image' => {'type' => 'ProductImage', 'filename' => 'image.gif' },
     }
 
-    HTTParty::XML.parse(product_xml)["product"].should == expected_product_hash
+    HTTParty::Parsers::XML.parse(product_xml)["product"].should == expected_product_hash
   end
 
   it "should handle unescaping from xml (ActiveResource Compatible)" do
@@ -440,6 +440,6 @@ describe HTTParty::XML, "#parse" do
       'pre_escaped_string' => 'First &amp; Last Name'
     }
 
-    HTTParty::XML.parse(xml_string)['person'].should == expected_hash
+    HTTParty::Parsers::XML.parse(xml_string)['person'].should == expected_hash
   end
 end

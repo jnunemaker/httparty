@@ -1,6 +1,6 @@
-require File.join(File.dirname(__FILE__), '..', 'spec_helper')
+require File.join(File.dirname(__FILE__), '..', '..', 'spec_helper')
 
-describe HTTParty::JSON do
+describe HTTParty::Parsers::JSON do
   TESTS = {
     %q({"returnTo":{"\/categories":"\/"}})        => {"returnTo" => {"/categories" => "/"}},
     %q({returnTo:{"\/categories":"\/"}})          => {"returnTo" => {"/categories" => "/"}},
@@ -28,14 +28,14 @@ describe HTTParty::JSON do
   TESTS.each do |json, expected|
     it "should decode json (#{json})" do
       lambda {
-        HTTParty::JSON.decode(json).should == expected
+        HTTParty::Parsers::JSON.decode(json).should == expected
       }.should_not raise_error
     end
   end
   
   it "should raise error for failed decoding" do
     lambda {
-      HTTParty::JSON.decode(%({: 1}))
-    }.should raise_error(HTTParty::JSON::ParseError)
+      HTTParty::Parsers::JSON.decode(%({: 1}))
+    }.should raise_error(HTTParty::Parsers::JSON::ParseError)
   end
 end
