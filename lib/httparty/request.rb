@@ -21,7 +21,12 @@ module HTTParty
     
     def uri
       new_uri = path.relative? ? URI.parse("#{options[:base_uri]}#{path}") : path
-      new_uri.query = query_string(new_uri)
+      
+      # avoid double query string on redirects [#12]
+      unless @redirect
+        new_uri.query = query_string(new_uri)
+      end
+      
       new_uri
     end
     
@@ -90,6 +95,7 @@ module HTTParty
           when Net::HTTPRedirection
             options[:limit] -= 1
             self.path = response['location']
+            @redirect = true
             perform
           else
             parsed_response = parse_response(response.body)
