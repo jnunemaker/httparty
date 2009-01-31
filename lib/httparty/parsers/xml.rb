@@ -178,8 +178,8 @@ class REXMLUtilityNode #:nodoc:
 end
 
 module HTTParty
-  module Parsers
-    module XML    
+  module Parsers #:nodoc:
+    module XML #:nodoc:
       def self.parse(xml)
         stack = []
         parser = REXML::Parsers::BaseParser.new(xml)

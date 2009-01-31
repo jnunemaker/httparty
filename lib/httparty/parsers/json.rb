@@ -7,9 +7,10 @@ require 'yaml'
 require 'strscan'
 
 module HTTParty
-  module Parsers
+  module Parsers #:nodoc:
     module JSON #:nodoc:
-      class ParseError < StandardError; end
+      class ParseError < StandardError #:nodoc:
+      end
 
       def self.decode(json)
         YAML.load(convert_json_to_yaml(json))
