@@ -47,6 +47,7 @@ spec/httparty/cookie_hash_spec.rb
 spec/httparty/parsers/json_spec.rb
 spec/httparty/parsers/xml_spec.rb
 spec/httparty/request_spec.rb
+spec/httparty/response_spec.rb
 spec/httparty_spec.rb
 spec/spec.opts
 spec/spec_helper.rb

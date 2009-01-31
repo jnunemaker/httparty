@@ -2,7 +2,7 @@
 * 1 major enhancement, 1 bug fix
   * JSON gem no longer a requirement. It was conflicting with rails json stuff so I just stole ActiveSupport's json decoding and bundled it with HTTParty.
   * Fixed bug where query strings were being duplicated on redirects
-  * Added more specs and moved some code around.
+  * Added a bunch of specs and moved some code around.
   
 == 0.2.10 2009-01-29
 * 1 minor enhancement
