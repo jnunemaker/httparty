@@ -30,9 +30,9 @@ module HTTParty
     end
     
     def perform
-      validate!
+      validate
       setup_raw_request
-      handle_response!(get_response)
+      handle_response(get_response)
     end
 
     private
@@ -85,7 +85,7 @@ module HTTParty
       end
       
       # Raises exception Net::XXX (http error code) if an http error occured
-      def handle_response!(response) #:nodoc:
+      def handle_response(response) #:nodoc:
         case response
           when Net::HTTPRedirection
             options[:limit] -= 1
@@ -116,7 +116,7 @@ module HTTParty
         AllowedFormats.each { |k, v| return v if mimetype.include?(k) }
       end
       
-      def validate! #:nodoc:
+      def validate #:nodoc:
         raise HTTParty::RedirectionTooDeep, 'HTTP redirects too deep' if options[:limit].to_i <= 0
         raise ArgumentError, 'only get, post, put and delete methods are supported' unless SupportedHTTPMethods.include?(http_method)
         raise ArgumentError, ':headers must be a hash' if options[:headers] && !options[:headers].is_a?(Hash)
