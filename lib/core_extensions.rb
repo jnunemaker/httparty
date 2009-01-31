@@ -21,7 +21,7 @@ require 'time'
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-class Object
+class Object #:nodoc:
   # @return <TrueClass, FalseClass>
   #
   # @example [].blank?         #=>  true
@@ -34,7 +34,7 @@ class Object
   end
 end # class Object
 
-class Numeric
+class Numeric #:nodoc:
   # @return <TrueClass, FalseClass>
   # 
   # Numerics can't be blank
@@ -43,7 +43,7 @@ class Numeric
   end
 end # class Numeric
 
-class NilClass
+class NilClass #:nodoc:
   # @return <TrueClass, FalseClass>
   # 
   # Nils are always blank
@@ -52,7 +52,7 @@ class NilClass
   end
 end # class NilClass
 
-class TrueClass
+class TrueClass #:nodoc:
   # @return <TrueClass, FalseClass>
   # 
   # True is not blank.  
@@ -61,14 +61,14 @@ class TrueClass
   end
 end # class TrueClass
 
-class FalseClass
+class FalseClass #:nodoc:
   # False is always blank.
   def blank?
     true
   end
 end # class FalseClass
 
-class String
+class String #:nodoc:
   # @example "".blank?         #=>  true
   # @example "     ".blank?    #=>  true
   # @example " hey ho ".blank? #=>  false
@@ -90,7 +90,7 @@ require 'rexml/light/node'
 # It's mainly just adding vowels, as I ht cd wth n vwls :)
 # This represents the hard part of the work, all I did was change the
 # underlying parser.
-class REXMLUtilityNode
+class REXMLUtilityNode #:nodoc:
   attr_accessor :name, :attributes, :children, :type
   
   def self.typecasts
@@ -260,7 +260,7 @@ class REXMLUtilityNode
   end
 end
 
-class ToHashParser
+class ToHashParser #:nodoc:
   def self.from_xml(xml)
     stack = []
     parser = REXML::Parsers::BaseParser.new(xml)
@@ -287,7 +287,7 @@ class ToHashParser
   end
 end
 
-class Hash  
+class Hash #:nodoc:
   # @return <String> This hash as a query string
   #
   # @example
@@ -348,6 +348,6 @@ class Hash
   end
 end
 
-class BlankSlate
+class BlankSlate #:nodoc:
   instance_methods.each { |m| undef_method m unless m =~ /^__/ }
 end

@@ -1,7 +1,7 @@
 require 'uri'
 
 module HTTParty
-  class Request    
+  class Request #:nodoc:
     SupportedHTTPMethods = [Net::HTTP::Get, Net::HTTP::Post, Net::HTTP::Put, Net::HTTP::Delete]
     
     attr_accessor :http_method, :path, :options
@@ -36,7 +36,7 @@ module HTTParty
     end
 
     private
-      def http #:nodoc:
+      def http
         http = Net::HTTP.new(uri.host, uri.port, options[:http_proxyaddr], options[:http_proxyport])
         http.use_ssl = (uri.port == 443)
         http.verify_mode = OpenSSL::SSL::VERIFY_NONE
@@ -64,13 +64,13 @@ module HTTParty
         http.request(@raw_request)
       end
 
-      def get_response #:nodoc:
+      def get_response
         response = perform_actual_request
         options[:format] ||= format_from_mimetype(response['content-type'])
         response
       end
       
-      def query_string(uri) #:nodoc:
+      def query_string(uri)
         query_string_parts = []
         query_string_parts << uri.query unless uri.query.blank?
 
@@ -85,7 +85,7 @@ module HTTParty
       end
       
       # Raises exception Net::XXX (http error code) if an http error occured
-      def handle_response(response) #:nodoc:
+      def handle_response(response)
         case response
           when Net::HTTPRedirection
             options[:limit] -= 1
@@ -97,7 +97,7 @@ module HTTParty
           end
       end
       
-      def parse_response(body) #:nodoc:
+      def parse_response(body)
         return nil if body.nil? or body.empty?
         case format
           when :xml
@@ -111,12 +111,12 @@ module HTTParty
   
       # Uses the HTTP Content-Type header to determine the format of the response
       # It compares the MIME type returned to the types stored in the AllowedFormats hash
-      def format_from_mimetype(mimetype) #:nodoc:
+      def format_from_mimetype(mimetype)
         return nil if mimetype.nil?
         AllowedFormats.each { |k, v| return v if mimetype.include?(k) }
       end
       
-      def validate #:nodoc:
+      def validate
         raise HTTParty::RedirectionTooDeep, 'HTTP redirects too deep' if options[:limit].to_i <= 0
         raise ArgumentError, 'only get, post, put and delete methods are supported' unless SupportedHTTPMethods.include?(http_method)
         raise ArgumentError, ':headers must be a hash' if options[:headers] && !options[:headers].is_a?(Hash)

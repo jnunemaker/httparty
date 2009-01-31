@@ -1,5 +1,5 @@
 module HTTParty
-  class Response < BlankSlate
+  class Response < BlankSlate #:nodoc:
     attr_accessor :body, :code, :headers
 
     def initialize(delegate, body, code, headers)

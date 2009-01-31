@@ -1,9 +1,9 @@
-module ModuleLevelInheritableAttributes
+module ModuleLevelInheritableAttributes #:nodoc:
   def self.included(base)
     base.extend(ClassMethods)
   end
   
-  module ClassMethods
+  module ClassMethods #:nodoc:
     def mattr_inheritable(*args)
       @mattr_inheritable_attrs ||= [:mattr_inheritable_attrs]
       @mattr_inheritable_attrs += args

@@ -1,4 +1,4 @@
-class HTTParty::CookieHash < Hash
+class HTTParty::CookieHash < Hash #:nodoc:
   def add_cookies(hash)
     merge!(hash)
   end

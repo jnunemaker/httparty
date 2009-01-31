@@ -74,7 +74,7 @@ if ARGV.empty?
 end
 
 # 1.8.6 has mistyping of transitive in if statement
-module REXML
+module REXML #:nodoc:
   class Document < Element
     def write( output=$stdout, indent=-1, transitive=false, ie_hack=false )
       if xml_decl.encoding != "UTF-8" && !output.kind_of?(Output)

@@ -112,7 +112,7 @@ module HTTParty
     "http#{'s' if use_ssl}://#{url}"
   end
   
-  class Basement
+  class Basement #:nodoc:
     include HTTParty
   end
   
