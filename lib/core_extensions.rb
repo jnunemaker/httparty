@@ -79,6 +79,12 @@ class String #:nodoc:
   def blank?
     strip.empty?
   end unless method_defined?(:blank?)
+  
+  def snake_case
+    return self.downcase if self =~ /^[A-Z]+$/
+    self.gsub(/([A-Z]+)(?=[A-Z][a-z]?)|\B[A-Z]/, '_\&') =~ /_*(.*)/
+    return $+.downcase
+  end unless method_defined?(:snake_case)
 end # class String
 
 class Hash #:nodoc:
