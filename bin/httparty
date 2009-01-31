@@ -2,7 +2,6 @@
 
 require "optparse"
 require "pp"
-require "rexml/document"
 
 $:.unshift(File.join(File.dirname(__FILE__), "/../lib"))
 require "httparty"

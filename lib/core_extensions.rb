@@ -84,6 +84,7 @@ end # class String
 require 'rexml/parsers/streamparser'
 require 'rexml/parsers/baseparser'
 require 'rexml/light/node'
+require "rexml/document"
 
 # This is a slighly modified version of the XMLUtilityNode from
 # http://merb.devjavu.com/projects/merb/ticket/95 (has.sox@gmail.com)
