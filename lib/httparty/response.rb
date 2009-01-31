@@ -3,7 +3,7 @@ module HTTParty
     attr_accessor :body, :code, :headers
     attr_reader :delegate
 
-    def initialize(delegate, body, code, headers)
+    def initialize(delegate, body, code, headers={})
       @delegate = delegate
       @body = body
       @code = code
