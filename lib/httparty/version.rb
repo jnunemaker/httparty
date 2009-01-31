@@ -1,3 +1,3 @@
 module HTTParty #:nodoc:
-  Version = '0.2.10'
+  Version = '0.3.0'
 end
