@@ -82,12 +82,12 @@ else
   response = HTTParty.send(opts[:action], ARGV.first, opts)
   puts "Status: #{response.code}"
   case opts[:output_format]
-  when :json
-    puts JSON.pretty_generate(response)
-  when :xml
-    REXML::Document.new(response.body).write(STDOUT, 2)
-    puts
-  else
-    puts response
+    when :json
+      puts JSON.pretty_generate(response)
+    when :xml
+      REXML::Document.new(response.body).write(STDOUT, 2)
+      puts
+    else
+      puts response
   end
 end
