@@ -31,7 +31,7 @@ class Object #:nodoc:
   # Returns true if the object is nil or empty (if applicable)
   def blank?
     nil? || (respond_to?(:empty?) && empty?)
-  end
+  end unless method_defined?(:blank?)
 end # class Object
 
 class Numeric #:nodoc:
@@ -40,7 +40,7 @@ class Numeric #:nodoc:
   # Numerics can't be blank
   def blank?
     false
-  end
+  end unless method_defined?(:blank?)
 end # class Numeric
 
 class NilClass #:nodoc:
@@ -49,7 +49,7 @@ class NilClass #:nodoc:
   # Nils are always blank
   def blank?
     true
-  end
+  end unless method_defined?(:blank?)
 end # class NilClass
 
 class TrueClass #:nodoc:
@@ -58,14 +58,14 @@ class TrueClass #:nodoc:
   # True is not blank.  
   def blank?
     false
-  end
+  end unless method_defined?(:blank?)
 end # class TrueClass
 
 class FalseClass #:nodoc:
   # False is always blank.
   def blank?
     true
-  end
+  end unless method_defined?(:blank?)
 end # class FalseClass
 
 class String #:nodoc:
@@ -78,7 +78,7 @@ class String #:nodoc:
   # Strips out whitespace then tests if the string is empty.
   def blank?
     strip.empty?
-  end
+  end unless method_defined?(:blank?)
 end # class String
 
 require 'rexml/parsers/streamparser'
