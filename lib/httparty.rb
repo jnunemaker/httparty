@@ -2,8 +2,8 @@ $:.unshift(File.dirname(__FILE__))
 
 require 'net/http'
 require 'net/https'
-require 'module_level_inheritable_attributes'
 require 'core_extensions'
+require 'httparty/module_inheritable_attributes'
 
 module HTTParty
   
@@ -19,7 +19,7 @@ module HTTParty
   
   def self.included(base)
     base.extend ClassMethods
-    base.send :include, ModuleLevelInheritableAttributes
+    base.send :include, HTTParty::ModuleInheritableAttributes
     base.send(:mattr_inheritable, :default_options)
     base.instance_variable_set("@default_options", {})
   end
@@ -129,9 +129,9 @@ module HTTParty
   end
 end
 
+require 'httparty/cookie_hash'
 require 'httparty/exceptions'
 require 'httparty/request'
 require 'httparty/response'
 require 'httparty/json'
 require 'httparty/xml'
-require 'httparty/cookie_hash'
