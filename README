@@ -24,11 +24,11 @@ grokking the structure of output). This can also be overridden to output
 formatted XML or JSON. Execute <tt>httparty --help</tt> for all the
 options. Below is an example of how easy it is.
 
-  httparty "http://twitter.com/statuses/public_timeline.json" -f json
+  httparty "http://twitter.com/statuses/public_timeline.json"
 
 == REQUIREMENTS:
 
-* JSON ~> 1.1
+* You like to party!
 
 == INSTALL:
 

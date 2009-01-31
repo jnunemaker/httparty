@@ -103,7 +103,7 @@ module HTTParty
           when :xml
             ToHashParser.from_xml(body)
           when :json
-            JSON.parse(body)
+            HTTParty::JSON.decode(body)
           else
             body
           end

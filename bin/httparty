@@ -82,7 +82,13 @@ else
   puts "Status: #{response.code}"
   case opts[:output_format]
     when :json
-      puts JSON.pretty_generate(response)
+      begin
+        require 'rubygems'
+        require 'json'
+        puts JSON.pretty_generate(response.delegate)
+      rescue LoadError
+        puts YAML.dump(response.delegate)
+      end
     when :xml
       REXML::Document.new(response.body).write(STDOUT, 2)
       puts
