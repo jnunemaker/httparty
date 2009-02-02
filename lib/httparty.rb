@@ -14,7 +14,9 @@ module HTTParty
     'text/json'              => :json,
     'application/javascript' => :json,
     'text/javascript'        => :json,
-    'text/html'              => :html
+    'text/html'              => :html,
+    'application/x-yaml'     => :yaml,
+    'text/yaml'              => :yaml
   } unless defined?(AllowedFormats)
   
   def self.included(base)

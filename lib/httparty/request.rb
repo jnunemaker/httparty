@@ -110,6 +110,8 @@ module HTTParty
             HTTParty::Parsers::XML.parse(body)
           when :json
             HTTParty::Parsers::JSON.decode(body)
+          when :yaml
+            YAML::load(body)
           else
             body
           end

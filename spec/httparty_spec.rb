@@ -144,6 +144,11 @@ describe HTTParty do
       @klass.default_options[:format].should == :json
     end
     
+    it "should allow yaml" do
+      @klass.format :yaml
+      @klass.default_options[:format].should == :yaml
+    end
+    
     it 'should not allow funky format' do
       lambda do
         @klass.format :foobar
