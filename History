@@ -1,3 +1,8 @@
+== 0.3.1 2009-02-10
+* 1 minor fix, 1 minor enhancement
+  * Fixed unescaping umlauts (siebertm)
+  * Added yaml response parsing (Miha Filej)
+  
 == 0.3.0 2009-01-31
 * 1 major enhancement, 1 bug fix
   * JSON gem no longer a requirement. It was conflicting with rails json stuff so I just stole ActiveSupport's json decoding and bundled it with HTTParty.
