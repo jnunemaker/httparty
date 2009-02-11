@@ -13,12 +13,19 @@ module HTTParty
       end
 
       def self.decode(json)
-        YAML.load(convert_json_to_yaml(json))
+        YAML.load(unescape(convert_json_to_yaml(json)))
       rescue ArgumentError => e
         raise ParseError, "Invalid JSON string"
       end
 
       protected
+
+        def self.unescape(str)
+          str.gsub(/\\u([0-9a-f]{4})/) {
+            [$1.hex].pack("U")
+          }
+        end
+
         # matches YAML-formatted dates
         DATE_REGEX = /^\d{4}-\d{2}-\d{2}|\d{4}-\d{1,2}-\d{1,2}[ \t]+\d{1,2}:\d{2}:\d{2}(\.[0-9]*)?(([ \t]*)Z|[-+]\d{2}?(:\d{2})?)?$/
 
