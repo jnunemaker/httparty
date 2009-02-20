@@ -6,7 +6,7 @@ module HTTParty
     def initialize(delegate, body, code, headers={})
       @delegate = delegate
       @body = body
-      @code = code
+      @code = code.to_i
       @headers = headers
     end
 

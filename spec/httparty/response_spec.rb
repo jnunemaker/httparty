@@ -5,7 +5,7 @@ describe HTTParty::Response do
     before do
       @response_object = {'foo' => 'bar'}
       @body = "{foo:'bar'}"
-      @code = 200
+      @code = '200'
       @response = HTTParty::Response.new(@response_object, @body, @code)
     end
     
@@ -18,7 +18,11 @@ describe HTTParty::Response do
     end
     
     it "should set code" do
-      @response.code.should == @code
+      @response.code.should.to_s == @code
+    end
+
+    it "should set code as a Fixnum" do
+      @response.code.should be_an_instance_of(Fixnum)
     end
   end
   
