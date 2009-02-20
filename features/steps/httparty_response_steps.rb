@@ -17,7 +17,7 @@ Then /it should return a Hash equaling:/ do |hash_table|
 end
 
 Then /it should return a response with a (\d+) response code/ do |code|
-  @response_from_httparty.code.should eql(code)
+  @response_from_httparty.code.should eql(code.to_i)
 end
 
 Then /it should raise an HTTParty::RedirectionTooDeep exception/ do
