@@ -167,13 +167,14 @@ module HTTParty
   end
 
   def self.normalize_base_uri(url) #:nodoc:
-    use_ssl = (url =~ /^https/) || url.include?(':443')
-    ends_with_slash = url =~ /\/$/
+    normalized_url = url.dup
+    use_ssl = (normalized_url =~ /^https/) || normalized_url.include?(':443')
+    ends_with_slash = normalized_url =~ /\/$/
     
-    url.chop! if ends_with_slash
-    url.gsub!(/^https?:\/\//i, '')
+    normalized_url.chop! if ends_with_slash
+    normalized_url.gsub!(/^https?:\/\//i, '')
     
-    "http#{'s' if use_ssl}://#{url}"
+    "http#{'s' if use_ssl}://#{normalized_url}"
   end
   
   class Basement #:nodoc:

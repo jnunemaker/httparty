@@ -19,6 +19,12 @@ describe HTTParty do
       @klass.base_uri('http://api.foobar.com')
       @klass.base_uri.should == 'http://api.foobar.com'
     end
+
+    it 'should not modify the parameter during assignment' do
+      uri = 'http://api.foobar.com'
+      @klass.base_uri(uri)
+      uri.should == 'http://api.foobar.com'
+    end
   end
   
   describe "#normalize_base_uri" do
@@ -35,6 +41,12 @@ describe HTTParty do
     it "should not remove https for ssl requests" do
       uri = HTTParty.normalize_base_uri('https://api.foo.com/v1:443')
       uri.should == 'https://api.foo.com/v1:443'
+    end
+
+    it 'should not modify the parameter' do
+      uri = 'http://api.foobar.com'
+      HTTParty.normalize_base_uri(uri)
+      uri.should == 'http://api.foobar.com'
     end
   end
   
