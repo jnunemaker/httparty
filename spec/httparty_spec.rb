@@ -149,6 +149,11 @@ describe HTTParty do
       @klass.default_options[:format].should == :yaml
     end
     
+    it "should allow plain" do
+      @klass.format :plain
+      @klass.default_options[:format].should == :plain
+    end
+    
     it 'should not allow funky format' do
       lambda do
         @klass.format :foobar
