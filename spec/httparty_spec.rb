@@ -159,6 +159,13 @@ describe HTTParty do
         @klass.format :foobar
       end.should raise_error(HTTParty::UnsupportedFormat)
     end
+
+    it 'should only print each format once with an exception' do
+      lambda do
+        @klass.format :foobar
+      end.should raise_error(HTTParty::UnsupportedFormat, "Must be one of: json, xml, html, yaml, plain")
+    end
+
   end
 
   describe "with explicit override of automatic redirect handling" do
