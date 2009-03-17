@@ -12,11 +12,6 @@ opts = {
   :verbose => false
 }
 
-def die(msg)
-  STDERR.puts(msg)
-  exit 1
-end
-
 OptionParser.new do |o|
   o.banner = "USAGE: #{$0} [options] [url]"
   
@@ -44,7 +39,7 @@ OptionParser.new do |o|
   end
   
   o.on("-H", "--header [NAME=VALUE]", "Additional HTTP headers in NAME=VALUE form") do |h|
-    die "Invalid header specification, should be Name:Value" unless h =~ /.+:.+/
+    abort "Invalid header specification, should be Name:Value" unless h =~ /.+:.+/
     name, value = h.split(':')
     opts[:headers][name.strip] = value.strip
   end
@@ -54,7 +49,7 @@ OptionParser.new do |o|
   end
   
   o.on("-u", "--user [CREDS]", "Use basic authentication. Value should be user:password") do |u|
-    die "Invalid credentials format. Must be user:password" unless u =~ /.+:.+/
+    abort "Invalid credentials format. Must be user:password" unless u =~ /.+:.+/
     user, password = u.split(':')
     opts[:basic_auth] = { :username => user, :password => password }
   end
@@ -65,21 +60,37 @@ OptionParser.new do |o|
   end
 end.parse!
 
-puts "Querying #{ARGV.first} with options: #{opts.inspect}" if opts[:verbose]
 
 if ARGV.empty?
   STDERR.puts "You need to provide a URL"
   STDERR.puts "USAGE: #{$0} [options] [url]"
 end
 
+def dump_headers(response)
+  resp_type = Net::HTTPResponse::CODE_TO_OBJ[response.code.to_s]
+  puts "#{response.code} #{resp_type.to_s.sub(/^Net::HTTP/, '')}"
+  response.headers.each do |n,v|
+    puts "#{n}: #{v}"
+  end
+  puts
+end
+
+if opts[:verbose]
+  puts "#{opts[:action].to_s.upcase} #{ARGV.first}"
+  opts[:headers].each do |n,v|
+    puts "#{n}: #{v}"
+  end
+  puts
+end
+
+response = HTTParty.send(opts[:action], ARGV.first, opts)
 if opts[:output_format].nil?
-  response = HTTParty.send(opts[:action], ARGV.first, opts)
-  puts "Status: #{response.code}"
+  dump_headers(response) if opts[:verbose]
   pp response
 else
   print_format = opts[:output_format]
-  response = HTTParty.send(opts[:action], ARGV.first, opts)
-  puts "Status: #{response.code}"
+  dump_headers(response) if opts[:verbose]
+
   case opts[:output_format]
     when :json
       begin
