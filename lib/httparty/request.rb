@@ -107,9 +107,9 @@ module HTTParty
         return nil if body.nil? or body.empty?
         case format
           when :xml
-            HTTParty::Parsers::XML.parse(body)
+            Crack::XML.parse(body)
           when :json
-            HTTParty::Parsers::JSON.decode(body)
+            Crack::JSON.parse(body)
           when :yaml
             YAML::load(body)
           else

@@ -2,8 +2,10 @@ $:.unshift(File.dirname(__FILE__))
 
 require 'net/http'
 require 'net/https'
-require 'core_extensions'
 require 'httparty/module_inheritable_attributes'
+require 'rubygems'
+gem 'crack'
+require 'crack'
 
 module HTTParty
   
@@ -195,7 +197,7 @@ module HTTParty
 end
 
 require 'httparty/cookie_hash'
+require 'httparty/core_extensions'
 require 'httparty/exceptions'
 require 'httparty/request'
 require 'httparty/response'
-require 'httparty/parsers'
