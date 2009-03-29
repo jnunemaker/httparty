@@ -28,6 +28,7 @@ options. Below is an example of how easy it is.
 
 == REQUIREMENTS:
 
+* Crack http://github.com/jnunemaker/crack/ - For XML and JSON parsing.
 * You like to party!
 
 == INSTALL:

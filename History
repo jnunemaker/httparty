@@ -1,3 +1,7 @@
+== 0.4.0 2009-03-29
+* 1 minor change
+  * Switched xml and json parsing to crack (same code as before just moved to gem for easier reuse in other projects)
+  
 == 0.3.1 2009-02-10
 * 1 minor fix, 1 minor enhancement
   * Fixed unescaping umlauts (siebertm)
