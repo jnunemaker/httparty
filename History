@@ -1,3 +1,7 @@
+== 0.4.2 209-03-30
+* 1 minor change
+  * response code now returns an integer instead of a string (jqr)
+
 == 0.4.1 2009-03-29
 * 1 minor fix
   * gem 'jnunemaker-crack' instead of gem 'crack'
