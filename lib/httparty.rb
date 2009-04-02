@@ -4,7 +4,7 @@ require 'net/http'
 require 'net/https'
 require 'httparty/module_inheritable_attributes'
 require 'rubygems'
-gem 'jnunemaker-crack'
+gem 'crack'
 require 'crack'
 
 module HTTParty
