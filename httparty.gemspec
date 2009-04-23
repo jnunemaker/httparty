@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{httparty}
-  s.version = "0.4.2"
+  s.version = "0.4.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 1.2") if s.respond_to? :required_rubygems_version=
   s.authors = ["John Nunemaker"]
-  s.date = %q{2009-04-02}
+  s.date = %q{2009-04-23}
   s.default_executable = %q{httparty}
   s.description = %q{Makes http fun! Also, makes consuming restful web services dead easy.}
   s.email = %q{nunemaker@gmail.com}
