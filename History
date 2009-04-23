@@ -1,4 +1,8 @@
-== 0.4.2 209-03-30
+== 0.4.5 2009-04-23
+* 1 minor update
+  * added message to the response object
+  
+== 0.4.2 2009-03-30
 * 2 minor changes
   * response code now returns an integer instead of a string (jqr)
   * rubyforge project setup for crack so i'm now depending on that instead of jnunemaker-crack

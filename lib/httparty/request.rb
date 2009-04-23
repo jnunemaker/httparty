@@ -99,7 +99,7 @@ module HTTParty
             perform
           else
             parsed_response = parse_response(response.body)
-            Response.new(parsed_response, response.body, response.code, response.to_hash)
+            Response.new(parsed_response, response.body, response.code, response.message, response.to_hash)
           end
       end
       
