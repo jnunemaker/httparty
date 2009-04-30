@@ -34,3 +34,7 @@ options. Below is an example of how easy it is.
 == INSTALL:
 
 * sudo gem install httparty
+
+== DOCS:
+
+http://rdoc.info/projects/jnunemaker/httparty
