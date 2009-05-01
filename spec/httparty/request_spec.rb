@@ -46,6 +46,23 @@ describe HTTParty::Request do
       @request.send(:setup_raw_request)
       @request.instance_variable_get(:@raw_request)['authorization'].should_not be_nil
     end
+    
+    it "should change timeout when configured (if an Integer)" do
+      @request.send(:http).open_timeout.should be_nil
+      @request.send(:http).read_timeout.should == 60
+      
+      invalid_timeout = "invalid"
+      invalid_timeout.is_a?(Integer).should be_false
+      @request.options[:timeout] = invalid_timeout
+      @request.send(:http).open_timeout.should be_nil
+      @request.send(:http).read_timeout.should == 60
+      
+      timeout = 30
+      timeout.is_a?(Integer).should be_true
+      @request.options[:timeout] = timeout
+      @request.send(:http).open_timeout.should == timeout
+      @request.send(:http).read_timeout.should == timeout
+    end
   end
   
   describe '#format_from_mimetype' do
