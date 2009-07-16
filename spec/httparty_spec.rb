@@ -175,7 +175,7 @@ describe HTTParty do
     it 'should only print each format once with an exception' do
       lambda do
         @klass.format :foobar
-      end.should raise_error(HTTParty::UnsupportedFormat, "Must be one of: json, plain, html, yaml, xml")
+      end.should raise_error(HTTParty::UnsupportedFormat, "Must be one of: html, json, plain, xml, yaml")
     end
 
   end

@@ -102,7 +102,7 @@ module HTTParty
     #     format :json
     #   end
     def format(f)
-      raise UnsupportedFormat, "Must be one of: #{AllowedFormats.values.uniq.join(', ')}" unless AllowedFormats.value?(f)
+      raise UnsupportedFormat, "Must be one of: #{AllowedFormats.values.map(&:to_s).uniq.sort.join(', ')}" unless AllowedFormats.value?(f)
       default_options[:format] = f
     end
     
