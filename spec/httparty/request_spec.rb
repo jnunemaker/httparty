@@ -114,7 +114,6 @@ describe HTTParty::Request do
     end
     
     describe 'with non-200 responses' do
-
       it 'should return a valid object for 4xx response' do
         stub_response '<foo><bar>yes</bar></foo>', 401
         resp = @request.perform
@@ -130,7 +129,6 @@ describe HTTParty::Request do
         resp.body.should == "<foo><bar>error</bar></foo>"
         resp['foo']['bar'].should == "error"
       end
-
     end
   end
 

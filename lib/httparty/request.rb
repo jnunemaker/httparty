@@ -51,15 +51,14 @@ module HTTParty
       def configure_basic_auth
         @raw_request.basic_auth(options[:basic_auth][:username], options[:basic_auth][:password])
       end
+      
+      def body
+        options[:body].is_a?(Hash) ? options[:body].to_params : options[:body]
+      end
 
       def setup_raw_request
-        @raw_request = http_method.new(uri.request_uri)
-        
-        if post? && options[:query]
-          @raw_request.set_form_data(options[:query])
-        end
-        
-        @raw_request.body = options[:body].is_a?(Hash) ? options[:body].to_params : options[:body] unless options[:body].blank?
+        @raw_request = http_method.new(uri.request_uri)        
+        @raw_request.body = body if body
         @raw_request.initialize_http_header options[:headers]
         
         configure_basic_auth if options[:basic_auth]
