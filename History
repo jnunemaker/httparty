@@ -1,3 +1,7 @@
+== 0.4.6 (working)
+* 1 minor update
+  * :query no longer sets form data. Use body and set content type to application/x-www-form-urlencoded if you need it. :query was wrong for that.
+  
 == 0.4.5 2009-04-23
 * 1 minor update
   * added message to the response object
