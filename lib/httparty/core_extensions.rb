@@ -1,5 +1,9 @@
-class BlankSlate #:nodoc:
-  instance_methods.each { |m| undef_method m unless m =~ /^__|instance_eval|object_id/ }
+if RUBY_VERSION.to_f == 1.8
+  class BlankSlate #:nodoc:
+    instance_methods.each { |m| undef_method m unless m =~ /^__|instance_eval|object_id/ }
+  end
+else
+  class BlankSlate < BasicObject; end
 end
  
 # 1.8.6 has mistyping of transitive in if statement
