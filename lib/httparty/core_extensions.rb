@@ -1,5 +1,5 @@
 class BlankSlate #:nodoc:
-  instance_methods.each { |m| undef_method m unless m =~ /^__/ }
+  instance_methods.each { |m| undef_method m unless m =~ /^__|instance_eval|object_id/ }
 end
  
 # 1.8.6 has mistyping of transitive in if statement
