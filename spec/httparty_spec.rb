@@ -96,6 +96,13 @@ describe HTTParty do
         @klass.get("")
       end
 
+      it "should pass the proper cookies when requested multiple times" do
+        2.times do
+          expect_cookie_header "type=snickerdoodle"
+          @klass.get("")
+        end
+      end
+
       it "should allow the class defaults to be overridden" do
         expect_cookie_header "type=chocolate_chip"
 
