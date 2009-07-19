@@ -48,20 +48,23 @@ module HTTParty
         http
       end
 
-      def configure_basic_auth
-        @raw_request.basic_auth(options[:basic_auth][:username], options[:basic_auth][:password])
-      end
-      
       def body
         options[:body].is_a?(Hash) ? options[:body].to_params : options[:body]
       end
+      
+      def username
+        options[:basic_auth][:username]
+      end
+      
+      def password
+        options[:basic_auth][:password]
+      end
 
       def setup_raw_request
-        @raw_request = http_method.new(uri.request_uri)        
+        @raw_request = http_method.new(uri.request_uri)
         @raw_request.body = body if body
-        @raw_request.initialize_http_header options[:headers]
-        
-        configure_basic_auth if options[:basic_auth]
+        @raw_request.initialize_http_header(options[:headers])
+        @raw_request.basic_auth(username, password) if options[:basic_auth]
       end
 
       def perform_actual_request
@@ -76,13 +79,13 @@ module HTTParty
       
       def query_string(uri)
         query_string_parts = []
-        query_string_parts << uri.query unless uri.query.blank?
+        query_string_parts << uri.query unless uri.query.nil?
 
         if options[:query].is_a?(Hash)
           query_string_parts << options[:default_params].merge(options[:query]).to_params
         else
-          query_string_parts << options[:default_params].to_params unless options[:default_params].blank?
-          query_string_parts << options[:query] unless options[:query].blank?
+          query_string_parts << options[:default_params].to_params unless options[:default_params].nil?
+          query_string_parts << options[:query] unless options[:query].nil?
         end
         
         query_string_parts.size > 0 ? query_string_parts.join('&') : nil
