@@ -1,8 +1,10 @@
-== 0.4.6 (working)
-* 1 minor update
+== 0.4.4 2009-07-19
+* 2 minor update
   * :query no longer sets form data. Use body and set content type to application/x-www-form-urlencoded if you need it. :query was wrong for that.
+  * Fixed a bug in the cookies class method that caused cookies to be forgotten after the first request.
+  * Also, some general cleanup of tests and such.
   
-== 0.4.5 2009-04-23
+== 0.4.3 2009-04-23
 * 1 minor update
   * added message to the response object
   
