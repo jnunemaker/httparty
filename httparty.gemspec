@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{httparty}
-  s.version = "0.4.3"
+  s.version = "0.4.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 1.2") if s.respond_to? :required_rubygems_version=
   s.authors = ["John Nunemaker"]
-  s.date = %q{2009-04-23}
+  s.date = %q{2009-07-19}
   s.default_executable = %q{httparty}
   s.description = %q{Makes http fun! Also, makes consuming restful web services dead easy.}
   s.email = %q{nunemaker@gmail.com}
@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.has_rdoc = true
   s.homepage = %q{http://httparty.rubyforge.org}
   s.post_install_message = %q{When you HTTParty, you must party hard!}
-  s.rdoc_options = ["--line-numbers", "--inline-source", "--title", "Httparty", "--main", "README"]
+  s.rdoc_options = ["--line-numbers", "--inline-source", "--title", "Httparty", "--main", "README.rdoc"]
   s.require_paths = ["lib"]
   s.rubyforge_project = %q{httparty}
   s.rubygems_version = %q{1.3.1}
