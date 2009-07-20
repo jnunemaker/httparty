@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), 'spec_helper')
+require File.expand_path(File.join(File.dirname(__FILE__), 'spec_helper'))
 
 describe HTTParty do
   before(:each) do
@@ -96,6 +96,13 @@ describe HTTParty do
         @klass.get("")
       end
 
+      it "should pass the proper cookies when requested multiple times" do
+        2.times do
+          expect_cookie_header "type=snickerdoodle"
+          @klass.get("")
+        end
+      end
+
       it "should allow the class defaults to be overridden" do
         expect_cookie_header "type=chocolate_chip"
 
@@ -175,7 +182,7 @@ describe HTTParty do
     it 'should only print each format once with an exception' do
       lambda do
         @klass.format :foobar
-      end.should raise_error(HTTParty::UnsupportedFormat, "Must be one of: json, plain, html, yaml, xml")
+      end.should raise_error(HTTParty::UnsupportedFormat, "Must be one of: html, json, plain, xml, yaml")
     end
 
   end
