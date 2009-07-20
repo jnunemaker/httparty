@@ -31,7 +31,6 @@ Manifest
 MIT-LICENSE
 Rakefile
 README.rdoc
-setup.rb
 spec/fixtures/delicious.xml
 spec/fixtures/empty.xml
 spec/fixtures/google.html
