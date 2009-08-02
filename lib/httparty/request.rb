@@ -98,6 +98,8 @@ module HTTParty
             options[:limit] -= 1
             self.path = response['location']
             @redirect = true
+            self.http_method = Net::HTTP::Get
+            capture_cookies(response)
             perform
           else
             parsed_response = parse_response(response.body)
@@ -117,6 +119,15 @@ module HTTParty
           else
             body
           end
+      end
+      
+      def capture_cookies(response)
+        return unless response['Set-Cookie']
+        cookies_hash = HTTParty::CookieHash.new()
+        cookies_hash.add_cookies(options[:headers]['Cookie']) if options[:headers] && options[:headers]['Cookie']
+        cookies_hash.add_cookies(response['Set-Cookie'])
+        options[:headers] ||= {}
+        options[:headers]['Cookie'] = cookies_hash.to_cookie_string
       end
   
       # Uses the HTTP Content-Type header to determine the format of the response
