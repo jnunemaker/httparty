@@ -176,6 +176,33 @@ describe HTTParty::Request do
         @request.http_method = Net::HTTP::Put
         @request.perform.should == {"hash" => {"foo" => "bar"}}
       end
+      
+      it "should keep track of cookies between redirects" do
+        @redirect['Set-Cookie'] = 'foo=bar; name=value; HTTPOnly'
+        @request.perform
+        @request.options[:headers]['Cookie'].should match(/foo=bar/)
+        @request.options[:headers]['Cookie'].should match(/name=value/)
+      end
+      
+      it 'should update cookies with rediects' do
+        @request.options[:headers] = {'Cookie'=> 'foo=bar;'}
+        @redirect['Set-Cookie'] = 'foo=tar;'
+        @request.perform
+        @request.options[:headers]['Cookie'].should match(/foo=tar/)
+      end
+      
+      it 'should keep cookies between rediects' do
+        @request.options[:headers] = {'Cookie'=> 'keep=me'}
+        @redirect['Set-Cookie'] = 'foo=tar;'
+        @request.perform
+        @request.options[:headers]['Cookie'].should match(/keep=me/)
+      end
+      
+      it 'should make resulting request a get request if it not already' do
+        @request.http_method = Net::HTTP::Delete
+        @request.perform.should == {"hash" => {"foo" => "bar"}}
+        @request.http_method.should == Net::HTTP::Get
+      end
     end
 
     describe "infinitely" do
