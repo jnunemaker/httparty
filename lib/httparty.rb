@@ -1,13 +1,14 @@
-$:.unshift(File.dirname(__FILE__))
-
+require 'pathname'
 require 'net/http'
 require 'net/https'
-require 'httparty/module_inheritable_attributes'
 require 'rubygems'
 gem 'crack', '>= 0.1.1'
 require 'crack'
 
-require 'httparty/cookie_hash'
+dir = Pathname(__FILE__).dirname.expand_path
+
+require dir + 'httparty/module_inheritable_attributes'
+require dir + 'httparty/cookie_hash'
 
 module HTTParty
   
@@ -201,7 +202,7 @@ module HTTParty
   end
 end
 
-require 'httparty/core_extensions'
-require 'httparty/exceptions'
-require 'httparty/request'
-require 'httparty/response'
+require dir + 'httparty/core_extensions'
+require dir + 'httparty/exceptions'
+require dir + 'httparty/request'
+require dir + 'httparty/response'
