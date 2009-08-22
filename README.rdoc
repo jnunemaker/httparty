@@ -6,7 +6,7 @@ Makes http fun again!
 
 Releases are tagged on github and also released as gems on github and rubyforge. Master is pushed to whenever I add a patch or a new feature. To build from master, you can clone the code, generate the updated gemspec, build the gem and install.
 
-* rake build_gemspec
+* rake gemspec
 * gem build httparty.gemspec
 * gem install the gem that was built
 
