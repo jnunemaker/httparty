@@ -51,6 +51,12 @@ describe HTTParty do
   end
   
   describe "headers" do
+    def expect_header(type, value)
+      HTTParty::Request.should_receive(:new) \
+        .with(anything, anything, hash_including({ :headers => { type => value, "cookie" => "" } })) \
+        .and_return(mock("mock response", :perform => nil))
+    end
+    
     it "should default to empty hash" do
       @klass.headers.should == {}
     end
@@ -59,6 +65,22 @@ describe HTTParty do
       init_headers = {:foo => 'bar', :baz => 'spax'}
       @klass.headers init_headers
       @klass.headers.should == init_headers
+    end
+    
+    describe "when a header is set at the class level" do
+      before(:each) do
+        @klass.headers({ 'Content-Type' => 'application/json' })
+      end
+      
+      it "should include that header in a get request" do
+        expect_header "Content-Type", "application/json"
+        @klass.get("")
+      end
+      
+      it "should include that header in a post request" do
+        expect_header "Content-Type", "application/json"
+        @klass.post("")
+      end
     end
   end
 
