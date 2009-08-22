@@ -5,6 +5,7 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
   gem.name = "httparty"
+  gem.summary = %Q{Makes http fun! Also, makes consuming restful web services dead easy.}
   gem.description = %Q{Makes http fun! Also, makes consuming restful web services dead easy.}
   gem.email = "nunemaker@gmail.com"
   gem.homepage = "http://httparty.rubyforge.org"
