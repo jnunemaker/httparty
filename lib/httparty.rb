@@ -4,7 +4,7 @@ require 'net/http'
 require 'net/https'
 require 'httparty/module_inheritable_attributes'
 require 'rubygems'
-gem 'crack'
+gem 'crack', '>= 0.1.1'
 require 'crack'
 
 require 'httparty/cookie_hash'
