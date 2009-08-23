@@ -1,6 +1,10 @@
 require File.join(File.dirname(__FILE__), '..', 'lib', 'httparty')
 gem 'rspec', '>= 1.2.8'
+gem 'fakeweb'
 require 'spec/autorun'
+require 'fakeweb'
+
+FakeWeb.allow_net_connect = false
 
 def file_fixture(filename)
   open(File.join(File.dirname(__FILE__), 'fixtures', "#{filename.to_s}")).read
