@@ -1,6 +1,11 @@
 require 'rubygems'
 gem 'rspec', '>= 1.2.8'
+gem 'fakeweb'
 require 'spec'
+require 'fakeweb'
+
+FakeWeb.allow_net_connect = false
+
 require File.join(File.dirname(__FILE__), '..', 'lib', 'httparty')
 
 def file_fixture(filename)
