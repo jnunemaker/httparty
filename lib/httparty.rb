@@ -160,11 +160,9 @@ module HTTParty
       end
 
       def process_cookies(options) #:nodoc:
-        return unless options[:cookies] || default_cookies
-        options[:headers] ||= {}
-        options[:headers]["cookie"] = cookies.merge(options[:cookies] || {}).to_cookie_string
-
-        options.delete(:cookies)
+        return unless options[:cookies] || default_cookies.any?
+        options[:headers] ||= headers.dup
+        options[:headers]["cookie"] = cookies.merge(options.delete(:cookies) || {}).to_cookie_string
       end
   end
 

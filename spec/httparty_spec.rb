@@ -51,14 +51,52 @@ describe HTTParty do
   end
   
   describe "headers" do
+    def expect_headers(header={})
+      HTTParty::Request.should_receive(:new) \
+        .with(anything, anything, hash_including({ :headers => header })) \
+        .and_return(mock("mock response", :perform => nil))
+    end
+
     it "should default to empty hash" do
       @klass.headers.should == {}
     end
-    
+
     it "should be able to be updated" do
       init_headers = {:foo => 'bar', :baz => 'spax'}
       @klass.headers init_headers
       @klass.headers.should == init_headers
+    end
+
+    it "uses the class headers when sending a request" do
+      expect_headers(:foo => 'bar')
+      @klass.headers(:foo => 'bar')
+      @klass.get('')
+    end
+
+    it "overwrites class headers when passing in headers" do
+      expect_headers(:baz => 'spax')
+      @klass.headers(:foo => 'bar')
+      @klass.get('', :headers => {:baz => 'spax'})
+    end
+
+    context "with cookies" do
+      it 'utilizes the class-level cookies' do
+        expect_headers(:foo => 'bar', 'cookie' => 'type=snickerdoodle')
+        @klass.headers(:foo => 'bar')
+        @klass.cookies(:type => 'snickerdoodle')
+        @klass.get('')
+      end
+
+      it 'adds cookies to the headers' do
+        expect_headers(:foo => 'bar', 'cookie' => 'type=snickerdoodle')
+        @klass.headers(:foo => 'bar')
+        @klass.get('', :cookies => {:type => 'snickerdoodle'})
+      end
+
+      it 'adds optional cookies to the optional headers' do
+        expect_headers(:baz => 'spax', 'cookie' => 'type=snickerdoodle')
+        @klass.get('', :cookies => {:type => 'snickerdoodle'}, :headers => {:baz => 'spax'})
+      end
     end
   end
 
