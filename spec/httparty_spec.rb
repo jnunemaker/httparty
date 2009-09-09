@@ -1,5 +1,11 @@
 require File.expand_path(File.join(File.dirname(__FILE__), 'spec_helper'))
 
+class CustomParser
+  def self.parse(body)
+    return {:sexy => true}
+  end
+end
+
 describe HTTParty do
   before(:each) do
     @klass = Class.new
@@ -171,6 +177,22 @@ describe HTTParty do
     it "should work" do
       @klass.basic_auth 'foobar', 'secret'
       @klass.default_options[:basic_auth].should == {:username => 'foobar', :password => 'secret'}
+    end
+  end
+  
+  describe "parser" do
+    before(:each) do
+      @klass.parser Proc.new{ |data| CustomParser.parse(data) }
+    end
+    
+    it "should set parser options" do
+      @klass.default_options[:parser].class.should == Proc
+    end
+
+    it "should be able parse response with custom parser" do
+      stub_http_response_with 'twitter.xml'
+      custom_parsed_response = @klass.get('http://twitter.com/statuses/public_timeline.xml')
+      custom_parsed_response[:sexy].should == true
     end
   end
   

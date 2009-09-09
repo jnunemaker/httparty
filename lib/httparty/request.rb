@@ -107,20 +107,29 @@ module HTTParty
           end
       end
       
+      # HTTParty.const_get((self.format.to_s || 'text').capitalize)
       def parse_response(body)
         return nil if body.nil? or body.empty?
-        case format
-          when :xml
-            Crack::XML.parse(body)
-          when :json
-            Crack::JSON.parse(body)
-          when :yaml
-            YAML::load(body)
+        if options[:parser].blank?
+          case format
+            when :xml
+              Crack::XML.parse(body)
+            when :json
+              Crack::JSON.parse(body)
+            when :yaml
+              YAML::load(body)
+            else
+              body
+            end
+        else
+          if options[:parser].is_a?(Proc)
+            options[:parser].call(body)
           else
             body
           end
+        end
       end
-      
+            
       def capture_cookies(response)
         return unless response['Set-Cookie']
         cookies_hash = HTTParty::CookieHash.new()

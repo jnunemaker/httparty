@@ -110,6 +110,16 @@ module HTTParty
       default_options[:format] = f
     end
     
+    # Allows setting a custom parser for the response.
+    #
+    #   class Foo
+    #     include HTTParty
+    #     parser Proc.new {|data| ...}
+    #   end
+    def parser(customer_parser)
+      default_options[:parser] = customer_parser
+    end
+    
     # Allows making a get request to a url.
     #
     #   class Foo
