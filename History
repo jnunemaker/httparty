@@ -1,6 +1,9 @@
 == 0.4.5 master
 * bug fixes
   * Fixed class-level headers overwritten by cookie management code. Closes #19
+  * Fixed "superclass mismatch for class BlankSlate" error. Closes #20
+* minor updates
+  * Building gem with Jeweler
 
 == 0.4.4 2009-07-19
 * 2 minor update
