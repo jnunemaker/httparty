@@ -1,7 +1,6 @@
-require 'rubygems'
-gem 'rspec', '>= 1.2.8'
-require 'spec'
 require File.join(File.dirname(__FILE__), '..', 'lib', 'httparty')
+gem 'rspec', '>= 1.2.8'
+require 'spec/autorun'
 
 def file_fixture(filename)
   open(File.join(File.dirname(__FILE__), 'fixtures', "#{filename.to_s}")).read
