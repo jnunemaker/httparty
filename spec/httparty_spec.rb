@@ -1,5 +1,11 @@
 require File.expand_path(File.join(File.dirname(__FILE__), 'spec_helper'))
 
+class CustomParser
+  def self.parse(body)
+    return {:sexy => true}
+  end
+end
+
 describe HTTParty do
   before(:each) do
     @klass = Class.new
@@ -14,7 +20,7 @@ describe HTTParty do
     it "should have reader" do
       @klass.base_uri.should == 'http://api.foo.com/v1'
     end
-    
+
     it 'should have writer' do
       @klass.base_uri('http://api.foobar.com')
       @klass.base_uri.should == 'http://api.foobar.com'
@@ -26,18 +32,18 @@ describe HTTParty do
       uri.should == 'http://api.foobar.com'
     end
   end
-  
+
   describe "#normalize_base_uri" do
     it "should add http if not present for non ssl requests" do
       uri = HTTParty.normalize_base_uri('api.foobar.com')
       uri.should == 'http://api.foobar.com'
     end
-    
+
     it "should add https if not present for ssl requests" do
       uri = HTTParty.normalize_base_uri('api.foo.com/v1:443')
       uri.should == 'https://api.foo.com/v1:443'
     end
-    
+
     it "should not remove https for ssl requests" do
       uri = HTTParty.normalize_base_uri('https://api.foo.com/v1:443')
       uri.should == 'https://api.foo.com/v1:443'
@@ -49,7 +55,7 @@ describe HTTParty do
       uri.should == 'http://api.foobar.com'
     end
   end
-  
+
   describe "headers" do
     def expect_headers(header={})
       HTTParty::Request.should_receive(:new) \
@@ -170,47 +176,64 @@ describe HTTParty do
       end
     end
   end
-  
+
   describe "default params" do
     it "should default to empty hash" do
       @klass.default_params.should == {}
     end
-    
+
     it "should be able to be updated" do
       new_defaults = {:foo => 'bar', :baz => 'spax'}
       @klass.default_params new_defaults
       @klass.default_params.should == new_defaults
     end
   end
-  
+
   describe "basic http authentication" do
     it "should work" do
       @klass.basic_auth 'foobar', 'secret'
       @klass.default_options[:basic_auth].should == {:username => 'foobar', :password => 'secret'}
     end
   end
-  
+
+  describe "parser" do
+    before(:each) do
+      @parser = Proc.new{ |data| CustomParser.parse(data) }
+      @klass.parser @parser
+    end
+
+    it "should set parser options" do
+      @klass.default_options[:parser].should == @parser
+    end
+
+    it "should be able parse response with custom parser" do
+      FakeWeb.register_uri(:get, 'http://twitter.com/statuses/public_timeline.xml', :body => 'tweets')
+      custom_parsed_response = @klass.get('http://twitter.com/statuses/public_timeline.xml')
+      custom_parsed_response[:sexy].should == true
+    end
+  end
+
   describe "format" do
     it "should allow xml" do
       @klass.format :xml
       @klass.default_options[:format].should == :xml
     end
-    
+
     it "should allow json" do
       @klass.format :json
       @klass.default_options[:format].should == :json
     end
-    
+
     it "should allow yaml" do
       @klass.format :yaml
       @klass.default_options[:format].should == :yaml
     end
-    
+
     it "should allow plain" do
       @klass.format :plain
       @klass.default_options[:format].should == :plain
     end
-    
+
     it 'should not allow funky format' do
       lambda do
         @klass.format :foobar
@@ -251,7 +274,7 @@ describe HTTParty do
       end.should raise_error(HTTParty::RedirectionTooDeep)
     end
   end
-  
+
   describe "with multiple class definitions" do
     before(:each) do
       @klass.instance_eval do
@@ -272,53 +295,53 @@ describe HTTParty do
       @additional_klass.default_options.should == { :base_uri => 'http://second.com', :default_params => { :two => 2 } }
     end
   end
-  
+
   describe "#get" do
     it "should be able to get html" do
       stub_http_response_with('google.html')
       HTTParty.get('http://www.google.com').should == file_fixture('google.html')
     end
-    
+
     it "should be able parse response type json automatically" do
       stub_http_response_with('twitter.json')
       tweets = HTTParty.get('http://twitter.com/statuses/public_timeline.json')
       tweets.size.should == 20
       tweets.first['user'].should == {
-        "name"              => "Pyk", 
-        "url"               => nil, 
-        "id"                => "7694602", 
-        "description"       => nil, 
-        "protected"         => false, 
-        "screen_name"       => "Pyk", 
-        "followers_count"   => 1, 
-        "location"          => "Opera Plaza, California", 
+        "name"              => "Pyk",
+        "url"               => nil,
+        "id"                => "7694602",
+        "description"       => nil,
+        "protected"         => false,
+        "screen_name"       => "Pyk",
+        "followers_count"   => 1,
+        "location"          => "Opera Plaza, California",
         "profile_image_url" => "http://static.twitter.com/images/default_profile_normal.png"
       }
     end
-    
+
     it "should be able parse response type xml automatically" do
       stub_http_response_with('twitter.xml')
       tweets = HTTParty.get('http://twitter.com/statuses/public_timeline.xml')
       tweets['statuses'].size.should == 20
       tweets['statuses'].first['user'].should == {
-        "name"              => "Magic 8 Bot", 
-        "url"               => nil, 
-        "id"                => "17656026", 
-        "description"       => "ask me a question", 
-        "protected"         => "false", 
-        "screen_name"       => "magic8bot", 
-        "followers_count"   => "90", 
-        "profile_image_url" => "http://s3.amazonaws.com/twitter_production/profile_images/65565851/8ball_large_normal.jpg", 
+        "name"              => "Magic 8 Bot",
+        "url"               => nil,
+        "id"                => "17656026",
+        "description"       => "ask me a question",
+        "protected"         => "false",
+        "screen_name"       => "magic8bot",
+        "followers_count"   => "90",
+        "profile_image_url" => "http://s3.amazonaws.com/twitter_production/profile_images/65565851/8ball_large_normal.jpg",
         "location"          => nil
       }
     end
-    
+
     it "should not get undefined method add_node for nil class for the following xml" do
       stub_http_response_with('undefined_method_add_node_for_nil.xml')
       result = HTTParty.get('http://foobar.com')
       result.should == {"Entities"=>{"href"=>"https://s3-sandbox.parature.com/api/v1/5578/5633/Account", "results"=>"0", "total"=>"0", "page_size"=>"25", "page"=>"1"}}
     end
-    
+
     it "should parse empty response fine" do
       stub_http_response_with('empty.xml')
       result = HTTParty.get('http://foobar.com')
