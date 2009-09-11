@@ -2,7 +2,8 @@
 * bug fixes
   * Fixed class-level headers overwritten by cookie management code. Closes #19
   * Fixed "superclass mismatch for class BlankSlate" error. Closes #20
-* minor updates
+  * Fixed reading files as post data from the command line (vesan)
+* minor enhancements
   * Building gem with Jeweler
 
 == 0.4.4 2009-07-19
