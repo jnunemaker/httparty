@@ -11,7 +11,7 @@ begin
   gem.homepage = "http://httparty.rubyforge.org"
   gem.authors = ["John Nunemaker"]
   gem.add_dependency 'crack', '>= 0.1.1'
-  gem.add_development_dependency "rspec"
+  gem.add_development_dependency "rspec", "1.2.8"
   gem.post_install_message = "When you HTTParty, you must party hard!"
   # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
