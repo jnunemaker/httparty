@@ -41,12 +41,6 @@ module HTTParty
     end
 
     private
-      # def http
-      #   http = Net::HTTP.new(uri.host, uri.port, options[:http_proxyaddr], options[:http_proxyport])
-      #   http.use_ssl = (uri.port == 443)
-      #   http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-      #   http
-      # end
 
       def http
         http = Net::HTTP.new(uri.host, uri.port, options[:http_proxyaddr], options[:http_proxyport])
@@ -58,7 +52,6 @@ module HTTParty
         end
         http
       end
-      
 
       def body
         options[:body].is_a?(Hash) ? options[:body].to_params : options[:body]

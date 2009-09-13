@@ -46,25 +46,26 @@ describe HTTParty::Request do
       @request.send(:setup_raw_request)
       @request.instance_variable_get(:@raw_request)['authorization'].should_not be_nil
     end
-    
-    it "should change timeout when configured (if an Integer)" do
-      @request.send(:http).open_timeout.should be_nil
-      @request.send(:http).read_timeout.should == 60
-      
-      invalid_timeout = "invalid"
-      invalid_timeout.is_a?(Integer).should be_false
-      @request.options[:timeout] = invalid_timeout
-      @request.send(:http).open_timeout.should be_nil
-      @request.send(:http).read_timeout.should == 60
-      
-      timeout = 30
-      timeout.is_a?(Integer).should be_true
-      @request.options[:timeout] = timeout
-      @request.send(:http).open_timeout.should == timeout
-      @request.send(:http).read_timeout.should == timeout
+
+    context "when setting timeout" do
+      it "does nothing if the timeout option is a string" do
+        http = mock("http", :null_object => true)
+        http.should_not_receive(:open_timeout=)
+        http.should_not_receive(:read_timeout=)
+        Net::HTTP.stub(:new => http)
+
+        request = HTTParty::Request.new(Net::HTTP::Get, 'https://foobar.com', {:timeout => "five seconds"})
+        request.send(:http)
+      end
+
+      it "sets the timeout to 5 seconds" do
+        @request.options[:timeout] = 5
+        @request.send(:http).open_timeout.should == 5
+        @request.send(:http).read_timeout.should == 5
+      end
     end
   end
-  
+
   describe '#format_from_mimetype' do
     it 'should handle text/xml' do
       ["text/xml", "text/xml; charset=iso8859-1"].each do |ct|
