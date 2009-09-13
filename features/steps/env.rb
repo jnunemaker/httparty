@@ -8,6 +8,7 @@ Before do
   @host_and_port = "0.0.0.0:#{port}"
   @server = Mongrel::HttpServer.new("0.0.0.0", port)
   @server.run
+  @request_options = {}
 end
 
 After do

@@ -1,6 +1,6 @@
 def basic_mongrel_handler
   Class.new(Mongrel::HttpHandler) do
-    attr_writer :content_type, :response_body, :response_code
+    attr_writer :content_type, :response_body, :response_code, :preprocessor
 
     def initialize
       @content_type = "text/html"
@@ -10,6 +10,7 @@ def basic_mongrel_handler
     end
 
     def process(request, response)
+      instance_eval &@preprocessor if @preprocessor
       reply_with(response, @response_code, @response_body)
     end
 

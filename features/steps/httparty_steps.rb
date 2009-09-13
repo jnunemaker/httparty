@@ -1,7 +1,11 @@
+When /^I set my HTTParty timeout option to (\d+)$/ do |timeout|
+  @request_options[:timeout] = timeout.to_i
+end
+
 When /I call HTTParty#get with '(.*)'$/ do |url|
   begin
-    @response_from_httparty = HTTParty.get("http://#{@host_and_port}#{url}")
-  rescue HTTParty::RedirectionTooDeep => e
+    @response_from_httparty = HTTParty.get("http://#{@host_and_port}#{url}", @request_options)
+  rescue HTTParty::RedirectionTooDeep, Timeout::Error => e
     @exception_from_httparty = e
   end
 end
