@@ -9,10 +9,11 @@ begin
   gem.description = %Q{Makes http fun! Also, makes consuming restful web services dead easy.}
   gem.email = "nunemaker@gmail.com"
   gem.homepage = "http://httparty.rubyforge.org"
-  gem.authors = ["John Nunemaker"]
+  gem.authors = ["John Nunemaker", "Sandro Turriate"]
   gem.add_dependency 'crack', '>= 0.1.1'
   gem.add_development_dependency "rspec", "1.2.8"
   gem.post_install_message = "When you HTTParty, you must party hard!"
+  gem.rubyforge_project = 'httparty'
   # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::RubyforgeTasks.new do |rubyforge|
