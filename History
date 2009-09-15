@@ -1,5 +1,12 @@
-== 0.4.5 2009-08-22
-  * default headers are now correctly passed (sporkd)
+== 0.4.5 2009-09-12
+* bug fixes
+  * Fixed class-level headers overwritten by cookie management code. Closes #19
+  * Fixed "superclass mismatch for class BlankSlate" error. Closes #20
+  * Fixed reading files as post data from the command line (vesan)
+* minor enhancements
+  * Timeout option added; will raise a Timeout::Error after the timeout has elapsed (attack). Closes #17
+    HTTParty.get "http://github.com", :timeout => 1
+  * Building gem with Jeweler
 
 == 0.4.4 2009-07-19
 * 2 minor update

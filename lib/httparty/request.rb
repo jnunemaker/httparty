@@ -41,10 +41,15 @@ module HTTParty
     end
 
     private
+
       def http
         http = Net::HTTP.new(uri.host, uri.port, options[:http_proxyaddr], options[:http_proxyport])
         http.use_ssl = (uri.port == 443)
         http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+        if options[:timeout] && options[:timeout].is_a?(Integer)
+          http.open_timeout = options[:timeout]
+          http.read_timeout = options[:timeout]
+        end
         http
       end
 
@@ -130,6 +135,15 @@ module HTTParty
         end
       end
             
+      def capture_cookies(response)
+        return unless response['Set-Cookie']
+        cookies_hash = HTTParty::CookieHash.new()
+        cookies_hash.add_cookies(options[:headers]['Cookie']) if options[:headers] && options[:headers]['Cookie']
+        cookies_hash.add_cookies(response['Set-Cookie'])
+        options[:headers] ||= {}
+        options[:headers]['Cookie'] = cookies_hash.to_cookie_string
+      end
+      
       def capture_cookies(response)
         return unless response['Set-Cookie']
         cookies_hash = HTTParty::CookieHash.new()

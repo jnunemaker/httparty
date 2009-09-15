@@ -20,7 +20,7 @@ Then /it should return a response with a (\d+) response code/ do |code|
   @response_from_httparty.code.should eql(code.to_i)
 end
 
-Then /it should raise an HTTParty::RedirectionTooDeep exception/ do
+Then /it should raise (?:an|a) ([\w:]+) exception/ do |exception|
   @exception_from_httparty.should_not be_nil
-  @exception_from_httparty.class.should eql(HTTParty::RedirectionTooDeep)
+  @exception_from_httparty.class.name.should eql(exception)
 end

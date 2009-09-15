@@ -1,11 +1,5 @@
 require File.expand_path(File.join(File.dirname(__FILE__), 'spec_helper'))
 
-class CustomParser
-  def self.parse(body)
-    return {:sexy => true}
-  end
-end
-
 describe HTTParty do
   before(:each) do
     @klass = Class.new
@@ -57,35 +51,51 @@ describe HTTParty do
   end
   
   describe "headers" do
-    def expect_header(type, value)
+    def expect_headers(header={})
       HTTParty::Request.should_receive(:new) \
-        .with(anything, anything, hash_including({ :headers => { type => value, "cookie" => "" } })) \
+        .with(anything, anything, hash_including({ :headers => header })) \
         .and_return(mock("mock response", :perform => nil))
     end
-    
+
     it "should default to empty hash" do
       @klass.headers.should == {}
     end
-    
+
     it "should be able to be updated" do
       init_headers = {:foo => 'bar', :baz => 'spax'}
       @klass.headers init_headers
       @klass.headers.should == init_headers
     end
-    
-    describe "when a header is set at the class level" do
-      before(:each) do
-        @klass.headers({ 'Content-Type' => 'application/json' })
+
+    it "uses the class headers when sending a request" do
+      expect_headers(:foo => 'bar')
+      @klass.headers(:foo => 'bar')
+      @klass.get('')
+    end
+
+    it "overwrites class headers when passing in headers" do
+      expect_headers(:baz => 'spax')
+      @klass.headers(:foo => 'bar')
+      @klass.get('', :headers => {:baz => 'spax'})
+    end
+
+    context "with cookies" do
+      it 'utilizes the class-level cookies' do
+        expect_headers(:foo => 'bar', 'cookie' => 'type=snickerdoodle')
+        @klass.headers(:foo => 'bar')
+        @klass.cookies(:type => 'snickerdoodle')
+        @klass.get('')
       end
-      
-      it "should include that header in a get request" do
-        expect_header "Content-Type", "application/json"
-        @klass.get("")
+
+      it 'adds cookies to the headers' do
+        expect_headers(:foo => 'bar', 'cookie' => 'type=snickerdoodle')
+        @klass.headers(:foo => 'bar')
+        @klass.get('', :cookies => {:type => 'snickerdoodle'})
       end
-      
-      it "should include that header in a post request" do
-        expect_header "Content-Type", "application/json"
-        @klass.post("")
+
+      it 'adds optional cookies to the optional headers' do
+        expect_headers(:baz => 'spax', 'cookie' => 'type=snickerdoodle')
+        @klass.get('', :cookies => {:type => 'snickerdoodle'}, :headers => {:baz => 'spax'})
       end
     end
   end
@@ -177,22 +187,6 @@ describe HTTParty do
     it "should work" do
       @klass.basic_auth 'foobar', 'secret'
       @klass.default_options[:basic_auth].should == {:username => 'foobar', :password => 'secret'}
-    end
-  end
-  
-  describe "parser" do
-    before(:each) do
-      @klass.parser Proc.new{ |data| CustomParser.parse(data) }
-    end
-    
-    it "should set parser options" do
-      @klass.default_options[:parser].class.should == Proc
-    end
-
-    it "should be able parse response with custom parser" do
-      stub_http_response_with 'twitter.xml'
-      custom_parsed_response = @klass.get('http://twitter.com/statuses/public_timeline.xml')
-      custom_parsed_response[:sexy].should == true
     end
   end
   

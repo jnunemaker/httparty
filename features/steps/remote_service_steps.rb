@@ -12,6 +12,11 @@ Given /that service is accessed at the path '(.*)'/ do |path|
   @server.register(path, @handler)
 end
 
+Given /^that service takes (\d+) seconds to generate a response$/ do |time|
+  preprocessor = lambda { sleep time.to_i }
+  @handler.preprocessor = preprocessor
+end
+
 Given /the response from the service has a Content-Type of '(.*)'/ do |content_type|
   @handler.content_type = content_type
 end
