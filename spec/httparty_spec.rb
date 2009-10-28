@@ -347,5 +347,36 @@ describe HTTParty do
       result = HTTParty.get('http://foobar.com')
       result.should == nil
     end
+
+    it "should accept http URIs" do
+      stub_http_response_with('google.html')
+      lambda do
+        HTTParty.get('http://google.com')
+      end.should_not raise_error(ArgumentError)
+    end
+
+    it "should accept https URIs" do
+      stub_http_response_with('google.html')
+      lambda do
+        HTTParty.get('https://google.com')
+      end.should_not raise_error(ArgumentError)
+    end
+
+    it "should raise an ArgumentError on URIs that are not http or https" do
+      # No need to stub since this isn't an HTTP request, and it won't be made
+      # anyway.  (In fact, stubbing keeps the URI from being evaluated and
+      # breaks the test.)
+      lambda do
+        HTTParty.get("file:///there_is_no_party_on/my/filesystem")
+      end.should raise_error(ArgumentError)
+    end
+
+    it "should raise an InvalidURIError on URIs that can't be parsed at all" do
+      # Like the previous test, stubbing is not desired.
+      lambda do
+        HTTParty.get("It's the one that says 'Bad URI'")
+      end.should raise_error(URI::InvalidURIError)
+    end
+
   end
 end
