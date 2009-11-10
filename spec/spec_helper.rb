@@ -1,5 +1,5 @@
 require File.join(File.dirname(__FILE__), '..', 'lib', 'httparty')
-gem 'rspec', '1.2.8'
+gem 'rspec', '1.2.9'
 gem 'fakeweb'
 require 'spec/autorun'
 require 'fakeweb'
