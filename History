@@ -1,3 +1,7 @@
+== 0.4.6 master
+* minor enhancements
+  * Register a customized response parser
+
 == 0.4.5 2009-09-12
 * bug fixes
   * Fixed class-level headers overwritten by cookie management code. Closes #19
