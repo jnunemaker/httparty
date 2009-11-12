@@ -1,6 +1,7 @@
 == 0.4.6 master
 * minor enhancements
   * Register a customized response parser
+  * Curl inspired output when using the binary in verbose mode (alexvollmer)
 
 == 0.4.5 2009-09-12
 * bug fixes
