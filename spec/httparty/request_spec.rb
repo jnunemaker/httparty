@@ -46,6 +46,18 @@ describe HTTParty::Request do
       request.send(:http).use_ssl?.should == true
     end
 
+    it "should use a PEM certificate when provided" do
+      http = mock("http", :null_object => true)
+      http.should_receive(:cert=)
+      http.should_receive(:key=)
+      Net::HTTP.stub(:new => http)
+      pem_file = :contents_of_pem_file
+      OpenSSL::X509::Certificate.stub!(:new).with(pem_file)
+      OpenSSL::PKey::RSA.stub!(:new).with(pem_file)
+      @request.options[:pem_file] = pem_file
+      @request.perform
+    end
+
     it "should use basic auth when configured" do
       @request.options[:basic_auth] = {:username => 'foobar', :password => 'secret'}
       @request.send(:setup_raw_request)

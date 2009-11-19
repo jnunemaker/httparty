@@ -56,6 +56,12 @@ module HTTParty
           http.open_timeout = options[:timeout]
           http.read_timeout = options[:timeout]
         end
+
+        if options[:pem_file]
+          http.cert = OpenSSL::X509::Certificate.new(options[:pem_file])
+          http.key = OpenSSL::PKey::RSA.new(options[:pem_file])
+        end
+
         http
       end
 

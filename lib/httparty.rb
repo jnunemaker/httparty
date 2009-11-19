@@ -110,6 +110,16 @@ module HTTParty
       default_options[:format] = f
     end
 
+    # Allows setting a PEM file to be used
+    #
+    #   class Foo
+    #     include HTTParty
+    #     pem_file File.read('/home/user/my.pem')
+    #   end
+    def pem_file(pem_file_contents)
+      default_options[:pem_file] = pem_file_contents
+    end
+
     # Allows setting a custom parser for the response.
     #
     #   class Foo
