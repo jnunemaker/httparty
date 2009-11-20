@@ -46,20 +46,25 @@ describe HTTParty::Request do
       request.send(:http).use_ssl?.should == true
     end
 
-    it "should use a PEM certificate when provided" do
-      pem_file = :contents_of_pem_file
-      cert = mock("OpenSSL::X509::Certificate")
-      key =  mock("OpenSSL::PKey::RSA")
-      OpenSSL::X509::Certificate.stub(:new).with(pem_file).and_return(cert)
-      OpenSSL::PKey::RSA.stub(:new).with(pem_file).and_return(key)
+    context "PEM certificates" do
+      before do
+        OpenSSL::X509::Certificate.stub(:new)
+        OpenSSL::PKey::RSA.stub(:new)
+      end
 
-      http = mock("http", :null_object => true)
-      http.should_receive(:cert=).with(cert)
-      http.should_receive(:key=).with(key)
+      it "should use a PEM certificate when provided" do
+        @request.stub!(:uri).and_return(URI.parse("https://google.com"))
+        pem = :pem_contents
+        cert = mock("OpenSSL::X509::Certificate")
+        key =  mock("OpenSSL::PKey::RSA")
+        OpenSSL::X509::Certificate.should_receive(:new).with(pem).and_return(cert)
+        OpenSSL::PKey::RSA.should_receive(:new).with(pem).and_return(key)
 
-      Net::HTTP.stub(:new => http)
-      @request.options[:pem_file] = pem_file
-      @request.perform
+        @request.options[:pem] = pem
+        pem_http = @request.send(:http)
+        pem_http.cert.should == cert
+        pem_http.key.should == key
+      end
     end
 
     it "should use basic auth when configured" do

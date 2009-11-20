@@ -114,10 +114,10 @@ module HTTParty
     #
     #   class Foo
     #     include HTTParty
-    #     pem_file File.read('/home/user/my.pem')
+    #     pem File.read('/home/user/my.pem')
     #   end
-    def pem_file(pem_file_contents)
-      default_options[:pem_file] = pem_file_contents
+    def pem(pem_contents)
+      default_options[:pem] = pem_contents
     end
 
     # Allows setting a custom parser for the response.
