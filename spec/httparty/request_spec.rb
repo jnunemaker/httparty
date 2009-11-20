@@ -65,6 +65,17 @@ describe HTTParty::Request do
         pem_http.cert.should == cert
         pem_http.key.should == key
       end
+
+      it "does not assign a PEM if scheme is not https" do
+        http = Net::HTTP.new('google.com')
+        http.should_not_receive(:cert=)
+        http.should_not_receive(:key=)
+        Net::HTTP.stub(:new => http)
+
+        request = HTTParty::Request.new(Net::HTTP::Get, 'http://google.com')
+        request.options[:pem] = :pem_contents
+        request.send(:http)
+      end
     end
 
     it "should use basic auth when configured" do

@@ -52,12 +52,13 @@ module HTTParty
         http = Net::HTTP.new(uri.host, uri.port, options[:http_proxyaddr], options[:http_proxyport])
         http.use_ssl = ssl_implied?
         http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+
         if options[:timeout] && options[:timeout].is_a?(Integer)
           http.open_timeout = options[:timeout]
           http.read_timeout = options[:timeout]
         end
 
-        if options[:pem]
+        if options[:pem] && http.use_ssl?
           http.cert = OpenSSL::X509::Certificate.new(options[:pem])
           http.key = OpenSSL::PKey::RSA.new(options[:pem])
         end
