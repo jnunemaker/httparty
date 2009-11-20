@@ -50,7 +50,7 @@ module HTTParty
 
       def http
         http = Net::HTTP.new(uri.host, uri.port, options[:http_proxyaddr], options[:http_proxyport])
-        http.use_ssl = ssl_inferred?
+        http.use_ssl = ssl_implied?
         http.verify_mode = OpenSSL::SSL::VERIFY_NONE
         if options[:timeout] && options[:timeout].is_a?(Integer)
           http.open_timeout = options[:timeout]
@@ -59,7 +59,7 @@ module HTTParty
         http
       end
 
-      def ssl_inferred?
+      def ssl_implied?
         uri.port == 443 || uri.instance_of?(URI::HTTPS)
       end
 
