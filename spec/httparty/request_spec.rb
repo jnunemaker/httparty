@@ -18,7 +18,7 @@ describe HTTParty::Request do
   before do
     @request = HTTParty::Request.new(Net::HTTP::Get, 'http://api.foo.com/v1', :format => :xml)
   end
-  
+
   describe "#format" do
     it "should return the correct parsing format" do
       @request.format.should == :xml
@@ -30,12 +30,12 @@ describe HTTParty::Request do
       request = HTTParty::Request.new(Net::HTTP::Get, 'https://api.foo.com/v1:443')
       request.send(:http).use_ssl?.should == true
     end
-    
+
     it 'should not use ssl for port 80' do
       request = HTTParty::Request.new(Net::HTTP::Get, 'http://foobar.com')
       request.send(:http).use_ssl?.should == false
     end
-    
+
     it "should use ssl for https scheme" do
       request = HTTParty::Request.new(Net::HTTP::Get, 'https://foobar.com')
       request.send(:http).use_ssl?.should == true
@@ -110,7 +110,7 @@ describe HTTParty::Request do
       @request.options[:format] = :xml
       @request.send(:parse_response, xml).should == {'books' => {'book' => {'id' => '1234', 'name' => 'Foo Bar!'}}}
     end
-    
+
     it 'should handle json automatically' do
       json = %q[{"books": {"book": {"name": "Foo Bar!", "id": "1234"}}}]
       @request.options[:format] = :json
@@ -130,7 +130,7 @@ describe HTTParty::Request do
 
       @request.perform.headers.should == { "key" => ["value"] }
     end
-    
+
     describe 'with non-200 responses' do
       it 'should return a valid object for 4xx response' do
         stub_response '<foo><bar>yes</bar></foo>', 401
@@ -156,7 +156,7 @@ describe HTTParty::Request do
     @request.options[:format] = :xml
     @request.perform.should be_nil
   end
-  
+
   it "should not fail for missing mime type" do
     stub_response "Content for you"
     @request.options[:format] = :html
@@ -194,28 +194,28 @@ describe HTTParty::Request do
         @request.http_method = Net::HTTP::Put
         @request.perform.should == {"hash" => {"foo" => "bar"}}
       end
-      
+
       it "should keep track of cookies between redirects" do
         @redirect['Set-Cookie'] = 'foo=bar; name=value; HTTPOnly'
         @request.perform
         @request.options[:headers]['Cookie'].should match(/foo=bar/)
         @request.options[:headers]['Cookie'].should match(/name=value/)
       end
-      
+
       it 'should update cookies with rediects' do
         @request.options[:headers] = {'Cookie'=> 'foo=bar;'}
         @redirect['Set-Cookie'] = 'foo=tar;'
         @request.perform
         @request.options[:headers]['Cookie'].should match(/foo=tar/)
       end
-      
+
       it 'should keep cookies between rediects' do
         @request.options[:headers] = {'Cookie'=> 'keep=me'}
         @redirect['Set-Cookie'] = 'foo=tar;'
         @request.perform
         @request.options[:headers]['Cookie'].should match(/keep=me/)
       end
-      
+
       it 'should make resulting request a get request if it not already' do
         @request.http_method = Net::HTTP::Delete
         @request.perform.should == {"hash" => {"foo" => "bar"}}
