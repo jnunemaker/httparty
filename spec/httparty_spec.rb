@@ -352,20 +352,20 @@ describe HTTParty do
       stub_http_response_with('google.html')
       lambda do
         HTTParty.get('http://google.com')
-      end.should_not raise_error(ArgumentError)
+      end.should_not raise_error(HTTParty::UnsupportedURIScheme)
     end
 
     it "should accept https URIs" do
       stub_http_response_with('google.html')
       lambda do
         HTTParty.get('https://google.com')
-      end.should_not raise_error(ArgumentError)
+      end.should_not raise_error(HTTParty::UnsupportedURIScheme)
     end
 
     it "should raise an ArgumentError on URIs that are not http or https" do
       lambda do
         HTTParty.get("file:///there_is_no_party_on/my/filesystem")
-      end.should raise_error(ArgumentError)
+      end.should raise_error(HTTParty::UnsupportedURIScheme)
     end
 
     it "should raise an InvalidURIError on URIs that can't be parsed at all" do

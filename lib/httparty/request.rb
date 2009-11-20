@@ -30,7 +30,7 @@ module HTTParty
       end
 
       unless SupportedURISchemes.include? new_uri.class
-        raise ArgumentError, "Cannot parse '#{new_uri}' as a supported URI class"
+        raise UnsupportedURIScheme, "'#{new_uri}' Must be HTTP or HTTPS"
       end
 
       new_uri
