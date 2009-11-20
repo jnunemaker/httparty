@@ -47,13 +47,17 @@ describe HTTParty::Request do
     end
 
     it "should use a PEM certificate when provided" do
-      http = mock("http", :null_object => true)
-      http.should_receive(:cert=)
-      http.should_receive(:key=)
-      Net::HTTP.stub(:new => http)
       pem_file = :contents_of_pem_file
-      OpenSSL::X509::Certificate.stub!(:new).with(pem_file)
-      OpenSSL::PKey::RSA.stub!(:new).with(pem_file)
+      cert = mock("OpenSSL::X509::Certificate")
+      key =  mock("OpenSSL::PKey::RSA")
+      OpenSSL::X509::Certificate.stub(:new).with(pem_file).and_return(cert)
+      OpenSSL::PKey::RSA.stub(:new).with(pem_file).and_return(key)
+
+      http = mock("http", :null_object => true)
+      http.should_receive(:cert=).with(cert)
+      http.should_receive(:key=).with(key)
+
+      Net::HTTP.stub(:new => http)
       @request.options[:pem_file] = pem_file
       @request.perform
     end
