@@ -2,6 +2,7 @@
 * minor enhancements
   * Register a customized response parser
   * Curl inspired output when using the binary in verbose mode (alexvollmer)
+  * raise UnsupportedURIScheme when scheme is not HTTP or HTTPS (djspinmonkey)
 
 == 0.4.5 2009-09-12
 * bug fixes
