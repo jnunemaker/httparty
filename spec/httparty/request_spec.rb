@@ -36,8 +36,13 @@ describe HTTParty::Request do
       request.send(:http).use_ssl?.should == false
     end
 
-    it "should use ssl for https scheme" do
+    it "uses ssl for https scheme with default port" do
       request = HTTParty::Request.new(Net::HTTP::Get, 'https://foobar.com')
+      request.send(:http).use_ssl?.should == true
+    end
+
+    it "uses ssl for https scheme regardless of port" do
+      request = HTTParty::Request.new(Net::HTTP::Get, 'https://foobar.com:123456')
       request.send(:http).use_ssl?.should == true
     end
 
