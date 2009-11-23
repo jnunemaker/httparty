@@ -273,6 +273,18 @@ describe HTTParty do
         @klass.put('/foo', :no_follow => true)
       end.should raise_error(HTTParty::RedirectionTooDeep)
     end
+
+    it "should fail with redirected HEAD" do
+      lambda do
+        @klass.head('/foo', :no_follow => true)
+      end.should raise_error(HTTParty::RedirectionTooDeep)
+    end
+
+    it "should fail with redirected OPTIONS" do
+      lambda do
+        @klass.options('/foo', :no_follow => true)
+      end.should raise_error(HTTParty::RedirectionTooDeep)
+    end
   end
 
   describe "with multiple class definitions" do

@@ -3,7 +3,7 @@ require 'uri'
 module HTTParty
 
   class Request #:nodoc:
-    SupportedHTTPMethods = [Net::HTTP::Get, Net::HTTP::Post, Net::HTTP::Put, Net::HTTP::Delete]
+    SupportedHTTPMethods = [Net::HTTP::Get, Net::HTTP::Post, Net::HTTP::Put, Net::HTTP::Delete, Net::HTTP::Head, Net::HTTP::Options]
     SupportedURISchemes  = [URI::HTTP, URI::HTTPS]
 
     attr_accessor :http_method, :path, :options
@@ -169,7 +169,7 @@ module HTTParty
 
       def validate
         raise HTTParty::RedirectionTooDeep, 'HTTP redirects too deep' if options[:limit].to_i <= 0
-        raise ArgumentError, 'only get, post, put and delete methods are supported' unless SupportedHTTPMethods.include?(http_method)
+        raise ArgumentError, 'only get, post, put, delete, head, and options methods are supported' unless SupportedHTTPMethods.include?(http_method)
         raise ArgumentError, ':headers must be a hash' if options[:headers] && !options[:headers].is_a?(Hash)
         raise ArgumentError, ':basic_auth must be a hash' if options[:basic_auth] && !options[:basic_auth].is_a?(Hash)
         raise ArgumentError, ':query must be hash if using HTTP Post' if post? && !options[:query].nil? && !options[:query].is_a?(Hash)
@@ -180,3 +180,4 @@ module HTTParty
       end
   end
 end
+

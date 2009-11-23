@@ -232,6 +232,16 @@ describe HTTParty::Request do
         @request.perform.should == {"hash" => {"foo" => "bar"}}
       end
 
+      it "should be handled by HEAD transparently" do
+        @request.http_method = Net::HTTP::Head
+        @request.perform.should == {"hash" => {"foo" => "bar"}}
+      end
+
+      it "should be handled by OPTIONS transparently" do
+        @request.http_method = Net::HTTP::Options
+        @request.perform.should == {"hash" => {"foo" => "bar"}}
+      end
+
       it "should keep track of cookies between redirects" do
         @redirect['Set-Cookie'] = 'foo=bar; name=value; HTTPOnly'
         @request.perform

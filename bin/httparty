@@ -14,20 +14,20 @@ opts = {
 
 OptionParser.new do |o|
   o.banner = "USAGE: #{$0} [options] [url]"
-  
+
   o.on("-f",
        "--format [FORMAT]",
        "Output format to use instead of pretty-print ruby: " +
        "plain, json or xml") do |f|
     opts[:output_format] = f.downcase.to_sym
   end
-  
+
   o.on("-a",
        "--action [ACTION]",
-       "HTTP action: get (default), post, put or delete") do |a|
+       "HTTP action: get (default), post, put, delete, head, or options") do |a|
     opts[:action] = a.downcase.to_sym
   end
-  
+
   o.on("-d",
        "--data [BODY]",
        "Data to put in request body (prefix with '@' for file)") do |d|
@@ -37,23 +37,23 @@ OptionParser.new do |o|
       opts[:data] = d
     end
   end
-  
+
   o.on("-H", "--header [NAME=VALUE]", "Additional HTTP headers in NAME=VALUE form") do |h|
     abort "Invalid header specification, should be Name:Value" unless h =~ /.+:.+/
     name, value = h.split(':')
     opts[:headers][name.strip] = value.strip
   end
-  
+
   o.on("-v", "--verbose", "If set, print verbose output") do |v|
     opts[:verbose] = true
   end
-  
+
   o.on("-u", "--user [CREDS]", "Use basic authentication. Value should be user:password") do |u|
     abort "Invalid credentials format. Must be user:password" unless u =~ /.+:.+/
     user, password = u.split(':')
     opts[:basic_auth] = { :username => user, :password => password }
   end
-  
+
   o.on("-h", "--help", "Show help documentation") do |h|
     puts o
     exit
