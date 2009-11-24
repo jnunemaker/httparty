@@ -308,6 +308,27 @@ describe HTTParty do
     end
   end
 
+  describe "two child classes inheriting from one parent" do
+    before(:each) do
+      @parent = Class.new do
+        include HTTParty
+      end
+
+      @child1 = Class.new(@parent)
+      @child2 = Class.new(@parent)
+    end
+
+    it "does not modify each others inherited attributes" do
+      @child1.default_params :joe => "alive"
+      @child2.default_params :joe => "dead"
+
+      @child1.default_options.should == { :default_params => {:joe => "alive"} }
+      @child2.default_options.should == { :default_params => {:joe => "dead"} }
+
+      @parent.default_options.should == { }
+    end
+  end
+
   describe "#get" do
     it "should be able to get html" do
       stub_http_response_with('google.html')
