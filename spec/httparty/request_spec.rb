@@ -52,29 +52,51 @@ describe HTTParty::Request do
         OpenSSL::PKey::RSA.stub(:new)
       end
 
-      it "should use a PEM certificate when provided" do
-        @request.stub!(:uri).and_return(URI.parse("https://google.com"))
-        pem = :pem_contents
-        cert = mock("OpenSSL::X509::Certificate")
-        key =  mock("OpenSSL::PKey::RSA")
-        OpenSSL::X509::Certificate.should_receive(:new).with(pem).and_return(cert)
-        OpenSSL::PKey::RSA.should_receive(:new).with(pem).and_return(key)
+      context "when scheme is https" do
+        before do
+          @request.stub!(:uri).and_return(URI.parse("https://google.com"))
+          pem = :pem_contents
+          @cert = mock("OpenSSL::X509::Certificate")
+          @key =  mock("OpenSSL::PKey::RSA")
+          OpenSSL::X509::Certificate.should_receive(:new).with(pem).and_return(@cert)
+          OpenSSL::PKey::RSA.should_receive(:new).with(pem).and_return(@key)
 
-        @request.options[:pem] = pem
-        pem_http = @request.send(:http)
-        pem_http.cert.should == cert
-        pem_http.key.should == key
+          @request.options[:pem] = pem
+          @pem_http = @request.send(:http)
+        end
+
+        it "should use a PEM certificate when provided" do
+          @pem_http.cert.should == @cert
+          @pem_http.key.should == @key
+        end
+
+        it "should verify the certificate when provided" do
+          @pem_http = @request.send(:http)
+          @pem_http.verify_mode.should == OpenSSL::SSL::VERIFY_PEER
+        end
       end
 
-      it "does not assign a PEM if scheme is not https" do
-        http = Net::HTTP.new('google.com')
-        http.should_not_receive(:cert=)
-        http.should_not_receive(:key=)
-        Net::HTTP.stub(:new => http)
+      context "when scheme is not https" do
+        it "does not assign a PEM" do
+          http = Net::HTTP.new('google.com')
+          http.should_not_receive(:cert=)
+          http.should_not_receive(:key=)
+          Net::HTTP.stub(:new => http)
 
-        request = HTTParty::Request.new(Net::HTTP::Get, 'http://google.com')
-        request.options[:pem] = :pem_contents
-        request.send(:http)
+          request = HTTParty::Request.new(Net::HTTP::Get, 'http://google.com')
+          request.options[:pem] = :pem_contents
+          request.send(:http)
+        end
+
+        it "should not verify a certificate if scheme is not https" do
+          http = Net::HTTP.new('google.com')
+          Net::HTTP.stub(:new => http)
+
+          request = HTTParty::Request.new(Net::HTTP::Get, 'http://google.com')
+          request.options[:pem] = :pem_contents
+          http = request.send(:http)
+          http.verify_mode.should == OpenSSL::SSL::VERIFY_NONE
+        end
       end
     end
 
