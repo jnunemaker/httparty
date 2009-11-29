@@ -5,6 +5,7 @@
   * raise UnsupportedURIScheme when scheme is not HTTP or HTTPS (djspinmonkey)
   * Allow SSL for ports other than 443 when scheme is HTTPS (stefankroes)
   * Accept PEM certificates via HTTParty#pem (chrislo)
+  * Support HEAD and OPTION verbs (grempe)
 
 == 0.4.5 2009-09-12
 * bug fixes
