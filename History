@@ -6,6 +6,7 @@
   * Allow SSL for ports other than 443 when scheme is HTTPS (stefankroes)
   * Accept PEM certificates via HTTParty#pem (chrislo)
   * Support HEAD and OPTION verbs (grempe)
+  * Verify SSL certificates when providing a PEM file (collectiveidea/danielmorrison)
 
 == 0.4.5 2009-09-12
 * bug fixes
