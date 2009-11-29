@@ -1,4 +1,6 @@
 == 0.4.6 master
+* bug fixes
+  * inheritable attributes no longer mutable by subclasses (yyyc514)
 * minor enhancements
   * Register a customized response parser
   * Curl inspired output when using the binary in verbose mode (alexvollmer)
