@@ -1,5 +1,5 @@
 module HTTParty
-  class Response < BasicObject #:nodoc:
+  class Response < HTTParty::BasicObject #:nodoc:
     attr_accessor :body, :code, :message, :headers
     attr_reader :delegate
 
