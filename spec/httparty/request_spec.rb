@@ -19,6 +19,19 @@ describe HTTParty::Request do
     @request = HTTParty::Request.new(Net::HTTP::Get, 'http://api.foo.com/v1', :format => :xml)
   end
 
+  describe "initialization" do
+    it "sets parser to HTTParty::Parser" do
+      request = HTTParty::Request.new(Net::HTTP::Get, 'http://google.com')
+      request.parser.should == HTTParty::Parser
+    end
+
+    it "sets parser to the optional parser" do
+      my_parser = lambda {}
+      request = HTTParty::Request.new(Net::HTTP::Get, 'http://google.com', :parser => my_parser)
+      request.parser.should == my_parser
+    end
+  end
+
   describe "#format" do
     it "should return the correct parsing format" do
       @request.format.should == :xml
@@ -160,6 +173,15 @@ describe HTTParty::Request do
       ["application/javascript", "application/javascript; charset=iso8859-1"].each do |ct|
         @request.send(:format_from_mimetype, ct).should == :json
       end
+    end
+
+    it "returns nil for an unrecognized mimetype" do
+      @request.send(:format_from_mimetype, "application/atom+xml").should be_nil
+    end
+
+    it "returns nil when using a default parser" do
+      @request.options[:parser] = lambda {}
+      @request.send(:format_from_mimetype, "text/json").should be_nil
     end
   end
 

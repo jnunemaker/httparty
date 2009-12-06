@@ -1,8 +1,13 @@
 == 0.4.6 master
 * bug fixes
   * inheritable attributes no longer mutable by subclasses (yyyc514)
+
+* major enhancements
+  * Custom Parsers via class or proc
+  * Deprecation warning on HTTParty::AllowedFormats
+    moved to HTTParty::Parser::SupportedFormats
+
 * minor enhancements
-  * Register a customized response parser
   * Curl inspired output when using the binary in verbose mode (alexvollmer)
   * raise UnsupportedURIScheme when scheme is not HTTP or HTTPS (djspinmonkey)
   * Allow SSL for ports other than 443 when scheme is HTTPS (stefankroes)

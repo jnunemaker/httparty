@@ -12,6 +12,20 @@ describe HTTParty do
     @klass.instance_eval { include HTTParty }
   end
 
+  describe "AllowedFormats deprecated" do
+    before do
+      Kernel.stub(:warn)
+    end
+    it "warns with a deprecation message" do
+      Kernel.should_receive(:warn).with("Deprecated: Use HTTParty::Parser::SupportedFormats")
+      HTTParty::AllowedFormats
+    end
+
+    it "returns HTTPart::Parser::SupportedFormats" do
+      HTTParty::AllowedFormats.should == HTTParty::Parser::SupportedFormats
+    end
+  end
+
   describe "base uri" do
     before(:each) do
       @klass.base_uri('api.foo.com/v1')
@@ -197,19 +211,37 @@ describe HTTParty do
   end
 
   describe "parser" do
-    before(:each) do
-      @parser = Proc.new{ |data| CustomParser.parse(data) }
-      @klass.parser @parser
+    let(:parser) do
+      Proc.new{ |data, format| CustomParser.parse(data) }
     end
 
     it "should set parser options" do
-      @klass.default_options[:parser].should == @parser
+      @klass.parser parser
+      @klass.default_options[:parser].should == parser
     end
 
     it "should be able parse response with custom parser" do
+      @klass.parser parser
       FakeWeb.register_uri(:get, 'http://twitter.com/statuses/public_timeline.xml', :body => 'tweets')
       custom_parsed_response = @klass.get('http://twitter.com/statuses/public_timeline.xml')
       custom_parsed_response[:sexy].should == true
+    end
+
+    it "raises UnsupportedFormat when the parser cannot handle the format" do
+      @klass.format :json
+      class MyParser < HTTParty::Parser
+        SupportedFormats = {}
+      end
+      expect do
+        @klass.parser MyParser
+      end.to raise_error(HTTParty::UnsupportedFormat)
+    end
+
+    it 'does not validate format whe custom parser is a proc' do
+      expect do
+        @klass.format :json
+        @klass.parser lambda {|body, format|}
+      end.to_not raise_error(HTTParty::UnsupportedFormat)
     end
   end
 
@@ -243,9 +275,21 @@ describe HTTParty do
     it 'should only print each format once with an exception' do
       lambda do
         @klass.format :foobar
-      end.should raise_error(HTTParty::UnsupportedFormat, "Must be one of: html, json, plain, xml, yaml")
+      end.should raise_error(HTTParty::UnsupportedFormat, "':foobar' Must be one of: html, json, plain, xml, yaml")
     end
 
+    it 'sets the default parser' do
+      @klass.default_options[:parser].should be_nil
+      @klass.format :json
+      @klass.default_options[:parser].should == HTTParty::Parser
+    end
+
+    it 'does not reset parser to the default parser' do
+      my_parser = lambda {}
+      @klass.parser my_parser
+      @klass.format :json
+      @klass.parser.should == my_parser
+    end
   end
 
   describe "with explicit override of automatic redirect handling" do
@@ -378,7 +422,7 @@ describe HTTParty do
     it "should parse empty response fine" do
       stub_http_response_with('empty.xml')
       result = HTTParty.get('http://foobar.com')
-      result.should == nil
+      result.should be_nil
     end
 
     it "should accept http URIs" do

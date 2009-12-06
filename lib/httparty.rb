@@ -11,19 +11,18 @@ require dir + 'httparty/module_inheritable_attributes'
 require dir + 'httparty/cookie_hash'
 
 module HTTParty
+  module AllowedFormatsDeprecation
+    def const_missing(const)
+      if const.to_s =~ /AllowedFormats$/
+        Kernel.warn("Deprecated: Use HTTParty::Parser::SupportedFormats")
+        HTTParty::Parser::SupportedFormats
+      else
+        super
+      end
+    end
+  end
 
-  AllowedFormats = {
-    'text/xml'               => :xml,
-    'application/xml'        => :xml,
-    'application/json'       => :json,
-    'text/json'              => :json,
-    'application/javascript' => :json,
-    'text/javascript'        => :json,
-    'text/html'              => :html,
-    'application/x-yaml'     => :yaml,
-    'text/yaml'              => :yaml,
-    'text/plain'             => :plain
-  } unless defined?(AllowedFormats)
+  extend AllowedFormatsDeprecation
 
   def self.included(base)
     base.extend ClassMethods
@@ -35,6 +34,8 @@ module HTTParty
   end
 
   module ClassMethods
+    extend AllowedFormatsDeprecation
+
     # Allows setting http proxy information to be used
     #
     #   class Foo
@@ -105,9 +106,14 @@ module HTTParty
     #     include HTTParty
     #     format :json
     #   end
-    def format(f)
-      raise UnsupportedFormat, "Must be one of: #{AllowedFormats.values.map { |v| v.to_s }.uniq.sort.join(', ')}" unless AllowedFormats.value?(f)
-      default_options[:format] = f
+    def format(f = nil)
+      if f.nil?
+        default_options[:format]
+      else
+        parser(Parser) if parser.nil?
+        default_options[:format] = f
+        validate_format
+      end
     end
 
     # Allows setting a PEM file to be used
@@ -126,8 +132,13 @@ module HTTParty
     #     include HTTParty
     #     parser Proc.new {|data| ...}
     #   end
-    def parser(customer_parser)
-      default_options[:parser] = customer_parser
+    def parser(customer_parser = nil)
+      if customer_parser.nil?
+        default_options[:parser]
+      else
+        default_options[:parser] = customer_parser
+        validate_format
+      end
     end
 
     # Allows making a get request to a url.
@@ -183,6 +194,7 @@ module HTTParty
     end
 
     private
+
       def perform_request(http_method, path, options) #:nodoc:
         options = default_options.dup.merge(options)
         process_cookies(options)
@@ -193,6 +205,12 @@ module HTTParty
         return unless options[:cookies] || default_cookies.any?
         options[:headers] ||= headers.dup
         options[:headers]["cookie"] = cookies.merge(options.delete(:cookies) || {}).to_cookie_string
+      end
+
+      def validate_format
+        if format && parser.respond_to?(:supports_format?) && !parser.supports_format?(format)
+          raise UnsupportedFormat, "'#{format.inspect}' Must be one of: #{parser.supported_formats.map{|f| f.to_s}.sort.join(', ')}"
+        end
       end
   end
 
@@ -239,6 +257,7 @@ end
 
 require dir + 'httparty/core_extensions'
 require dir + 'httparty/exceptions'
+require dir + 'httparty/parser'
 require dir + 'httparty/request'
 require dir + 'httparty/response'
 

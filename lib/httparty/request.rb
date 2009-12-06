@@ -1,9 +1,16 @@
 require 'uri'
 
 module HTTParty
-
   class Request #:nodoc:
-    SupportedHTTPMethods = [Net::HTTP::Get, Net::HTTP::Post, Net::HTTP::Put, Net::HTTP::Delete, Net::HTTP::Head, Net::HTTP::Options]
+    SupportedHTTPMethods = [
+      Net::HTTP::Get,
+      Net::HTTP::Post,
+      Net::HTTP::Put,
+      Net::HTTP::Delete,
+      Net::HTTP::Head,
+      Net::HTTP::Options
+    ]
+
     SupportedURISchemes  = [URI::HTTP, URI::HTTPS]
 
     attr_accessor :http_method, :path, :options
@@ -14,6 +21,7 @@ module HTTParty
       self.options = {
         :limit => o.delete(:no_follow) ? 0 : 5,
         :default_params => {},
+        :parser => Parser
       }.merge(o)
     end
 
@@ -39,6 +47,11 @@ module HTTParty
     def format
       options[:format]
     end
+
+    def parser
+      options[:parser]
+    end
+
 
     def perform
       validate
@@ -126,31 +139,12 @@ module HTTParty
             capture_cookies(response)
             perform
           else
-            parsed_response = parse_response(response.body)
-            Response.new(parsed_response, response.body, response.code, response.message, response.to_hash)
+            Response.new(parse_response(response.body), response.body, response.code, response.message, response.to_hash)
           end
       end
 
       def parse_response(body)
-        return nil if body.nil? or body.empty?
-        if options[:parser].blank?
-          case format
-            when :xml
-              Crack::XML.parse(body)
-            when :json
-              Crack::JSON.parse(body)
-            when :yaml
-              YAML::load(body)
-            else
-              body
-            end
-        else
-          if options[:parser].is_a?(Proc)
-            options[:parser].call(body)
-          else
-            body
-          end
-        end
+        parser.call(body, format)
       end
 
       def capture_cookies(response)
@@ -162,11 +156,13 @@ module HTTParty
         options[:headers]['Cookie'] = cookies_hash.to_cookie_string
       end
 
-      # Uses the HTTP Content-Type header to determine the format of the response
-      # It compares the MIME type returned to the types stored in the AllowedFormats hash
+      # Uses the HTTP Content-Type header to determine the format of the
+      # response It compares the MIME type returned to the types stored in the
+      # SupportedFormats hash
       def format_from_mimetype(mimetype)
-        return nil if mimetype.nil?
-        AllowedFormats.each { |k, v| return v if mimetype.include?(k) }
+        if mimetype && parser.respond_to?(:format_from_mimetype)
+          parser.format_from_mimetype(mimetype)
+        end
       end
 
       def validate
