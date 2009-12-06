@@ -1,6 +1,7 @@
 == 0.4.6 master
 * bug fixes
   * inheritable attributes no longer mutable by subclasses (yyyc514)
+  * namespace BasicObject within HTTParty to reduce class name collisions (eric)
 
 * major enhancements
   * Custom Parsers via class or proc
