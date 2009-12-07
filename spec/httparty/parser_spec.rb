@@ -27,6 +27,13 @@ describe HTTParty::Parser do
     it "returns the SupportedFormats constant" do
       HTTParty::Parser.formats.should == HTTParty::Parser::SupportedFormats
     end
+
+    it "returns the SupportedFormats constant for subclasses" do
+      class MyParser < HTTParty::Parser
+        SupportedFormats = {"application/atom+xml" => :atom}
+      end
+      MyParser.formats.should == {"application/atom+xml" => :atom}
+    end
   end
 
   describe ".format_from_mimetype" do
