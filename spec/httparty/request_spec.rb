@@ -232,6 +232,13 @@ describe HTTParty::Request do
     end
 
     describe 'with non-200 responses' do
+      it 'should return a valid object for 304 not modified' do
+        stub_response '', 304
+        resp = @request.perform
+        resp.code.should == 304
+        resp.body.should == ""  # or nil?
+      end
+
       it 'should return a valid object for 4xx response' do
         stub_response '<foo><bar>yes</bar></foo>', 401
         resp = @request.perform
@@ -251,10 +258,12 @@ describe HTTParty::Request do
   end
 
   it "should not attempt to parse empty responses" do
-    stub_response "", 204
+    [204, 304].each do |code|
+      stub_response "", code
 
-    @request.options[:format] = :xml
-    @request.perform.should be_nil
+      @request.options[:format] = :xml
+      @request.perform.should be_nil
+    end
   end
 
   it "should not fail for missing mime type" do
