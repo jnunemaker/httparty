@@ -135,7 +135,12 @@ module HTTParty
       # Raises exception Net::XXX (http error code) if an http error occured
       def handle_response(response)
         case response
-          when Net::HTTPRedirection
+        when Net::HTTPMultipleChoice,              # 300
+          Net::HTTPMovedPermanently,               # 301
+          Net::HTTPFound,                          # 302
+          Net::HTTPSeeOther,                       # 303
+          Net::HTTPUseProxy,                       # 305
+          Net::HTTPTemporaryRedirect
             options[:limit] -= 1
             self.path = response['location']
             @redirect = true
