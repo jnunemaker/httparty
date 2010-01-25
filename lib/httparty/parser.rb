@@ -58,6 +58,7 @@ module HTTParty
     # @return [Symbol] e.g. :json
     attr_reader :format
 
+    # Instantiate the parser and call #parse.
     # @param [String] body the response body
     # @param [Symbol] format the response format
     # @return parsed response
