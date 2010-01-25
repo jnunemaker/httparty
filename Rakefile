@@ -75,3 +75,11 @@ desc 'Upload website files to rubyforge'
 task :website do
   sh %{rsync -av website/ jnunemaker@rubyforge.org:/var/www/gforge-projects/httparty}
 end
+
+begin
+  require 'yard'
+  YARD::Rake::YardocTask.new do |t|
+    t.options = ['--verbose']
+  end
+rescue LoadError
+end
