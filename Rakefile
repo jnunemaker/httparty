@@ -68,6 +68,7 @@ Rake::RDocTask.new do |rdoc|
   rdoc.title = "httparty #{version}"
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
+  rdoc.rdoc_files.include('lib/httparty.rb')
 end
 
 desc 'Upload website files to rubyforge'
