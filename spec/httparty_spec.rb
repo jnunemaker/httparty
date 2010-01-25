@@ -203,6 +203,18 @@ describe HTTParty do
     end
   end
 
+  describe "debug_output" do
+    it "stores the given stream as a default_option" do
+      @klass.debug_output $stdout
+      @klass.default_options[:debug_output].should == $stdout
+    end
+
+    it "stores the $stderr stream by default" do
+      @klass.debug_output
+      @klass.default_options[:debug_output].should == $stderr
+    end
+  end
+
   describe "basic http authentication" do
     it "should work" do
       @klass.basic_auth 'foobar', 'secret'

@@ -82,6 +82,17 @@ module HTTParty
       default_options[:default_params].merge!(h)
     end
 
+    # Set an output stream for debugging, defaults to $stderr.
+    # The output stream is passed on to Net::HTTP#set_debug_output.
+    #
+    #   class Foo
+    #     include HTTParty
+    #     debug_output $stderr
+    #   end
+    def debug_output(stream = $stderr)
+      default_options[:debug_output] = stream
+    end
+
     # Allows setting a base uri to be used for each request.
     #
     #   class Foo

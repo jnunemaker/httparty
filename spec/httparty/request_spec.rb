@@ -111,6 +111,25 @@ describe HTTParty::Request do
           http.verify_mode.should == OpenSSL::SSL::VERIFY_NONE
         end
       end
+
+      context "debugging" do
+        before do
+          @http = Net::HTTP.new('google.com')
+          Net::HTTP.stub(:new => @http)
+          @request = HTTParty::Request.new(Net::HTTP::Get, 'http://google.com')
+        end
+
+        it "calls #set_debug_output when the option is provided" do
+          @request.options[:debug_output] = $stderr
+          @http.should_receive(:set_debug_output).with($stderr)
+          @request.send(:http)
+        end
+
+        it "does not set_debug_output when the option is not provided" do
+          @http.should_not_receive(:set_debug_output)
+          @request.send(:http)
+        end
+      end
     end
 
     it "should use basic auth when configured" do
