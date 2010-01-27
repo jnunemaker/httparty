@@ -46,6 +46,15 @@ describe HTTParty::Request do
     end
   end
 
+  describe "#uri" do
+    context "query strings" do
+      it "does not add an empty query string when default_params are blank" do
+        @request.options[:default_params] = {}
+        @request.uri.query.should be_nil
+      end
+    end
+  end
+
   describe 'http' do
     it "should use ssl for port 443" do
       request = HTTParty::Request.new(Net::HTTP::Get, 'https://api.foo.com/v1:443')

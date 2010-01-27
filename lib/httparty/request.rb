@@ -125,7 +125,7 @@ module HTTParty
         if options[:query].is_a?(Hash)
           query_string_parts << options[:default_params].merge(options[:query]).to_params
         else
-          query_string_parts << options[:default_params].to_params unless options[:default_params].nil?
+          query_string_parts << options[:default_params].to_params unless options[:default_params].empty?
           query_string_parts << options[:query] unless options[:query].nil?
         end
 

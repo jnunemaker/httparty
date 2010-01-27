@@ -2,6 +2,8 @@
 * bug fixes
   * Handle 304 response correctly by returning the HTTParty::Response object instead of redirecting (seth and hellvinz)
   * Only redirect 300 responses if the header contains a Location
+  * Don't append empty query strings to the uri. Closes #31
+
 * minor enhancements
   * HTTParty#debug_output prints debugging information for the current request (iwarshak)
 
@@ -28,6 +30,7 @@
   * Fixed class-level headers overwritten by cookie management code. Closes #19
   * Fixed "superclass mismatch for class BlankSlate" error. Closes #20
   * Fixed reading files as post data from the command line (vesan)
+
 * minor enhancements
   * Timeout option added; will raise a Timeout::Error after the timeout has elapsed (attack). Closes #17
     HTTParty.get "http://github.com", :timeout => 1
