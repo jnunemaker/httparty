@@ -368,12 +368,13 @@ describe HTTParty::Request do
       end
     end
   end
-end
 
-describe HTTParty::Request, "with POST http method" do
-  it "should raise argument error if query is not a hash" do
-    lambda {
-      HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', :format => :xml, :query => 'astring').perform
-    }.should raise_error(ArgumentError)
+  context "with POST http method" do
+    it "should raise argument error if query is not a hash" do
+      lambda {
+        HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', :format => :xml, :query => 'astring').perform
+      }.should raise_error(ArgumentError)
+    end
   end
 end
+
