@@ -1,4 +1,7 @@
 == 0.5.1 (master)
+* bug fixes
+  * Handle 304 response correctly by returning the HTTParty::Response object instead of redirecting (seth and hellvinz)
+  * Only redirect 300 responses if the header contains a Location
 * minor enhancements
   * HTTParty#debug_output prints debugging information for the current request (iwarshak)
 
