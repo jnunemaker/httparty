@@ -143,11 +143,11 @@ module HTTParty
     #     include HTTParty
     #     parser Proc.new {|data| ...}
     #   end
-    def parser(customer_parser = nil)
-      if customer_parser.nil?
+    def parser(custom_parser = nil)
+      if custom_parser.nil?
         default_options[:parser]
       else
-        default_options[:parser] = customer_parser
+        default_options[:parser] = custom_parser
         validate_format
       end
     end
