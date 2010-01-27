@@ -38,6 +38,14 @@ describe HTTParty::Request do
     end
   end
 
+  context "options" do
+    it "should use basic auth when configured" do
+      @request.options[:basic_auth] = {:username => 'foobar', :password => 'secret'}
+      @request.send(:setup_raw_request)
+      @request.instance_variable_get(:@raw_request)['authorization'].should_not be_nil
+    end
+  end
+
   describe 'http' do
     it "should use ssl for port 443" do
       request = HTTParty::Request.new(Net::HTTP::Get, 'https://api.foo.com/v1:443')
@@ -130,12 +138,6 @@ describe HTTParty::Request do
           @request.send(:http)
         end
       end
-    end
-
-    it "should use basic auth when configured" do
-      @request.options[:basic_auth] = {:username => 'foobar', :password => 'secret'}
-      @request.send(:setup_raw_request)
-      @request.instance_variable_get(:@raw_request)['authorization'].should_not be_nil
     end
 
     context "when setting timeout" do
