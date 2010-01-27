@@ -232,11 +232,27 @@ describe HTTParty::Request do
     end
 
     describe 'with non-200 responses' do
-      it 'should return a valid object for 304 not modified' do
-        stub_response '', 304
-        resp = @request.perform
-        resp.code.should == 304
-        resp.body.should == ""  # or nil?
+      context "3xx responses" do
+        it 'returns a valid object for 304 not modified' do
+          stub_response '', 304
+          resp = @request.perform
+          resp.code.should == 304
+          resp.body.should == ''
+          resp.should be_nil
+        end
+
+        it "redirects if a 300 contains a location header" do
+          redirect = stub_response '', 300
+          redirect['location'] = 'http://foo.com/foo'
+          ok = stub_response('<hash><foo>bar</foo></hash>', 200)
+          @http.stub!(:request).and_return(redirect, ok)
+          @request.perform.should == {"hash" => {"foo" => "bar"}}
+        end
+
+        it "returns the Net::HTTP response if the 300 does not contain a location header" do
+          net_response = stub_response '', 300
+          @request.perform.should be_kind_of(Net::HTTPMultipleChoice)
+        end
       end
 
       it 'should return a valid object for 4xx response' do

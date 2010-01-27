@@ -141,6 +141,7 @@ module HTTParty
           Net::HTTPSeeOther,                       # 303
           Net::HTTPUseProxy,                       # 305
           Net::HTTPTemporaryRedirect
+          if response.key?('location')
             options[:limit] -= 1
             self.path = response['location']
             @redirect = true
@@ -148,8 +149,11 @@ module HTTParty
             capture_cookies(response)
             perform
           else
-            Response.new(parse_response(response.body), response.body, response.code, response.message, response.to_hash)
+            response
           end
+        else
+          Response.new(parse_response(response.body), response.body, response.code, response.message, response.to_hash)
+        end
       end
 
       def parse_response(body)
