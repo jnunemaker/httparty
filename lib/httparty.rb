@@ -127,6 +127,29 @@ module HTTParty
       end
     end
 
+    # Declare whether or not to follow redirects.  When true, an
+    # {HTTParty::RedirectionTooDeep} error will raise upon encountering a
+    # redirect. You can then gain access to the response object via
+    # HTTParty::RedirectionTooDeep#response.
+    #
+    # @see HTTParty::ResponseError#response
+    #
+    # @example
+    #   class Foo
+    #     include HTTParty
+    #     base_uri 'http://google.com'
+    #     no_follow true
+    #   end
+    #
+    #   begin
+    #     Foo.get('/')
+    #   rescue HTTParty::RedirectionTooDeep => e
+    #     puts e.response.body
+    #   end
+    def no_follow(value = false)
+      default_options[:no_follow] = value
+    end
+
     # Allows setting a PEM file to be used
     #
     #   class Foo

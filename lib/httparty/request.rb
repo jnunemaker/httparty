@@ -13,13 +13,13 @@ module HTTParty
 
     SupportedURISchemes  = [URI::HTTP, URI::HTTPS]
 
-    attr_accessor :http_method, :path, :options
+    attr_accessor :http_method, :path, :options, :last_response
 
     def initialize(http_method, path, o={})
       self.http_method = http_method
       self.path = path
       self.options = {
-        :limit => o.delete(:no_follow) ? 0 : 5,
+        :limit => o.delete(:no_follow) ? 1 : 5,
         :default_params => {},
         :parser => Parser
       }.merge(o)
@@ -56,7 +56,8 @@ module HTTParty
     def perform
       validate
       setup_raw_request
-      handle_response(get_response)
+      get_response
+      handle_response
     end
 
     private
@@ -113,9 +114,8 @@ module HTTParty
       end
 
       def get_response
-        response = perform_actual_request
-        options[:format] ||= format_from_mimetype(response['content-type'])
-        response
+        self.last_response = perform_actual_request
+        options[:format] ||= format_from_mimetype(last_response['content-type'])
       end
 
       def query_string(uri)
@@ -133,26 +133,26 @@ module HTTParty
       end
 
       # Raises exception Net::XXX (http error code) if an http error occured
-      def handle_response(response)
-        case response
+      def handle_response
+        case last_response
         when Net::HTTPMultipleChoice,              # 300
           Net::HTTPMovedPermanently,               # 301
           Net::HTTPFound,                          # 302
           Net::HTTPSeeOther,                       # 303
           Net::HTTPUseProxy,                       # 305
           Net::HTTPTemporaryRedirect
-          if response.key?('location')
+          if last_response.key?('location')
             options[:limit] -= 1
-            self.path = response['location']
+            self.path = last_response['location']
             @redirect = true
             self.http_method = Net::HTTP::Get
-            capture_cookies(response)
+            capture_cookies(last_response)
             perform
           else
-            response
+            last_response
           end
         else
-          Response.new(parse_response(response.body), response.body, response.code, response.message, response.to_hash)
+          Response.new(parse_response(last_response.body), last_response.body, last_response.code, last_response.message, last_response.to_hash)
         end
       end
 
@@ -179,7 +179,7 @@ module HTTParty
       end
 
       def validate
-        raise HTTParty::RedirectionTooDeep, 'HTTP redirects too deep' if options[:limit].to_i <= 0
+        raise HTTParty::RedirectionTooDeep.new(last_response), 'HTTP redirects too deep' if options[:limit].to_i <= 0
         raise ArgumentError, 'only get, post, put, delete, head, and options methods are supported' unless SupportedHTTPMethods.include?(http_method)
         raise ArgumentError, ':headers must be a hash' if options[:headers] && !options[:headers].is_a?(Hash)
         raise ArgumentError, ':basic_auth must be a hash' if options[:basic_auth] && !options[:basic_auth].is_a?(Hash)
