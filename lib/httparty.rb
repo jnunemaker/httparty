@@ -184,18 +184,22 @@ module HTTParty
       perform_request Net::HTTP::Post, path, options
     end
 
+    # Perform a PUT request to a path
     def put(path, options={})
       perform_request Net::HTTP::Put, path, options
     end
 
+    # Perform a DELETE request to a path
     def delete(path, options={})
       perform_request Net::HTTP::Delete, path, options
     end
 
+    # Perform a HEAD request to a path
     def head(path, options={})
       perform_request Net::HTTP::Head, path, options
     end
 
+    # Perform an OPTIONS request to a path
     def options(path, options={})
       perform_request Net::HTTP::Options, path, options
     end
