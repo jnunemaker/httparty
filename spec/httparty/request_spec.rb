@@ -1,20 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper'))
 
 describe HTTParty::Request do
-  def stub_response(body, code = 200)
-    unless @http
-      @http = Net::HTTP.new('localhost', 80)
-      @request.stub!(:http).and_return(@http)
-      @request.stub!(:uri).and_return(URI.parse("http://foo.com/foobar"))
-    end
-
-    response = Net::HTTPResponse::CODE_TO_OBJ[code.to_s].new("1.1", code, body)
-    response.stub!(:body).and_return(body)
-
-    @http.stub!(:request).and_return(response)
-    response
-  end
-
   before do
     @request = HTTParty::Request.new(Net::HTTP::Get, 'http://api.foo.com/v1', :format => :xml)
   end
