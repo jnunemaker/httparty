@@ -94,7 +94,6 @@ else
   case opts[:output_format]
     when :json
       begin
-        require 'rubygems'
         require 'json'
         puts JSON.pretty_generate(response.delegate)
       rescue LoadError
