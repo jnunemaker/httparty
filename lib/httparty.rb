@@ -3,6 +3,10 @@ require 'net/http'
 require 'net/https'
 require 'crack'
 
+if (Crack::const_defined?(:VERSION)) && Crack::VERSION != "0.1.5"
+  warn "warning: HTTParty depends on version 0.1.5 of crack, not #{Crack::VERSION}."
+end
+
 dir = Pathname(__FILE__).dirname.expand_path
 
 require dir + 'httparty/module_inheritable_attributes'
