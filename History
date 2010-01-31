@@ -3,6 +3,7 @@
   * Handle 304 response correctly by returning the HTTParty::Response object instead of redirecting (seth and hellvinz)
   * Only redirect 300 responses if the header contains a Location
   * Don't append empty query strings to the uri. Closes #31
+  * When no_follow is enabled, only raise the RedirectionTooDeep exception when a response tries redirecting. Closes #28
 
 * minor enhancements
   * HTTParty#debug_output prints debugging information for the current request (iwarshak)
