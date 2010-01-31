@@ -13,7 +13,7 @@ require dir + 'httparty/module_inheritable_attributes'
 require dir + 'httparty/cookie_hash'
 
 module HTTParty
-  VERSION = "0.5.1".freeze
+  VERSION = "0.5.2".freeze
 
   module AllowedFormatsDeprecation
     def const_missing(const)
