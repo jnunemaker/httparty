@@ -8,9 +8,10 @@
 * major enhancements
   * Removed rubygems dependency. I suggest adding rubygems to RUBYOPT if this causes problems for you.
     $ export RUBYOPT='rubygems'
+  * HTTParty#debug_output prints debugging information for the current request (iwarshak)
+  * HTTParty#no_follow now available as a class-level option. Sets whether or not to follow redirects.
 
 * minor enhancements
-  * HTTParty#debug_output prints debugging information for the current request (iwarshak)
   * HTTParty::VERSION now available
   * Update crack requirement to version 0.1.5
 
