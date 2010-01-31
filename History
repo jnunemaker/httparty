@@ -5,9 +5,14 @@
   * Don't append empty query strings to the uri. Closes #31
   * When no_follow is enabled, only raise the RedirectionTooDeep exception when a response tries redirecting. Closes #28
 
+* major enhancements
+  * Removed rubygems dependency. I suggest adding rubygems to RUBYOPT if this causes problems for you.
+    $ export RUBYOPT='rubygems'
+
 * minor enhancements
   * HTTParty#debug_output prints debugging information for the current request (iwarshak)
   * HTTParty::VERSION now available
+  * Update crack requirement to version 0.1.5
 
 == 0.5.0 2009-12-07
 * bug fixes
