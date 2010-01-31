@@ -11,6 +11,8 @@ require dir + 'httparty/module_inheritable_attributes'
 require dir + 'httparty/cookie_hash'
 
 module HTTParty
+  VERSION = "0.5.0".freeze
+
   module AllowedFormatsDeprecation
     def const_missing(const)
       if const.to_s =~ /AllowedFormats$/
@@ -298,4 +300,3 @@ require dir + 'httparty/exceptions'
 require dir + 'httparty/parser'
 require dir + 'httparty/request'
 require dir + 'httparty/response'
-
