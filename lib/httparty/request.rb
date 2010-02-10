@@ -157,7 +157,7 @@ module HTTParty
             options[:limit] -= 1
             self.path = last_response['location']
             self.redirect = true
-            self.http_method = Net::HTTP::Get
+            self.http_method = Net::HTTP::Get unless options[:maintain_method_across_redirects]
             capture_cookies(last_response)
             perform
           else

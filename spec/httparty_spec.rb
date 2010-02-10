@@ -323,6 +323,18 @@ describe HTTParty do
     end
   end
 
+  describe "#maintain_method_across_redirects" do
+    it "sets maintain_method_across_redirects to true by default" do
+      @klass.maintain_method_across_redirects
+      @klass.default_options[:maintain_method_across_redirects].should be_true
+    end
+
+    it "sets the maintain_method_across_redirects option to false" do
+      @klass.maintain_method_across_redirects false
+      @klass.default_options[:maintain_method_across_redirects].should be_false
+    end
+  end
+
   describe "with explicit override of automatic redirect handling" do
     before do
       @request = HTTParty::Request.new(Net::HTTP::Get, 'http://api.foo.com/v1', :format => :xml, :no_follow => true)

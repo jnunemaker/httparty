@@ -364,6 +364,13 @@ describe HTTParty::Request do
         @request.perform.should == {"hash" => {"foo" => "bar"}}
         @request.http_method.should == Net::HTTP::Get
       end
+
+      it 'should not make resulting request a get request if options[:maintain_method_across_redirects] is true' do
+        @request.options[:maintain_method_across_redirects] = true
+        @request.http_method = Net::HTTP::Delete
+        @request.perform.should == {"hash" => {"foo" => "bar"}}
+        @request.http_method.should == Net::HTTP::Delete
+      end
     end
 
     describe "infinitely" do

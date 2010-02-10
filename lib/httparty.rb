@@ -166,6 +166,21 @@ module HTTParty
       default_options[:no_follow] = value
     end
 
+    # Declare that you wish to maintain the chosen HTTP method across redirects.
+    # The default behavior is to follow redirects via the GET method.
+    # If you wish to maintain the original method, you can set this option to true.
+    #
+    # @example
+    #   class Foo
+    #     include HTTParty
+    #     base_uri 'http://google.com'
+    #     maintain_method_across_redirects true
+    #   end
+
+    def maintain_method_across_redirects(value = true)
+      default_options[:maintain_method_across_redirects] = value
+    end
+
     # Allows setting a PEM file to be used
     #
     #   class Foo
