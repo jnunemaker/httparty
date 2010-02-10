@@ -222,6 +222,13 @@ describe HTTParty do
     end
   end
 
+  describe "digest http authentication" do
+    it "should work" do
+      @klass.digest_auth 'foobar', 'secret'
+      @klass.default_options[:digest_auth].should == {:username => 'foobar', :password => 'secret'}
+    end
+  end
+
   describe "parser" do
     let(:parser) do
       Proc.new{ |data, format| CustomParser.parse(data) }

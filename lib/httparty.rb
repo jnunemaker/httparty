@@ -74,6 +74,17 @@ module HTTParty
       default_options[:basic_auth] = {:username => u, :password => p}
     end
 
+    # Allows setting digest authentication username and password.
+    #
+    #   class Foo
+    #     include HTTParty
+    #     digest_auth 'username', 'password'
+    #   end
+    def digest_auth(u, p)
+      default_options[:digest_auth] = {:username => u, :password => p}
+    end
+
+
     # Allows setting default parameters to be appended to each request.
     # Great for api keys and such.
     #
