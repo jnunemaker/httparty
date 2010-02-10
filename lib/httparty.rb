@@ -11,6 +11,7 @@ dir = Pathname(__FILE__).dirname.expand_path
 
 require dir + 'httparty/module_inheritable_attributes'
 require dir + 'httparty/cookie_hash'
+require dir + 'net_digest_auth'
 
 module HTTParty
   VERSION = "0.5.2".freeze

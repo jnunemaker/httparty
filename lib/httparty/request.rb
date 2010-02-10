@@ -94,12 +94,16 @@ module HTTParty
         options[:body].is_a?(Hash) ? options[:body].to_params : options[:body]
       end
 
+      def credentials
+        options[:basic_auth] || options[:digest_auth]
+      end
+
       def username
-        options[:basic_auth][:username]
+        credentials[:username]
       end
 
       def password
-        options[:basic_auth][:password]
+        credentials[:password]
       end
 
       def setup_raw_request
@@ -107,6 +111,14 @@ module HTTParty
         @raw_request.body = body if body
         @raw_request.initialize_http_header(options[:headers])
         @raw_request.basic_auth(username, password) if options[:basic_auth]
+        setup_digest_auth if options[:digest_auth]
+      end
+      
+      def setup_digest_auth
+        res = http.head(uri.request_uri)
+        if res['www-authenticate'] != nil && res['www-authenticate'].length > 0
+          @raw_request.digest_auth(username, password, res)
+        end
       end
 
       def perform_actual_request
@@ -182,7 +194,9 @@ module HTTParty
         raise HTTParty::RedirectionTooDeep.new(last_response), 'HTTP redirects too deep' if options[:limit].to_i <= 0
         raise ArgumentError, 'only get, post, put, delete, head, and options methods are supported' unless SupportedHTTPMethods.include?(http_method)
         raise ArgumentError, ':headers must be a hash' if options[:headers] && !options[:headers].is_a?(Hash)
+        raise ArgumentError, 'only one authentication method, :basic_auth or :digest_auth may be used at a time' if options[:basic_auth] && options[:digest_auth]
         raise ArgumentError, ':basic_auth must be a hash' if options[:basic_auth] && !options[:basic_auth].is_a?(Hash)
+        raise ArgumentError, ':digest_auth must be a hash' if options[:digest_auth] && !options[:digest_auth].is_a?(Hash)
         raise ArgumentError, ':query must be hash if using HTTP Post' if post? && !options[:query].nil? && !options[:query].is_a?(Hash)
       end
 

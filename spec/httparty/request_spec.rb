@@ -30,6 +30,17 @@ describe HTTParty::Request do
       @request.send(:setup_raw_request)
       @request.instance_variable_get(:@raw_request)['authorization'].should_not be_nil
     end
+
+    it "should use digest auth when configured" do
+      FakeWeb.register_uri(:head, "http://api.foo.com/v1",
+        :www_authenticate => 'Digest realm="Log Viewer", qop="auth", nonce="2CA0EC6B0E126C4800E56BA0C0003D3C", opaque="5ccc069c403ebaf9f0171e9517f40e41", stale=false')
+
+      @request.options[:digest_auth] = {:username => 'foobar', :password => 'secret'}
+      @request.send(:setup_raw_request)
+
+      raw_request = @request.instance_variable_get(:@raw_request)
+      raw_request.instance_variable_get(:@header)['Authorization'].should_not be_nil
+    end
   end
 
   describe "#uri" do
@@ -371,6 +382,26 @@ describe HTTParty::Request do
       lambda {
         HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', :format => :xml, :query => 'astring').perform
       }.should raise_error(ArgumentError)
+    end
+  end
+
+  describe "argument validation" do
+    it "should raise argument error if basic_auth and digest_auth are both present" do
+      lambda {
+        HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', :basic_auth => {}, :digest_auth => {}).perform
+      }.should raise_error(ArgumentError, "only one authentication method, :basic_auth or :digest_auth may be used at a time")
+    end
+
+    it "should raise argument error if basic_auth is not a hash" do
+      lambda {
+        HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', :basic_auth => ["foo", "bar"]).perform
+      }.should raise_error(ArgumentError, ":basic_auth must be a hash")
+    end
+
+    it "should raise argument error if digest_auth is not a hash" do
+      lambda {
+        HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', :digest_auth => ["foo", "bar"]).perform
+      }.should raise_error(ArgumentError, ":digest_auth must be a hash")
     end
   end
 end
