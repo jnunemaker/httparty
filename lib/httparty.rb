@@ -97,7 +97,7 @@ module HTTParty
       default_options[:debug_output] = stream
     end
 
-    # Allows setting a base uri to be used for each request.
+    # Allows setting HTTP headers to be used for each request.
     #
     #   class Foo
     #     include HTTParty
