@@ -94,6 +94,18 @@ module HTTParty
       default_options[:default_params].merge!(h)
     end
 
+    # Allows setting a default timeout for all HTTP calls
+    # Timeout is specified in seconds.
+    #
+    #   class Foo
+    #     include HTTParty
+    #     default_timeout 10
+    #   end
+    def default_timeout(t)
+      raise ArgumentError, 'Timeout must be an integer' unless t && t.is_a?(Integer)
+      default_options[:timeout] = t
+    end
+
     # Set an output stream for debugging, defaults to $stderr.
     # The output stream is passed on to Net::HTTP#set_debug_output.
     #

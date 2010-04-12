@@ -203,6 +203,17 @@ describe HTTParty do
     end
   end
 
+  describe "default timeout" do
+    it "should default to nil" do
+      @klass.default_options[:timeout].should == nil
+    end
+
+    it "should support updating" do
+      @klass.default_timeout 10
+      @klass.default_options[:timeout].should == 10
+    end
+  end
+
   describe "debug_output" do
     it "stores the given stream as a default_option" do
       @klass.debug_output $stdout
