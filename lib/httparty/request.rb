@@ -52,7 +52,6 @@ module HTTParty
       options[:parser]
     end
 
-
     def perform
       validate
       setup_raw_request
@@ -62,97 +61,97 @@ module HTTParty
 
     private
 
-      def http
-        http = Net::HTTP.new(uri.host, uri.port, options[:http_proxyaddr], options[:http_proxyport])
-        http.use_ssl = ssl_implied?
+    def http
+      http = Net::HTTP.new(uri.host, uri.port, options[:http_proxyaddr], options[:http_proxyport])
+      http.use_ssl = ssl_implied?
 
-        if options[:timeout] && options[:timeout].is_a?(Integer)
-          http.open_timeout = options[:timeout]
-          http.read_timeout = options[:timeout]
-        end
-
-        if options[:pem] && http.use_ssl?
-          http.cert = OpenSSL::X509::Certificate.new(options[:pem])
-          http.key = OpenSSL::PKey::RSA.new(options[:pem])
-          http.verify_mode = OpenSSL::SSL::VERIFY_PEER
-        else
-          http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-        end
-
-        if options[:debug_output]
-          http.set_debug_output(options[:debug_output])
-        end
-
-        http
+      if options[:timeout] && options[:timeout].is_a?(Integer)
+        http.open_timeout = options[:timeout]
+        http.read_timeout = options[:timeout]
       end
 
-      def ssl_implied?
-        uri.port == 443 || uri.instance_of?(URI::HTTPS)
+      if options[:pem] && http.use_ssl?
+        http.cert = OpenSSL::X509::Certificate.new(options[:pem])
+        http.key = OpenSSL::PKey::RSA.new(options[:pem])
+        http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+      else
+        http.verify_mode = OpenSSL::SSL::VERIFY_NONE
       end
 
-      def body
-        options[:body].is_a?(Hash) ? options[:body].to_params : options[:body]
+      if options[:debug_output]
+        http.set_debug_output(options[:debug_output])
       end
 
-      def credentials
-        options[:basic_auth] || options[:digest_auth]
+      http
+    end
+
+    def ssl_implied?
+      uri.port == 443 || uri.instance_of?(URI::HTTPS)
+    end
+
+    def body
+      options[:body].is_a?(Hash) ? options[:body].to_params : options[:body]
+    end
+
+    def credentials
+      options[:basic_auth] || options[:digest_auth]
+    end
+
+    def username
+      credentials[:username]
+    end
+
+    def password
+      credentials[:password]
+    end
+
+    def setup_raw_request
+      @raw_request = http_method.new(uri.request_uri)
+      @raw_request.body = body if body
+      @raw_request.initialize_http_header(options[:headers])
+      @raw_request.basic_auth(username, password) if options[:basic_auth]
+      setup_digest_auth if options[:digest_auth]
+    end
+
+    def setup_digest_auth
+      res = http.head(uri.request_uri)
+      if res['www-authenticate'] != nil && res['www-authenticate'].length > 0
+        @raw_request.digest_auth(username, password, res)
+      end
+    end
+
+    def perform_actual_request
+      http.request(@raw_request)
+    end
+
+    def get_response
+      self.last_response = perform_actual_request
+      options[:format] ||= format_from_mimetype(last_response['content-type'])
+    end
+
+    def query_string(uri)
+      query_string_parts = []
+      query_string_parts << uri.query unless uri.query.nil?
+
+      if options[:query].is_a?(Hash)
+        query_string_parts << options[:default_params].merge(options[:query]).to_params
+      else
+        query_string_parts << options[:default_params].to_params unless options[:default_params].empty?
+        query_string_parts << options[:query] unless options[:query].nil?
       end
 
-      def username
-        credentials[:username]
-      end
+      query_string_parts.size > 0 ? query_string_parts.join('&') : nil
+    end
 
-      def password
-        credentials[:password]
-      end
-
-      def setup_raw_request
-        @raw_request = http_method.new(uri.request_uri)
-        @raw_request.body = body if body
-        @raw_request.initialize_http_header(options[:headers])
-        @raw_request.basic_auth(username, password) if options[:basic_auth]
-        setup_digest_auth if options[:digest_auth]
-      end
-
-      def setup_digest_auth
-        res = http.head(uri.request_uri)
-        if res['www-authenticate'] != nil && res['www-authenticate'].length > 0
-          @raw_request.digest_auth(username, password, res)
-        end
-      end
-
-      def perform_actual_request
-        http.request(@raw_request)
-      end
-
-      def get_response
-        self.last_response = perform_actual_request
-        options[:format] ||= format_from_mimetype(last_response['content-type'])
-      end
-
-      def query_string(uri)
-        query_string_parts = []
-        query_string_parts << uri.query unless uri.query.nil?
-
-        if options[:query].is_a?(Hash)
-          query_string_parts << options[:default_params].merge(options[:query]).to_params
-        else
-          query_string_parts << options[:default_params].to_params unless options[:default_params].empty?
-          query_string_parts << options[:query] unless options[:query].nil?
-        end
-
-        query_string_parts.size > 0 ? query_string_parts.join('&') : nil
-      end
-
-      # Raises exception Net::XXX (http error code) if an http error occured
-      def handle_response
-        case last_response
-        when Net::HTTPMultipleChoice,              # 300
-          Net::HTTPMovedPermanently,               # 301
-          Net::HTTPFound,                          # 302
-          Net::HTTPSeeOther,                       # 303
-          Net::HTTPUseProxy,                       # 305
-          Net::HTTPTemporaryRedirect
+    # Raises exception Net::XXX (http error code) if an http error occured
+    def handle_response
+      case last_response
+        when Net::HTTPMultipleChoice, # 300
+        Net::HTTPMovedPermanently, # 301
+        Net::HTTPFound, # 302
+        Net::HTTPSeeOther, # 303
+        Net::HTTPUseProxy, # 305
+        Net::HTTPTemporaryRedirect
           if last_response.key?('location')
             options[:limit] -= 1
             self.path = last_response['location']
@@ -165,30 +164,30 @@ module HTTParty
           end
         else
           Response.new(parse_response(last_response.body), last_response.body, last_response.code, last_response.message, last_response.to_hash)
-        end
       end
+    end
 
-      def parse_response(body)
-        parser.call(body, format)
-      end
+    def parse_response(body)
+      parser.call(body, format)
+    end
 
-      def capture_cookies(response)
-        return unless response['Set-Cookie']
-        cookies_hash = HTTParty::CookieHash.new()
-        cookies_hash.add_cookies(options[:headers]['Cookie']) if options[:headers] && options[:headers]['Cookie']
-        cookies_hash.add_cookies(response['Set-Cookie'])
-        options[:headers] ||= {}
-        options[:headers]['Cookie'] = cookies_hash.to_cookie_string
-      end
+    def capture_cookies(response)
+      return unless response['Set-Cookie']
+      cookies_hash = HTTParty::CookieHash.new()
+      cookies_hash.add_cookies(options[:headers]['Cookie']) if options[:headers] && options[:headers]['Cookie']
+      cookies_hash.add_cookies(response['Set-Cookie'])
+      options[:headers] ||= {}
+      options[:headers]['Cookie'] = cookies_hash.to_cookie_string
+    end
 
-      # Uses the HTTP Content-Type header to determine the format of the
-      # response It compares the MIME type returned to the types stored in the
-      # SupportedFormats hash
-      def format_from_mimetype(mimetype)
-        if mimetype && parser.respond_to?(:format_from_mimetype)
-          parser.format_from_mimetype(mimetype)
-        end
+    # Uses the HTTP Content-Type header to determine the format of the
+    # response It compares the MIME type returned to the types stored in the
+    # SupportedFormats hash
+    def format_from_mimetype(mimetype)
+      if mimetype && parser.respond_to?(:format_from_mimetype)
+        parser.format_from_mimetype(mimetype)
       end
+    end
 
       def validate
         raise HTTParty::RedirectionTooDeep.new(last_response), 'HTTP redirects too deep' if options[:limit].to_i <= 0
@@ -200,9 +199,8 @@ module HTTParty
         raise ArgumentError, ':query must be hash if using HTTP Post' if post? && !options[:query].nil? && !options[:query].is_a?(Hash)
       end
 
-      def post?
-        Net::HTTP::Post == http_method
-      end
+    def post?
+      Net::HTTP::Post == http_method
+    end
   end
 end
-

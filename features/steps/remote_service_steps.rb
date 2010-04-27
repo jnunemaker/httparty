@@ -33,6 +33,10 @@ Given /that service is protected by Basic Authentication/ do
   add_basic_authentication_to @handler
 end
 
+Given /that service is protected by Digest Authentication/ do
+  add_digest_authentication_to @handler
+end
+
 Given /that service requires the username '(.*)' with the password '(.*)'/ do |username, password|
   @handler.username = username
   @handler.password = password

@@ -50,6 +50,35 @@ def add_basic_authentication_to(handler)
   handler.extend(m)
 end
 
+def add_digest_authentication_to(handler)
+  m = Module.new do
+    attr_writer :username, :password
+
+    def self.extended(base)
+      base.instance_eval { @custom_headers["WWW-Authenticate"] = 'Digest realm="testrealm@host.com",qop="auth,auth-int",nonce="nonce",opaque="opaque"' }
+      base.class_eval { alias_method_chain :process, :digest_authentication }
+    end
+
+    def process_with_digest_authentication(request, response)
+      if authorized?(request)
+        process_without_digest_authentication(request, response)
+        #does not work. At this point response.body_sent is nil and
+        #response.body.string is set to the correct value
+        # -> it's not a stream issue
+        #The else close is never called after this point, yet the result is whatever I put in the else statement
+        # -> don't get it
+      else
+          reply_with(response, 401, "Incorrect.  You have 20 seconds to comply.")
+      end
+    end
+
+    def authorized?(request)
+      request.params["HTTP_AUTHORIZATION"] =~ /Digest.*uri=/
+    end
+  end
+  handler.extend(m)
+end
+
 def new_mongrel_redirector(target_url, relative_path = false)
   target_url = "http://#{@host_and_port}#{target_url}" unless relative_path
   Mongrel::RedirectHandler.new(target_url)

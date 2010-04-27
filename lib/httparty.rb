@@ -84,7 +84,6 @@ module HTTParty
       default_options[:digest_auth] = {:username => u, :password => p}
     end
 
-
     # Allows setting default parameters to be appended to each request.
     # Great for api keys and such.
     #
