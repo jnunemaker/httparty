@@ -60,15 +60,8 @@ def add_digest_authentication_to(handler)
     end
 
     def process_with_digest_authentication(request, response)
-      if authorized?(request)
-        process_without_digest_authentication(request, response)
-        #does not work. At this point response.body_sent is nil and
-        #response.body.string is set to the correct value
-        # -> it's not a stream issue
-        #The else close is never called after this point, yet the result is whatever I put in the else statement
-        # -> don't get it
-      else
-          reply_with(response, 401, "Incorrect.  You have 20 seconds to comply.")
+      if authorized?(request) then process_without_digest_authentication(request, response)
+      else reply_with(response, 401, "Incorrect.  You have 20 seconds to comply.")
       end
     end
 
