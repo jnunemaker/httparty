@@ -243,7 +243,7 @@ describe HTTParty do
       @klass.format :json
       class MyParser < HTTParty::Parser
         SupportedFormats = {}
-      end
+      end unless defined?(MyParser)
       expect do
         @klass.parser MyParser
       end.to raise_error(HTTParty::UnsupportedFormat)

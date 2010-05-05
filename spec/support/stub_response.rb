@@ -14,7 +14,7 @@ module HTTParty
     end
 
     def stub_response(body, code = 200)
-      unless @http
+      unless defined?(@http) && @http
         @http = Net::HTTP.new('localhost', 80)
         @request.stub!(:http).and_return(@http)
         @request.stub!(:uri).and_return(URI.parse("http://foo.com/foobar"))

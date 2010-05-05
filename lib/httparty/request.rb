@@ -13,7 +13,7 @@ module HTTParty
 
     SupportedURISchemes  = [URI::HTTP, URI::HTTPS]
 
-    attr_accessor :http_method, :path, :options, :last_response
+    attr_accessor :http_method, :path, :options, :last_response, :redirect
 
     def initialize(http_method, path, o={})
       self.http_method = http_method
@@ -33,7 +33,7 @@ module HTTParty
       new_uri = path.relative? ? URI.parse("#{options[:base_uri]}#{path}") : path
 
       # avoid double query string on redirects [#12]
-      unless @redirect
+      unless redirect
         new_uri.query = query_string(new_uri)
       end
 
@@ -144,7 +144,7 @@ module HTTParty
           if last_response.key?('location')
             options[:limit] -= 1
             self.path = last_response['location']
-            @redirect = true
+            self.redirect = true
             self.http_method = Net::HTTP::Get
             capture_cookies(last_response)
             perform
