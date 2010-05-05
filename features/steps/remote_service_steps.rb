@@ -13,8 +13,8 @@ Given /that service is accessed at the path '(.*)'/ do |path|
 end
 
 Given /^that service takes (\d+) seconds to generate a response$/ do |time|
-  preprocessor = lambda { sleep time.to_i }
-  @handler.preprocessor = preprocessor
+  @server_response_time = time.to_i
+  @handler.preprocessor = lambda { sleep time.to_i }
 end
 
 Given /the response from the service has a Content-Type of '(.*)'/ do |content_type|
@@ -49,4 +49,9 @@ end
 # server with a browser.  Runs until you kill it with Ctrl-c
 Given /I want to hit this in a browser/ do
   @server.acceptor.join
+end
+
+Then /I wait for the server to recover/ do
+  timeout = @request_options[:timeout] || 0
+  sleep @server_response_time - timeout
 end
