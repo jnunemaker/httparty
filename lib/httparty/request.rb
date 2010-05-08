@@ -113,7 +113,7 @@ module HTTParty
         @raw_request.basic_auth(username, password) if options[:basic_auth]
         setup_digest_auth if options[:digest_auth]
       end
-      
+
       def setup_digest_auth
         res = http.head(uri.request_uri)
         if res['www-authenticate'] != nil && res['www-authenticate'].length > 0

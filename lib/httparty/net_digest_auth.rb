@@ -28,7 +28,7 @@ module Net
       header = []
       header << "Digest username=\"#{user}\""
       header << "realm=\"#{params['realm']}\""
-      
+
       header << "qop=#{params['qop']}"
 
       header << "algorithm=MD5"
