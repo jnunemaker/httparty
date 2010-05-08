@@ -10,3 +10,4 @@ Feature: Supports the timeout option
     When I set my HTTParty timeout option to 1
     And I call HTTParty#get with '/service.html'
     Then it should raise a Timeout::Error exception
+    And I wait for the server to recover
