@@ -114,7 +114,7 @@ module HTTParty
     end
 
     def setup_digest_auth
-      res = http.head(uri.request_uri)
+      res = http.head(uri.request_uri, options[:headers])
       if res['www-authenticate'] != nil && res['www-authenticate'].length > 0
         @raw_request.digest_auth(username, password, res)
       end
