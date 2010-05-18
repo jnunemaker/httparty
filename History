@@ -2,11 +2,17 @@
 * major enhancements
   * Digest Auth (bartiaco, sbecker, gilles, and aaronrussell)
   * Maintain HTTP method across redirects (bartiaco and sbecker)
+  * HTTParty::Response#response returns the Net::HTTPResponse object
+  * HTTParty::Response#headers returns a HTTParty::Response::Headers object
+    which quacks like a Hash + Net::HTTPHeader. The #headers method continues
+    to be backwards-compatible with the old Hash return value but may become
+    deprecated in the future.
 
 * minor enhancements
   * Update crack requirement to version 0.1.7
     You may still get a warning because Crack's version constant is out of date
   * Timeout option can be set for all requests using HTTParty.default_timeout (taazza)
+  * Closed #38 "headers hash should downcase keys so canonical header name can be used"
 
 == 0.5.2 2010-01-31
 * minor enhancements
