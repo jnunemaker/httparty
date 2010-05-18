@@ -3,10 +3,6 @@ require 'net/http'
 require 'net/https'
 require 'crack'
 
-if Crack::VERSION != "0.1.6"
-  warn "warning: HTTParty depends on version 0.1.6 of crack, not #{Crack::VERSION}."
-end
-
 dir = Pathname(__FILE__).dirname.expand_path
 
 require dir + 'httparty/module_inheritable_attributes'
@@ -15,6 +11,7 @@ require dir + 'httparty/net_digest_auth'
 
 module HTTParty
   VERSION = "0.5.2".freeze
+  CRACK_DEPENDENCY = "0.1.7".freeze
 
   module AllowedFormatsDeprecation
     def const_missing(const)
@@ -328,3 +325,7 @@ require dir + 'httparty/exceptions'
 require dir + 'httparty/parser'
 require dir + 'httparty/request'
 require dir + 'httparty/response'
+
+if Crack::VERSION != HTTParty::CRACK_DEPENDENCY
+  warn "warning: HTTParty depends on version #{HTTParty::CRACK_DEPENDENCY} of crack, not #{Crack::VERSION}."
+end
