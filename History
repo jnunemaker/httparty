@@ -3,6 +3,10 @@
   * Digest Auth (bartiaco, sbecker, gilles, and aaronrussell)
   * Maintain HTTP method across redirects (bartiaco and sbecker)
 
+* minor enhancements
+  * Update crack requirement to version 0.1.7
+    You may still get a warning because Crack's version constant is out of date
+
 == 0.5.2 2010-01-31
 * minor enhancements
   * Update crack requirement to version 0.1.6
