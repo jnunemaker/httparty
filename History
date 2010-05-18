@@ -6,6 +6,7 @@
 * minor enhancements
   * Update crack requirement to version 0.1.7
     You may still get a warning because Crack's version constant is out of date
+  * Timeout option can be set for all requests using HTTParty.default_timeout (taazza)
 
 == 0.5.2 2010-01-31
 * minor enhancements
