@@ -38,7 +38,7 @@ module HTTParty
     end
 
     def class
-      Object.instance_method(:class).bind(self).call
+      Response
     end
 
     def code
