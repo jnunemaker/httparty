@@ -1,5 +1,5 @@
 require 'mongrel'
-require 'activesupport'
+require 'active_support'
 require 'lib/httparty'
 require 'spec/expectations'
 

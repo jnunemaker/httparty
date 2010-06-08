@@ -1,5 +1,5 @@
 require 'rubygems'
-require 'activesupport'
+require 'active_support'
 
 dir = File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
 require File.join(dir, 'httparty')
