@@ -19,9 +19,34 @@ describe HTTParty::Request do
   end
 
   describe "#format" do
-    it "should return the correct parsing format" do
-      @request.format.should == :xml
+    context "request yet to be made" do
+      it "returns format option" do
+        request = HTTParty::Request.new 'get', '/', :format => :xml
+        request.format.should == :xml
+      end
+
+      it "returns nil format" do
+        request = HTTParty::Request.new 'get', '/'
+        request.format.should be_nil
+      end
     end
+
+    context "request has been made" do
+      it "returns format option" do
+        request = HTTParty::Request.new 'get', '/', :format => :xml
+        request.last_response = stub
+        request.format.should == :xml
+      end
+
+      it "returns the content-type from the last response when the option is not set" do
+        request = HTTParty::Request.new 'get', '/'
+        response = stub
+        response.should_receive(:[]).with('content-type').and_return('text/json')
+        request.last_response = response
+        request.format.should == :json
+      end
+    end
+
   end
 
   context "options" do

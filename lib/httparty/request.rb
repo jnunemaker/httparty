@@ -45,7 +45,7 @@ module HTTParty
     end
 
     def format
-      options[:format]
+      options[:format] || (format_from_mimetype(last_response['content-type']) if last_response)
     end
 
     def parser
@@ -126,7 +126,6 @@ module HTTParty
 
     def get_response
       self.last_response = perform_actual_request
-      options[:format] ||= format_from_mimetype(last_response['content-type'])
     end
 
     def query_string(uri)
