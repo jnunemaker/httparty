@@ -146,24 +146,24 @@ module HTTParty
     # Raises exception Net::XXX (http error code) if an http error occured
     def handle_response
       case last_response
-        when Net::HTTPMultipleChoice, # 300
+      when Net::HTTPMultipleChoice, # 300
         Net::HTTPMovedPermanently, # 301
         Net::HTTPFound, # 302
         Net::HTTPSeeOther, # 303
         Net::HTTPUseProxy, # 305
         Net::HTTPTemporaryRedirect
-          if last_response.key?('location')
-            options[:limit] -= 1
-            self.path = last_response['location']
-            self.redirect = true
-            self.http_method = Net::HTTP::Get unless options[:maintain_method_across_redirects]
-            capture_cookies(last_response)
-            perform
-          else
-            last_response
-          end
+        if last_response.key?('location')
+          options[:limit] -= 1
+          self.path = last_response['location']
+          self.redirect = true
+          self.http_method = Net::HTTP::Get unless options[:maintain_method_across_redirects]
+          capture_cookies(last_response)
+          perform
         else
-          Response.new(last_response, parse_response(last_response.body))
+          last_response
+        end
+      else
+        Response.new(last_response, parse_response(last_response.body))
       end
     end
 
