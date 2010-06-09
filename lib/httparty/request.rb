@@ -1,5 +1,3 @@
-require 'uri'
-
 module HTTParty
   class Request #:nodoc:
     SupportedHTTPMethods = [
@@ -144,6 +142,7 @@ module HTTParty
 
     # Raises exception Net::XXX (http error code) if an http error occured
     def handle_response
+      handle_deflation
       case last_response
       when Net::HTTPMultipleChoice, # 300
         Net::HTTPMovedPermanently, # 301
@@ -163,6 +162,17 @@ module HTTParty
         end
       else
         Response.new(last_response, parse_response(last_response.body))
+      end
+    end
+
+    # Inspired by Ruby 1.9
+    def handle_deflation
+      case last_response["content-encoding"]
+      when "gzip"
+        body_io = StringIO.new(last_response.body)
+        last_response.body.replace Zlib::GzipReader.new(body_io).read
+      when "deflate"
+        last_response.body.replace Zlib::Inflate.inflate(last_response.body)
       end
     end
 

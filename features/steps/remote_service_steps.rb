@@ -17,6 +17,10 @@ Given /^that service takes (\d+) seconds to generate a response$/ do |time|
   @handler.preprocessor = lambda { sleep time.to_i }
 end
 
+Given /^a remote deflate service$/ do
+  @handler = DeflateHandler.new
+end
+
 Given /the response from the service has a Content-Type of '(.*)'/ do |content_type|
   @handler.content_type = content_type
 end

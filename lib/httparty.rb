@@ -1,6 +1,8 @@
 require 'pathname'
 require 'net/http'
 require 'net/https'
+require 'uri'
+require 'zlib'
 require 'crack'
 
 dir = Pathname(__FILE__).dirname.expand_path

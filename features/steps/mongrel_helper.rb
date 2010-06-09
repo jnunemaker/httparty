@@ -22,6 +22,15 @@ class BasicMongrelHandler < Mongrel::HttpHandler
   end
 end
 
+class DeflateHandler < BasicMongrelHandler
+  def process(request, response)
+    response.start do |head, body|
+      head['Content-Encoding'] = 'deflate'
+      body.write Zlib::Deflate.deflate(response_body)
+    end
+  end
+end
+
 module BasicAuthentication
   def self.extended(base)
     base.custom_headers["WWW-Authenticate"] = 'Basic Realm="Super Secret Page"'
