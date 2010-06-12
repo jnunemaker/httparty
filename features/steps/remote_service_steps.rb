@@ -21,6 +21,10 @@ Given /^a remote deflate service$/ do
   @handler = DeflateHandler.new
 end
 
+Given /^a remote gzip service$/ do
+  @handler = GzipHandler.new
+end
+
 Given /the response from the service has a Content-Type of '(.*)'/ do |content_type|
   @handler.content_type = content_type
 end

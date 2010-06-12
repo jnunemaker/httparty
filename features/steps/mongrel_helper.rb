@@ -31,6 +31,26 @@ class DeflateHandler < BasicMongrelHandler
   end
 end
 
+class GzipHandler < BasicMongrelHandler
+  def process(request, response)
+    response.start do |head, body|
+      head['Content-Encoding'] = 'gzip'
+      body.write gzip(response_body)
+    end
+  end
+
+  protected
+
+  def gzip(string)
+    sio = StringIO.new('', 'r+')
+    gz = Zlib::GzipWriter.new sio
+    gz.write string
+    gz.finish
+    sio.rewind
+    sio.read
+  end
+end
+
 module BasicAuthentication
   def self.extended(base)
     base.custom_headers["WWW-Authenticate"] = 'Basic Realm="Super Secret Page"'
