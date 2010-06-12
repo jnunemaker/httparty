@@ -13,6 +13,8 @@
     You may still get a warning because Crack's version constant is out of date
   * Timeout option can be set for all requests using HTTParty.default_timeout (taazza)
   * Closed #38 "headers hash should downcase keys so canonical header name can be used"
+  * Closed #40 "Gzip response" wherein gziped and deflated responses are
+    automatically inflated. (carsonmcdonald)
 
 == 0.5.2 2010-01-31
 * minor enhancements
