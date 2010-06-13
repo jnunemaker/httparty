@@ -1,4 +1,4 @@
-== 0.5.3 (master)
+== 0.6.0 2010-06-13
 * major enhancements
   * Digest Auth (bartiaco, sbecker, gilles, and aaronrussell)
   * Maintain HTTP method across redirects (bartiaco and sbecker)
