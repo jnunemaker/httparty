@@ -12,7 +12,7 @@ require dir + 'httparty/cookie_hash'
 require dir + 'httparty/net_digest_auth'
 
 module HTTParty
-  VERSION = "0.5.2".freeze
+  VERSION = "0.6.0".freeze
   CRACK_DEPENDENCY = "0.1.7".freeze
 
   module AllowedFormatsDeprecation
