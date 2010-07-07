@@ -1,7 +1,8 @@
 == 0.7.0 (master)
-* major enhancements
+* bug fixes
   * subclasses always merge into the parent's default_options and
-  default_cookies (l4rk)
+  default_cookies (l4rk).
+  * subclasses play nicely with grand parents. gh-49
 
 == 0.6.0 2010-06-13
 * major enhancements
