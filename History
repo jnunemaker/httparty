@@ -1,3 +1,8 @@
+== 0.7.0 (master)
+* major enhancements
+  * subclasses always merge into the parent's default_options and
+  default_cookies (l4rk)
+
 == 0.6.0 2010-06-13
 * major enhancements
   * Digest Auth (bartiaco, sbecker, gilles, and aaronrussell)
