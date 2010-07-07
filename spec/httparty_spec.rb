@@ -416,6 +416,9 @@ describe HTTParty do
     before(:each) do
       @parent = Class.new do
         include HTTParty
+        def self.name
+          "Parent"
+        end
       end
 
       @child1 = Class.new(@parent)
