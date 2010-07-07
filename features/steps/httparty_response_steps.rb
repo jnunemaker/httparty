@@ -1,5 +1,5 @@
 Then /it should return an? (\w+)$/ do |class_string|
-  @response_from_httparty.should be_an_instance_of(class_string.constantize)
+  @response_from_httparty.should be_an_instance_of(class_string.class)
 end
 
 Then /the return value should match '(.*)'/ do |expected_text|
