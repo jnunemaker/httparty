@@ -15,6 +15,7 @@ module HTTParty
       end
 
       def inherited(subclass)
+        super
         @mattr_inheritable_attrs.each do |inheritable_attribute|
           ivar = "@#{inheritable_attribute}"
           subclass.instance_variable_set(ivar, instance_variable_get(ivar).clone)

@@ -472,6 +472,23 @@ describe HTTParty do
     end
   end
 
+  describe "grand parent with inherited callback" do
+    before do
+      @grand_parent = Class.new do
+        def self.inherited(subclass)
+          subclass.instance_variable_set(:@grand_parent, true)
+        end
+      end
+      @parent = Class.new(@grand_parent) do
+        include HTTParty
+      end
+    end
+    it "continues running the #inherited on the parent" do
+      child = Class.new(@parent)
+      child.instance_variable_get(:@grand_parent).should be_true
+    end
+  end
+
   describe "#get" do
     it "should be able to get html" do
       stub_http_response_with('google.html')
