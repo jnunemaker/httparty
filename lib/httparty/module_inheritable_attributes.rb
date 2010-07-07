@@ -16,8 +16,16 @@ module HTTParty
 
       def inherited(subclass)
         @mattr_inheritable_attrs.each do |inheritable_attribute|
-          instance_var = "@#{inheritable_attribute}"
-          subclass.instance_variable_set(instance_var, instance_variable_get(instance_var).clone)
+          ivar = "@#{inheritable_attribute}"
+          subclass.instance_variable_set(ivar, instance_variable_get(ivar).clone)
+          if instance_variable_get(ivar).respond_to?(:merge)
+            method = <<-EOM
+              def self.#{inheritable_attribute}
+                #{ivar} = superclass.#{inheritable_attribute}.merge #{ivar}
+              end
+            EOM
+            subclass.class_eval method
+          end
         end
       end
     end

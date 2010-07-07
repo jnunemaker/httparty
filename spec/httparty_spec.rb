@@ -434,6 +434,42 @@ describe HTTParty do
 
       @parent.default_options.should == { }
     end
+
+    it "inherits default_options from the superclass" do
+      @parent.basic_auth 'user', 'password'
+      @child1.default_options.should == {:basic_auth => {:username => 'user', :password => 'password'}}
+      @child1.basic_auth 'u', 'p' # modifying child1 has no effect on child2
+      @child2.default_options.should == {:basic_auth => {:username => 'user', :password => 'password'}}
+    end
+
+    it "doesn't modify the parent's default options" do
+      @parent.basic_auth 'user', 'password'
+
+      @child1.basic_auth 'u', 'p'
+      @child1.default_options.should == {:basic_auth => {:username => 'u', :password => 'p'}}
+
+      @child1.basic_auth 'email', 'token'
+      @child1.default_options.should == {:basic_auth => {:username => 'email', :password => 'token'}}
+
+      @parent.default_options.should == {:basic_auth => {:username => 'user', :password => 'password'}}
+    end
+
+    it "inherits default_cookies from the parent class" do
+      @parent.cookies 'type' => 'chocolate_chip'
+      @child1.default_cookies.should == {"type" => "chocolate_chip"}
+      @child1.cookies 'type' => 'snickerdoodle'
+      @child1.default_cookies.should == {"type" => "snickerdoodle"}
+      @child2.default_cookies.should == {"type" => "chocolate_chip"}
+    end
+
+    it "doesn't modify the parent's default cookies" do
+      @parent.cookies 'type' => 'chocolate_chip'
+
+      @child1.cookies 'type' => 'snickerdoodle'
+      @child1.default_cookies.should == {"type" => "snickerdoodle"}
+
+      @parent.default_cookies.should == {"type" => "chocolate_chip"}
+    end
   end
 
   describe "#get" do
