@@ -1,4 +1,6 @@
-== 0.7.0 (master)
+== 0.6.1
+* minor enhancements
+  * updated to crack 0.1.8
 * bug fixes
   * subclasses always merge into the parent's default_options and
   default_cookies (l4rk).

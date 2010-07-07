@@ -1,15 +1,19 @@
 require 'rake'
+require File.expand_path('../lib/httparty', __FILE__)
 
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
-    gem.name = "httparty"
-    gem.summary = %Q{Makes http fun! Also, makes consuming restful web services dead easy.}
+    gem.name        = "httparty"
+    gem.summary     = %Q{Makes http fun! Also, makes consuming restful web services dead easy.}
     gem.description = %Q{Makes http fun! Also, makes consuming restful web services dead easy.}
-    gem.email = "nunemaker@gmail.com"
-    gem.homepage = "http://httparty.rubyforge.org"
-    gem.authors = ["John Nunemaker", "Sandro Turriate"]
-    gem.add_dependency 'crack', '0.1.7'
+    gem.email       = "nunemaker@gmail.com"
+    gem.homepage    = "http://httparty.rubyforge.org"
+    gem.authors     = ["John Nunemaker", "Sandro Turriate"]
+    gem.version     = HTTParty::VERSION
+
+    gem.add_dependency 'crack', HTTParty::CRACK_DEPENDENCY
+
     gem.add_development_dependency "activesupport", "~>2.3"
     gem.add_development_dependency "cucumber", "~>0.7"
     gem.add_development_dependency "fakeweb", "~>1.2"
@@ -29,6 +33,7 @@ end
 
 require 'spec/rake/spectask'
 Spec::Rake::SpecTask.new(:spec) do |spec|
+  spec.ruby_opts << '-rubygems'
   spec.libs << 'lib' << 'spec'
   spec.spec_files = FileList['spec/**/*_spec.rb']
   spec.spec_opts = ['--options', 'spec/spec.opts']
