@@ -1,3 +1,4 @@
+require 'base64'
 class BasicMongrelHandler < Mongrel::HttpHandler
   attr_accessor :content_type, :custom_headers, :response_body, :response_code, :preprocessor, :username, :password
 
