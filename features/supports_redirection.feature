@@ -7,8 +7,8 @@ Feature: Supports Redirection
 
   Scenario: A service that redirects once
     Given a remote service that returns 'Service Response'
-    And that service is accessed at the path '/service.html'
-    And the url '/redirector.html' redirects to '/service.html'
+    And that service is accessed at the path '/landing_service.html'
+    And the url '/redirector.html' redirects to '/landing_service.html'
     When I call HTTParty#get with '/redirector.html'
     Then the return value should match 'Service Response'
 

@@ -8,9 +8,9 @@ Feature: Handles Multiple Formats
 
   Scenario: An HTML service
     Given a remote service that returns '<h1>Some HTML</h1>'
-    And that service is accessed at the path '/service.html'
+    And that service is accessed at the path '/html_service.html'
     And the response from the service has a Content-Type of 'text/html'
-    When I call HTTParty#get with '/service.html'
+    When I call HTTParty#get with '/html_service.html'
     Then it should return a String
     And the return value should match '<h1>Some HTML</h1>'
 
