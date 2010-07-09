@@ -201,6 +201,26 @@ module HTTParty
       default_options[:pem] = pem_contents
     end
 
+    # Allows setting an OpenSSL certificate authority file
+    #
+    #   class Foo
+    #     include HTTParty
+    #     ssl_ca_file '/etc/ssl/certs/ca-certificates.crt'
+    #   end
+    def ssl_ca_file(path)
+      default_options[:ssl_ca_file] = path
+    end
+
+    # Allows setting an OpenSSL certificate authority path (directory)
+    #
+    #   class Foo
+    #     include HTTParty
+    #     ssl_ca_path '/etc/ssl/certs/'
+    #   end
+    def ssl_ca_path(path)
+      default_options[:ssl_ca_path] = path
+    end
+
     # Allows setting a custom parser for the response.
     #
     #   class Foo

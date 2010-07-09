@@ -1,0 +1,9 @@
+[ca]
+basicConstraints=critical,CA:true
+subjectKeyIdentifier=hash
+authorityKeyIdentifier=keyid:always,issuer:always
+
+[cert]
+basicConstraints=critical,CA:false
+subjectKeyIdentifier=hash
+authorityKeyIdentifier=keyid,issuer
