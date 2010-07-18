@@ -1,4 +1,11 @@
-== 0.6.1
+== 0.7.0 (master)
+* minor enhancements
+  * Added query methods for HTTP status codes, i.e. response.success?
+    response.created? (thanks citizenparker)
+* bug fixes
+  * Fixed superclass mismatch exception while running tests
+
+== 0.6.1 2010-07-07
 * minor enhancements
   * updated to crack 0.1.8
 * bug fixes
