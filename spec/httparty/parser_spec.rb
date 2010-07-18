@@ -1,7 +1,5 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper'))
 
-class CustomParser < HTTParty::Parser; end
-
 describe HTTParty::Parser do
   describe ".SupportedFormats" do
     it "returns a hash" do
@@ -115,10 +113,13 @@ describe HTTParty::Parser do
       end
 
       it "raises a useful exception message for subclasses" do
-        parser = CustomParser.new('body', :atom)
+        atom_parser = Class.new(HTTParty::Parser) do
+          def self.name; 'AtomParser'; end
+        end
+        parser = atom_parser.new 'body', :atom
         expect do
           parser.send(:parse_supported_format)
-        end.to raise_error(NotImplementedError, "CustomParser has not implemented a parsing method for the :atom format.")
+        end.to raise_error(NotImplementedError, "AtomParser has not implemented a parsing method for the :atom format.")
       end
     end
   end

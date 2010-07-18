@@ -1,11 +1,5 @@
 require File.expand_path(File.join(File.dirname(__FILE__), 'spec_helper'))
 
-class CustomParser
-  def self.parse(body)
-    return {:sexy => true}
-  end
-end
-
 describe HTTParty do
   before(:each) do
     @klass = Class.new
@@ -241,6 +235,12 @@ describe HTTParty do
   end
 
   describe "parser" do
+    class CustomParser
+      def self.parse(body)
+        return {:sexy => true}
+      end
+    end
+
     let(:parser) do
       Proc.new{ |data, format| CustomParser.parse(data) }
     end
