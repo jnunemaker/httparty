@@ -13,6 +13,20 @@ describe HTTParty::Response do
     @response = HTTParty::Response.new(@response_object, @parsed_response)
   end
 
+  describe ".underscore" do
+    it "works with one capitalized word" do
+      HTTParty::Response.underscore("Accepted").should == "accepted"
+    end
+
+    it "works with titlecase" do
+      HTTParty::Response.underscore("BadGateway").should == "bad_gateway"
+    end
+
+    it "works with all caps" do
+      HTTParty::Response.underscore("OK").should == "ok"
+    end
+  end
+
   describe "initialization" do
     it "should set the Net::HTTP Response" do
       @response.response.should == @response_object
@@ -79,5 +93,96 @@ describe HTTParty::Response do
     response = HTTParty::Response.new({'foo' => {'bar' => 'baz'}}, "{foo: {bar:'baz'}}", 200, 'OK')
     response.foo.should == {'bar' => 'baz'}
     response.foo.bar.should == 'baz'
+  end
+
+  describe "semantic methods for response codes" do
+    def response_mock(klass)
+      r = klass.new('', '', '')
+      r.stub(:body)
+      r
+    end
+
+    context "major codes" do
+      it "is information" do
+        net_response = response_mock(Net::HTTPInformation)
+        response = HTTParty::Response.new(net_response, '')
+        response.information?.should be_true
+      end
+
+      it "is success" do
+        net_response = response_mock(Net::HTTPSuccess)
+        response = HTTParty::Response.new(net_response, '')
+        response.success?.should be_true
+      end
+
+      it "is redirection" do
+        net_response = response_mock(Net::HTTPRedirection)
+        response = HTTParty::Response.new(net_response, '')
+        response.redirection?.should be_true
+      end
+
+      it "is client error" do
+        net_response = response_mock(Net::HTTPClientError)
+        response = HTTParty::Response.new(net_response, '')
+        response.client_error?.should be_true
+      end
+
+      it "is server error" do
+        net_response = response_mock(Net::HTTPServerError)
+        response = HTTParty::Response.new(net_response, '')
+        response.server_error?.should be_true
+      end
+    end
+
+    context "for specific codes" do
+      SPECIFIC_CODES = {
+        :accepted?                        => Net::HTTPAccepted,
+        :bad_gateway?                     => Net::HTTPBadGateway,
+        :bad_request?                     => Net::HTTPBadRequest,
+        :conflict?                        => Net::HTTPConflict,
+        :continue?                        => Net::HTTPContinue,
+        :created?                         => Net::HTTPCreated,
+        :expectation_failed?              => Net::HTTPExpectationFailed,
+        :forbidden?                       => Net::HTTPForbidden,
+        :found?                           => Net::HTTPFound,
+        :gateway_time_out?                => Net::HTTPGatewayTimeOut,
+        :gone?                            => Net::HTTPGone,
+        :internal_server_error?           => Net::HTTPInternalServerError,
+        :length_required?                 => Net::HTTPLengthRequired,
+        :method_not_allowed?              => Net::HTTPMethodNotAllowed,
+        :moved_permanently?               => Net::HTTPMovedPermanently,
+        :multiple_choice?                 => Net::HTTPMultipleChoice,
+        :no_content?                      => Net::HTTPNoContent,
+        :non_authoritative_information?   => Net::HTTPNonAuthoritativeInformation,
+        :not_acceptable?                  => Net::HTTPNotAcceptable,
+        :not_found?                       => Net::HTTPNotFound,
+        :not_implemented?                 => Net::HTTPNotImplemented,
+        :not_modified?                    => Net::HTTPNotModified,
+        :ok?                              => Net::HTTPOK,
+        :partial_content?                 => Net::HTTPPartialContent,
+        :payment_required?                => Net::HTTPPaymentRequired,
+        :precondition_failed?             => Net::HTTPPreconditionFailed,
+        :proxy_authentication_required?   => Net::HTTPProxyAuthenticationRequired,
+        :request_entity_too_large?        => Net::HTTPRequestEntityTooLarge,
+        :request_time_out?                => Net::HTTPRequestTimeOut,
+        :request_uri_too_long?            => Net::HTTPRequestURITooLong,
+        :requested_range_not_satisfiable? => Net::HTTPRequestedRangeNotSatisfiable,
+        :reset_content?                   => Net::HTTPResetContent,
+        :see_other?                       => Net::HTTPSeeOther,
+        :service_unavailable?             => Net::HTTPServiceUnavailable,
+        :switch_protocol?                 => Net::HTTPSwitchProtocol,
+        :temporary_redirect?              => Net::HTTPTemporaryRedirect,
+        :unauthorized?                    => Net::HTTPUnauthorized,
+        :unsupported_media_type?          => Net::HTTPUnsupportedMediaType,
+        :use_proxy?                       => Net::HTTPUseProxy,
+        :version_not_supported?           => Net::HTTPVersionNotSupported
+      }.each do |method, klass|
+        it "responds to #{method}" do
+          net_response = response_mock(klass)
+          response = HTTParty::Response.new(net_response, '')
+          response.__send__(method).should be_true
+        end
+      end
+    end
   end
 end
