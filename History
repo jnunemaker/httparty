@@ -4,6 +4,7 @@
     response.created? (thanks citizenparker)
 * bug fixes
   * Fixed superclass mismatch exception while running tests
+    (thanks dlitz http://github.com/dlitz/httparty/commit/48224f0615b32133afcff4718ad426df7a4b401b)
 
 == 0.6.1 2010-07-07
 * minor enhancements
