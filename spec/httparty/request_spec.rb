@@ -139,16 +139,6 @@ describe HTTParty::Request do
           request.options[:pem] = :pem_contents
           request.send(:http)
         end
-
-        it "should not verify a certificate if scheme is not https" do
-          http = Net::HTTP.new('google.com')
-          Net::HTTP.stub(:new => http)
-
-          request = HTTParty::Request.new(Net::HTTP::Get, 'http://google.com')
-          request.options[:pem] = :pem_contents
-          http = request.send(:http)
-          http.verify_mode.should == OpenSSL::SSL::VERIFY_NONE
-        end
       end
 
       context "debugging" do

@@ -59,6 +59,27 @@ module HTTParty
 
     private
 
+    def attach_ssl_certificates(http)
+      if http.use_ssl?
+        # Client certificate authentication
+        if options[:pem]
+          http.cert = OpenSSL::X509::Certificate.new(options[:pem])
+          http.key = OpenSSL::PKey::RSA.new(options[:pem])
+          http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+        end
+
+        # SSL certificate authority file and/or directory
+        if options[:ssl_ca_file]
+          http.ca_file = options[:ssl_ca_file]
+          http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+        end
+        if options[:ssl_ca_path]
+          http.ca_path = options[:ssl_ca_path]
+          http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+        end
+      end
+    end
+
     def http
       http = Net::HTTP.new(uri.host, uri.port, options[:http_proxyaddr], options[:http_proxyport])
       http.use_ssl = ssl_implied?
@@ -68,23 +89,7 @@ module HTTParty
         http.read_timeout = options[:timeout]
       end
 
-      # By default, don't do any SSL verification (!), but this can be overridden.
-      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-      # Client certificate authentication
-      if options[:pem] && http.use_ssl?
-        http.cert = OpenSSL::X509::Certificate.new(options[:pem])
-        http.key = OpenSSL::PKey::RSA.new(options[:pem])
-        http.verify_mode = OpenSSL::SSL::VERIFY_PEER
-      end
-      # SSL certificate authority file and/or directory
-      if options[:ssl_ca_file] && http.use_ssl?
-        http.ca_file = options[:ssl_ca_file]
-        http.verify_mode = OpenSSL::SSL::VERIFY_PEER
-      end
-      if options[:ssl_ca_path] && http.use_ssl?
-        http.ca_path = options[:ssl_ca_path]
-        http.verify_mode = OpenSSL::SSL::VERIFY_PEER
-      end
+      attach_ssl_certificates(http)
 
       if options[:debug_output]
         http.set_debug_output(options[:debug_output])
