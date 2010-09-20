@@ -297,7 +297,7 @@ module HTTParty
       def perform_request(http_method, path, options) #:nodoc:
         options = default_options.dup.merge(options)
         process_cookies(options)
-        Request.new(http_method, path, options).perform
+        (options[:fragments]) ? Request.new(http_method, path, options).perform_lazy : Request.new(http_method, path, options).perform
       end
 
       def process_cookies(options) #:nodoc:

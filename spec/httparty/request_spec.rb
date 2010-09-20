@@ -66,6 +66,13 @@ describe HTTParty::Request do
       raw_request = @request.instance_variable_get(:@raw_request)
       raw_request.instance_variable_get(:@header)['Authorization'].should_not be_nil
     end
+    
+    it "should be setup to return a response in fragments when configured" do
+      @request.options[:fragments] = true
+      response = @request.send(:perform_lazy)
+      response.class.should == HTTParty::Response
+      response.parsed_response.should be_nil
+    end
   end
 
   describe "#uri" do

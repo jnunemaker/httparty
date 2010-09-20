@@ -24,3 +24,14 @@ Then /it should raise (?:an|a) ([\w:]+) exception/ do |exception|
   @exception_from_httparty.should_not be_nil
   @exception_from_httparty.class.name.should eql(exception)
 end
+
+Then /^the response should have more than one fragment for '(.*)'$/ do |url|
+  got_fragments = false
+  
+  @response_from_httparty.read_lazy do |fragment|
+    got_fragments = true if fragment.length > 0
+    break
+  end
+  
+  got_fragments.should be_true
+end

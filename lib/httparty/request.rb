@@ -49,6 +49,10 @@ module HTTParty
     def parser
       options[:parser]
     end
+    
+    def fragments
+      options[:fragments]
+    end
 
     def perform
       validate
@@ -56,6 +60,12 @@ module HTTParty
       get_response
       handle_response
     end
+    
+    def perform_lazy
+       validate
+       setup_raw_request
+       Response.new(http,nil,uri.request_uri)
+     end
 
     private
 

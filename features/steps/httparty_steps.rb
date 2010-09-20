@@ -2,6 +2,10 @@ When /^I set my HTTParty timeout option to (\d+)$/ do |timeout|
   @request_options[:timeout] = timeout.to_i
 end
 
+When /^I set my HTTParty fragments option$/ do 
+  @request_options[:fragments] = true
+end
+
 When /I call HTTParty#get with '(.*)'$/ do |url|
   begin
     @response_from_httparty = HTTParty.get("http://#{@host_and_port}#{url}", @request_options)

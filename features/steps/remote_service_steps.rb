@@ -3,6 +3,11 @@ Given /a remote service that returns '(.*)'/ do |response_body|
   Given "the response from the service has a body of '#{response_body}'"
 end
 
+Given /a remote service that returns a large result/ do
+  @handler = BasicMongrelHandler.new
+  @handler.response_body = "0"*10000000
+end
+
 Given /a remote service that returns a (\d+) status code/ do |code|
   @handler = BasicMongrelHandler.new
   @handler.response_code = code

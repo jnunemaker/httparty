@@ -35,13 +35,23 @@ module HTTParty
 
     attr_reader :response, :parsed_response, :body, :headers
 
-    def initialize(response, parsed_response)
+    def initialize(response, parsed_response, path=nil)
       @response = response
-      @body = response.body
-      @parsed_response = parsed_response
-      @headers = Headers.new(response.to_hash)
+      if path.nil?
+        @body = response.body
+        @parsed_response = parsed_response
+        @headers = Headers.new(response.to_hash)        
+      else
+        @path = path
+      end
     end
 
+    def read_lazy(&f)
+      response.request_get(@path) do |res|
+        res.read_body(&f)
+      end
+    end
+    
     def class
       Response
     end
