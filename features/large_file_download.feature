@@ -5,10 +5,6 @@ Feature: Handles large downloads in fragments
 	So that I can immediately write fragments, conserving memory
 	
 	Scenario: supports reading a response in fragments
-	# 	Given a website
-	# 	When I call HTTParty#get_fragments
-	# 	Then the response should have more than one fragment
-
 		Given a remote service that returns a large result
 		And that service is accessed at the path '/large_response.html'
 		When I set my HTTParty fragments option
