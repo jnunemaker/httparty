@@ -201,6 +201,37 @@ module HTTParty
       default_options[:pem] = pem_contents
     end
 
+    # Override the way query strings are normalized.
+    # Helpful for overriding the default rails normalization of Array queries.
+    #
+    # For a query:
+    #   get '/', :query => {:selected_ids => [1,2,3]}
+    #
+    # The default query string normalizer returns:
+    #   /?selected_ids[]=1&selected_ids[]=2&selected_ids[]=3
+    #
+    # Let's change it to this:
+    #  /?selected_ids=1&selected_ids=2&selected_ids=3
+    #
+    # Pass a Proc to the query normalizer which accepts the yielded query.
+    #
+    # @example Modifying Array query strings
+    #   class ServiceWrapper
+    #     include HTTParty
+    #
+    #     query_string_normalizer proc { |query|
+    #       query.map do |key, value|
+    #         value.map {|v| "#{key}=#{v}"}
+    #       end.join('&')
+    #     }
+    #   end
+    #
+    # @param [Proc] normalizer the new normalizer
+    # @yield [Hash] query hash option
+    def query_string_normalizer(normalizer)
+      default_options[:query_string_normalizer] = normalizer
+    end
+
     # Allows setting an OpenSSL certificate authority file
     #
     #   class Foo

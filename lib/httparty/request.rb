@@ -103,7 +103,7 @@ module HTTParty
     end
 
     def body
-      options[:body].is_a?(Hash) ? options[:body].to_params : options[:body]
+      options[:body].is_a?(Hash) ? normalize_query(options[:body]) : options[:body]
     end
 
     def credentials
@@ -116,6 +116,18 @@ module HTTParty
 
     def password
       credentials[:password]
+    end
+
+    def normalize_query(query)
+      if query_string_normalizer
+        query_string_normalizer.call(query)
+      else
+        query.to_params
+      end
+    end
+
+    def query_string_normalizer
+      options[:query_string_normalization]
     end
 
     def setup_raw_request
@@ -146,11 +158,12 @@ module HTTParty
       query_string_parts << uri.query unless uri.query.nil?
 
       if options[:query].is_a?(Hash)
-        query_string_parts << options[:default_params].merge(options[:query]).to_params
+        query_string_parts << normalize_query(options[:default_params].merge(options[:query]))
       else
-        query_string_parts << options[:default_params].to_params unless options[:default_params].empty?
+        query_string_parts << normalize_query(options[:default_params]) unless options[:default_params].empty?
         query_string_parts << options[:query] unless options[:query].nil?
       end
+
 
       query_string_parts.size > 0 ? query_string_parts.join('&') : nil
     end

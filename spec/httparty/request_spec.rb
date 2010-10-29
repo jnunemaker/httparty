@@ -5,6 +5,18 @@ describe HTTParty::Request do
     @request = HTTParty::Request.new(Net::HTTP::Get, 'http://api.foo.com/v1', :format => :xml)
   end
 
+  let(:array_normalization_proc) do
+    proc do |query|
+      query.map do |key, value|
+        if value.is_a?(Array)
+          value.map {|v| "#{key}=#{v}"}
+        else
+          {key => value}.to_params
+        end
+      end.flatten.sort.join('&')
+    end
+  end
+
   describe "initialization" do
     it "sets parser to HTTParty::Parser" do
       request = HTTParty::Request.new(Net::HTTP::Get, 'http://google.com')
@@ -73,6 +85,36 @@ describe HTTParty::Request do
       it "does not add an empty query string when default_params are blank" do
         @request.options[:default_params] = {}
         @request.uri.query.should be_nil
+      end
+
+      it "respects the query string normalization proc" do
+        @request.options[:query_string_normalization] = array_normalization_proc
+        @request.options[:query] = {:page => 1, :foo => %w(bar baz)}
+        URI.unescape(@request.uri.query).should == "foo=bar&foo=baz&page=1"
+      end
+
+      context "when representing an array" do
+        it "doesn't modify strings" do
+          @request.options[:query] = "foo=bar&foo=baz"
+          URI.unescape(@request.uri.query).should == "foo=bar&foo=baz"
+        end
+
+        it "converts a ruby array into a Rails supported query string" do
+          @request.options[:query] = {:foo => %w(bar baz)}
+          URI.unescape(@request.uri.query).should == "foo[]=bar&foo[]=baz"
+        end
+      end
+    end
+  end
+
+  describe "#setup_raw_request" do
+    context "when query_string_normalization is set" do
+      it "sets the body to the return value of the proc" do
+        @request.options[:query_string_normalization] = array_normalization_proc
+        @request.options[:body] = {:page => 1, :foo => %w(bar baz)}
+        @request.send(:setup_raw_request)
+        body = @request.instance_variable_get(:@raw_request).body
+        URI.unescape(body).should == "foo=bar&foo=baz&page=1"
       end
     end
   end
