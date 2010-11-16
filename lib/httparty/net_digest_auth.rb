@@ -25,9 +25,10 @@ module Net
         %Q(nonce="#{params['nonce']}"),
         %Q(nc="0"),
         %Q(cnonce="#{params['cnonce']}"),
-        %Q(opaque="#{params['opaque']}"),
         %Q(response="#{request_digest}")
       ]
+
+      header << %Q(opaque="#{params['opaque']}") if params.has_key? 'opaque',
 
       @header['Authorization'] = header
     end
