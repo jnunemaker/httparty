@@ -195,10 +195,11 @@ module HTTParty
     #
     #   class Foo
     #     include HTTParty
-    #     pem File.read('/home/user/my.pem')
+    #     pem File.read('/home/user/my.pem'), "optional password"
     #   end
-    def pem(pem_contents)
+    def pem(pem_contents, password=nil)
       default_options[:pem] = pem_contents
+      default_options[:pem_password] = password
     end
 
     # Override the way query strings are normalized.

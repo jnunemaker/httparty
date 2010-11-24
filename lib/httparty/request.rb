@@ -64,7 +64,7 @@ module HTTParty
         # Client certificate authentication
         if options[:pem]
           http.cert = OpenSSL::X509::Certificate.new(options[:pem])
-          http.key = OpenSSL::PKey::RSA.new(options[:pem])
+          http.key = OpenSSL::PKey::RSA.new(options[:pem], options[:pem_password])
           http.verify_mode = OpenSSL::SSL::VERIFY_PEER
         end
 
