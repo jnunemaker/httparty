@@ -160,9 +160,10 @@ describe HTTParty::Request do
           @cert = mock("OpenSSL::X509::Certificate")
           @key =  mock("OpenSSL::PKey::RSA")
           OpenSSL::X509::Certificate.should_receive(:new).with(pem).and_return(@cert)
-          OpenSSL::PKey::RSA.should_receive(:new).with(pem).and_return(@key)
+          OpenSSL::PKey::RSA.should_receive(:new).with(pem, "password").and_return(@key)
 
           @request.options[:pem] = pem
+          @request.options[:pem_password] = "password"
           @pem_http = @request.send(:http)
         end
 
