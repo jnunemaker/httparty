@@ -11,6 +11,7 @@ require dir + 'httparty/module_inheritable_attributes'
 require dir + 'httparty/cookie_hash'
 require dir + 'httparty/net_digest_auth'
 
+# @see HTTParty::ClassMethods
 module HTTParty
   VERSION          = "0.6.1".freeze
   CRACK_DEPENDENCY = "0.1.8".freeze
@@ -81,6 +82,28 @@ module HTTParty
     #   end
     def digest_auth(u, p)
       default_options[:digest_auth] = {:username => u, :password => p}
+    end
+
+    # Do not send rails style query strings.
+    # Specically, don't use bracket notation when sending an array
+    #
+    # For a query:
+    #   get '/', :query => {:selected_ids => [1,2,3]}
+    #
+    # The default query string looks like this:
+    #   /?selected_ids[]=1&selected_ids[]=2&selected_ids[]=3
+    #
+    # Call `disable_rails_query_string_format` to transform the query string
+    # into:
+    #   /?selected_ids=1&selected_ids=2&selected_ids=3
+    #
+    # @example
+    #   class Foo
+    #     include HTTParty
+    #     disable_rails_query_string_format
+    #   end
+    def disable_rails_query_string_format
+      query_string_normalizer Request::NON_RAILS_QUERY_STRING_NORMALIZER
     end
 
     # Allows setting default parameters to be appended to each request.
@@ -226,8 +249,9 @@ module HTTParty
     #     }
     #   end
     #
-    # @param [Proc] normalizer the new normalizer
-    # @yield [Hash] query hash option
+    # @param [Proc] normalizer custom query string normalizer.
+    # @yield [Hash, String] query string
+    # @yieldreturn [Array] an array that will later be joined with '&'
     def query_string_normalizer(normalizer)
       default_options[:query_string_normalizer] = normalizer
     end

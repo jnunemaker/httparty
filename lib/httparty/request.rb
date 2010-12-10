@@ -11,6 +11,18 @@ module HTTParty
 
     SupportedURISchemes  = [URI::HTTP, URI::HTTPS]
 
+    NON_RAILS_QUERY_STRING_NORMALIZER = Proc.new do |query|
+      query.map do |key, value|
+        if value.nil?
+          key
+        elsif value.is_a?(Array)
+          value.map {|v| "#{key}=#{URI.encode(v.to_s, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}"}
+        else
+          {key => value}.to_params
+        end
+      end.flatten.sort.join('&')
+    end
+
     attr_accessor :http_method, :path, :options, :last_response, :redirect
 
     def initialize(http_method, path, o={})

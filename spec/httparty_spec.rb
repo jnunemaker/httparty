@@ -41,7 +41,14 @@ describe HTTParty do
     end
   end
 
-  describe "#normalize_base_uri" do
+  describe ".disable_rails_query_string_format" do
+    it "sets the query string normalizer to HTTParty::Request::NON_RAILS_QUERY_STRING_NORMALIZER" do
+      @klass.disable_rails_query_string_format
+      @klass.default_options[:query_string_normalizer].should == HTTParty::Request::NON_RAILS_QUERY_STRING_NORMALIZER
+    end
+  end
+
+  describe ".normalize_base_uri" do
     it "should add http if not present for non ssl requests" do
       uri = HTTParty.normalize_base_uri('api.foobar.com')
       uri.should == 'http://api.foobar.com'
@@ -343,6 +350,14 @@ describe HTTParty do
     it "sets the maintain_method_across_redirects option to false" do
       @klass.maintain_method_across_redirects false
       @klass.default_options[:maintain_method_across_redirects].should be_false
+    end
+  end
+
+  describe ".query_string_normalizer" do
+    it "sets the query_string_normalizer option" do
+      normalizer = proc {}
+      @klass.query_string_normalizer normalizer
+      @klass.default_options[:query_string_normalizer].should == normalizer
     end
   end
 
