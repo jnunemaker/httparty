@@ -19,6 +19,7 @@ module HTTParty
       self.options = {
         :limit => o.delete(:no_follow) ? 1 : 5,
         :default_params => {},
+        :follow_redirects => true,
         :parser => Parser
       }.merge(o)
     end
@@ -178,19 +179,21 @@ module HTTParty
         Net::HTTPSeeOther, # 303
         Net::HTTPUseProxy, # 305
         Net::HTTPTemporaryRedirect
-        if last_response.key?('location')
+        if options[:follow_redirects] && last_response.key?('location')
           options[:limit] -= 1
-          self.path = last_response['location']
+          new_uri = last_response['location']
+          if new_uri =~ /^http/
+            self.path = new_uri
+          else
+            self.path.merge(new_uri)
+          end
           self.redirect = true
           self.http_method = Net::HTTP::Get unless options[:maintain_method_across_redirects]
           capture_cookies(last_response)
-          perform
-        else
-          last_response
+          return perform
         end
-      else
-        Response.new(last_response, parse_response(last_response.body))
       end
+      Response.new(last_response, parse_response(last_response.body))
     end
 
     # Inspired by Ruby 1.9
