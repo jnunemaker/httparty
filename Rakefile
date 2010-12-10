@@ -19,13 +19,9 @@ begin
     gem.add_development_dependency "fakeweb", "~>1.2"
     gem.add_development_dependency "mongrel", "~>1.1"
     gem.add_development_dependency "rspec", "~>1.3"
-    gem.add_development_dependency "jeweler", "~>1.4"
+    gem.add_development_dependency "jeweler", "~>1.5"
     gem.post_install_message = "When you HTTParty, you must party hard!"
-    gem.rubyforge_project = 'httparty'
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
-  end
-  Jeweler::RubyforgeTasks.new do |rubyforge|
-    rubyforge.doc_task = "rdoc"
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
@@ -46,13 +42,10 @@ Spec::Rake::SpecTask.new(:rcov) do |spec|
   spec.rcov = true
 end
 
-task :spec => :check_dependencies
-
 begin
   require 'cucumber/rake/task'
   Cucumber::Rake::Task.new(:features)
 
-  task :features => :check_dependencies
 rescue LoadError
   task :features do
     abort "Cucumber is not available. In order to run features, you must: sudo gem install cucumber"
@@ -74,11 +67,6 @@ Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
   rdoc.rdoc_files.include('lib/httparty.rb')
-end
-
-desc 'Upload website files to rubyforge'
-task :website do
-  sh %{rsync -av website/ jnunemaker@rubyforge.org:/var/www/gforge-projects/httparty}
 end
 
 begin
