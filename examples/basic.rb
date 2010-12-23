@@ -9,3 +9,24 @@ puts response.body, response.code, response.message, response.headers.inspect
 response.each do |item|
   puts item['user']['screen_name']
 end
+
+# An example post to a minimal rails app in the development environment
+# Note that "skip_before_filter :verify_authenticity_token" must be set in the
+# "pears" controller for this example
+
+class Partay
+  include HTTParty
+  base_uri 'http://localhost:3000'
+end
+
+options = {
+  :body => {
+    :pear => { # your resource
+      :foo => '123', # your columns/data
+      :bar => 'second',
+      :baz => 'last thing'
+    }
+  }
+}
+
+pp Partay.post('/pears.xml', options)
