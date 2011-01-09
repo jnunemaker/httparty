@@ -41,6 +41,32 @@ module HTTParty
   module ClassMethods
     extend AllowedFormatsDeprecation
 
+    # ----------------------------------------
+    # :section: Common Request Options
+    # Request methods (get, post, put, delete, head, options) all take a common set of options. These are:
+    #
+    # [:+body+:] Body of the request. If passed a Hash, will try to normalize it first, by default passing it to ActiveSupport::to_params. Any other kind of object will get used as-is.
+    # [:+http_proxyaddr+:] Address of proxy server to use.
+    # [:+http_proxyport+:]  Port of proxy server to use.
+    # [:+limit+:] Maximum number of redirects to follow. Takes precedences over :+no_follow+.    
+    # [:+query+:] Query string, or a Hash representing it. Normalized according to the same rules as :+body+. If you specify this on a POST, you must use a Hash. See also HTTParty::ClassMethods.default_params.
+    # [:+timeout+:] Timeout for opening connection and reading data.
+    #
+    # There are also another set of options with names corresponding to various class methods. The methods in question are those that let you set a class-wide default, and the options override the defaults on a request-by-request basis. Those options are:
+    # * :+base_uri+: see HTTParty::ClassMethods.base_uri.
+    # * :+basic_auth+: see HTTParty::ClassMethods.basic_auth. Only one of :+basic_auth+ and :+digest_auth+ can be used at a time; if you try using both, you'll get an ArgumentError.
+    # * :+debug_output+: see HTTParty::ClassMethods.debug_output.
+    # * :+digest_auth+: see HTTParty::ClassMethods.digest_auth. Only one of :+basic_auth+ and :+digest_auth+ can be used at a time; if you try using both, you'll get an ArgumentError.
+    # * :+format+: see HTTParty::ClassMethods.format.
+    # * :+headers+: see HTTParty::ClassMethods.headers. Must be a Hash.
+    # * :+maintain_method_across_redirects+: see HTTParty::ClassMethods.maintain_method_across_redirects.
+    # * :+no_follow+: see HTTParty::ClassMethods.no_follow.
+    # * :+parser+: see HTTParty::ClassMethods.parser.
+    # * :+pem+: see HTTParty::ClassMethods.pem.
+    # * :+query_string_normalization+: see HTTParty::ClassMethods.query_string_normalizer. Note the difference in names.
+    # * :+ssl_ca_file+: see HTTParty::ClassMethods.ssl_ca_file.
+    # ----------------------------------------
+    
     # Allows setting http proxy information to be used
     #
     #   class Foo
