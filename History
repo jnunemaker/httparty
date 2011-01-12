@@ -3,6 +3,7 @@
   * Added query methods for HTTP status codes, i.e. response.success?
     response.created? (thanks citizenparker)
   * Added support for ssl_ca_file and ssl_ca_path (dlitz)
+  * Allow custom query string normalization. gh-8
 * bug fixes
   * Fixed superclass mismatch exception while running tests
     (thanks dlitz http://github.com/dlitz/httparty/commit/48224f0615b32133afcff4718ad426df7a4b401b)
