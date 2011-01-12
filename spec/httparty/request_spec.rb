@@ -99,7 +99,7 @@ describe HTTParty::Request do
 
       it "respects the query string normalization proc" do
         empty_proc = lambda {|qs| ""}
-        @request.options[:query_string_normalization] = empty_proc
+        @request.options[:query_string_normalizer] = empty_proc
         @request.options[:query] = {:foo => :bar}
         URI.unescape(@request.uri.query).should == ""
       end
@@ -115,9 +115,9 @@ describe HTTParty::Request do
   end
 
   describe "#setup_raw_request" do
-    context "when query_string_normalization is set" do
+    context "when query_string_normalizer is set" do
       it "sets the body to the return value of the proc" do
-        @request.options[:query_string_normalization] = HTTParty::Request::NON_RAILS_QUERY_STRING_NORMALIZER
+        @request.options[:query_string_normalizer] = HTTParty::Request::NON_RAILS_QUERY_STRING_NORMALIZER
         @request.options[:body] = {:page => 1, :foo => %w(bar baz)}
         @request.send(:setup_raw_request)
         body = @request.instance_variable_get(:@raw_request).body

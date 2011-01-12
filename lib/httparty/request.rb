@@ -139,7 +139,7 @@ module HTTParty
     end
 
     def query_string_normalizer
-      options[:query_string_normalization]
+      options[:query_string_normalizer]
     end
 
     def setup_raw_request
