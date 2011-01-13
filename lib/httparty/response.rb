@@ -33,9 +33,10 @@ module HTTParty
       string.gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').gsub(/([a-z])([A-Z])/,'\1_\2').downcase
     end
 
-    attr_reader :response, :parsed_response, :body, :headers
+    attr_reader :request, :response, :parsed_response, :body, :headers
 
-    def initialize(response, parsed_response)
+    def initialize(request, response, parsed_response)
+      @request = request
       @response = response
       @body = response.body
       @parsed_response = parsed_response

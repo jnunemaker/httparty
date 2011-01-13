@@ -201,7 +201,7 @@ module HTTParty
           last_response
         end
       else
-        Response.new(last_response, parse_response(last_response.body))
+        Response.new(self, last_response, parse_response(last_response.body))
       end
     end
 
