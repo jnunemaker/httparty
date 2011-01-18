@@ -13,7 +13,7 @@ require dir + 'httparty/net_digest_auth'
 
 # @see HTTParty::ClassMethods
 module HTTParty
-  VERSION          = "0.6.1".freeze
+  VERSION          = "0.7.0".freeze
   CRACK_DEPENDENCY = "0.1.8".freeze
 
   module AllowedFormatsDeprecation
