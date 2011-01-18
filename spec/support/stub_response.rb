@@ -8,7 +8,7 @@ module HTTParty
       response.stub!(:body).and_return(data)
 
       http_request = HTTParty::Request.new(Net::HTTP::Get, 'http://localhost', :format => format)
-      http_request.stub!(:perform_actual_request).and_return(response)
+      http_request.stub_chain(:http, :request).and_return(response)
 
       HTTParty::Request.should_receive(:new).and_return(http_request)
     end

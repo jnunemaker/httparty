@@ -66,7 +66,8 @@ module HTTParty
     def perform
       validate
       setup_raw_request
-      get_response
+      self.last_response = http.request(@raw_request)
+      handle_deflation
       handle_response
     end
 
@@ -158,14 +159,6 @@ module HTTParty
       end
     end
 
-    def perform_actual_request
-      http.request(@raw_request)
-    end
-
-    def get_response
-      self.last_response = perform_actual_request
-    end
-
     def query_string(uri)
       query_string_parts = []
       query_string_parts << uri.query unless uri.query.nil?
@@ -183,7 +176,6 @@ module HTTParty
 
     # Raises exception Net::XXX (http error code) if an http error occured
     def handle_response
-      handle_deflation
       case last_response
       when Net::HTTPMultipleChoice, # 300
         Net::HTTPMovedPermanently, # 301
@@ -241,15 +233,15 @@ module HTTParty
       end
     end
 
-      def validate
-        raise HTTParty::RedirectionTooDeep.new(last_response), 'HTTP redirects too deep' if options[:limit].to_i <= 0
-        raise ArgumentError, 'only get, post, put, delete, head, and options methods are supported' unless SupportedHTTPMethods.include?(http_method)
-        raise ArgumentError, ':headers must be a hash' if options[:headers] && !options[:headers].is_a?(Hash)
-        raise ArgumentError, 'only one authentication method, :basic_auth or :digest_auth may be used at a time' if options[:basic_auth] && options[:digest_auth]
-        raise ArgumentError, ':basic_auth must be a hash' if options[:basic_auth] && !options[:basic_auth].is_a?(Hash)
-        raise ArgumentError, ':digest_auth must be a hash' if options[:digest_auth] && !options[:digest_auth].is_a?(Hash)
-        raise ArgumentError, ':query must be hash if using HTTP Post' if post? && !options[:query].nil? && !options[:query].is_a?(Hash)
-      end
+    def validate
+      raise HTTParty::RedirectionTooDeep.new(last_response), 'HTTP redirects too deep' if options[:limit].to_i <= 0
+      raise ArgumentError, 'only get, post, put, delete, head, and options methods are supported' unless SupportedHTTPMethods.include?(http_method)
+      raise ArgumentError, ':headers must be a hash' if options[:headers] && !options[:headers].is_a?(Hash)
+      raise ArgumentError, 'only one authentication method, :basic_auth or :digest_auth may be used at a time' if options[:basic_auth] && options[:digest_auth]
+      raise ArgumentError, ':basic_auth must be a hash' if options[:basic_auth] && !options[:basic_auth].is_a?(Hash)
+      raise ArgumentError, ':digest_auth must be a hash' if options[:digest_auth] && !options[:digest_auth].is_a?(Hash)
+      raise ArgumentError, ':query must be hash if using HTTP Post' if post? && !options[:query].nil? && !options[:query].is_a?(Hash)
+    end
 
     def post?
       Net::HTTP::Post == http_method
