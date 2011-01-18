@@ -1,4 +1,4 @@
-== 0.7.0 2010-01-18
+== 0.7.0 2011-01-18
 * minor enhancements
   * Added query methods for HTTP status codes, i.e. response.success?
     response.created? (thanks citizenparker)
