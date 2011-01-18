@@ -1,4 +1,4 @@
-== 0.7.0 (master)
+== 0.7.0 2010-01-18
 * minor enhancements
   * Added query methods for HTTP status codes, i.e. response.success?
     response.created? (thanks citizenparker)
@@ -9,7 +9,7 @@
   * Added basic post example (pbuckley)
   * Response object has access to its corresponding request object
   * Added example of siginin into tripit.com
-  * Added option to follow redirects (rkj)
+  * Added option to follow redirects (rkj). gh-56
 * bug fixes
   * Fixed superclass mismatch exception while running tests
     (thanks dlitz http://github.com/dlitz/httparty/commit/48224f0615b32133afcff4718ad426df7a4b401b)
