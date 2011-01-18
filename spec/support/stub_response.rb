@@ -14,10 +14,10 @@ module HTTParty
     end
 
     def stub_response(body, code = 200)
+      @request.options[:base_uri] ||= 'http://localhost'
       unless defined?(@http) && @http
         @http = Net::HTTP.new('localhost', 80)
         @request.stub!(:http).and_return(@http)
-        @request.stub!(:uri).and_return(URI.parse("http://foo.com/foobar"))
       end
 
       response = Net::HTTPResponse::CODE_TO_OBJ[code.to_s].new("1.1", code, body)

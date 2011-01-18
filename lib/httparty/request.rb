@@ -170,34 +170,21 @@ module HTTParty
         query_string_parts << options[:query] unless options[:query].nil?
       end
 
-
       query_string_parts.size > 0 ? query_string_parts.join('&') : nil
     end
 
     # Raises exception Net::XXX (http error code) if an http error occured
     def handle_response
-      case last_response
-      when Net::HTTPMultipleChoice, # 300
-        Net::HTTPMovedPermanently, # 301
-        Net::HTTPFound, # 302
-        Net::HTTPSeeOther, # 303
-        Net::HTTPUseProxy, # 305
-        Net::HTTPTemporaryRedirect
-        if options[:follow_redirects] && last_response.key?('location')
-          options[:limit] -= 1
-          new_uri = last_response['location']
-          if new_uri =~ /^http/
-            self.path = new_uri
-          else
-            self.path.merge(new_uri)
-          end
-          self.redirect = true
-          self.http_method = Net::HTTP::Get unless options[:maintain_method_across_redirects]
-          capture_cookies(last_response)
-          return perform
-        end
+      if response_redirects?
+        options[:limit] -= 1
+        self.path = last_response['location']
+        self.redirect = true
+        self.http_method = Net::HTTP::Get unless options[:maintain_method_across_redirects]
+        capture_cookies(last_response)
+        perform
+      else
+        Response.new(self, last_response, parse_response(last_response.body))
       end
-      Response.new(self, last_response, parse_response(last_response.body))
     end
 
     # Inspired by Ruby 1.9
@@ -208,6 +195,18 @@ module HTTParty
         last_response.body.replace Zlib::GzipReader.new(body_io).read
       when "deflate"
         last_response.body.replace Zlib::Inflate.inflate(last_response.body)
+      end
+    end
+
+    def response_redirects?
+      case last_response
+      when Net::HTTPMultipleChoice, # 300
+           Net::HTTPMovedPermanently, # 301
+           Net::HTTPFound, # 302
+           Net::HTTPSeeOther, # 303
+           Net::HTTPUseProxy, # 305
+           Net::HTTPTemporaryRedirect
+        options[:follow_redirects] && last_response.key?('location')
       end
     end
 

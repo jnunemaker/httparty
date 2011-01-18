@@ -184,6 +184,19 @@ module HTTParty
       default_cookies.add_cookies(h)
     end
 
+    # Proceed to the location header when an HTTP response dictates a redirect.
+    # Redirects are always followed by default.
+    #
+    # @example
+    #   class Foo
+    #     include HTTParty
+    #     base_uri 'http://google.com'
+    #     follow_redirects true
+    #   end
+    def follow_redirects(value = true)
+      default_options[:follow_redirects] = value
+    end
+
     # Allows setting the format with which to parse.
     # Must be one of the allowed formats ie: json, xml
     #

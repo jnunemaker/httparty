@@ -372,6 +372,18 @@ describe HTTParty do
     end
   end
 
+  describe ".follow_redirects" do
+    it "sets follow redirects to true by default" do
+      @klass.follow_redirects
+      @klass.default_options[:follow_redirects].should be_true
+    end
+
+    it "sets the follow_redirects option to false" do
+      @klass.follow_redirects false
+      @klass.default_options[:follow_redirects].should be_false
+    end
+  end
+
   describe ".query_string_normalizer" do
     it "sets the query_string_normalizer option" do
       normalizer = proc {}

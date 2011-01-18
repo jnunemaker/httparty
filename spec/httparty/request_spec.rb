@@ -322,9 +322,19 @@ describe HTTParty::Request do
           @request.perform.should == {"hash" => {"foo" => "bar"}}
         end
 
-        it "returns the Net::HTTP response if the 300 does not contain a location header" do
+        it "redirects if a 300 contains a relative location header" do
+          redirect = stub_response '', 300
+          redirect['location'] = '/foo/bar'
+          ok = stub_response('<hash><foo>bar</foo></hash>', 200)
+          @http.stub!(:request).and_return(redirect, ok)
+          response = @request.perform
+          response.request.uri.request_uri.should == "/foo/bar"
+          response.should == {"hash" => {"foo" => "bar"}}
+        end
+
+        it "returns the HTTParty::Response when the 300 does not contain a location header" do
           net_response = stub_response '', 300
-          @request.perform.should be_kind_of(Net::HTTPMultipleChoice)
+          HTTParty::Response.should === @request.perform
         end
       end
 
