@@ -1,7 +1,7 @@
 module HTTParty
   class Response < HTTParty::BasicObject #:nodoc:
     class Headers
-      include Net::HTTPHeader
+      include ::Net::HTTPHeader
 
       def initialize(header)
         @header = header
@@ -56,7 +56,7 @@ module HTTParty
       %(#<#{self.class}:0x#{inspect_id} @parsed_response=#{parsed_response.inspect}, @response=#{response.inspect}, @headers=#{headers.inspect}>)
     end
 
-    CODES_TO_OBJ = Net::HTTPResponse::CODE_CLASS_TO_OBJ.merge Net::HTTPResponse::CODE_TO_OBJ
+    CODES_TO_OBJ = ::Net::HTTPResponse::CODE_CLASS_TO_OBJ.merge ::Net::HTTPResponse::CODE_TO_OBJ
 
     CODES_TO_OBJ.each do |response_code, klass|
       name = klass.name.sub("Net::HTTP", '')

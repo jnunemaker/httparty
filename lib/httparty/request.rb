@@ -12,7 +12,7 @@ module HTTParty
     SupportedURISchemes  = [URI::HTTP, URI::HTTPS]
 
     NON_RAILS_QUERY_STRING_NORMALIZER = Proc.new do |query|
-      query.map do |key, value|
+      Array(query).map do |key, value|
         if value.nil?
           key
         elsif value.is_a?(Array)
