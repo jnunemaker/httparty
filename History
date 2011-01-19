@@ -1,3 +1,8 @@
+== 0.7.1 2011-01-19
+* bug fixes
+  * Fix uninitialized constant HTTParty::Response::Net in 1.9.2 (cap10morgan)
+  * Other fixes for 1.9.2, full suite still fails (cap10morgan)
+
 == 0.7.0 2011-01-18
 * minor enhancements
   * Added query methods for HTTP status codes, i.e. response.success?
