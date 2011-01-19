@@ -127,7 +127,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<activesupport>, ["~> 2.3"])
       s.add_development_dependency(%q<cucumber>, ["~> 0.7"])
       s.add_development_dependency(%q<fakeweb>, ["~> 1.2"])
-      s.add_development_dependency(%q<mongrel>, ["~> 1.1"])
+      s.add_development_dependency(%q<mongrel>, ["~> 1.2.0.pre2"])
       s.add_development_dependency(%q<rspec>, ["~> 1.3"])
       s.add_development_dependency(%q<jeweler>, ["~> 1.5"])
     else
@@ -135,7 +135,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<activesupport>, ["~> 2.3"])
       s.add_dependency(%q<cucumber>, ["~> 0.7"])
       s.add_dependency(%q<fakeweb>, ["~> 1.2"])
-      s.add_dependency(%q<mongrel>, ["~> 1.1"])
+      s.add_dependency(%q<mongrel>, ["~> 1.2.0.pre2"])
       s.add_dependency(%q<rspec>, ["~> 1.3"])
       s.add_dependency(%q<jeweler>, ["~> 1.5"])
     end
@@ -144,7 +144,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<activesupport>, ["~> 2.3"])
     s.add_dependency(%q<cucumber>, ["~> 0.7"])
     s.add_dependency(%q<fakeweb>, ["~> 1.2"])
-    s.add_dependency(%q<mongrel>, ["~> 1.1"])
+    s.add_dependency(%q<mongrel>, ["~> 1.2.0.pre2"])
     s.add_dependency(%q<rspec>, ["~> 1.3"])
     s.add_dependency(%q<jeweler>, ["~> 1.5"])
   end
