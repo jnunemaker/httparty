@@ -28,7 +28,7 @@ module Net
         %Q(response="#{request_digest}")
       ]
 
-      header << %Q(opaque="#{params['opaque']}") if params.has_key? 'opaque',
+      header << %Q(opaque="#{params['opaque']}") if params.has_key? 'opaque'
 
       @header['Authorization'] = header
     end
