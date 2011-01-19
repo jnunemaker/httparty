@@ -9,7 +9,7 @@ describe HTTParty::Request do
     let(:normalizer) { HTTParty::Request::NON_RAILS_QUERY_STRING_NORMALIZER }
 
     it "doesn't modify strings" do
-      query_string = normalizer["foo=bar&foo=baz"]
+      query_string = normalizer.call(["foo=bar&foo=baz"])
       URI.unescape(query_string).should == "foo=bar&foo=baz"
     end
 
