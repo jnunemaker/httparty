@@ -68,15 +68,27 @@ describe HTTParty::Request do
       @request.instance_variable_get(:@raw_request)['authorization'].should_not be_nil
     end
 
-    it "should use digest auth when configured" do
-      FakeWeb.register_uri(:head, "http://api.foo.com/v1",
-        :www_authenticate => 'Digest realm="Log Viewer", qop="auth", nonce="2CA0EC6B0E126C4800E56BA0C0003D3C", opaque="5ccc069c403ebaf9f0171e9517f40e41", stale=false')
+    context "digest_auth" do
+      def do_digest_auth(opaque = ', opaque="5ccc069c403ebaf9f0171e9517f40e41"')
+        FakeWeb.register_uri(:head, "http://api.foo.com/v1",
+          :www_authenticate => 'Digest realm="Log Viewer", qop="auth", nonce="2CA0EC6B0E126C4800E56BA0C0003D3C"'+opaque+', stale=false')
 
-      @request.options[:digest_auth] = {:username => 'foobar', :password => 'secret'}
-      @request.send(:setup_raw_request)
+        @request.options[:digest_auth] = {:username => 'foobar', :password => 'secret'}
+        @request.send(:setup_raw_request)
 
-      raw_request = @request.instance_variable_get(:@raw_request)
-      raw_request.instance_variable_get(:@header)['Authorization'].should_not be_nil
+        raw_request = @request.instance_variable_get(:@raw_request)
+      end
+
+      it "should use digest auth when configured" do
+        raw_request = do_digest_auth
+        raw_request.instance_variable_get(:@header)['Authorization'].should_not be_nil
+        raw_request.instance_variable_get(:@header)['Authorization'].should include(%Q(opaque="5ccc069c403ebaf9f0171e9517f40e41"))
+      end
+
+      it "should not return opaque in the header if the server didn't sent it" do
+        raw_request = do_digest_auth ''
+        raw_request.instance_variable_get(:@header)['Authorization'].find{|param| param =~ /opaque/}.should be_nil
+      end
     end
   end
 
