@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{httparty}
-  s.version = "0.7.2"
+  s.version = "0.7.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["John Nunemaker", "Sandro Turriate"]
@@ -76,6 +76,7 @@ Gem::Specification.new do |s|
     "spec/fixtures/twitter.xml",
     "spec/fixtures/undefined_method_add_node_for_nil.xml",
     "spec/httparty/cookie_hash_spec.rb",
+    "spec/httparty/net_digest_auth_spec.rb",
     "spec/httparty/parser_spec.rb",
     "spec/httparty/request_spec.rb",
     "spec/httparty/response_spec.rb",
@@ -92,7 +93,7 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://httparty.rubyforge.org}
   s.post_install_message = %q{When you HTTParty, you must party hard!}
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.3.7}
+  s.rubygems_version = %q{1.4.2}
   s.summary = %q{Makes http fun! Also, makes consuming restful web services dead easy.}
   s.test_files = [
     "examples/aaws.rb",
@@ -105,6 +106,7 @@ Gem::Specification.new do |s|
     "examples/twitter.rb",
     "examples/whoismyrep.rb",
     "spec/httparty/cookie_hash_spec.rb",
+    "spec/httparty/net_digest_auth_spec.rb",
     "spec/httparty/parser_spec.rb",
     "spec/httparty/request_spec.rb",
     "spec/httparty/response_spec.rb",
@@ -117,7 +119,6 @@ Gem::Specification.new do |s|
   ]
 
   if s.respond_to? :specification_version then
-    current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
