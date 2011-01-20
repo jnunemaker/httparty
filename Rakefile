@@ -19,6 +19,7 @@ begin
     gem.add_development_dependency "fakeweb", "~>1.2"
     gem.add_development_dependency "rspec", "~>1.3"
     gem.add_development_dependency "jeweler", "~>1.5"
+    gem.add_development_dependency "mongrel", "1.2.0.pre2"
     gem.post_install_message = "When you HTTParty, you must party hard!"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end

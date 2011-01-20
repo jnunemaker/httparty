@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    httparty (0.7.0)
+    httparty (0.7.2)
       crack (= 0.1.8)
 
 GEM
@@ -41,7 +41,6 @@ PLATFORMS
 
 DEPENDENCIES
   activesupport (~> 2.3)
-  crack (= 0.1.8)
   cucumber (~> 0.7)
   fakeweb (~> 1.2)
   httparty!
