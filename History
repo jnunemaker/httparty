@@ -1,3 +1,11 @@
+== 0.7.3 2011-01-20
+* bug fixes
+  * Fix digest auth for unspecified quality of protection (bjoernalbers, mtrudel, dwo)
+
+== 0.7.2 2011-01-20
+* bug fixes
+  * Fix gem dependencies
+
 == 0.7.1 2011-01-19
 * bug fixes
   * Fix uninitialized constant HTTParty::Response::Net in 1.9.2 (cap10morgan)
