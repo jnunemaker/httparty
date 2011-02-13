@@ -75,6 +75,8 @@ module HTTParty
 
     def attach_ssl_certificates(http)
       if http.use_ssl?
+        http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+
         # Client certificate authentication
         if options[:pem]
           http.cert = OpenSSL::X509::Certificate.new(options[:pem])
@@ -87,6 +89,7 @@ module HTTParty
           http.ca_file = options[:ssl_ca_file]
           http.verify_mode = OpenSSL::SSL::VERIFY_PEER
         end
+
         if options[:ssl_ca_path]
           http.ca_path = options[:ssl_ca_path]
           http.verify_mode = OpenSSL::SSL::VERIFY_PEER
