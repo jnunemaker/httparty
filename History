@@ -1,3 +1,7 @@
+== 0.7.4 2011-02-13
+* bug fixes
+  * Set VERIFY_NONE when using https. Ruby 1.9.2 no longer sets this for us. gh-67
+
 == 0.7.3 2011-01-20
 * bug fixes
   * Fix digest auth for unspecified quality of protection (bjoernalbers, mtrudel, dwo)
