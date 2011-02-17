@@ -152,7 +152,7 @@ module HTTParty
     #     default_timeout 10
     #   end
     def default_timeout(t)
-      raise ArgumentError, 'Timeout must be an integer' unless t && t.is_a?(Integer)
+      raise ArgumentError, 'Timeout must be an integer or float' unless t && (t.is_a?(Integer) || t.is_a?(Float))
       default_options[:timeout] = t
     end
 

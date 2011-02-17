@@ -232,6 +232,11 @@ describe HTTParty do
       @klass.default_timeout 10
       @klass.default_options[:timeout].should == 10
     end
+
+    it "should support floats" do
+      @klass.default_timeout 0.5
+      @klass.default_options[:timeout].should == 0.5
+    end
   end
 
   describe "debug_output" do
