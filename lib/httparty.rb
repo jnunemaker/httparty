@@ -5,7 +5,7 @@ require 'uri'
 require 'zlib'
 require 'crack'
 
-dir = Pathname(__FILE__).dirname.expand_path
+dir = Pathname(__FILE__).dirname.expand_path.to_s
 
 require dir + 'httparty/module_inheritable_attributes'
 require dir + 'httparty/cookie_hash'
