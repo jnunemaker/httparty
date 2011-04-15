@@ -5,15 +5,13 @@ require 'uri'
 require 'zlib'
 require 'crack'
 
-dir = Pathname(__FILE__).dirname.expand_path.to_s
-
-require dir + 'httparty/module_inheritable_attributes'
-require dir + 'httparty/cookie_hash'
-require dir + 'httparty/net_digest_auth'
+require 'httparty/module_inheritable_attributes'
+require 'httparty/cookie_hash'
+require 'httparty/net_digest_auth'
 
 # @see HTTParty::ClassMethods
 module HTTParty
-  VERSION          = "0.7.4".freeze
+  VERSION          = "0.7.5".freeze
   CRACK_DEPENDENCY = "0.1.8".freeze
 
   module AllowedFormatsDeprecation
@@ -448,11 +446,11 @@ module HTTParty
 
 end
 
-require dir + 'httparty/core_extensions'
-require dir + 'httparty/exceptions'
-require dir + 'httparty/parser'
-require dir + 'httparty/request'
-require dir + 'httparty/response'
+require 'httparty/core_extensions'
+require 'httparty/exceptions'
+require 'httparty/parser'
+require 'httparty/request'
+require 'httparty/response'
 
 if Crack::VERSION != HTTParty::CRACK_DEPENDENCY
   warn "warning: HTTParty depends on version #{HTTParty::CRACK_DEPENDENCY} of crack, not #{Crack::VERSION}."
