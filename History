@@ -1,3 +1,7 @@
+== 0.7.5 2011-04-16
+* bug fix
+  * caused issue with latest rubygems
+
 == 0.7.4 2011-02-13
 * bug fixes
   * Set VERIFY_NONE when using https. Ruby 1.9.2 no longer sets this for us. gh-67

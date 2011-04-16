@@ -8,12 +8,10 @@ require 'crack'
 require 'httparty/module_inheritable_attributes'
 require 'httparty/cookie_hash'
 require 'httparty/net_digest_auth'
+require 'httparty/version'
 
 # @see HTTParty::ClassMethods
 module HTTParty
-  VERSION          = "0.7.5".freeze
-  CRACK_DEPENDENCY = "0.1.8".freeze
-
   module AllowedFormatsDeprecation
     def const_missing(const)
       if const.to_s =~ /AllowedFormats$/

@@ -1,4 +1,6 @@
-require File.join(File.dirname(__FILE__), '..', 'lib', 'httparty')
+$:.push File.expand_path("../lib", __FILE__)
+require "httparty"
+
 require 'spec/autorun'
 require 'fakeweb'
 
