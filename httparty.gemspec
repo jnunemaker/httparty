@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["John Nunemaker", "Sandro Turriate"]
   s.email       = ["nunemaker@gmail.com"]
-  s.homepage    = "http://github.com/jnunemaker/httparty"
+  s.homepage    = "http://httparty.rubyforge.org/"
   s.summary     = %q{Makes http fun! Also, makes consuming restful web services dead easy.}
   s.description = %q{Makes http fun! Also, makes consuming restful web services dead easy.}
 
