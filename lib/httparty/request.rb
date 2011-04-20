@@ -14,7 +14,7 @@ module HTTParty
     NON_RAILS_QUERY_STRING_NORMALIZER = Proc.new do |query|
       Array(query).map do |key, value|
         if value.nil?
-          key
+          key.to_s
         elsif value.is_a?(Array)
           value.map {|v| "#{key}=#{URI.encode(v.to_s, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}"}
         else

@@ -13,7 +13,7 @@ describe HTTParty::Request do
       URI.unescape(query_string).should == "foo=bar&foo=baz"
     end
 
-    context "when representing an array" do
+    context "when the query is an array" do
 
       it "doesn't include brackets" do
         query_string = normalizer[{:page => 1, :foo => %w(bar baz)}]
@@ -23,6 +23,13 @@ describe HTTParty::Request do
       it "URI encodes array values" do
         query_string = normalizer[{:people => ["Bob Marley", "Tim & Jon"]}]
         query_string.should == "people=Bob%20Marley&people=Tim%20%26%20Jon"
+      end
+    end
+
+    context "when the query is a hash" do
+      it "correctly handles nil values" do
+        query_string = normalizer[{:page => 1, :per_page => nil}]
+        query_string.should == "page=1&per_page"
       end
     end
   end
