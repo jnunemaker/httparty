@@ -64,6 +64,11 @@ module HTTParty
         klass === response
       end
     end
+    
+    def respond_to?(name)
+      return true if [:request,:response,:parsed_response,:body,:headers].include?(name)
+      parsed_response.respond_to?(name) or response.respond_to?(name)
+    end
 
     protected
 
