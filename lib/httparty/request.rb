@@ -101,7 +101,7 @@ module HTTParty
       http = Net::HTTP.new(uri.host, uri.port, options[:http_proxyaddr], options[:http_proxyport])
       http.use_ssl = ssl_implied?
 
-      if options[:timeout] && options[:timeout].is_a?(Integer)
+      if options[:timeout] && (options[:timeout].is_a?(Integer) || options[:timeout].is_a?(Float))
         http.open_timeout = options[:timeout]
         http.read_timeout = options[:timeout]
       end
