@@ -1,3 +1,8 @@
+== 0.7.8 2011-06-06
+* bug fix
+  * Make response honor respond to
+  * net http timeout can also be a float
+
 == 0.7.7 2011-04-16
 * bug fix
   * Fix NoMethodError when using the NON_RAILS_QUERY_STRING_NORMALIZER with a hash whose key is a symbol and value is nil
