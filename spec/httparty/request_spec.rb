@@ -134,6 +134,18 @@ describe HTTParty::Request do
   end
 
   describe 'http' do
+    it "should use socksproxy when options have socks_proxyaddr and socks_proxyport set" do
+      request = HTTParty::Request.new(Net::HTTP::Get, 'http://api.foo.com/', { :socks_proxyaddr => 'localhost', :socks_proxyport => 1234 })
+      request.send(:http)
+      request.use_socks_proxy.should == true
+    end
+
+    it "should not use socksproxy when options does not have socks_proxyaddr and socks_proxyport set" do
+      request = HTTParty::Request.new(Net::HTTP::Get, 'http://api.foo.com/')
+      request.send(:http)
+      request.use_socks_proxy.should == false
+    end
+  
     it "should use ssl for port 443" do
       request = HTTParty::Request.new(Net::HTTP::Get, 'https://api.foo.com/v1:443')
       request.send(:http).use_ssl?.should == true

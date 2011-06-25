@@ -1,6 +1,7 @@
 require 'pathname'
 require 'net/http'
 require 'net/https'
+require 'socksify/http'
 require 'uri'
 require 'zlib'
 require 'crack'
@@ -61,6 +62,17 @@ module HTTParty
   module ClassMethods
 
     extend AllowedFormatsDeprecation
+
+    # Allows setting SOCKS proxy information to be used
+    #
+    #   class Foo
+    #     include HTTParty
+    #     socks_proxy 'http://foo.com', 80
+    #   end
+    def socks_proxy(addr=nil, port = nil)
+      default_options[:socks_proxyaddr] = addr
+      default_options[:socks_proxyport] = port
+    end
 
     # Allows setting http proxy information to be used
     #

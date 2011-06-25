@@ -23,11 +23,12 @@ module HTTParty
       end.flatten.sort.join('&')
     end
 
-    attr_accessor :http_method, :path, :options, :last_response, :redirect
+    attr_accessor :http_method, :path, :options, :last_response, :redirect, :use_socks_proxy
 
     def initialize(http_method, path, o={})
       self.http_method = http_method
       self.path = path
+      self.use_socks_proxy = false
       self.options = {
         :limit => o.delete(:no_follow) ? 1 : 5,
         :default_params => {},
@@ -99,6 +100,12 @@ module HTTParty
 
     def http
       http = Net::HTTP.new(uri.host, uri.port, options[:http_proxyaddr], options[:http_proxyport])
+      
+      if options[:socks_proxyaddr] && options[:socks_proxyport]
+        http = Net::HTTP::SOCKSProxy(options[:socks_proxyaddr], options[:socks_proxyport]).new(uri.host, uri.port)
+        self.use_socks_proxy = true
+      end
+
       http.use_ssl = ssl_implied?
 
       if options[:timeout] && (options[:timeout].is_a?(Integer) || options[:timeout].is_a?(Float))

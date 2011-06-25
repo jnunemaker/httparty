@@ -5,7 +5,20 @@ describe HTTParty do
     @klass = Class.new
     @klass.instance_eval { include HTTParty }
   end
-
+  
+  describe "socks_proxy" do
+    before do
+      @proxyklass = Class.new
+      @proxyklass.instance_eval { 
+        include HTTParty 
+        socks_proxy 'localhost', 1234
+      }      
+    end
+    it "sets default_options for socks_proxyaddr and socks_proxyport" do
+      @proxyklass.default_options[:socks_proxyaddr].should == "localhost" && @proxyklass.default_options[:socks_proxyport].should == 1234
+    end
+  end
+  
   describe "AllowedFormats deprecated" do
     before do
       Kernel.stub(:warn)
