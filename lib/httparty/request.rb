@@ -23,7 +23,7 @@ module HTTParty
       end.flatten.sort.join('&')
     end
 
-    attr_accessor :http_method, :path, :options, :last_response, :redirect
+    attr_accessor :http_method, :path, :options, :last_response, :redirect, :last_uri
 
     def initialize(http_method, path, o={})
       self.http_method = http_method
@@ -41,7 +41,7 @@ module HTTParty
     end
 
     def uri
-      new_uri = path.relative? ? URI.parse("#{options[:base_uri]}#{path}") : path
+      new_uri = path.relative? ? URI.parse("#{relative_base_uri}#{path}") : path
 
       # avoid double query string on redirects [#12]
       unless redirect
@@ -52,7 +52,11 @@ module HTTParty
         raise UnsupportedURIScheme, "'#{new_uri}' Must be HTTP or HTTPS"
       end
 
-      new_uri
+      @last_uri = new_uri
+    end
+
+    def relative_base_uri
+      response_redirects? ? "#{@last_uri.scheme}://#{@last_uri.host}" : options[:base_uri]
     end
 
     def format
