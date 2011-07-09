@@ -41,7 +41,7 @@ module HTTParty
     end
 
     def uri
-      new_uri = path.relative? ? URI.parse("#{relative_base_uri}#{path}") : path
+      new_uri = path.relative? ? URI.parse("#{base_uri}#{path}") : path
 
       # avoid double query string on redirects [#12]
       unless redirect
@@ -55,8 +55,8 @@ module HTTParty
       @last_uri = new_uri
     end
 
-    def relative_base_uri
-      response_redirects? ? "#{@last_uri.scheme}://#{@last_uri.host}" : options[:base_uri]
+    def base_uri
+      redirect ? "#{@last_uri.scheme}://#{@last_uri.host}" : options[:base_uri]
     end
 
     def format
