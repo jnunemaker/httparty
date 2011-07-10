@@ -93,7 +93,6 @@ module HTTParty
       @body = body
       @format = format
     end
-    private_class_method :new
 
     # @return [Object] the parsed body
     # @return [nil] when the response body is nil or an empty string
@@ -109,11 +108,11 @@ module HTTParty
     protected
 
     def xml
-      Crack::XML.parse(body)
+      MultiXml.parse(body)
     end
 
     def json
-      Crack::JSON.parse(body)
+      MultiJson.decode(body)
     end
 
     def yaml

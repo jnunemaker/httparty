@@ -18,7 +18,7 @@ module HTTParty
         elsif value.is_a?(Array)
           value.map {|v| "#{key}=#{URI.encode(v.to_s, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}"}
         else
-          {key => value}.to_params
+          {key => value}.to_param
         end
       end.flatten.sort.join('&')
     end
@@ -139,7 +139,7 @@ module HTTParty
       if query_string_normalizer
         query_string_normalizer.call(query)
       else
-        query.to_params
+        query.to_param
       end
     end
 

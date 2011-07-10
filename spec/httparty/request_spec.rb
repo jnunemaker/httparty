@@ -1,4 +1,4 @@
-require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper'))
+require_relative '../spec_helper'
 
 describe HTTParty::Request do
   before do
@@ -14,7 +14,6 @@ describe HTTParty::Request do
     end
 
     context "when the query is an array" do
-
       it "doesn't include brackets" do
         query_string = normalizer[{:page => 1, :foo => %w(bar baz)}]
         URI.unescape(query_string).should == "foo=bar&foo=baz&page=1"
@@ -220,7 +219,7 @@ describe HTTParty::Request do
 
     context "when setting timeout" do
       it "does nothing if the timeout option is a string" do
-        http = mock("http", :null_object => true)
+        http = double("http").as_null_object
         http.should_not_receive(:open_timeout=)
         http.should_not_receive(:read_timeout=)
         Net::HTTP.stub(:new => http)

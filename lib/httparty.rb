@@ -3,7 +3,11 @@ require 'net/http'
 require 'net/https'
 require 'uri'
 require 'zlib'
-require 'crack'
+require 'active_support/core_ext/object/blank'
+require 'active_support/core_ext/object/to_param'
+require 'active_support/core_ext/object/to_query'
+require 'multi_json'
+require 'multi_xml'
 
 require 'httparty/module_inheritable_attributes'
 require 'httparty/cookie_hash'
@@ -449,7 +453,3 @@ require 'httparty/exceptions'
 require 'httparty/parser'
 require 'httparty/request'
 require 'httparty/response'
-
-if Crack::VERSION != HTTParty::CRACK_DEPENDENCY
-  warn "warning: HTTParty depends on version #{HTTParty::CRACK_DEPENDENCY} of crack, not #{Crack::VERSION}."
-end
