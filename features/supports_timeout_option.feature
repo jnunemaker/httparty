@@ -1,7 +1,7 @@
 Feature: Supports the timeout option
   In order to handle inappropriately slow response times
   As a developer
-  I want my request to raise an exception after my specified timeout as elapsed
+  I want my request to raise an exception after my specified timeout has elapsed
 
   Scenario: A long running response
     Given a remote service that returns '<h1>Some HTML</h1>'

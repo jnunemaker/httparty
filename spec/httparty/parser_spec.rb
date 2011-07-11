@@ -1,4 +1,4 @@
-require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper'))
+require_relative '../spec_helper'
 
 describe HTTParty::Parser do
   describe ".SupportedFormats" do
@@ -129,13 +129,13 @@ describe HTTParty::Parser do
       HTTParty::Parser.new('body', nil)
     end
 
-    it "parses xml with Crack" do
-      Crack::XML.should_receive(:parse).with('body')
+    it "parses xml with multi_xml" do
+      MultiXml.should_receive(:parse).with('body')
       subject.send(:xml)
     end
 
-    it "parses json with Crack" do
-      Crack::JSON.should_receive(:parse).with('body')
+    it "parses json with multi_json" do
+      MultiJson.should_receive(:decode).with('body')
       subject.send(:json)
     end
 

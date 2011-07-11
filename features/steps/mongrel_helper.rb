@@ -10,7 +10,7 @@ class BasicMongrelHandler < Mongrel::HttpHandler
   end
 
   def process(request, response)
-    instance_eval &preprocessor if preprocessor
+    preprocessor.call if preprocessor.is_a? Proc
     reply_with(response, response_code, response_body)
   end
 
