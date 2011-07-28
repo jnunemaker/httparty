@@ -186,7 +186,7 @@ module HTTParty
         capture_cookies(last_response)
         perform
       else
-        Response.new(self, last_response, parse_response(last_response.body))
+        Response.new(self, last_response, parser, format)
       end
     end
 
@@ -211,10 +211,6 @@ module HTTParty
            Net::HTTPTemporaryRedirect
         options[:follow_redirects] && last_response.key?('location')
       end
-    end
-
-    def parse_response(body)
-      parser.call(body, format)
     end
 
     def capture_cookies(response)

@@ -33,13 +33,14 @@ module HTTParty
       string.gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').gsub(/([a-z])([A-Z])/,'\1_\2').downcase
     end
 
-    attr_reader :request, :response, :parsed_response, :body, :headers
+    attr_reader :request, :response, :parser, :format, :body, :headers
 
-    def initialize(request, response, parsed_response)
+    def initialize(request, response, parser, format)
       @request = request
       @response = response
       @body = response.body
-      @parsed_response = parsed_response
+      @parser = parser
+      @format = format
       @headers = Headers.new(response.to_hash)
     end
 
@@ -53,7 +54,14 @@ module HTTParty
 
     def inspect
       inspect_id = "%x" % (object_id * 2)
-      %(#<#{self.class}:0x#{inspect_id} @parsed_response=#{parsed_response.inspect}, @response=#{response.inspect}, @headers=#{headers.inspect}>)
+      %(#<#{self.class}:0x#{inspect_id} parsed_response=#{parsed_response.inspect}, @response=#{response.inspect}, @headers=#{headers.inspect}>)
+    end
+
+    def parse_response
+      parser.call(body, format) if success?
+    end
+    def parsed_response
+      @parsed_response ||= parse_response
     end
 
     CODES_TO_OBJ = ::Net::HTTPResponse::CODE_CLASS_TO_OBJ.merge ::Net::HTTPResponse::CODE_TO_OBJ
@@ -66,7 +74,7 @@ module HTTParty
     end
     
     def respond_to?(name)
-      return true if [:request,:response,:parsed_response,:body,:headers].include?(name)
+      return true if [:request,:response,:parser,:format,:body,:headers].include?(name)
       parsed_response.respond_to?(name) or response.respond_to?(name)
     end
 

@@ -9,8 +9,9 @@ describe HTTParty::Response do
     @response_object.stub(:body => "{foo:'bar'}")
     @response_object['last-modified'] = @last_modified
     @response_object['content-length'] = @content_length
-    @parsed_response = {"foo" => "bar"}
-    @response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
+    @parser = HTTParty::Parser
+    @format = :json
+    @response = HTTParty::Response.new(@request_object, @response_object, @parser, @format)
   end
 
   describe ".underscore" do
@@ -45,44 +46,76 @@ describe HTTParty::Response do
     end
   end
 
+  it 'should handle xml automatically' do
+    xml = %q[<books><book><id>1234</id><name>Foo Bar!</name></book></books>]
+    response_object = Net::HTTPOK.new('1.1', 404, 'NOT_FOUND')
+    response_object.stub(:body => xml)
+    response = HTTParty::Response.new(@request_object, response_object, @parser, :xml)
+    response.parsed_response.should == {'books' => {'book' => {'id' => '1234', 'name' => 'Foo Bar!'}}}
+  end
+
+  it 'should handle json automatically' do
+    json = %q[{"books": {"book": {"name": "Foo Bar!", "id": "1234"}}}]
+    response_object = Net::HTTPOK.new('1.1', 404, 'NOT_FOUND')
+    response_object.stub(:body => json)
+    response = HTTParty::Response.new(@request_object, response_object, @parser, :json)
+    response.parsed_response.should == {'books' => {'book' => {'id' => '1234', 'name' => 'Foo Bar!'}}}
+  end
+
+  it 'should handle yaml automatically' do
+    yaml = "books: \n  book: \n    name: Foo Bar!\n    id: \"1234\"\n"
+    response_object = Net::HTTPOK.new('1.1', 404, 'NOT_FOUND')
+    response_object.stub(:body => yaml)
+    response = HTTParty::Response.new(@request_object, response_object, @parser, :yaml)
+    response.parsed_response.should == {'books' => {'book' => {'id' => '1234', 'name' => 'Foo Bar!'}}}
+  end
+
+  it 'should return a nil parsed_response' do
+    response_object = Net::HTTPOK.new('1.1', 404, 'NOT_FOUND')
+    response = HTTParty::Response.new(@request_object, response_object, @parser, @format)
+    response.parsed_response.should == nil
+  end
+
   it "returns response headers" do
-    response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
+    response = HTTParty::Response.new(@request_object, @response_object, @parser, @format)
     response.headers.should == {'last-modified' => [@last_modified], 'content-length' => [@content_length]}
   end
 
   it "should send missing methods to delegate" do
-    response = HTTParty::Response.new(@request_object, @response_object, {'foo' => 'bar'})
+    response = HTTParty::Response.new(@request_object, @response_object, @parser, @format)
     response['foo'].should == 'bar'
   end
   
   it "should respond_to? methods it supports" do
-    response = HTTParty::Response.new(@request_object, @response_object, {'foo' => 'bar'})
-    response.respond_to?(:parsed_response).should be_true
+    response = HTTParty::Response.new(@request_object, @response_object, @parser, @format)
+    response.respond_to?(:parser).should be_true
   end
 
   it "should be able to iterate if it is array" do
-    response = HTTParty::Response.new(@request_object, @response_object, [{'foo' => 'bar'}, {'foo' => 'baz'}])
+    @response_object.stub(:body => "[{'foo' => 'bar'}, {'foo' => 'baz'}]")
+    response = HTTParty::Response.new(@request_object, @response_object, @parser, @format)
     response.size.should == 2
     expect {
       response.each { |item| }
     }.to_not raise_error
+    @response_object.stub(:body => "{foo:'bar'}")
   end
 
   it "allows headers to be accessed by mixed-case names in hash notation" do
-    response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
+    response = HTTParty::Response.new(@request_object, @response_object, @parser, @format)
     response.headers['Content-LENGTH'].should == @content_length
   end
 
   it "returns a comma-delimited value when multiple values exist" do
     @response_object.add_field 'set-cookie', 'csrf_id=12345; path=/'
     @response_object.add_field 'set-cookie', '_github_ses=A123CdE; path=/'
-    response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
+    response = HTTParty::Response.new(@request_object, @response_object, @parser, @format)
     response.headers['set-cookie'].should == "csrf_id=12345; path=/, _github_ses=A123CdE; path=/"
   end
 
   # Backwards-compatibility - previously, #headers returned a Hash
   it "responds to hash methods" do
-    response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
+    response = HTTParty::Response.new(@request_object, @response_object, @parser, @format)
     hash_methods = {}.methods - response.headers.methods
     hash_methods.each do |method_name|
       response.headers.respond_to?(method_name).should be_true
