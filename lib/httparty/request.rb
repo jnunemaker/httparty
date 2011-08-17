@@ -149,7 +149,12 @@ module HTTParty
 
     def setup_raw_request
       @raw_request = http_method.new(uri.request_uri)
-      @raw_request.body = body if body
+      if body
+        @raw_request.body = body
+        if not body.is_a?(Hash)
+          options[:headers].merge!('content-type' => mimetype_from_format(format))
+        end
+      end
       @raw_request.initialize_http_header(options[:headers])
       @raw_request.basic_auth(username, password) if options[:basic_auth]
       setup_digest_auth if options[:digest_auth]
@@ -232,6 +237,16 @@ module HTTParty
     def format_from_mimetype(mimetype)
       if mimetype && parser.respond_to?(:format_from_mimetype)
         parser.format_from_mimetype(mimetype)
+      end
+    end
+
+    # Determines the mimetype from the format
+    # TODO support more formats automatically
+    def mimetype_from_format(format)
+      case format
+      when :xml : 'text/xml'
+      when :json : 'text/json'
+      when :html : 'text/html'
       end
     end
 
