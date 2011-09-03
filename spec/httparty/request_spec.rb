@@ -326,7 +326,12 @@ describe HTTParty::Request do
           redirect['location'] = 'http://foo.com/foo'
           ok = stub_response('<hash><foo>bar</foo></hash>', 200)
           @http.stub!(:request).and_return(redirect, ok)
-          @request.perform.should == {"hash" => {"foo" => "bar"}}
+          response = @request.perform
+          response.request.base_uri.to_s.should == "http://foo.com"
+          response.request.path.to_s.should == "http://foo.com/foo"
+          response.request.uri.request_uri.should == "/foo"
+          response.request.uri.to_s.should == "http://foo.com/foo"
+          response.should == {"hash" => {"foo" => "bar"}}
         end
 
         it "redirects if a 300 contains a relative location header" do
@@ -335,7 +340,23 @@ describe HTTParty::Request do
           ok = stub_response('<hash><foo>bar</foo></hash>', 200)
           @http.stub!(:request).and_return(redirect, ok)
           response = @request.perform
+          response.request.base_uri.to_s.should == "http://api.foo.com"
+          response.request.path.to_s.should == "/foo/bar"
           response.request.uri.request_uri.should == "/foo/bar"
+          response.request.uri.to_s.should == "http://api.foo.com/foo/bar"
+          response.should == {"hash" => {"foo" => "bar"}}
+        end
+
+        it "handles multiple redirects and relative location headers on different hosts" do
+          @request = HTTParty::Request.new(Net::HTTP::Get, 'http://test.com/redirect', :format => :xml)
+          FakeWeb.register_uri(:get, "http://test.com/redirect", :status => [300, "REDIRECT"], :location => "http://api.foo.com/v2")
+          FakeWeb.register_uri(:get, "http://api.foo.com/v2", :status => [300, "REDIRECT"], :location => "/v3")
+          FakeWeb.register_uri(:get, "http://api.foo.com/v3", :body => "<hash><foo>bar</foo></hash>")
+          response = @request.perform
+          response.request.base_uri.to_s.should == "http://api.foo.com"
+          response.request.path.to_s.should == "/v3"
+          response.request.uri.request_uri.should == "/v3"
+          response.request.uri.to_s.should == "http://api.foo.com/v3"
           response.should == {"hash" => {"foo" => "bar"}}
         end
 
