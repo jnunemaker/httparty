@@ -1,3 +1,9 @@
+== 0.8.0 2011-09-13
+* new
+  * switch to multi json/xml for parsing by default
+* bug fixes
+  * fix redirects to relative uri's
+
 == 0.7.8 2011-06-06
 * bug fix
   * Make response honor respond to
@@ -125,11 +131,11 @@
   * :query no longer sets form data. Use body and set content type to application/x-www-form-urlencoded if you need it. :query was wrong for that.
   * Fixed a bug in the cookies class method that caused cookies to be forgotten after the first request.
   * Also, some general cleanup of tests and such.
-  
+
 == 0.4.3 2009-04-23
 * 1 minor update
   * added message to the response object
-  
+
 == 0.4.2 2009-03-30
 * 2 minor changes
   * response code now returns an integer instead of a string (jqr)
@@ -138,36 +144,36 @@
 == 0.4.1 2009-03-29
 * 1 minor fix
   * gem 'jnunemaker-crack' instead of gem 'crack'
-  
+
 == 0.4.0 2009-03-29
 * 1 minor change
   * Switched xml and json parsing to crack (same code as before just moved to gem for easier reuse in other projects)
-  
+
 == 0.3.1 2009-02-10
 * 1 minor fix, 1 minor enhancement
   * Fixed unescaping umlauts (siebertm)
   * Added yaml response parsing (Miha Filej)
-  
+
 == 0.3.0 2009-01-31
 * 1 major enhancement, 1 bug fix
   * JSON gem no longer a requirement. It was conflicting with rails json stuff so I just stole ActiveSupport's json decoding and bundled it with HTTParty.
   * Fixed bug where query strings were being duplicated on redirects
   * Added a bunch of specs and moved some code around.
-  
+
 == 0.2.10 2009-01-29
 * 1 minor enhancement
   * Made encoding on query parameters treat everything except URI::PATTERN::UNRESERVED as UNSAFE to force encoding of '+' character (Julian Russell)
-  
+
 == 0.2.9 2009-01-29
 * 3 minor enhancements
   * Added a 'headers' accessor to the response with a hash of any HTTP headers. (Don Peterson)
   * Add support for a ":cookies" option to be used at the class level, or as an option on any individual call.  It should be passed a hash, which will be converted to the proper format and added to the request headers when the call is made. (Don Peterson)
   * Refactored several specs and added a full suite of cucumber features (Don Peterson)
-  
+
 == 0.2.8 2009-01-28
 * 1 major fix
   * fixed major bug with response where it wouldn't iterate or really work at all with parsed responses
-  
+
 == 0.2.7 2009-01-28
 * 2 minor fixes, 2 minor enhancements, 2 major enhancements
   * fixed undefined method add_node for nil class error that occasionally happened (juliocesar)
@@ -180,11 +186,11 @@
 == 0.2.6 2009-01-05
 * 1 minor bug fix
   * added explicit require of time as Time#parse failed outside of rails (willcodeforfoo)
-  
+
 == 0.2.5 2009-01-05
 * 1 major enhancement
   * Add command line interface to HTTParty (Alex Vollmer)
-  
+
 == 0.2.4 2008-12-23
 * 1 bug fix
   * Fixed that mimetype detection was failing if no mimetype was returned from service (skippy)
@@ -206,7 +212,7 @@
 
 == 0.1.8 2008-11-30
 * 3 major enhancements
-  * Moved base_uri normalization into request class and out of httparty module, fixing 
+  * Moved base_uri normalization into request class and out of httparty module, fixing
     the problem where base_uri was not always being normalized.
   * Stupid simple support for HTTParty.get/post/put/delete. (jqr)
   * Switched gem management to Echoe from newgem.
@@ -214,16 +220,16 @@
 == 0.1.7 2008-11-30
 * 1 major enhancement
   * fixed multiple class definitions overriding each others options
-  
+
 == 0.1.6 2008-11-26
 * 1 major enhancement
   * now passing :query to set_form_data if post request to avoid content length errors
-  
+
 == 0.1.5 2008-11-14
 * 2 major enhancements
   * Refactored send request method out into its own object.
   * Added :html format if you just want to do that.
-  
+
 == 0.1.4 2008-11-08
 * 3 major enhancements:
   * Removed some cruft
