@@ -109,11 +109,11 @@ module HTTParty
     protected
 
     def xml
-      Crack::XML.parse(body)
+      MultiXml.parse(body)
     end
 
     def json
-      Crack::JSON.parse(body)
+      MultiJson.decode(body)
     end
 
     def yaml

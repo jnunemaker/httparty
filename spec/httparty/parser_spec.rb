@@ -129,13 +129,13 @@ describe HTTParty::Parser do
       HTTParty::Parser.new('body', nil)
     end
 
-    it "parses xml with Crack" do
-      Crack::XML.should_receive(:parse).with('body')
+    it "parses xml with MultiXml" do
+      MultiXml.should_receive(:parse).with('body')
       subject.send(:xml)
     end
 
-    it "parses json with Crack" do
-      Crack::JSON.should_receive(:parse).with('body')
+    it "parses json with MultiJson" do
+      MultiJson.should_receive(:decode).with('body')
       subject.send(:json)
     end
 

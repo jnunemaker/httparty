@@ -13,6 +13,8 @@ Gem::Specification.new do |s|
   s.description = %q{Makes http fun! Also, makes consuming restful web services dead easy.}
 
   s.add_dependency 'crack', HTTParty::CRACK_DEPENDENCY
+  s.add_dependency 'multi_json'
+  s.add_dependency 'multi_xml'
 
   s.add_development_dependency "activesupport", "~> 2.3"
   s.add_development_dependency "cucumber",      "~> 0.7"
