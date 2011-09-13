@@ -42,7 +42,7 @@ options. Below is an example of how easy it is.
 
 == Requirements
 
-* Crack http://github.com/jnunemaker/crack/ - For XML and JSON parsing.
+* multijson and multixml
 * You like to party!
 
 == Install

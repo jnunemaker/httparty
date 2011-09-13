@@ -3,7 +3,6 @@ require 'net/http'
 require 'net/https'
 require 'uri'
 require 'zlib'
-require 'crack'
 require 'multi_xml'
 require 'multi_json'
 
@@ -443,15 +442,11 @@ module HTTParty
   def self.options(*args)
     Basement.options(*args)
   end
-
 end
 
 require 'httparty/core_extensions'
+require 'httparty/hash_conversions'
 require 'httparty/exceptions'
 require 'httparty/parser'
 require 'httparty/request'
 require 'httparty/response'
-
-if Crack::VERSION != HTTParty::CRACK_DEPENDENCY
-  warn "warning: HTTParty depends on version #{HTTParty::CRACK_DEPENDENCY} of crack, not #{Crack::VERSION}."
-end
