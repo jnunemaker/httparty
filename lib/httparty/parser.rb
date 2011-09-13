@@ -113,7 +113,7 @@ module HTTParty
     end
 
     def json
-      Crack::JSON.parse(body)
+      Crack::JSON.parse(body.strip)
     end
 
     def yaml

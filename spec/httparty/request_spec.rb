@@ -285,24 +285,6 @@ describe HTTParty::Request do
   end
 
   describe 'parsing responses' do
-    it 'should handle xml automatically' do
-      xml = %q[<books><book><id>1234</id><name>Foo Bar!</name></book></books>]
-      @request.options[:format] = :xml
-      @request.send(:parse_response, xml).should == {'books' => {'book' => {'id' => '1234', 'name' => 'Foo Bar!'}}}
-    end
-
-    it 'should handle json automatically' do
-      json = %q[{"books": {"book": {"name": "Foo Bar!", "id": "1234"}}}]
-      @request.options[:format] = :json
-      @request.send(:parse_response, json).should == {'books' => {'book' => {'id' => '1234', 'name' => 'Foo Bar!'}}}
-    end
-
-    it 'should handle yaml automatically' do
-      yaml = "books: \n  book: \n    name: Foo Bar!\n    id: \"1234\"\n"
-      @request.options[:format] = :yaml
-      @request.send(:parse_response, yaml).should == {'books' => {'book' => {'id' => '1234', 'name' => 'Foo Bar!'}}}
-    end
-
     it "should include any HTTP headers in the returned response" do
       @request.options[:format] = :html
       response = stub_response "Content"

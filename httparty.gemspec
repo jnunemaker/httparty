@@ -4,7 +4,7 @@ require "httparty/version"
 
 Gem::Specification.new do |s|
   s.name        = "httparty"
-  s.version     = HTTParty::VERSION
+  s.version     = HTTParty::VERSION.dup
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["John Nunemaker", "Sandro Turriate"]
   s.email       = ["nunemaker@gmail.com"]
