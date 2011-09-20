@@ -32,7 +32,8 @@ module HTTParty
         :limit => o.delete(:no_follow) ? 1 : 5,
         :default_params => {},
         :follow_redirects => true,
-        :parser => Parser
+        :parser => Parser,
+        :retryable => {}
       }.merge(o)
     end
 
@@ -68,11 +69,15 @@ module HTTParty
     end
 
     def perform
-      validate
-      setup_raw_request
-      self.last_response = http.request(@raw_request)
-      handle_deflation
-      handle_response
+      retryable(options[:retryable]) do |retries, exception|
+        $stderr.puts "try #{retries} failed with exception: #{exception}" if retries > 0 && options[:debug]
+        
+        validate
+        setup_raw_request
+        self.last_response = http.request(@raw_request)
+        handle_deflation
+        handle_response
+      end
     end
 
     private
