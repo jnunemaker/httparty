@@ -180,7 +180,6 @@ module HTTParty
       query_string_parts.size > 0 ? query_string_parts.join('&') : nil
     end
 
-    # Raises exception Net::XXX (http error code) if an http error occured
     def handle_response
       if response_redirects?
         options[:limit] -= 1
