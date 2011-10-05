@@ -200,8 +200,10 @@ module HTTParty
       when "gzip"
         body_io = StringIO.new(last_response.body)
         last_response.body.replace Zlib::GzipReader.new(body_io).read
+        last_response.delete('content-encoding')
       when "deflate"
         last_response.body.replace Zlib::Inflate.inflate(last_response.body)
+        last_response.delete('content-encoding')
       end
     end
 

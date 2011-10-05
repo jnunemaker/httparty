@@ -487,6 +487,32 @@ describe HTTParty::Request do
     end
   end
 
+  describe "#handle_deflation" do
+    context "context-encoding" do
+      before do
+        @request.options[:format] = :html
+        @last_response = mock()
+        @last_response.stub!(:body).and_return('')
+      end
+
+      it "should inflate the gzipped body" do
+        @last_response.stub!(:[]).with("content-encoding").and_return("gzip")
+        @request.stub!(:last_response).and_return(@last_response)
+        Zlib::GzipReader.should_receive(:new).and_return(StringIO.new(''))
+        @request.last_response.should_receive(:delete).with('content-encoding')
+        @request.send(:handle_deflation)
+      end
+
+      it "should inflate the deflated body" do
+        @last_response.stub!(:[]).with("content-encoding").and_return("deflate")
+        @request.stub!(:last_response).and_return(@last_response)
+        Zlib::Inflate.should_receive(:inflate).and_return('')
+        @request.last_response.should_receive(:delete).with('content-encoding')
+        @request.send(:handle_deflation)
+      end
+    end
+  end
+
   context "with POST http method" do
     it "should raise argument error if query is not a hash" do
       lambda {
