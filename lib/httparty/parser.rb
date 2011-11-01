@@ -96,9 +96,9 @@ module HTTParty
     private_class_method :new
 
     # @return [Object] the parsed body
-    # @return [nil] when the response body is nil or an empty string
+    # @return [nil] when the response body is nil, an empty string, spaces only or "null"
     def parse
-      return nil if body.nil? || body.empty?
+      return nil if body.nil? || body.strip.empty? || body == "null"
       if supports_format?
         parse_supported_format
       else

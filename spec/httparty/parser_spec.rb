@@ -87,6 +87,16 @@ describe HTTParty::Parser do
       @parser.stub(:body => nil)
       @parser.parse.should be_nil
     end
+
+    it "returns nil for a 'null' body" do
+      @parser.stub(:body => "null")
+      @parser.parse.should be_nil
+    end
+
+    it "returns nil for a body with spaces only" do
+      @parser.stub(:body => "   ")
+      @parser.parse.should be_nil
+    end
   end
 
   describe "#supports_format?" do
