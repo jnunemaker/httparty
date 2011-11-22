@@ -157,6 +157,7 @@ module HTTParty
       @raw_request.initialize_http_header(options[:headers])
       @raw_request.basic_auth(username, password) if options[:basic_auth]
       setup_digest_auth if options[:digest_auth]
+      set_oauth_auth if options[:oauth_auth]
     end
 
     def setup_digest_auth
@@ -164,6 +165,14 @@ module HTTParty
       if res['www-authenticate'] != nil && res['www-authenticate'].length > 0
         @raw_request.digest_auth(username, password, res)
       end
+    end
+    
+    def set_oauth_auth
+      oauth_params = {:consumer => options[:oauth_auth].consumer,
+                      :token => options[:oauth_auth],
+                      :request_uri => uri}
+      oauth_helper = OAuth::Client::Helper.new(@raw_request, oauth_params)
+      @raw_request['Authorization'] = oauth_helper.header
     end
 
     def query_string(uri)

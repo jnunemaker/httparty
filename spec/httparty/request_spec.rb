@@ -95,6 +95,17 @@ describe HTTParty::Request do
       raw_request = @request.instance_variable_get(:@raw_request)
       raw_request.instance_variable_get(:@header)['Authorization'].should_not be_nil
     end
+    
+    it "should use oauth when configured" do
+      consumer = OAuth::Consumer.new("key","secret")
+      access_token = OAuth::AccessToken.new(consumer)
+      
+      @request.options[:oauth_auth] = access_token
+      @request.send(:setup_raw_request)
+      
+      raw_request = @request.instance_variable_get(:@raw_request)
+      raw_request.instance_variable_get(:@header)['authorization'].should_not be_nil
+    end
   end
 
   describe "#uri" do

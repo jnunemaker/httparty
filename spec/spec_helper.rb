@@ -3,6 +3,7 @@ require "httparty"
 
 require 'spec/autorun'
 require 'fakeweb'
+require 'oauth'
 
 def file_fixture(filename)
   open(File.join(File.dirname(__FILE__), 'fixtures', "#{filename.to_s}")).read
