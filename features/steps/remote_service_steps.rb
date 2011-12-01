@@ -14,7 +14,7 @@ end
 
 Given /^that service takes (\d+) seconds to generate a response$/ do |time|
   @server_response_time = time.to_i
-  @handler.preprocessor = lambda { sleep time.to_i }
+  @handler.preprocessor = Proc.new { sleep time.to_i }
 end
 
 Given /^a remote deflate service$/ do
