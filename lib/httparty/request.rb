@@ -67,10 +67,23 @@ module HTTParty
       options[:parser]
     end
 
-    def perform
+    def perform(&block)
       validate
       setup_raw_request
-      self.last_response = http.request(@raw_request)
+
+      self.last_response = http.request(@raw_request) do |http_response|
+        if block
+          chunks = []
+
+          http_response.read_body do |fragment|
+            chunks << fragment
+            block.call(fragment)
+          end
+
+          http_response.body = chunks.join
+        end
+      end
+
       handle_deflation
       handle_response
     end
