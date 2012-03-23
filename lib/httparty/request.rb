@@ -196,7 +196,7 @@ module HTTParty
     # Inspired by Ruby 1.9
     def handle_deflation
       case last_response["content-encoding"]
-      when "gzip"
+      when "gzip", "x-gzip"
         body_io = StringIO.new(last_response.body)
         last_response.body.replace Zlib::GzipReader.new(body_io).read
         last_response.delete('content-encoding')
