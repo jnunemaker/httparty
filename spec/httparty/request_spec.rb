@@ -495,8 +495,16 @@ describe HTTParty::Request do
         @last_response.stub!(:body).and_return('')
       end
 
-      it "should inflate the gzipped body" do
+      it "should inflate the gzipped body with content-encoding: gzip" do
         @last_response.stub!(:[]).with("content-encoding").and_return("gzip")
+        @request.stub!(:last_response).and_return(@last_response)
+        Zlib::GzipReader.should_receive(:new).and_return(StringIO.new(''))
+        @request.last_response.should_receive(:delete).with('content-encoding')
+        @request.send(:handle_deflation)
+      end
+
+      it "should inflate the gzipped body with content-encoding: x-gzip" do
+        @last_response.stub!(:[]).with("content-encoding").and_return("x-gzip")
         @request.stub!(:last_response).and_return(@last_response)
         Zlib::GzipReader.should_receive(:new).and_return(StringIO.new(''))
         @request.last_response.should_receive(:delete).with('content-encoding')
