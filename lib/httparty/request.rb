@@ -160,7 +160,11 @@ module HTTParty
     end
 
     def setup_digest_auth
-      res = http.head(uri.request_uri, options[:headers])
+      if @raw_request.class == Net::HTTP::Get || @raw_request.class == Net::HTTP::Head
+        res = http.head(uri.request_uri, options[:headers])
+      else
+        res = self.last_response = http.request(@raw_request)
+      end
       if res['www-authenticate'] != nil && res['www-authenticate'].length > 0
         @raw_request.digest_auth(username, password, res)
       end

@@ -95,6 +95,17 @@ describe HTTParty::Request do
       raw_request = @request.instance_variable_get(:@raw_request)
       raw_request.instance_variable_get(:@header)['Authorization'].should_not be_nil
     end
+
+    it "should use the right http method for digest authentication" do
+      @post_request = HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', :format => :xml)
+      FakeWeb.register_uri(:post, "http://api.foo.com/v1", {})
+
+      http = @post_request.send(:http)
+      @post_request.should_receive(:http).and_return(http)
+      http.should_not_receive(:head).and_return({'www-authenticate' => nil})
+      @post_request.options[:digest_auth] = {:username => 'foobar', :password => 'secret'}
+      @post_request.send(:setup_raw_request)
+    end
   end
 
   describe "#uri" do
