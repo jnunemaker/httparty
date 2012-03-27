@@ -86,7 +86,7 @@ describe HTTParty::Request do
     end
 
     it "should use digest auth when configured" do
-      FakeWeb.register_uri(:head, "http://api.foo.com/v1",
+      FakeWeb.register_uri(:get, "http://api.foo.com/v1",
         :www_authenticate => 'Digest realm="Log Viewer", qop="auth", nonce="2CA0EC6B0E126C4800E56BA0C0003D3C", opaque="5ccc069c403ebaf9f0171e9517f40e41", stale=false')
 
       @request.options[:digest_auth] = {:username => 'foobar', :password => 'secret'}
