@@ -39,6 +39,22 @@ describe HTTParty do
 
   end
 
+  describe 'http_proxy' do
+    it 'should set the address' do
+      @klass.http_proxy 'proxy.foo.com', 80
+      options = @klass.default_options
+      options[:http_proxyaddr].should == 'proxy.foo.com'
+      options[:http_proxyport].should == 80
+    end
+
+    it 'should set the proxy user and pass when they are provided' do
+      @klass.http_proxy 'proxy.foo.com', 80, 'user', 'pass'
+      options = @klass.default_options
+      options[:http_proxyuser].should == 'user'
+      options[:http_proxypass].should == 'pass'
+    end
+  end
+
   describe "base uri" do
     before(:each) do
       @klass.base_uri('api.foo.com/v1')

@@ -216,6 +216,25 @@ describe HTTParty::Request do
           @request.send(:http)
         end
       end
+
+      context 'with a proxy' do
+        it 'should use a proxy address and port' do
+          request = HTTParty::Request.new(Net::HTTP::Get, 'https://foobar.com',
+            :http_proxyaddr => '1.2.3.4', :http_proxyport => 8080)
+          http = request.send(:http)
+          http.proxy_address.should == '1.2.3.4'
+          http.proxy_port.should == 8080
+        end
+
+        it 'should use a proxy user and password when provided' do
+          request = HTTParty::Request.new(Net::HTTP::Get, 'https://foobar.com',
+            :http_proxyaddr => '1.2.3.4', :http_proxyport => 8080,
+            :http_proxyuser => 'user', :http_proxypass => 'pass')
+          http = request.send(:http)
+          http.proxy_user.should == 'user'
+          http.proxy_pass.should == 'pass'
+        end
+      end
     end
 
     context "when setting timeout" do
