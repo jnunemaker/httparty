@@ -578,5 +578,27 @@ describe HTTParty::Request do
       }.should raise_error(ArgumentError, ":digest_auth must be a hash")
     end
   end
+
+  describe "retryable" do
+    [:get, :post, :put, :delete].each do |m|
+      before do
+        @agent = HTTParty
+        @url   = 'http://foo.com'
+
+        FakeWeb.register_uri(:post, @url, :exception => Timeout::Error)
+        @_action = lambda do |_method|
+          FakeWeb.register_uri(_method, @url, [{:response => "", :times => 3}, {:exception => Timeout::Error}])
+          lambda { @agent.send(_method, @url) }.should_not raise_error(Timeout::Error)
+
+          FakeWeb.register_uri(_method, @url, :exception => Timeout::Error)
+          lambda { @agent.send(_method, @url) }.should raise_error(Timeout::Error)
+        end
+      end
+
+      it "should catch Timeout::Error 3 times and retry before raising exception on #{m}" do
+        @_action.call(m)
+      end
+    end
+  end
 end
 
