@@ -67,11 +67,13 @@ module HTTParty
     #
     #   class Foo
     #     include HTTParty
-    #     http_proxy 'http://foo.com', 80
+    #     http_proxy 'http://foo.com', 80, "username", "password"
     #   end
-    def http_proxy(addr=nil, port = nil)
+    def http_proxy(addr=nil, port = nil, u = nil, p = nil)
       default_options[:http_proxyaddr] = addr
       default_options[:http_proxyport] = port
+      default_options[:http_proxyuser] = u
+      default_options[:http_proxypassword] = p
     end
 
     # Allows setting a base uri to be used for each request.
