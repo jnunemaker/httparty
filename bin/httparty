@@ -32,9 +32,9 @@ OptionParser.new do |o|
        "--data [BODY]",
        "Data to put in request body (prefix with '@' for file)") do |d|
     if d =~ /^@/
-      opts[:data] = open(d[1..-1]).read
+      opts[:body] = open(d[1..-1]).read
     else
-      opts[:data] = d
+      opts[:body] = d
     end
   end
 
