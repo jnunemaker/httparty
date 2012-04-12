@@ -3,7 +3,7 @@ module HTTParty
     class Headers
       include ::Net::HTTPHeader
 
-      def initialize(header)
+      def initialize(header = {})
         @header = header
       end
 
