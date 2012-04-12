@@ -102,7 +102,10 @@ module HTTParty
     end
 
     def http
-      http = Net::HTTP.new(uri.host, uri.port, options[:http_proxyaddr], options[:http_proxyport])
+      http = Net::HTTP.new(uri.host, uri.port,
+                           options[:http_proxyaddr], options[:http_proxyport],
+                           options[:http_proxyuser], options[:http_proxypassword])
+                          
       http.use_ssl = ssl_implied?
 
       if options[:timeout] && (options[:timeout].is_a?(Integer) || options[:timeout].is_a?(Float))

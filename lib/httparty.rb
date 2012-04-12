@@ -41,6 +41,8 @@ module HTTParty
   # [:+body+:] Body of the request. If passed a Hash, will try to normalize it first, by default passing it to ActiveSupport::to_params. Any other kind of object will get used as-is.
   # [:+http_proxyaddr+:] Address of proxy server to use.
   # [:+http_proxyport+:]  Port of proxy server to use.
+  # [:+http_proxyuser+:]  User to authenticate with proxy server.
+  # [:+http_proxypassword+:]  Password to authenticate with proxy server.
   # [:+limit+:] Maximum number of redirects to follow. Takes precedences over :+no_follow+.
   # [:+query+:] Query string, or a Hash representing it. Normalized according to the same rules as :+body+. If you specify this on a POST, you must use a Hash. See also HTTParty::ClassMethods.default_params.
   # [:+timeout+:] Timeout for opening connection and reading data.
@@ -67,11 +69,13 @@ module HTTParty
     #
     #   class Foo
     #     include HTTParty
-    #     http_proxy 'http://foo.com', 80
+    #     http_proxy 'http://foo.com', 80, "user", "passwd"
     #   end
-    def http_proxy(addr=nil, port = nil)
+    def http_proxy(addr=nil, port = nil, user=nil, password=nil)
       default_options[:http_proxyaddr] = addr
       default_options[:http_proxyport] = port
+      default_options[:http_proxyuser] = user
+      default_options[:http_proxypassword] = password
     end
 
     # Allows setting a base uri to be used for each request.
