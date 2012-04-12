@@ -343,8 +343,8 @@ module HTTParty
     #   # Simple get with full url and query parameters
     #   # ie: http://foo.com/resource.json?limit=10
     #   Foo.get('http://foo.com/resource.json', :query => {:limit => 10})
-    def get(path, options={})
-      perform_request Net::HTTP::Get, path, options
+    def get(path, options={}, &block)
+      perform_request Net::HTTP::Get, path, options, &block
     end
 
     # Allows making a post request to a url.
@@ -359,28 +359,28 @@ module HTTParty
     #   # Simple post with full url using :query option,
     #   # which gets set as form data on the request.
     #   Foo.post('http://foo.com/resources', :query => {:bar => 'baz'})
-    def post(path, options={})
-      perform_request Net::HTTP::Post, path, options
+    def post(path, options={}, &block)
+      perform_request Net::HTTP::Post, path, options, &block
     end
 
     # Perform a PUT request to a path
-    def put(path, options={})
-      perform_request Net::HTTP::Put, path, options
+    def put(path, options={}, &block)
+      perform_request Net::HTTP::Put, path, options, &block
     end
 
     # Perform a DELETE request to a path
-    def delete(path, options={})
-      perform_request Net::HTTP::Delete, path, options
+    def delete(path, options={}, &block)
+      perform_request Net::HTTP::Delete, path, options, &block
     end
 
     # Perform a HEAD request to a path
-    def head(path, options={})
-      perform_request Net::HTTP::Head, path, options
+    def head(path, options={}, &block)
+      perform_request Net::HTTP::Head, path, options, &block
     end
 
     # Perform an OPTIONS request to a path
-    def options(path, options={})
-      perform_request Net::HTTP::Options, path, options
+    def options(path, options={}, &block)
+      perform_request Net::HTTP::Options, path, options, &block
     end
 
     def default_options #:nodoc:
@@ -389,10 +389,10 @@ module HTTParty
 
     private
 
-      def perform_request(http_method, path, options) #:nodoc:
+      def perform_request(http_method, path, options, &block) #:nodoc:
         options = default_options.dup.merge(options)
         process_cookies(options)
-        Request.new(http_method, path, options).perform
+        Request.new(http_method, path, options).perform(&block)
       end
 
       def process_cookies(options) #:nodoc:
@@ -423,28 +423,28 @@ module HTTParty
     include HTTParty
   end
 
-  def self.get(*args)
-    Basement.get(*args)
+  def self.get(*args, &block)
+    Basement.get(*args, &block)
   end
 
-  def self.post(*args)
-    Basement.post(*args)
+  def self.post(*args, &block)
+    Basement.post(*args, &block)
   end
 
-  def self.put(*args)
-    Basement.put(*args)
+  def self.put(*args, &block)
+    Basement.put(*args, &block)
   end
 
-  def self.delete(*args)
-    Basement.delete(*args)
+  def self.delete(*args, &block)
+    Basement.delete(*args, &block)
   end
 
-  def self.head(*args)
-    Basement.head(*args)
+  def self.head(*args, &block)
+    Basement.head(*args, &block)
   end
 
-  def self.options(*args)
-    Basement.options(*args)
+  def self.options(*args, &block)
+    Basement.options(*args, &block)
   end
 end
 
