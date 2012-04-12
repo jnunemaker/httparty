@@ -54,6 +54,10 @@ OptionParser.new do |o|
     opts[:basic_auth] = { :username => user, :password => password }
   end
 
+  o.on("-r", "--response-code", "Command fails if response code >= 400") do
+    opts[:response_code] = true
+  end
+
   o.on("-h", "--help", "Show help documentation") do |h|
     puts o
     exit
@@ -106,3 +110,4 @@ else
       puts response
   end
 end
+exit false if opts[:response_code] && response.code >= 400
