@@ -1,3 +1,20 @@
+== 0.8.2 2012-04-12
+* new
+  * add -r to make CLI return failure code if status >= 400
+  * allow blank username from CLI
+* bug fixes
+  * return nil for null body
+  * automatically deflate responses with a Content-Encoding: x-gzip header
+  * Do not HEAD on POST request with digest authentication
+  * add support for proxy authentication
+  * fix posting data with CLI
+  * require rexml/document if xml format from CLI
+  * support for fragmented responses
+
+== 0.8.1 2011-10-05
+* bug fixes
+  * content-encoding header should be removed when automatically inflating the body
+
 == 0.8.0 2011-09-13
 * new
   * switch to multi json/xml for parsing by default
