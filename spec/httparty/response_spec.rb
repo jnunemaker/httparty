@@ -190,4 +190,11 @@ describe HTTParty::Response do
       end
     end
   end
+
+  describe "headers" do
+    it "can initialize without headers" do
+      headers = HTTParty::Response::Headers.new
+      headers.should == {}
+    end
+  end
 end
