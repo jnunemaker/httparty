@@ -19,7 +19,7 @@ describe HTTParty do
       HTTParty::AllowedFormats.should == HTTParty::Parser::SupportedFormats
     end
   end
-  
+
   describe "pem" do
 
     it 'should set the pem content' do
@@ -560,6 +560,15 @@ describe HTTParty do
     it "should be able to get html" do
       stub_http_response_with('google.html')
       HTTParty.get('http://www.google.com').should == file_fixture('google.html')
+    end
+
+    it "should be able to get chunked html" do
+      chunks = ["Chunk1", "Chunk2", "Chunk3", "Chunk4"]
+      stub_chunked_http_response_with(chunks)
+
+      HTTParty.get('http://www.google.com') do |fragment|
+        chunks.should include(fragment)
+      end.should == chunks.join
     end
 
     it "should be able parse response type json automatically" do
