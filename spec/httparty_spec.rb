@@ -433,6 +433,12 @@ describe HTTParty do
       end.should raise_error(HTTParty::RedirectionTooDeep) {|e| e.response.body.should == 'first redirect'}
     end
 
+    it "should fail with redirected PATCH" do
+      lambda do
+        @klass.patch('/foo', :no_follow => true)
+      end.should raise_error(HTTParty::RedirectionTooDeep) {|e| e.response.body.should == 'first redirect'}
+    end
+
     it "should fail with redirected DELETE" do
       lambda do
         @klass.delete('/foo', :no_follow => true)

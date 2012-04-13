@@ -36,7 +36,7 @@ module HTTParty
   end
 
   # == Common Request Options
-  # Request methods (get, post, put, delete, head, options) all take a common set of options. These are:
+  # Request methods (get, post, patch, put, delete, head, options) all take a common set of options. These are:
   #
   # [:+body+:] Body of the request. If passed a Hash, will try to normalize it first, by default passing it to ActiveSupport::to_params. Any other kind of object will get used as-is.
   # [:+http_proxyaddr+:] Address of proxy server to use.
@@ -363,6 +363,11 @@ module HTTParty
       perform_request Net::HTTP::Post, path, options, &block
     end
 
+    # Perform a PATCH request to a path
+    def patch(path, options={}, &block)
+      perform_request Net::HTTP::Patch, path, options, &block
+    end
+
     # Perform a PUT request to a path
     def put(path, options={}, &block)
       perform_request Net::HTTP::Put, path, options, &block
@@ -429,6 +434,10 @@ module HTTParty
 
   def self.post(*args, &block)
     Basement.post(*args, &block)
+  end
+
+  def self.patch(*args, &block)
+    Basement.patch(*args, &block)
   end
 
   def self.put(*args, &block)
