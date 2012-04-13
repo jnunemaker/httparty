@@ -7,3 +7,4 @@ log/
 pkg/
 *.swp
 /.bundle
+.rvmrc
