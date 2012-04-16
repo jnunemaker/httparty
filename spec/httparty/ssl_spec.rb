@@ -27,7 +27,7 @@ describe HTTParty::Request do
     end
 
     it "should work when using ssl_ca_path with a certificate authority" do
-      ssl_verify_test(:ssl_ca_path, ".", "server.crt").should == {'success' => true}
+      ssl_verify_test(:ssl_ca_path, "", "server.crt").should == {'success' => true}
     end
 
     it "should fail when using ssl_ca_file and the server uses an unrecognized certificate authority" do
