@@ -71,6 +71,7 @@ module HTTParty
     def perform(&block)
       validate
       setup_raw_request
+      chunked_body = nil
 
       self.last_response = http.request(@raw_request) do |http_response|
         if block
@@ -81,12 +82,12 @@ module HTTParty
             block.call(fragment)
           end
 
-          http_response.body = chunks.join
+          chunked_body = chunks.join
         end
       end
 
       handle_deflation
-      handle_response
+      handle_response(chunked_body)
     end
 
     private
@@ -197,7 +198,7 @@ module HTTParty
       query_string_parts.size > 0 ? query_string_parts.join('&') : nil
     end
 
-    def handle_response
+    def handle_response(body)
       if response_redirects?
         options[:limit] -= 1
         self.path = last_response['location']
@@ -206,7 +207,8 @@ module HTTParty
         capture_cookies(last_response)
         perform
       else
-        Response.new(self, last_response, parse_response(last_response.body))
+        body = body || last_response.body
+        Response.new(self, last_response, parse_response(body), :body => body)
       end
     end
 
