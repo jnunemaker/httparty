@@ -27,7 +27,12 @@ describe HTTParty::Request do
     end
 
     it "should work when using ssl_ca_path with a certificate authority" do
-      ssl_verify_test(:ssl_ca_path, "", "server.crt").should == {'success' => true}
+      http = Net::HTTP.new('www.google.com', 443, nil, nil, nil, nil)
+      response = stub(Net::HTTPResponse, :[] => '', :body => '', :to_hash => {})
+      http.stub(:request).and_return(response)
+      Net::HTTP.should_receive(:new).with('www.google.com', 443, nil, nil, nil, nil).and_return(http)
+      http.should_receive(:ca_path=).with('/foo/bar')
+      HTTParty.get('https://www.google.com', :ssl_ca_path => '/foo/bar')
     end
 
     it "should fail when using ssl_ca_file and the server uses an unrecognized certificate authority" do
