@@ -10,11 +10,11 @@ describe HTTParty::Request do
       FakeWeb.allow_net_connect = false
     end
 
-    it "should work with when no trusted CA list is specified" do
+    it "should work when no trusted CA list is specified" do
       ssl_verify_test(nil, nil, "selfsigned.crt").should == {'success' => true}
     end
 
-    it "should work with when no trusted CA list is specified, even with a bogus hostname" do
+    it "should work when no trusted CA list is specified, even with a bogus hostname" do
       ssl_verify_test(nil, nil, "bogushost.crt").should == {'success' => true}
     end
 
