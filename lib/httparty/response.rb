@@ -35,12 +35,12 @@ module HTTParty
 
     attr_reader :request, :response, :parsed_response, :body, :headers
 
-    def initialize(request, response, parsed_response)
-      @request = request
-      @response = response
-      @body = response.body
+    def initialize(request, response, parsed_response, options={})
+      @request         = request
+      @response        = response
+      @body            = response.body || options[:body]
       @parsed_response = parsed_response
-      @headers = Headers.new(response.to_hash)
+      @headers         = Headers.new(response.to_hash)
     end
 
     def class
