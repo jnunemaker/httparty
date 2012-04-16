@@ -1,7 +1,7 @@
 source :rubygems
 gemspec
 
-gem 'rake',     '~> 0.8.7'
+gem 'rake'
 gem 'cucumber', '~> 0.7'
 gem 'fakeweb',  '~> 1.2'
 gem 'rspec',    '~> 1.3'
