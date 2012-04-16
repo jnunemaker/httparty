@@ -2,22 +2,6 @@
 
 Makes http fun again!
 
-== Note on Releases
-
-Releases are tagged on github and also released as gems on github and rubyforge. Master is pushed to whenever I add a patch or a new feature. To build from master, you can clone the code, generate the updated gemspec, build the gem and install.
-
-* rake gemspec
-* gem build httparty.gemspec
-* gem install the gem that was built
-
-== Note on Patches/Pull Requests
-
-* Fork the project.
-* Make your feature addition or bug fix.
-* Add tests for it. This is important so I don't break it in a future version unintentionally.
-* Commit, do not mess with rakefile, version, or history. (if you want to have your own version, that is fine but bump version in a commit by itself in another branch so I can ignore when I pull)
-* Send me a pull request. Bonus points for topic branches.
-
 == Features:
 
 * Easy get, post requests
@@ -28,6 +12,14 @@ Releases are tagged on github and also released as gems on github and rubyforge.
 == Examples
 
 See http://github.com/jnunemaker/httparty/tree/master/examples
+
+== Note on Patches/Pull Requests
+
+* Fork the project.
+* Make your feature addition or bug fix.
+* Add tests for it. This is important so I don't break it in a future version unintentionally.
+* Commit, do not mess with rakefile, version, or history. (if you want to have your own version, that is fine but bump version in a commit by itself in another branch so I can ignore when I pull)
+* Send me a pull request. Bonus points for topic branches.
 
 == Command Line Interface
 
