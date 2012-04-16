@@ -13,11 +13,11 @@ describe Net::HTTPHeader::DigestAuthenticator do
     @digest.authorization_header.join(", ")
   end
 
-
   context "with specified quality of protection (qop)" do
     before do
-      @digest = setup_digest({'www-authenticate' =>
-        'Digest realm="myhost@testrealm.com", nonce="NONCE", qop="auth"'})
+      @digest = setup_digest({
+        'www-authenticate' => 'Digest realm="myhost@testrealm.com", nonce="NONCE", qop="auth"',
+      })
     end
 
     it "should set prefix" do
@@ -45,9 +45,7 @@ describe Net::HTTPHeader::DigestAuthenticator do
     end
 
     it "should set response" do
-      request_digest =
-        "md5(md5(Mufasa:myhost@testrealm.com:Circle Of Life)" +
-        ":NONCE:0:md5(deadbeef):auth:md5(GET:/dir/index.html))"
+      request_digest = "md5(md5(Mufasa:myhost@testrealm.com:Circle Of Life):NONCE:0:md5(deadbeef):auth:md5(GET:/dir/index.html))"
       authorization_header.should include(%Q(response="#{request_digest}"))
     end
   end
@@ -55,8 +53,9 @@ describe Net::HTTPHeader::DigestAuthenticator do
 
   context "with unspecified quality of protection (qop)" do
     before do
-      @digest = setup_digest({'www-authenticate' =>
-        'Digest realm="myhost@testrealm.com", nonce="NONCE"'})
+      @digest = setup_digest({
+        'www-authenticate' => 'Digest realm="myhost@testrealm.com", nonce="NONCE"',
+      })
     end
 
     it "should set prefix" do
@@ -84,9 +83,7 @@ describe Net::HTTPHeader::DigestAuthenticator do
     end
 
     it "should set response" do
-      request_digest =
-        "md5(md5(Mufasa:myhost@testrealm.com:Circle Of Life)" +
-        ":NONCE:md5(GET:/dir/index.html))"
+      request_digest = "md5(md5(Mufasa:myhost@testrealm.com:Circle Of Life):NONCE:md5(GET:/dir/index.html))"
       authorization_header.should include(%Q(response="#{request_digest}"))
     end
   end

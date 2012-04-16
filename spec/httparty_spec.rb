@@ -10,6 +10,7 @@ describe HTTParty do
     before do
       Kernel.stub(:warn)
     end
+
     it "warns with a deprecation message" do
       Kernel.should_receive(:warn).with("Deprecated: Use HTTParty::Parser::SupportedFormats")
       HTTParty::AllowedFormats
@@ -21,7 +22,6 @@ describe HTTParty do
   end
 
   describe "pem" do
-
     it 'should set the pem content' do
       @klass.pem 'PEM-CONTENT'
       @klass.default_options[:pem].should == 'PEM-CONTENT'
@@ -36,7 +36,6 @@ describe HTTParty do
       @klass.pem 'PEM-CONTENT', 'PASSWORD'
       @klass.default_options[:pem_password].should == 'PASSWORD'
     end
-
   end
 
   describe 'http_proxy' do

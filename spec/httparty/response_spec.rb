@@ -54,7 +54,7 @@ describe HTTParty::Response do
     response = HTTParty::Response.new(@request_object, @response_object, {'foo' => 'bar'})
     response['foo'].should == 'bar'
   end
-  
+
   it "should respond_to? methods it supports" do
     response = HTTParty::Response.new(@request_object, @response_object, {'foo' => 'bar'})
     response.respond_to?(:parsed_response).should be_true
@@ -102,9 +102,9 @@ describe HTTParty::Response do
 
   describe "semantic methods for response codes" do
     def response_mock(klass)
-      r = klass.new('', '', '')
-      r.stub(:body)
-      r
+      response = klass.new('', '', '')
+      response.stub(:body)
+      response
     end
 
     context "major codes" do
