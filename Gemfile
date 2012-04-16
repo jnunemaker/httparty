@@ -6,6 +6,9 @@ gem 'cucumber', '~> 0.7'
 gem 'fakeweb',  '~> 1.2'
 gem 'rspec',    '~> 1.3'
 gem 'mongrel',  '1.2.0.pre2'
-gem 'guard'
-gem 'guard-rspec'
-gem 'guard-bundler'
+
+group :development do
+  gem 'guard'
+  gem 'guard-rspec'
+  gem 'guard-bundler'
+end
