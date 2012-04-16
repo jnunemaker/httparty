@@ -3,6 +3,7 @@ module HTTParty
     SupportedHTTPMethods = [
       Net::HTTP::Get,
       Net::HTTP::Post,
+      Net::HTTP::Patch,
       Net::HTTP::Put,
       Net::HTTP::Delete,
       Net::HTTP::Head,
@@ -260,7 +261,7 @@ module HTTParty
 
     def validate
       raise HTTParty::RedirectionTooDeep.new(last_response), 'HTTP redirects too deep' if options[:limit].to_i <= 0
-      raise ArgumentError, 'only get, post, put, delete, head, and options methods are supported' unless SupportedHTTPMethods.include?(http_method)
+      raise ArgumentError, 'only get, post, patch, put, delete, head, and options methods are supported' unless SupportedHTTPMethods.include?(http_method)
       raise ArgumentError, ':headers must be a hash' if options[:headers] && !options[:headers].is_a?(Hash)
       raise ArgumentError, 'only one authentication method, :basic_auth or :digest_auth may be used at a time' if options[:basic_auth] && options[:digest_auth]
       raise ArgumentError, ':basic_auth must be a hash' if options[:basic_auth] && !options[:basic_auth].is_a?(Hash)
