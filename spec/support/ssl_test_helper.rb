@@ -12,7 +12,7 @@ module HTTParty
       if mode
         ca_path = path.join(ca_basename)
         raise ArgumentError.new("#{ca_path} does not exist") unless ca_path.exist?
-        options[mode] = ca_path
+        options[mode] = ca_path.to_s
       end
 
       test_server = SSLTestServer.new({
