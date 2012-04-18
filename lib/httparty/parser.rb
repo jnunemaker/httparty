@@ -113,7 +113,7 @@ module HTTParty
     end
 
     def json
-      MultiJson.decode(body)
+      MultiJson.load(body)
     end
 
     def yaml

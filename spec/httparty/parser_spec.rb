@@ -145,7 +145,7 @@ describe HTTParty::Parser do
     end
 
     it "parses json with MultiJson" do
-      MultiJson.should_receive(:decode).with('body')
+      MultiJson.should_receive(:load).with('body')
       subject.send(:json)
     end
 
