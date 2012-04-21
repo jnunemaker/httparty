@@ -22,7 +22,7 @@ module HTTParty
           if instance_variable_get(ivar).respond_to?(:merge)
             method = <<-EOM
               def self.#{inheritable_attribute}
-                #{ivar} = superclass.#{inheritable_attribute}.merge #{ivar}
+                #{ivar} = superclass.#{inheritable_attribute}.merge Marshal.load(Marshal.dump(#{ivar}))
               end
             EOM
             subclass.class_eval method

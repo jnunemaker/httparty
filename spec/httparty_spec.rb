@@ -526,6 +526,14 @@ describe HTTParty do
       @parent.default_options.should == {:basic_auth => {:username => 'user', :password => 'password'}}
     end
 
+    it "doesn't modify hashes in the parent's default options" do
+      @parent.headers 'Accept' => 'application/json'
+      @child1.headers 'Accept' => 'application/xml'
+
+      @parent.default_options[:headers].should == {'Accept' => 'application/json'}
+      @child1.default_options[:headers].should == {'Accept' => 'application/xml'}
+    end
+
     it "inherits default_cookies from the parent class" do
       @parent.cookies 'type' => 'chocolate_chip'
       @child1.default_cookies.should == {"type" => "chocolate_chip"}
