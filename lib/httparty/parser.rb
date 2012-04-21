@@ -93,7 +93,6 @@ module HTTParty
       @body = body
       @format = format
     end
-    private_class_method :new
 
     # @return [Object] the parsed body
     # @return [nil] when the response body is nil, an empty string, spaces only or "null"
