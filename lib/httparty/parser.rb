@@ -113,7 +113,12 @@ module HTTParty
     end
 
     def json
-      MultiJson.load(body)
+      # https://github.com/sferik/rails/commit/5e62670131dfa1718eaf21ff8dd3371395a5f1cc
+      if MultiJson.respond_to?(:adapter)
+        MultiJson.load(body)
+      else
+        MultiJson.decode(json)
+      end
     end
 
     def yaml
