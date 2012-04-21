@@ -117,7 +117,7 @@ module HTTParty
       if MultiJson.respond_to?(:adapter)
         MultiJson.load(body)
       else
-        MultiJson.decode(json)
+        MultiJson.decode(body)
       end
     end
 

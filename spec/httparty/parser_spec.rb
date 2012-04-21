@@ -149,6 +149,12 @@ describe HTTParty::Parser do
       subject.send(:json)
     end
 
+    it "uses MultiJson.decode if MultiJson does not respond to adapter" do
+      MultiJson.should_receive(:respond_to?).with(:adapter).and_return(false)
+      MultiJson.should_receive(:decode).with('body')
+      subject.send(:json)
+    end
+
     it "parses yaml" do
       YAML.should_receive(:load).with('body')
       subject.send(:yaml)
