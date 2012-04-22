@@ -1,33 +1,5 @@
 module HTTParty
   class Response < HTTParty::BasicObject #:nodoc:
-    class Headers
-      include ::Net::HTTPHeader
-
-      def initialize(header = {})
-        @header = header
-      end
-
-      def ==(other)
-        @header == other
-      end
-
-      def inspect
-        @header.inspect
-      end
-
-      def method_missing(name, *args, &block)
-        if @header.respond_to?(name)
-          @header.send(name, *args, &block)
-        else
-          super
-        end
-      end
-
-      def respond_to?(method)
-        super || @header.respond_to?(method)
-      end
-    end
-
     def self.underscore(string)
       string.gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').gsub(/([a-z])([A-Z])/,'\1_\2').downcase
     end
@@ -82,3 +54,5 @@ module HTTParty
     end
   end
 end
+
+require 'httparty/response/headers'
