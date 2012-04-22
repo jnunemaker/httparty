@@ -28,7 +28,6 @@ module HTTParty
       end
     end
 
-
     def self.underscore(string)
       string.gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').gsub(/([a-z])([A-Z])/,'\1_\2').downcase
     end
@@ -66,8 +65,8 @@ module HTTParty
     end
 
     def respond_to?(name)
-      return true if [:request,:response,:parsed_response,:body,:headers].include?(name)
-      parsed_response.respond_to?(name) or response.respond_to?(name)
+      return true if [:request, :response, :parsed_response, :body, :headers].include?(name)
+      parsed_response.respond_to?(name) || response.respond_to?(name)
     end
 
     protected
