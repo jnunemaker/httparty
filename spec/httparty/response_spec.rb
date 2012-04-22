@@ -55,9 +55,34 @@ describe HTTParty::Response do
     response['foo'].should == 'bar'
   end
 
-  it "should respond_to? methods it supports" do
+  it "response to request" do
+    response = HTTParty::Response.new(@request_object, @response_object, {'foo' => 'bar'})
+    response.respond_to?(:request).should be_true
+  end
+
+  it "responds to response" do
+    response = HTTParty::Response.new(@request_object, @response_object, {'foo' => 'bar'})
+    response.respond_to?(:response).should be_true
+  end
+
+  it "responds to body" do
+    response = HTTParty::Response.new(@request_object, @response_object, {'foo' => 'bar'})
+    response.respond_to?(:body).should be_true
+  end
+
+  it "responds to headers" do
+    response = HTTParty::Response.new(@request_object, @response_object, {'foo' => 'bar'})
+    response.respond_to?(:headers).should be_true
+  end
+
+  it "responds to parsed_response" do
     response = HTTParty::Response.new(@request_object, @response_object, {'foo' => 'bar'})
     response.respond_to?(:parsed_response).should be_true
+  end
+
+  it "responds to anything parsed_response responds to" do
+    response = HTTParty::Response.new(@request_object, @response_object, {'foo' => 'bar'})
+    response.respond_to?(:[]).should be_true
   end
 
   it "should be able to iterate if it is array" do
