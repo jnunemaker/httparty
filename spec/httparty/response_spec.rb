@@ -9,7 +9,7 @@ describe HTTParty::Response do
     @response_object.stub(:body => "{foo:'bar'}")
     @response_object['last-modified'] = @last_modified
     @response_object['content-length'] = @content_length
-    @parsed_response = {"foo" => "bar"}
+    @parsed_response = lambda { {"foo" => "bar"} }
     @response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
   end
 
@@ -51,42 +51,42 @@ describe HTTParty::Response do
   end
 
   it "should send missing methods to delegate" do
-    response = HTTParty::Response.new(@request_object, @response_object, {'foo' => 'bar'})
+    response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
     response['foo'].should == 'bar'
   end
 
   it "response to request" do
-    response = HTTParty::Response.new(@request_object, @response_object, {'foo' => 'bar'})
+    response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
     response.respond_to?(:request).should be_true
   end
 
   it "responds to response" do
-    response = HTTParty::Response.new(@request_object, @response_object, {'foo' => 'bar'})
+    response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
     response.respond_to?(:response).should be_true
   end
 
   it "responds to body" do
-    response = HTTParty::Response.new(@request_object, @response_object, {'foo' => 'bar'})
+    response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
     response.respond_to?(:body).should be_true
   end
 
   it "responds to headers" do
-    response = HTTParty::Response.new(@request_object, @response_object, {'foo' => 'bar'})
+    response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
     response.respond_to?(:headers).should be_true
   end
 
   it "responds to parsed_response" do
-    response = HTTParty::Response.new(@request_object, @response_object, {'foo' => 'bar'})
+    response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
     response.respond_to?(:parsed_response).should be_true
   end
 
   it "responds to anything parsed_response responds to" do
-    response = HTTParty::Response.new(@request_object, @response_object, {'foo' => 'bar'})
+    response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
     response.respond_to?(:[]).should be_true
   end
 
   it "should be able to iterate if it is array" do
-    response = HTTParty::Response.new(@request_object, @response_object, [{'foo' => 'bar'}, {'foo' => 'baz'}])
+    response = HTTParty::Response.new(@request_object, @response_object, lambda { [{'foo' => 'bar'}, {'foo' => 'baz'}] })
     response.size.should == 2
     expect {
       response.each { |item| }
@@ -112,17 +112,6 @@ describe HTTParty::Response do
     hash_methods.each do |method_name|
       response.headers.respond_to?(method_name).should be_true
     end
-  end
-
-  xit "should allow hashes to be accessed with dot notation" do
-    response = HTTParty::Response.new(@request_object, {'foo' => 'bar'}, "{foo:'bar'}", 200, 'OK')
-    response.foo.should == 'bar'
-  end
-
-  xit "should allow nested hashes to be accessed with dot notation" do
-    response = HTTParty::Response.new(@request_object, {'foo' => {'bar' => 'baz'}}, "{foo: {bar:'baz'}}", 200, 'OK')
-    response.foo.should == {'bar' => 'baz'}
-    response.foo.bar.should == 'baz'
   end
 
   describe "semantic methods for response codes" do

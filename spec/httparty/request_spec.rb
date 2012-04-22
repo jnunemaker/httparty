@@ -411,6 +411,16 @@ describe HTTParty::Request do
         resp.body.should == "<foo><bar>error</bar></foo>"
         resp['foo']['bar'].should == "error"
       end
+
+      it "parses response lazily so codes can be checked prior" do
+        stub_response 'not xml', 500
+        @request.options[:format] = :xml
+        lambda {
+          response = @request.perform
+          response.code.should == 500
+          response.body.should == 'not xml'
+        }.should_not raise_error
+      end
     end
   end
 

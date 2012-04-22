@@ -208,7 +208,7 @@ module HTTParty
         perform
       else
         body = body || last_response.body
-        Response.new(self, last_response, parse_response(body), :body => body)
+        Response.new(self, last_response, lambda { parse_response(body) }, :body => body)
       end
     end
 

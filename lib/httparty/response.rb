@@ -4,14 +4,18 @@ module HTTParty
       string.gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').gsub(/([a-z])([A-Z])/,'\1_\2').downcase
     end
 
-    attr_reader :request, :response, :parsed_response, :body, :headers
+    attr_reader :request, :response, :body, :headers
 
-    def initialize(request, response, parsed_response, options={})
-      @request         = request
-      @response        = response
-      @body            = response.body || options[:body]
-      @parsed_response = parsed_response
-      @headers         = Headers.new(response.to_hash)
+    def initialize(request, response, parsed_block, options={})
+      @request      = request
+      @response     = response
+      @body         = response.body || options[:body]
+      @parsed_block = parsed_block
+      @headers      = Headers.new(response.to_hash)
+    end
+
+    def parsed_response
+      @parsed_response ||= @parsed_block.call
     end
 
     def class
@@ -24,7 +28,7 @@ module HTTParty
 
     def inspect
       inspect_id = "%x" % (object_id * 2)
-      %(#<#{self.class}:0x#{inspect_id} @parsed_response=#{parsed_response.inspect}, @response=#{response.inspect}, @headers=#{headers.inspect}>)
+      %(#<#{self.class}:0x#{inspect_id} parsed_response=#{parsed_response.inspect}, @response=#{response.inspect}, @headers=#{headers.inspect}>)
     end
 
     CODES_TO_OBJ = ::Net::HTTPResponse::CODE_CLASS_TO_OBJ.merge ::Net::HTTPResponse::CODE_TO_OBJ
