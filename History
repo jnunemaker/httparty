@@ -1,3 +1,10 @@
+== 0.8.3 2012-04-21
+* new
+  * [lazy parsing of responses](https://github.com/jnunemaker/httparty/commit/9fd5259c8dab00e426082b66af44ede2c9068f45)
+  * [add support for PATCH requests](https://github.com/jnunemaker/httparty/commit/7ab6641e37a9e31517e46f6124f38c615395d38a)
+* bug fixes
+  * [subclasses no longer override superclass options](https://github.com/jnunemaker/httparty/commit/682af8fbf672e7b3009e650da776c85cdfe78d39)
+
 == 0.8.2 2012-04-12
 * new
   * add -r to make CLI return failure code if status >= 400
