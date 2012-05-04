@@ -415,7 +415,7 @@ module HTTParty
 
   def self.normalize_base_uri(url) #:nodoc:
     normalized_url = url.dup
-    use_ssl = (normalized_url =~ /^https/) || normalized_url.include?(':443')
+    use_ssl = (normalized_url =~ /^https/) || (normalized_url =~ /:443\b/)
     ends_with_slash = normalized_url =~ /\/$/
 
     normalized_url.chop! if ends_with_slash
