@@ -103,6 +103,11 @@ describe HTTParty do
       HTTParty.normalize_base_uri(uri)
       uri.should == 'http://api.foobar.com'
     end
+
+    it "should not treat uri's with a port of 4430 as ssl" do
+      uri = HTTParty.normalize_base_uri('http://api.foo.com:4430/v1')
+      uri.should == 'http://api.foo.com:4430/v1'
+    end
   end
 
   describe "headers" do
