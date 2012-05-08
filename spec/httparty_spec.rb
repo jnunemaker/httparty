@@ -20,6 +20,25 @@ describe HTTParty do
       HTTParty::AllowedFormats.should == HTTParty::Parser::SupportedFormats
     end
   end
+  
+  describe "pem" do
+
+    it 'should set the pem content' do
+      @klass.pem 'PEM-CONTENT'
+      @klass.default_options[:pem].should == 'PEM-CONTENT'
+    end
+
+    it "should set the password to nil if it's not provided" do
+      @klass.pem 'PEM-CONTENT'
+      @klass.default_options[:pem_password].should be_nil
+    end
+
+    it 'should set the password' do
+      @klass.pem 'PEM-CONTENT', 'PASSWORD'
+      @klass.default_options[:pem_password].should == 'PASSWORD'
+    end
+
+  end
 
   describe "pem" do
     it 'should set the pem content' do
