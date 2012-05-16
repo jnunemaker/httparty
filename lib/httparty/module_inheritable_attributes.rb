@@ -8,7 +8,7 @@ module HTTParty
           result
         end
       elsif value.is_a?(Proc)
-        value # We can't serialize procs
+        value.dup # We can't serialize procs
       elsif value.respond_to?(:map)
         value.map { |value| deep_clone value }
       else
