@@ -539,6 +539,11 @@ describe HTTParty do
       @child1.default_options[:headers].should == {'Accept' => 'application/xml'}
     end
 
+    it "works with lambda values" do
+      @child1.disable_rails_query_string_format
+      @child1.default_options[:query_string_normalizer].should be_a Proc
+    end
+
     it "inherits default_cookies from the parent class" do
       @parent.cookies 'type' => 'chocolate_chip'
       @child1.default_cookies.should == {"type" => "chocolate_chip"}
