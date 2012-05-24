@@ -66,11 +66,11 @@ describe Net::HTTPHeader::DigestAuthenticator do
     end
 
     it "should set nonce-count" do
-      authorization_header.should include(%Q(nc="0"))
+      authorization_header.should include(%Q(nc="00000001"))
     end
 
     it "should set response" do
-      request_digest = "md5(md5(Mufasa:myhost@testrealm.com:Circle Of Life):NONCE:0:md5(deadbeef):auth:md5(GET:/dir/index.html))"
+      request_digest = "md5(md5(Mufasa:myhost@testrealm.com:Circle Of Life):NONCE:00000001:md5(deadbeef):auth:md5(GET:/dir/index.html))"
       authorization_header.should include(%Q(response="#{request_digest}"))
     end
   end

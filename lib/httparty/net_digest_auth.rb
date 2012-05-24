@@ -20,18 +20,24 @@ module Net
 
       def authorization_header
         @cnonce = md5(random)
-        header = [%Q(Digest username="#{@username}"),
+        header = [
+          %Q(Digest username="#{@username}"),
           %Q(realm="#{@response['realm']}"),
           %Q(nonce="#{@response['nonce']}"),
           %Q(uri="#{@path}"),
-          %Q(response="#{request_digest}")]
+          %Q(response="#{request_digest}"),
+        ]
 
-        [%Q(cnonce="#{@cnonce}"),
-          %Q(qop="#{@response['qop']}"),
-          %Q(nc="0")].each { |field| header << field } if qop_present?
+        if qop_present?
+          fields = [
+            %Q(cnonce="#{@cnonce}"),
+            %Q(qop="#{@response['qop']}"),
+            %Q(nc="00000001")
+          ]
+          fields.each { |field| header << field }
+        end
 
         header << %Q(opaque="#{@response['opaque']}") if opaque_present?
-
         header
       end
 
@@ -58,7 +64,7 @@ module Net
 
       def request_digest
         a = [md5(a1), @response['nonce'], md5(a2)]
-        a.insert(2, "0", @cnonce, @response['qop']) if qop_present?
+        a.insert(2, "00000001", @cnonce, @response['qop']) if qop_present?
         md5(a.join(":"))
       end
 
