@@ -28,7 +28,7 @@ module Net
         [%Q(cnonce="#{@cnonce}"),
           %Q(opaque="#{@response['opaque']}"),
           %Q(qop="#{@response['qop']}"),
-          %Q(nc="0")].each { |field| header << field } if qop_present?
+          %Q(nc="00000001")].each { |field| header << field } if qop_present?
         header
       end
 
@@ -51,7 +51,7 @@ module Net
 
       def request_digest
         a = [md5(a1), @response['nonce'], md5(a2)]
-        a.insert(2, "0", @cnonce, @response['qop']) if qop_present?
+        a.insert(2, "00000001", @cnonce, @response['qop']) if qop_present?
         md5(a.join(":"))
       end
 
