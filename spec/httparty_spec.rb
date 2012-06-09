@@ -539,6 +539,20 @@ describe HTTParty do
       @child1.default_options[:headers].should == {'Accept' => 'application/xml'}
     end
 
+    it "works with lambda values" do
+      @child1.default_options[:imaginary_option] = lambda { "This is a new lambda "}
+      @child1.default_options[:imaginary_option].should be_a Proc
+    end
+
+    it 'should dup the proc on the child class' do
+      imaginary_option = lambda { "This is a new lambda" }
+      @parent.default_options[:imaginary_option] = imaginary_option
+      @parent.default_options[:imaginary_option].should be_equal imaginary_option
+      @child1.default_options[:imaginary_option]
+      @child1.default_options[:imaginary_option].should == imaginary_option
+      @child1.default_options[:imaginary_option].should_not be_equal imaginary_option
+    end
+
     it "inherits default_cookies from the parent class" do
       @parent.cookies 'type' => 'chocolate_chip'
       @child1.default_cookies.should == {"type" => "chocolate_chip"}
