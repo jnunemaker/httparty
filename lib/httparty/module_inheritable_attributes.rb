@@ -35,11 +35,12 @@ module HTTParty
         super
         @mattr_inheritable_attrs.each do |inheritable_attribute|
           ivar = "@#{inheritable_attribute}"
-          subclass.instance_variable_set(ivar, instance_variable_get(ivar).clone)
+          # Initially, set the instance variable value to be a clone of the parents value.
+          subclass.instance_variable_set ivar, HTTParty::ModuleInheritableAttributes.deep_clone(instance_variable_get(ivar))
           if instance_variable_get(ivar).respond_to?(:merge)
             method = <<-EOM
               def self.#{inheritable_attribute}
-                #{ivar} = superclass.#{inheritable_attribute}.merge HTTParty::ModuleInheritableAttributes.deep_clone(#{ivar})
+                #{ivar} = (superclass.#{inheritable_attribute}.merge(HTTParty::ModuleInheritableAttributes.deep_clone(#{ivar})))
               end
             EOM
             subclass.class_eval method
