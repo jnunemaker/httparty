@@ -10,6 +10,7 @@ require 'httparty/module_inheritable_attributes'
 require 'httparty/cookie_hash'
 require 'httparty/net_digest_auth'
 require 'httparty/version'
+require 'httparty/connection_factory'
 
 # @see HTTParty::ClassMethods
 module HTTParty
@@ -57,6 +58,7 @@ module HTTParty
   # * :+maintain_method_across_redirects+: see HTTParty::ClassMethods.maintain_method_across_redirects.
   # * :+no_follow+: see HTTParty::ClassMethods.no_follow.
   # * :+parser+: see HTTParty::ClassMethods.parser.
+  # * :+connection_factory+: see HTTParty::ClassMethods.connection_factory.
   # * :+pem+: see HTTParty::ClassMethods.pem.
   # * :+query_string_normalizer+: see HTTParty::ClassMethods.query_string_normalizer
   # * :+ssl_ca_file+: see HTTParty::ClassMethods.ssl_ca_file.
@@ -328,6 +330,22 @@ module HTTParty
       else
         default_options[:parser] = custom_parser
         validate_format
+      end
+    end
+
+    # Allows setting a custom connection_factory for the http connections
+    #
+    #   class Foo
+    #     include HTTParty
+    #     connection_factory Proc.new {|uri, options| ... }
+    #   end
+    #
+    # @see HTTParty::ConnectionFactory
+    def connection_factory(custom_factory = nil)
+      if custom_factory.nil?
+        default_options[:connection_factory]
+      else
+        default_options[:connection_factory] = custom_factory
       end
     end
 

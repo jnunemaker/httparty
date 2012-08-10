@@ -326,6 +326,25 @@ describe HTTParty do
     end
   end
 
+  describe "connection_factory" do
+    let(:uri) { 'http://google.com/api.json' }
+    let(:connection_factory) { mock('CustomConnectionFactory') }
+
+    it "should set parser options" do
+      @klass.connection_factory connection_factory
+      @klass.default_options[:connection_factory].should be connection_factory
+    end
+
+    it "should process a request with a connection from the factory" do
+      connection_factory.should_receive(:call) do |u,o|
+        HTTParty::ConnectionFactory.call(u,o)
+      end.with(URI.parse(uri), kind_of(Hash))
+      FakeWeb.register_uri(:get, uri, :body => 'stuff')
+      @klass.connection_factory connection_factory
+      @klass.get(uri).should == 'stuff'
+    end
+  end
+
   describe "format" do
     it "should allow xml" do
       @klass.format :xml
