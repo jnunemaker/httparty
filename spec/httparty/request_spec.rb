@@ -106,6 +106,16 @@ describe HTTParty::Request do
       @post_request.options[:digest_auth] = {:username => 'foobar', :password => 'secret'}
       @post_request.send(:setup_raw_request)
     end
+
+    it 'should use the right ssl version when configured' do
+      request = HTTParty::Request.new(Net::HTTP::Get, 'https://api.foo.com/v1', :format => :xml)
+      FakeWeb.register_uri(:get, "https://api.foo.com/v1", {})
+
+      request.options[:ssl_version] = 'SSLv3'
+      request.send(:setup_raw_request)
+
+      request.send(:http).ssl_version.should == 'SSLv3'
+    end
   end
 
   describe "#uri" do

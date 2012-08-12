@@ -131,6 +131,10 @@ module HTTParty
         http.set_debug_output(options[:debug_output])
       end
 
+      if options[:ssl_version] && http.use_ssl?
+        http.ssl_version = options[:ssl_version]
+      end
+
       http
     end
 
