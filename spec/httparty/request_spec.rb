@@ -45,6 +45,17 @@ describe HTTParty::Request do
       request = HTTParty::Request.new(Net::HTTP::Get, 'http://google.com', :parser => my_parser)
       request.parser.should == my_parser
     end
+
+    it "sets connection_adapter to HTTPParty::ConnectionAdapter" do
+      request = HTTParty::Request.new(Net::HTTP::Get, 'http://google.com')
+      request.connection_adapter.should == HTTParty::ConnectionAdapter
+    end
+
+    it "sets connection_adapter to the optional connection_adapter" do
+      my_adapter = lambda {}
+      request = HTTParty::Request.new(Net::HTTP::Get, 'http://google.com', :connection_adapter => my_adapter)
+      request.connection_adapter.should == my_adapter
+    end
   end
 
   describe "#format" do
@@ -145,125 +156,12 @@ describe HTTParty::Request do
   end
 
   describe 'http' do
-    it "should use ssl for port 443" do
-      request = HTTParty::Request.new(Net::HTTP::Get, 'https://api.foo.com/v1:443')
-      request.send(:http).use_ssl?.should == true
-    end
-
-    it 'should not use ssl for port 80' do
-      request = HTTParty::Request.new(Net::HTTP::Get, 'http://foobar.com')
-      request.send(:http).use_ssl?.should == false
-    end
-
-    it "uses ssl for https scheme with default port" do
-      request = HTTParty::Request.new(Net::HTTP::Get, 'https://foobar.com')
-      request.send(:http).use_ssl?.should == true
-    end
-
-    it "uses ssl for https scheme regardless of port" do
-      request = HTTParty::Request.new(Net::HTTP::Get, 'https://foobar.com:123456')
-      request.send(:http).use_ssl?.should == true
-    end
-
-    context "PEM certificates" do
-      before do
-        OpenSSL::X509::Certificate.stub(:new)
-        OpenSSL::PKey::RSA.stub(:new)
-      end
-
-      context "when scheme is https" do
-        before do
-          @request.stub!(:uri).and_return(URI.parse("https://google.com"))
-          pem = :pem_contents
-          @cert = mock("OpenSSL::X509::Certificate")
-          @key =  mock("OpenSSL::PKey::RSA")
-          OpenSSL::X509::Certificate.should_receive(:new).with(pem).and_return(@cert)
-          OpenSSL::PKey::RSA.should_receive(:new).with(pem, "password").and_return(@key)
-
-          @request.options[:pem] = pem
-          @request.options[:pem_password] = "password"
-          @pem_http = @request.send(:http)
-        end
-
-        it "should use a PEM certificate when provided" do
-          @pem_http.cert.should == @cert
-          @pem_http.key.should == @key
-        end
-
-        it "should verify the certificate when provided" do
-          @pem_http = @request.send(:http)
-          @pem_http.verify_mode.should == OpenSSL::SSL::VERIFY_PEER
-        end
-      end
-
-      context "when scheme is not https" do
-        it "does not assign a PEM" do
-          http = Net::HTTP.new('google.com')
-          http.should_not_receive(:cert=)
-          http.should_not_receive(:key=)
-          Net::HTTP.stub(:new => http)
-
-          request = HTTParty::Request.new(Net::HTTP::Get, 'http://google.com')
-          request.options[:pem] = :pem_contents
-          request.send(:http)
-        end
-      end
-
-      context "debugging" do
-        before do
-          @http = Net::HTTP.new('google.com')
-          Net::HTTP.stub(:new => @http)
-          @request = HTTParty::Request.new(Net::HTTP::Get, 'http://google.com')
-        end
-
-        it "calls #set_debug_output when the option is provided" do
-          @request.options[:debug_output] = $stderr
-          @http.should_receive(:set_debug_output).with($stderr)
-          @request.send(:http)
-        end
-
-        it "does not set_debug_output when the option is not provided" do
-          @http.should_not_receive(:set_debug_output)
-          @request.send(:http)
-        end
-      end
-
-      context 'with a proxy' do
-        it 'should use a proxy address and port' do
-          request = HTTParty::Request.new(Net::HTTP::Get, 'https://foobar.com',
-            :http_proxyaddr => '1.2.3.4', :http_proxyport => 8080)
-          http = request.send(:http)
-          http.proxy_address.should == '1.2.3.4'
-          http.proxy_port.should == 8080
-        end
-
-        it 'should use a proxy user and password when provided' do
-          request = HTTParty::Request.new(Net::HTTP::Get, 'https://foobar.com',
-            :http_proxyaddr => '1.2.3.4', :http_proxyport => 8080,
-            :http_proxyuser => 'user', :http_proxypass => 'pass')
-          http = request.send(:http)
-          http.proxy_user.should == 'user'
-          http.proxy_pass.should == 'pass'
-        end
-      end
-    end
-
-    context "when setting timeout" do
-      it "does nothing if the timeout option is a string" do
-        http = mock("http", :null_object => true)
-        http.should_not_receive(:open_timeout=)
-        http.should_not_receive(:read_timeout=)
-        Net::HTTP.stub(:new => http)
-
-        request = HTTParty::Request.new(Net::HTTP::Get, 'https://foobar.com', {:timeout => "five seconds"})
-        request.send(:http)
-      end
-
-      it "sets the timeout to 5 seconds" do
-        @request.options[:timeout] = 5
-        @request.send(:http).open_timeout.should == 5
-        @request.send(:http).read_timeout.should == 5
-      end
+    it "should get a connection from the connection_adapter" do
+      http = Net::HTTP.new('google.com')
+      adapter = mock('adapter')
+      request = HTTParty::Request.new(Net::HTTP::Get, 'https://api.foo.com/v1:443', :connection_adapter => adapter)
+      adapter.should_receive(:call).with(request.uri, request.options).and_return(http)
+      request.send(:http).should be http
     end
   end
 

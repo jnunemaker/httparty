@@ -33,7 +33,8 @@ module HTTParty
         :limit => o.delete(:no_follow) ? 1 : 5,
         :default_params => {},
         :follow_redirects => true,
-        :parser => Parser
+        :parser => Parser,
+        :connection_adapter => ConnectionAdapter
       }.merge(o)
     end
 
@@ -68,6 +69,10 @@ module HTTParty
       options[:parser]
     end
 
+    def connection_adapter
+      options[:connection_adapter]
+    end
+
     def perform(&block)
       validate
       setup_raw_request
@@ -92,50 +97,8 @@ module HTTParty
 
     private
 
-    def attach_ssl_certificates(http)
-      if http.use_ssl?
-        http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-
-        # Client certificate authentication
-        if options[:pem]
-          http.cert = OpenSSL::X509::Certificate.new(options[:pem])
-          http.key = OpenSSL::PKey::RSA.new(options[:pem], options[:pem_password])
-          http.verify_mode = OpenSSL::SSL::VERIFY_PEER
-        end
-
-        # SSL certificate authority file and/or directory
-        if options[:ssl_ca_file]
-          http.ca_file = options[:ssl_ca_file]
-          http.verify_mode = OpenSSL::SSL::VERIFY_PEER
-        end
-
-        if options[:ssl_ca_path]
-          http.ca_path = options[:ssl_ca_path]
-          http.verify_mode = OpenSSL::SSL::VERIFY_PEER
-        end
-      end
-    end
-
     def http
-      http = Net::HTTP.new(uri.host, uri.port, options[:http_proxyaddr], options[:http_proxyport], options[:http_proxyuser], options[:http_proxypass])
-      http.use_ssl = ssl_implied?
-
-      if options[:timeout] && (options[:timeout].is_a?(Integer) || options[:timeout].is_a?(Float))
-        http.open_timeout = options[:timeout]
-        http.read_timeout = options[:timeout]
-      end
-
-      attach_ssl_certificates(http)
-
-      if options[:debug_output]
-        http.set_debug_output(options[:debug_output])
-      end
-
-      http
-    end
-
-    def ssl_implied?
-      uri.port == 443 || uri.instance_of?(URI::HTTPS)
+      connection_adapter.call(uri, options)
     end
 
     def body

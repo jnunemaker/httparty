@@ -326,6 +326,38 @@ describe HTTParty do
     end
   end
 
+  describe "connection_adapter" do
+    let(:uri) { 'http://google.com/api.json' }
+    let(:connection_adapter) { mock('CustomConnectionAdapter') }
+
+    it "should set the connection_adapter" do
+      @klass.connection_adapter connection_adapter
+      @klass.default_options[:connection_adapter].should be connection_adapter
+    end
+
+    it "should set the connection_adapter_options when provided" do
+      options = {:foo => :bar}
+      @klass.connection_adapter connection_adapter, options
+      @klass.default_options[:connection_adapter_options].should be options
+    end
+
+    it "should not set the connection_adapter_options when not provided" do
+      @klass.connection_adapter connection_adapter
+      @klass.default_options[:connection_adapter_options].should be_nil
+    end
+
+    it "should process a request with a connection from the adapter" do
+      connection_adapter_options = {:foo => :bar}
+      connection_adapter.should_receive(:call) do |u,o|
+        o[:connection_adapter_options].should == connection_adapter_options
+        HTTParty::ConnectionAdapter.call(u,o)
+      end.with(URI.parse(uri), kind_of(Hash))
+      FakeWeb.register_uri(:get, uri, :body => 'stuff')
+      @klass.connection_adapter connection_adapter, connection_adapter_options
+      @klass.get(uri).should == 'stuff'
+    end
+  end
+
   describe "format" do
     it "should allow xml" do
       @klass.format :xml
