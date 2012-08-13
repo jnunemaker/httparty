@@ -1,59 +1,59 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper'))
 
-describe HTTParty::ConnectionFactory do
+describe HTTParty::ConnectionAdapter do
 
   describe "initialization" do
     let(:uri) { URI 'http://www.google.com' }
     it "takes a URI as input" do
-      HTTParty::ConnectionFactory.new(uri)
+      HTTParty::ConnectionAdapter.new(uri)
     end
 
     it "raises an ArgumentError if the uri is nil" do
-      expect { HTTParty::ConnectionFactory.new(nil) }.to raise_error ArgumentError
+      expect { HTTParty::ConnectionAdapter.new(nil) }.to raise_error ArgumentError
     end
 
     it "raises an ArgumentError if the uri is a String" do
-      expect { HTTParty::ConnectionFactory.new('http://www.google.com') }.to raise_error ArgumentError
+      expect { HTTParty::ConnectionAdapter.new('http://www.google.com') }.to raise_error ArgumentError
     end
 
     it "sets the uri" do
-      factory = HTTParty::ConnectionFactory.new(uri)
-      factory.uri.should be uri
+      adapter = HTTParty::ConnectionAdapter.new(uri)
+      adapter.uri.should be uri
     end
 
     it "also accepts an optional options hash" do
-      HTTParty::ConnectionFactory.new(uri, {})
+      HTTParty::ConnectionAdapter.new(uri, {})
     end
 
     it "sets the options" do
       options = {:foo => :bar}
-      factory = HTTParty::ConnectionFactory.new(uri, options)
-      factory.options.should be options
+      adapter = HTTParty::ConnectionAdapter.new(uri, options)
+      adapter.options.should be options
     end
   end
 
   describe ".call" do
-    it "generates an HTTParty::ConnectionFactory instance with the given uri and options" do
-      HTTParty::ConnectionFactory.should_receive(:new).with(@uri, @options).and_return(stub(:connection => nil))
-      HTTParty::ConnectionFactory.call(@uri, @options)
+    it "generates an HTTParty::ConnectionAdapter instance with the given uri and options" do
+      HTTParty::ConnectionAdapter.should_receive(:new).with(@uri, @options).and_return(stub(:connection => nil))
+      HTTParty::ConnectionAdapter.call(@uri, @options)
     end
 
-    it "calls #connection on the connection factory" do
-      factory = mock('Factory')
+    it "calls #connection on the connection adapter" do
+      adapter = mock('Adapter')
       connection = mock('Connection')
-      factory.should_receive(:connection).and_return(connection)
-      HTTParty::ConnectionFactory.stub(:new => factory)
-      HTTParty::ConnectionFactory.call(@uri, @options).should be connection
+      adapter.should_receive(:connection).and_return(connection)
+      HTTParty::ConnectionAdapter.stub(:new => adapter)
+      HTTParty::ConnectionAdapter.call(@uri, @options).should be connection
     end
   end
 
   describe '#connection' do
     let(:uri) { URI 'http://www.google.com' }
     let(:options) { Hash.new }
-    let(:factory) { HTTParty::ConnectionFactory.new(uri, options) }
+    let(:adapter) { HTTParty::ConnectionAdapter.new(uri, options) }
 
     describe "the resulting connection" do
-      subject { factory.connection }
+      subject { adapter.connection }
       it { should be_an_instance_of Net::HTTP }
 
       context "when dealing with ssl" do
@@ -91,7 +91,7 @@ describe HTTParty::ConnectionFactory do
           http.should_not_receive(:read_timeout=)
           Net::HTTP.stub(:new => http)
 
-          factory.connection
+          adapter.connection
         end
       end
 
@@ -112,7 +112,7 @@ describe HTTParty::ConnectionFactory do
             http.should_not_receive(:read_timeout=)
             Net::HTTP.stub(:new => http)
 
-            factory.connection
+            adapter.connection
           end
         end
       end
@@ -127,14 +127,14 @@ describe HTTParty::ConnectionFactory do
           let(:options) { {:debug_output => $stderr} }
           it "has debug output set" do
             http.should_receive(:set_debug_output).with($stderr)
-            factory.connection
+            adapter.connection
           end
         end
 
         context "is not provided" do
           it "does not set_debug_output" do
             http.should_not_receive(:set_debug_output)
-            factory.connection
+            adapter.connection
           end
         end
       end

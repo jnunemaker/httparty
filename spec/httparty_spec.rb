@@ -326,21 +326,34 @@ describe HTTParty do
     end
   end
 
-  describe "connection_factory" do
+  describe "connection_adapter" do
     let(:uri) { 'http://google.com/api.json' }
-    let(:connection_factory) { mock('CustomConnectionFactory') }
+    let(:connection_adapter) { mock('CustomConnectionAdapter') }
 
-    it "should set parser options" do
-      @klass.connection_factory connection_factory
-      @klass.default_options[:connection_factory].should be connection_factory
+    it "should set the connection_adapter" do
+      @klass.connection_adapter connection_adapter
+      @klass.default_options[:connection_adapter].should be connection_adapter
     end
 
-    it "should process a request with a connection from the factory" do
-      connection_factory.should_receive(:call) do |u,o|
-        HTTParty::ConnectionFactory.call(u,o)
+    it "should set the connection_adapter_options when provided" do
+      options = {:foo => :bar}
+      @klass.connection_adapter connection_adapter, options
+      @klass.default_options[:connection_adapter_options].should be options
+    end
+
+    it "should not set the connection_adapter_options when not provided" do
+      @klass.connection_adapter connection_adapter
+      @klass.default_options[:connection_adapter_options].should be_nil
+    end
+
+    it "should process a request with a connection from the adapter" do
+      connection_adapter_options = {:foo => :bar}
+      connection_adapter.should_receive(:call) do |u,o|
+        o[:connection_adapter_options].should == connection_adapter_options
+        HTTParty::ConnectionAdapter.call(u,o)
       end.with(URI.parse(uri), kind_of(Hash))
       FakeWeb.register_uri(:get, uri, :body => 'stuff')
-      @klass.connection_factory connection_factory
+      @klass.connection_adapter connection_adapter, connection_adapter_options
       @klass.get(uri).should == 'stuff'
     end
   end

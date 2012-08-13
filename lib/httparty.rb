@@ -10,7 +10,7 @@ require 'httparty/module_inheritable_attributes'
 require 'httparty/cookie_hash'
 require 'httparty/net_digest_auth'
 require 'httparty/version'
-require 'httparty/connection_factory'
+require 'httparty/connection_adapter'
 
 # @see HTTParty::ClassMethods
 module HTTParty
@@ -58,10 +58,11 @@ module HTTParty
   # * :+maintain_method_across_redirects+: see HTTParty::ClassMethods.maintain_method_across_redirects.
   # * :+no_follow+: see HTTParty::ClassMethods.no_follow.
   # * :+parser+: see HTTParty::ClassMethods.parser.
-  # * :+connection_factory+: see HTTParty::ClassMethods.connection_factory.
+  # * :+connection_adapter+: see HTTParty::ClassMethods.connection_adapter.
   # * :+pem+: see HTTParty::ClassMethods.pem.
   # * :+query_string_normalizer+: see HTTParty::ClassMethods.query_string_normalizer
   # * :+ssl_ca_file+: see HTTParty::ClassMethods.ssl_ca_file.
+  # * :+ssl_ca_path+: see HTTParty::ClassMethods.ssl_ca_path.
 
   module ClassMethods
 
@@ -333,19 +334,27 @@ module HTTParty
       end
     end
 
-    # Allows setting a custom connection_factory for the http connections
+    # Allows setting a custom connection_adapter for the http connections
     #
+    # @example
     #   class Foo
     #     include HTTParty
-    #     connection_factory Proc.new {|uri, options| ... }
+    #     connection_adapter Proc.new {|uri, options| ... }
     #   end
     #
-    # @see HTTParty::ConnectionFactory
-    def connection_factory(custom_factory = nil)
-      if custom_factory.nil?
-        default_options[:connection_factory]
+    # @example provide optional configuration for your connection_adapter
+    #   class Foo
+    #     include HTTParty
+    #     connection_adapter Proc.new {|uri, options| ... }, {:foo => :bar}
+    #   end
+    #
+    # @see HTTParty::ConnectionAdapter
+    def connection_adapter(custom_adapter = nil, options = nil)
+      if custom_adapter.nil?
+        default_options[:connection_adapter]
       else
-        default_options[:connection_factory] = custom_factory
+        default_options[:connection_adapter] = custom_adapter
+        default_options[:connection_adapter_options] = options
       end
     end
 

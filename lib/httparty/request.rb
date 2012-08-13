@@ -34,7 +34,7 @@ module HTTParty
         :default_params => {},
         :follow_redirects => true,
         :parser => Parser,
-        :connection_factory => ConnectionFactory
+        :connection_adapter => ConnectionAdapter
       }.merge(o)
     end
 
@@ -69,8 +69,8 @@ module HTTParty
       options[:parser]
     end
 
-    def connection_factory
-      options[:connection_factory]
+    def connection_adapter
+      options[:connection_adapter]
     end
 
     def perform(&block)
@@ -98,7 +98,7 @@ module HTTParty
     private
 
     def http
-      connection_factory.call(uri, options)
+      connection_adapter.call(uri, options)
     end
 
     def body

@@ -46,15 +46,15 @@ describe HTTParty::Request do
       request.parser.should == my_parser
     end
 
-    it "sets connection_factory to HTTPParty::ConnectionFactory" do
+    it "sets connection_adapter to HTTPParty::ConnectionAdapter" do
       request = HTTParty::Request.new(Net::HTTP::Get, 'http://google.com')
-      request.connection_factory.should == HTTParty::ConnectionFactory
+      request.connection_adapter.should == HTTParty::ConnectionAdapter
     end
 
-    it "sets connection_factory to the optional connection_factory" do
-      my_factory = lambda {}
-      request = HTTParty::Request.new(Net::HTTP::Get, 'http://google.com', :connection_factory => my_factory)
-      request.connection_factory.should == my_factory
+    it "sets connection_adapter to the optional connection_adapter" do
+      my_adapter = lambda {}
+      request = HTTParty::Request.new(Net::HTTP::Get, 'http://google.com', :connection_adapter => my_adapter)
+      request.connection_adapter.should == my_adapter
     end
   end
 
@@ -156,11 +156,11 @@ describe HTTParty::Request do
   end
 
   describe 'http' do
-    it "should get a connection from the connection_factory" do
+    it "should get a connection from the connection_adapter" do
       http = Net::HTTP.new('google.com')
-      factory = mock('factory')
-      request = HTTParty::Request.new(Net::HTTP::Get, 'https://api.foo.com/v1:443', :connection_factory => factory)
-      factory.should_receive(:call).with(request.uri, request.options).and_return(http)
+      adapter = mock('adapter')
+      request = HTTParty::Request.new(Net::HTTP::Get, 'https://api.foo.com/v1:443', :connection_adapter => adapter)
+      adapter.should_receive(:call).with(request.uri, request.options).and_return(http)
       request.send(:http).should be http
     end
   end
