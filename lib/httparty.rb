@@ -296,7 +296,7 @@ module HTTParty
       default_options[:query_string_normalizer] = normalizer
     end
 
-    # Allows setting of SSL version to use.
+    # Allows setting of SSL version to use. This only works in Ruby 1.9.
     # You can get a list of valid versions from OpenSSL::SSL::SSLContext::METHODS.
     #
     #   class Foo

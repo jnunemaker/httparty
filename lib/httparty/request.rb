@@ -114,7 +114,7 @@ module HTTParty
           http.verify_mode = OpenSSL::SSL::VERIFY_PEER
         end
 
-        if options[:ssl_version]
+        if options[:ssl_version] && http.respond_to?(:ssl_version=)
           http.ssl_version = options[:ssl_version]
         end
       end
