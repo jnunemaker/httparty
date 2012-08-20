@@ -38,6 +38,13 @@ describe HTTParty do
     end
   end
 
+  describe 'ssl_version' do
+    it 'should set the ssl_version content' do
+      @klass.ssl_version :SSLv3
+      @klass.default_options[:ssl_version].should == :SSLv3
+    end
+  end
+
   describe 'http_proxy' do
     it 'should set the address' do
       @klass.http_proxy 'proxy.foo.com', 80

@@ -113,6 +113,10 @@ module HTTParty
           http.ca_path = options[:ssl_ca_path]
           http.verify_mode = OpenSSL::SSL::VERIFY_PEER
         end
+
+        if options[:ssl_version] && http.respond_to?(:ssl_version=)
+          http.ssl_version = options[:ssl_version]
+        end
       end
     end
 

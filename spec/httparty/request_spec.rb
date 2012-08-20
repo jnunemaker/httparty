@@ -165,6 +165,14 @@ describe HTTParty::Request do
       request.send(:http).use_ssl?.should == true
     end
 
+    it 'uses specified ssl_version' do
+      request = HTTParty::Request.new(Net::HTTP::Get, 'https://foobar.com', :ssl_version => :TLSv1)
+      http = request.send(:http)
+      if http.respond_to?(:ssl_version)
+        http.ssl_version.should == :TLSv1
+      end
+    end
+
     context "PEM certificates" do
       before do
         OpenSSL::X509::Certificate.stub(:new)
