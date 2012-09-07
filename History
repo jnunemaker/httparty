@@ -1,3 +1,13 @@
+== 0.9.0 2012-09-07
+* new
+  * [support for connection adapters](https://github.com/jnunemaker/httparty/pull/157)
+  * [allow ssl_version on ruby 1.9](https://github.com/jnunemaker/httparty/pull/159)
+
+* bug fixes
+  * [don't treat port 4430 as ssl](https://github.com/jnunemaker/httparty/commit/a296b1c97f83d7dcc6ef85720a43664c265685ac)
+  * [deep clone default options](https://github.com/jnunemaker/httparty/commit/f74227d30f9389b4b23a888c9af49fb9b8248e1f)
+  * a few net digest auth fixes
+
 == 0.8.3 2012-04-21
 * new
   * [lazy parsing of responses](https://github.com/jnunemaker/httparty/commit/9fd5259c8dab00e426082b66af44ede2c9068f45)
