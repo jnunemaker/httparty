@@ -13,6 +13,31 @@ describe Net::HTTPHeader::DigestAuthenticator do
     @digest.authorization_header.join(", ")
   end
 
+
+  context "with an opaque value in the response header" do
+    before do
+      @digest = setup_digest({
+        'www-authenticate' => 'Digest realm="myhost@testrealm.com", opaque="solid"'
+      })
+    end
+
+    it "should set opaque" do
+      authorization_header.should include(%Q(opaque="solid"))
+    end
+  end
+
+  context "without an opaque valid in the response header" do
+    before do
+      @digest = setup_digest({
+        'www-authenticate' => 'Digest realm="myhost@testrealm.com"'
+      })  
+    end
+
+    it "should not set opaque" do
+      authorization_header.should_not include(%Q(opaque=)) 
+    end
+  end
+
   context "with specified quality of protection (qop)" do
     before do
       @digest = setup_digest({
