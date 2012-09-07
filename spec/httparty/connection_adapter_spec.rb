@@ -84,7 +84,7 @@ describe HTTParty::ConnectionAdapter do
           it "sets ssl version" do
             subject.ssl_version.should == :TLSv1
           end
-        end
+        end if RUBY_VERSION > '1.9'
       end
 
       context "when timeout is not set" do
