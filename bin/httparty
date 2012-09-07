@@ -38,7 +38,7 @@ OptionParser.new do |o|
     end
   end
 
-  o.on("-H", "--header [NAME=VALUE]", "Additional HTTP headers in NAME=VALUE form") do |h|
+  o.on("-H", "--header [NAME:VALUE]", "Additional HTTP headers in NAME:VALUE form") do |h|
     abort "Invalid header specification, should be Name:Value" unless h =~ /.+:.+/
     name, value = h.split(':')
     opts[:headers][name.strip] = value.strip
