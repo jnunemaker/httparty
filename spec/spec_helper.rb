@@ -22,3 +22,9 @@ Spec::Runner.configure do |config|
     FakeWeb.allow_net_connect = true
   end
 end
+
+Spec::Matchers.define :use_ssl do
+  match do |connection|
+    connection.use_ssl?
+  end
+end

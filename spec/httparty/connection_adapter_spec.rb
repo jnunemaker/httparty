@@ -56,31 +56,34 @@ describe HTTParty::ConnectionAdapter do
       subject { adapter.connection }
       it { should be_an_instance_of Net::HTTP }
 
+      context "using port 80" do
+        let(:uri) { URI 'http://foobar.com' }
+        it { should_not use_ssl }
+      end
+
       context "when dealing with ssl" do
-        Spec::Matchers.define :use_ssl do
-          match do |connection|
-            connection.use_ssl?
-          end
-        end
+        let(:uri) { URI 'https://foobar.com' }
 
         context "using port 443 for ssl" do
           let(:uri) { URI 'https://api.foo.com/v1:443' }
           it { should use_ssl }
         end
 
-        context "using port 80" do
-          let(:uri) { URI 'http://foobar.com' }
-          it { should_not use_ssl }
-        end
-
         context "https scheme with default port" do
-          let(:uri) { URI 'https://foobar.com' }
           it { should use_ssl }
         end
 
         context "https scheme with non-standard port" do
           let(:uri) { URI 'https://foobar.com:123456' }
           it { should use_ssl }
+        end
+
+        context "when ssl version is set" do
+          let(:options) { {:ssl_version => :TLSv1} }
+
+          it "sets ssl version" do
+            subject.ssl_version.should == :TLSv1
+          end
         end
       end
 
@@ -199,6 +202,5 @@ describe HTTParty::ConnectionAdapter do
         end
       end
     end
-
   end
 end
