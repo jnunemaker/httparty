@@ -25,10 +25,13 @@ module Net
           %Q(nonce="#{@response['nonce']}"),
           %Q(uri="#{@path}"),
           %Q(response="#{request_digest}")]
+
         [%Q(cnonce="#{@cnonce}"),
-          %Q(opaque="#{@response['opaque']}"),
           %Q(qop="#{@response['qop']}"),
           %Q(nc="0")].each { |field| header << field } if qop_present?
+
+        header << %Q(opaque="#{@response['opaque']}") if opaque_present?
+
         header
       end
 
@@ -39,6 +42,10 @@ module Net
         params = {}
         $2.gsub(/(\w+)="(.*?)"/) { params[$1] = $2 }
         params
+      end
+
+      def opaque_present?
+        @response.has_key?('opaque') and not @response['opaque'].empty?
       end
 
       def qop_present?
