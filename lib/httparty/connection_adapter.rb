@@ -61,7 +61,7 @@ module HTTParty
     end
 
     def connection
-      http = Net::HTTP.new(uri.host, uri.port, options[:http_proxyaddr], options[:http_proxyport], options[:http_proxyuser], options[:http_proxypass])
+      http = Net::HTTP.new(uri.hostname, uri.port, options[:http_proxyaddr], options[:http_proxyport], options[:http_proxyuser], options[:http_proxypass])
 
       http.use_ssl = ssl_implied?(uri)
 
