@@ -140,6 +140,7 @@ module HTTParty
     def setup_digest_auth
       auth_request = http_method.new(uri.request_uri)
       auth_request.initialize_http_header(options[:headers])
+      auth_request.body = ''
       res = http.request(auth_request)
 
       if res['www-authenticate'] != nil && res['www-authenticate'].length > 0
