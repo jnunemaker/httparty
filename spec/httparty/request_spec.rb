@@ -275,6 +275,18 @@ describe HTTParty::Request do
           response.should == {"hash" => {"foo" => "bar"}}
         end
 
+        it "redirects to bad URIs if a 300 contains a malformed location header" do
+          redirect = stub_response '', 300
+          redirect['location'] = '/foo/bar?q=search term'
+          ok = stub_response('<hash><foo>bar</foo></hash>', 200)
+          @http.stub!(:request).and_return(redirect, ok)
+          response = @request.perform
+          response.request.base_uri.to_s.should == "http://api.foo.com"
+          response.request.path.to_s.should == "/foo/bar?q=search%20term"
+          response.request.uri.request_uri.should == "/foo/bar?q=search%20term"
+          response.request.uri.to_s.should == "http://api.foo.com/foo/bar?q=search%20term"
+        end
+
         it "handles multiple redirects and relative location headers on different hosts" do
           @request = HTTParty::Request.new(Net::HTTP::Get, 'http://test.com/redirect', :format => :xml)
           FakeWeb.register_uri(:get, "http://test.com/redirect", :status => [300, "REDIRECT"], :location => "http://api.foo.com/v2")
