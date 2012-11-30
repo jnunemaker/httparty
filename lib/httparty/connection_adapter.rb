@@ -76,6 +76,10 @@ module HTTParty
         http.set_debug_output(options[:debug_output])
       end
 
+      if options[:ciphers]
+        http.ciphers = options[:ciphers]
+      end
+
       return http
     end
 

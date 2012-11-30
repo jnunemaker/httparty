@@ -78,6 +78,7 @@ describe HTTParty::ConnectionAdapter do
           it { should use_ssl }
         end
 
+
         context "when ssl version is set" do
           let(:options) { {:ssl_version => :TLSv1} }
 
@@ -86,6 +87,14 @@ describe HTTParty::ConnectionAdapter do
           end
         end if RUBY_VERSION > '1.9'
       end
+
+      context "specifying ciphers" do
+        let(:options) { {:ciphers => 'RC4-SHA' } }
+
+        it "should set the ciphers on the connection" do
+          subject.ciphers.should == 'RC4-SHA'
+        end
+      end if RUBY_VERSION > '1.9'
 
       context "when timeout is not set" do
         it "doesn't set the timeout" do
