@@ -119,6 +119,14 @@ describe HTTParty::Request do
     end
   end
 
+  it "should configure the http connection adapter with ciphers if supplied" do
+    @post_request = HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', :ciphers => 'RC4-SHA')
+    FakeWeb.register_uri(:post, "http://api.foo.com/v1", {})
+
+    http = @post_request.send(:http)
+    http.ciphers.should == 'RC4-SHA'
+  end
+
   describe "#uri" do
     context "query strings" do
       it "does not add an empty query string when default_params are blank" do
