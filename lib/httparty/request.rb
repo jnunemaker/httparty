@@ -24,7 +24,8 @@ module HTTParty
       end.flatten.sort.join('&')
     end
 
-    attr_accessor :http_method, :path, :options, :last_response, :redirect, :last_uri
+    attr_accessor :http_method, :options, :last_response, :redirect, :last_uri
+    attr_reader :path
 
     def initialize(http_method, path, o={})
       self.http_method = http_method
