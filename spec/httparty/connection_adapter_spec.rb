@@ -87,6 +87,14 @@ describe HTTParty::ConnectionAdapter do
         end if RUBY_VERSION > '1.9'
       end
 
+      context "when dealing with IPv6" do
+        let(:uri) { URI 'http://[fd00::1]' }
+
+        it "strips brackets from the address" do
+          subject.address.should == 'fd00::1'
+        end
+      end
+
       context "when timeout is not set" do
         it "doesn't set the timeout" do
           http = mock("http", :null_object => true)
