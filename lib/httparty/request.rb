@@ -10,7 +10,7 @@ module HTTParty
       Net::HTTP::Options
     ]
 
-    SupportedURISchemes  = [URI::HTTP, URI::HTTPS]
+    SupportedURISchemes  = [URI::HTTP, URI::HTTPS, URI::Generic]
 
     NON_RAILS_QUERY_STRING_NORMALIZER = Proc.new do |query|
       Array(query).map do |key, value|
@@ -43,6 +43,14 @@ module HTTParty
       @path = URI.parse(uri)
     end
 
+    def request_uri(uri)
+      if uri.respond_to? :request_uri
+        uri.request_uri
+      else
+        uri.path
+      end
+    end
+
     def uri
       new_uri = path.relative? ? URI.parse("#{base_uri}#{path}") : path
 
@@ -52,7 +60,7 @@ module HTTParty
       end
 
       unless SupportedURISchemes.include? new_uri.class
-        raise UnsupportedURIScheme, "'#{new_uri}' Must be HTTP or HTTPS"
+        raise UnsupportedURIScheme, "'#{new_uri}' Must be HTTP, HTTPS or Generic"
       end
 
       @last_uri = new_uri
@@ -131,7 +139,7 @@ module HTTParty
     end
 
     def setup_raw_request
-      @raw_request = http_method.new(uri.request_uri)
+      @raw_request = http_method.new(request_uri(uri))
       @raw_request.body = body if body
       @raw_request.initialize_http_header(options[:headers])
       @raw_request.basic_auth(username, password) if options[:basic_auth]

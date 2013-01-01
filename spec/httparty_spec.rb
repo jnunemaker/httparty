@@ -702,10 +702,11 @@ describe HTTParty do
       end.should_not raise_error(HTTParty::UnsupportedURIScheme)
     end
 
-    it "should raise an ArgumentError on URIs that are not http or https" do
+    it "should accept webcal URIs" do
+      stub_http_response_with('google.html')
       lambda do
-        HTTParty.get("file:///there_is_no_party_on/my/filesystem")
-      end.should raise_error(HTTParty::UnsupportedURIScheme)
+        HTTParty.get('webcal://google.com')
+      end.should_not raise_error(HTTParty::UnsupportedURIScheme)
     end
 
     it "should raise an InvalidURIError on URIs that can't be parsed at all" do
