@@ -99,7 +99,9 @@ module HTTParty
     private
 
     def http
-      connection_adapter.call(uri, options)
+      adapter = connection_adapter.call(uri, options)
+      adapter.ciphers = options[:ciphers] if options[:ciphers]
+      adapter
     end
 
     def body
