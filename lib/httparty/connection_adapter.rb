@@ -47,6 +47,10 @@ module HTTParty
   # * :+connection_adapter_options+: contains the hash your passed to HTTParty.connection_adapter when you configured your connection adapter
   class ConnectionAdapter
 
+    # Private: Regex used to strip brackets from IPv6 URIs.
+    StripIpv6BracketsRegex = /\A\[(.*)\]\z/
+
+    # Public
     def self.call(uri, options)
       new(uri, options).connection
     end
@@ -61,8 +65,8 @@ module HTTParty
     end
 
     def connection
-      hostname = /\A\[(.*)\]\z/ =~ uri.host ? $1 : uri.host
-      http = Net::HTTP.new(hostname, uri.port, options[:http_proxyaddr], options[:http_proxyport], options[:http_proxyuser], options[:http_proxypass])
+      host = clean_host(uri.host)
+      http = Net::HTTP.new(host, uri.port, options[:http_proxyaddr], options[:http_proxyport], options[:http_proxyuser], options[:http_proxypass])
 
       http.use_ssl = ssl_implied?(uri)
 
@@ -81,6 +85,15 @@ module HTTParty
     end
 
     private
+
+    def clean_host(host)
+      strip_ipv6_brackets(host)
+    end
+
+    def strip_ipv6_brackets(host)
+      StripIpv6BracketsRegex =~ host ? $1 : host
+    end
+
     def ssl_implied?(uri)
       uri.port == 443 || uri.instance_of?(URI::HTTPS)
     end
