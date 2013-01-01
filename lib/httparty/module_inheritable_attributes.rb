@@ -5,12 +5,19 @@ module HTTParty
     end
 
     # borrowed from Rails 3.2 ActiveSupport
-    def self.hash_deep_dup(h)
-      duplicate = h.dup
-      duplicate.each_pair do |k,v|
-        tv = duplicate[k]
-        duplicate[k] = tv.is_a?(Hash) && v.is_a?(Hash) ? hash_deep_dup(tv) : v
+    def self.hash_deep_dup(hash)
+      duplicate = hash.dup
+
+      duplicate.each_pair do |key, value|
+        duplicate[key] = if value.is_a?(Hash)
+          hash_deep_dup(value)
+        elsif value.is_a?(Proc)
+          duplicate[key] = value.dup
+        else
+          value
+        end
       end
+
       duplicate
     end
 
@@ -18,9 +25,11 @@ module HTTParty
       def mattr_inheritable(*args)
         @mattr_inheritable_attrs ||= [:mattr_inheritable_attrs]
         @mattr_inheritable_attrs += args
+
         args.each do |arg|
           module_eval %(class << self; attr_accessor :#{arg} end)
         end
+
         @mattr_inheritable_attrs
       end
 
@@ -29,12 +38,15 @@ module HTTParty
         @mattr_inheritable_attrs.each do |inheritable_attribute|
           ivar = "@#{inheritable_attribute}"
           subclass.instance_variable_set(ivar, instance_variable_get(ivar).clone)
+
           if instance_variable_get(ivar).respond_to?(:merge)
             method = <<-EOM
               def self.#{inheritable_attribute}
-                #{ivar} = superclass.#{inheritable_attribute}.merge ModuleInheritableAttributes.hash_deep_dup(#{ivar})
+                duplicate = ModuleInheritableAttributes.hash_deep_dup(#{ivar})
+                #{ivar} = superclass.#{inheritable_attribute}.merge(duplicate)
               end
             EOM
+
             subclass.class_eval method
           end
         end
