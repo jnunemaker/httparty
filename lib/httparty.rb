@@ -310,6 +310,19 @@ module HTTParty
       default_options[:ssl_version] = version
     end
 
+    # Allows setting of SSL ciphers to use.
+    # You can get a list of valid specific ciphers from OpenSSL::Cipher.ciphers.
+    # You also can specify a cipher suite here, listed here at openssl.org: 
+    # http://www.openssl.org/docs/apps/ciphers.html#CIPHER_SUITE_NAMES
+    #
+    #   class Foo
+    #     include HTTParty
+    #     ciphers "RC4-SHA"
+    #   end
+    def ciphers(cipher_names)
+      default_options[:ciphers] = cipher_names
+    end
+
     # Allows setting an OpenSSL certificate authority file
     #
     #   class Foo

@@ -45,6 +45,14 @@ describe HTTParty do
     end
   end
 
+  describe 'ciphers' do
+    it 'should set the ciphers content' do
+      @klass.default_options[:ciphers].should be_nil
+      @klass.ciphers 'RC4-SHA'
+      @klass.default_options[:ciphers].should == 'RC4-SHA'
+    end
+  end
+
   describe 'http_proxy' do
     it 'should set the address' do
       @klass.http_proxy 'proxy.foo.com', 80

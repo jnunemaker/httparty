@@ -61,6 +61,14 @@ describe HTTParty::ConnectionAdapter do
         it { should_not use_ssl }
       end
 
+      context "specifying ciphers" do
+        let(:options) { {:ciphers => 'RC4-SHA' } }
+
+        it "should set the ciphers on the connection" do
+          subject.ciphers.should == 'RC4-SHA'
+        end
+      end
+
       context "when dealing with ssl" do
         let(:uri) { URI 'https://foobar.com' }
 
