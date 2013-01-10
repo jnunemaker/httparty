@@ -384,11 +384,6 @@ describe HTTParty do
       @klass.default_options[:format].should == :json
     end
 
-    it "should allow yaml" do
-      @klass.format :yaml
-      @klass.default_options[:format].should == :yaml
-    end
-
     it "should allow plain" do
       @klass.format :plain
       @klass.default_options[:format].should == :plain
@@ -403,7 +398,7 @@ describe HTTParty do
     it 'should only print each format once with an exception' do
       lambda do
         @klass.format :foobar
-      end.should raise_error(HTTParty::UnsupportedFormat, "':foobar' Must be one of: html, json, plain, xml, yaml")
+      end.should raise_error(HTTParty::UnsupportedFormat, "':foobar' Must be one of: html, json, plain, xml")
     end
 
     it 'sets the default parser' do

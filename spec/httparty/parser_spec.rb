@@ -155,11 +155,6 @@ describe HTTParty::Parser do
       subject.send(:json)
     end
 
-    it "parses yaml" do
-      YAML.should_receive(:load).with('body')
-      subject.send(:yaml)
-    end
-
     it "parses html by simply returning the body" do
       subject.send(:html).should == 'body'
     end
