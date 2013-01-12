@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.description = %q{Makes http fun! Also, makes consuming restful web services dead easy.}
 
   s.add_dependency 'multi_json', "~> 1.0"
-  s.add_dependency 'multi_xml'
+  s.add_dependency 'multi_xml', ">= 0.5.2"
 
   s.post_install_message = "When you HTTParty, you must party hard!"
 
