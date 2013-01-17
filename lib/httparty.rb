@@ -429,6 +429,11 @@ module HTTParty
       perform_request Net::HTTP::Delete, path, options, &block
     end
 
+    # Perform a MOVE request to a path
+    def move(path, options={}, &block)
+      perform_request Net::HTTP::Move, path, options, &block
+    end
+
     # Perform a HEAD request to a path
     def head(path, options={}, &block)
       perform_request Net::HTTP::Head, path, options, &block
@@ -499,6 +504,10 @@ module HTTParty
     Basement.delete(*args, &block)
   end
 
+  def self.move(*args, &block)
+    Basement.move(*args, &block)
+  end
+  
   def self.head(*args, &block)
     Basement.head(*args, &block)
   end
