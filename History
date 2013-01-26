@@ -1,3 +1,9 @@
+== 0.10.1 2013-01-26
+
+* new
+  * [added support for MOVE requests](https://github.com/jnunemaker/httparty/pull/183)
+  * [bump multi xml version](https://github.com/jnunemaker/httparty/pull/181)
+
 == 0.10.0 2013-01-10
 * changes
   * removed yaml support because of security risk (see rails yaml issues)
