@@ -37,7 +37,7 @@ module HTTParty
 
       stack.each do |parent, hash|
         hash.each do |k, v|
-          if value.is_a?(Hash)
+          if v.is_a?(Hash)
             stack << ["#{parent}[#{k}]", v]
           else
             param << normalize_param("#{parent}[#{k}]", v)
