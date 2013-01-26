@@ -36,11 +36,11 @@ module HTTParty
       end
 
       stack.each do |parent, hash|
-        hash.each do |key, value|
+        hash.each do |k, v|
           if value.is_a?(Hash)
-            stack << ["#{parent}[#{key}]", value]
+            stack << ["#{parent}[#{k}]", v]
           else
-            param << normalize_param("#{parent}[#{key}]", value)
+            param << normalize_param("#{parent}[#{k}]", v)
           end
         end
       end
