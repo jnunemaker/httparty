@@ -172,9 +172,9 @@ module HTTParty
     end
 
     def handle_response(body)
-      if response_redirects?
-        options[:limit] -= 1
-        self.path = last_response['location']
+      if response_redirects?                      
+        options[:limit] -= 1        
+        self.path = URI.parse(last_response['location']).relative? ? @last_uri.merge(last_response['location']).to_s : last_response['location']
         self.redirect = true
         self.http_method = Net::HTTP::Get unless options[:maintain_method_across_redirects]
         capture_cookies(last_response)

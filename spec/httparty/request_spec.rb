@@ -263,24 +263,50 @@ describe HTTParty::Request do
           @http.stub!(:request).and_return(redirect, ok)
           response = @request.perform
           response.request.base_uri.to_s.should == "http://api.foo.com"
-          response.request.path.to_s.should == "/foo/bar"
+          response.request.path.to_s.should == "http://api.foo.com/foo/bar"
           response.request.uri.request_uri.should == "/foo/bar"
           response.request.uri.to_s.should == "http://api.foo.com/foo/bar"
           response.should == {"hash" => {"foo" => "bar"}}
-        end
+        end   
+
+        it "redirects if a 300 contains a relative location header with a current directory path" do
+          redirect = stub_response '', 300
+          redirect['location'] = './foo/bar'
+          ok = stub_response('<hash><foo>bar</foo></hash>', 200)
+          @http.stub!(:request).and_return(redirect, ok)
+          response = @request.perform
+          response.request.base_uri.to_s.should == "http://api.foo.com"
+          response.request.path.to_s.should == "http://api.foo.com/foo/bar"
+          response.request.uri.request_uri.should == "/foo/bar"
+          response.request.uri.to_s.should == "http://api.foo.com/foo/bar"
+          response.should == {"hash" => {"foo" => "bar"}}
+        end        
+
+        it "redirects if a 300 contains a relative location header with a parent directory path" do
+          redirect = stub_response '', 300
+          redirect['location'] = '../moose'
+          ok = stub_response('<hash><moose>bullwinkle</moose></hash>', 200)
+          @http.stub!(:request).and_return(redirect, ok)
+          response = @request.perform
+          response.request.base_uri.to_s.should == "http://api.foo.com"
+          response.request.path.to_s.should == "http://api.foo.com/moose"
+          response.request.uri.request_uri.should == "/moose"
+          response.request.uri.to_s.should == "http://api.foo.com/moose"
+          response.should == {"hash" => {"moose" => "bullwinkle"}}
+        end        
 
         it "handles multiple redirects and relative location headers on different hosts" do
           @request = HTTParty::Request.new(Net::HTTP::Get, 'http://test.com/redirect', :format => :xml)
-          FakeWeb.register_uri(:get, "http://test.com/redirect", :status => [300, "REDIRECT"], :location => "http://api.foo.com/v2")
-          FakeWeb.register_uri(:get, "http://api.foo.com/v2", :status => [300, "REDIRECT"], :location => "/v3")
+          FakeWeb.register_uri(:get, "http://test.com/redirect", :status => [300, "REDIRECT"], :location => "http://api.foo.com/v2/bar")
+          FakeWeb.register_uri(:get, "http://api.foo.com/v2/bar", :status => [300, "REDIRECT"], :location => "../v3")
           FakeWeb.register_uri(:get, "http://api.foo.com/v3", :body => "<hash><foo>bar</foo></hash>")
           response = @request.perform
           response.request.base_uri.to_s.should == "http://api.foo.com"
-          response.request.path.to_s.should == "/v3"
+          response.request.path.to_s.should == "http://api.foo.com/v3"
           response.request.uri.request_uri.should == "/v3"
           response.request.uri.to_s.should == "http://api.foo.com/v3"
           response.should == {"hash" => {"foo" => "bar"}}
-        end
+        end        
 
         it "returns the HTTParty::Response when the 300 does not contain a location header" do
           stub_response '', 300
