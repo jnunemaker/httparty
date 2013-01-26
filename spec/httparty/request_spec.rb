@@ -283,7 +283,7 @@ describe HTTParty::Request do
         end
 
         it "returns the HTTParty::Response when the 300 does not contain a location header" do
-          net_response = stub_response '', 300
+          stub_response '', 300
           HTTParty::Response.should === @request.perform
         end
       end
