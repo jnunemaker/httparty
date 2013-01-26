@@ -7,7 +7,8 @@ module HTTParty
       Net::HTTP::Put,
       Net::HTTP::Delete,
       Net::HTTP::Head,
-      Net::HTTP::Options
+      Net::HTTP::Options,
+      Net::HTTP::Move
     ]
 
     SupportedURISchemes  = [URI::HTTP, URI::HTTPS, URI::Generic]
