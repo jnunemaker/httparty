@@ -66,5 +66,11 @@ describe HTTParty::CookieHash do
       @s = @cookie_hash.to_cookie_string
       @s.should_not match(/path=\//)
     end
+
+    it "should not include client side only cookies even when attributes use camal case" do
+      @cookie_hash.add_cookies(:Path => "/")
+      @s = @cookie_hash.to_cookie_string
+      @s.should_not match(/Path=\//)
+    end
   end
 end

@@ -17,6 +17,6 @@ class HTTParty::CookieHash < Hash #:nodoc:
   end
 
   def to_cookie_string
-    delete_if { |k, v| CLIENT_COOKIES.include?(k.to_s) }.collect { |k, v| "#{k}=#{v}" }.join("; ")
+    delete_if { |k, v| CLIENT_COOKIES.include?(k.to_s.downcase) }.collect { |k, v| "#{k}=#{v}" }.join("; ")
   end
 end
