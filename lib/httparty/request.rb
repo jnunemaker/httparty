@@ -53,7 +53,7 @@ module HTTParty
     end
 
     def uri
-      new_uri = path.relative? ? URI.parse("#{base_uri}#{path}") : path
+      new_uri = path.relative? ? URI.parse("#{base_uri}#{path}") : path.clone
 
       # avoid double query string on redirects [#12]
       unless redirect

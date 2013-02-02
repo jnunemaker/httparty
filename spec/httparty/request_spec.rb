@@ -133,6 +133,12 @@ describe HTTParty::Request do
         URI.unescape(@request.uri.query).should == ""
       end
 
+      it "does not duplicate query string parameters when uri is called twice" do
+        @request.options[:query] = {:foo => :bar}
+        @request.uri
+        @request.uri.query.should == "foo=bar"
+      end
+
       context "when representing an array" do
         it "returns a Rails style query string" do
           @request.options[:query] = {:foo => %w(bar baz)}
