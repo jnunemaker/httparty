@@ -369,6 +369,11 @@ describe HTTParty::Request do
         @request.perform.should == {"hash" => {"foo" => "bar"}}
       end
 
+      it "should be handled by COPY transparently" do
+        @request.http_method = Net::HTTP::Copy
+        @request.perform.should == {"hash" => {"foo" => "bar"}}
+      end
+
       it "should be handled by PATCH transparently" do
         @request.http_method = Net::HTTP::Patch
         @request.perform.should == {"hash" => {"foo" => "bar"}}

@@ -434,6 +434,11 @@ module HTTParty
       perform_request Net::HTTP::Move, path, options, &block
     end
 
+    # Perform a COPY request to a path
+    def copy(path, options={}, &block)
+      perform_request Net::HTTP::Copy, path, options, &block
+    end
+
     # Perform a HEAD request to a path
     def head(path, options={}, &block)
       perform_request Net::HTTP::Head, path, options, &block
@@ -508,6 +513,10 @@ module HTTParty
     Basement.move(*args, &block)
   end
   
+  def self.copy(*args, &block)
+    Basement.move(*args, &block)
+  end
+
   def self.head(*args, &block)
     Basement.head(*args, &block)
   end
