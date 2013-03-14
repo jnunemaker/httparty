@@ -109,6 +109,8 @@ describe HTTParty::ConnectionAdapter do
           http = mock("http", :null_object => true)
           http.should_not_receive(:open_timeout=)
           http.should_not_receive(:read_timeout=)
+          http.should_receive(:use_ssl=).with(false)
+          http.should_receive(:use_ssl?)
           Net::HTTP.stub(:new => http)
 
           adapter.connection
@@ -130,6 +132,8 @@ describe HTTParty::ConnectionAdapter do
             http = mock("http", :null_object => true)
             http.should_not_receive(:open_timeout=)
             http.should_not_receive(:read_timeout=)
+            http.should_receive(:use_ssl=).with(false)
+            http.should_receive(:use_ssl?)
             Net::HTTP.stub(:new => http)
 
             adapter.connection
