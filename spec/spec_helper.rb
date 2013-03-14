@@ -1,7 +1,11 @@
 $:.push File.expand_path("../lib", __FILE__)
 require "httparty"
 
-require 'spec/autorun'
+begin
+  require 'spec/autorun'
+rescue LoadError
+  require 'rspec/autorun'
+end
 require 'fakeweb'
 
 def file_fixture(filename)
