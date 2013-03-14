@@ -11,19 +11,19 @@ describe HTTParty::Request do
     end
 
     it "should work when no trusted CA list is specified" do
-      ssl_verify_test(nil, nil, "selfsigned.crt").should == {'success' => true}
+      ssl_verify_test(nil, nil, "selfsigned.crt").to_hash.should == {'success' => true}
     end
 
     it "should work when no trusted CA list is specified, even with a bogus hostname" do
-      ssl_verify_test(nil, nil, "bogushost.crt").should == {'success' => true}
+      ssl_verify_test(nil, nil, "bogushost.crt").to_hash.should == {'success' => true}
     end
 
     it "should work when using ssl_ca_file with a self-signed CA" do
-      ssl_verify_test(:ssl_ca_file, "selfsigned.crt", "selfsigned.crt").should == {'success' => true}
+      ssl_verify_test(:ssl_ca_file, "selfsigned.crt", "selfsigned.crt").to_hash.should == {'success' => true}
     end
 
     it "should work when using ssl_ca_file with a certificate authority" do
-      ssl_verify_test(:ssl_ca_file, "ca.crt", "server.crt").should == {'success' => true}
+      ssl_verify_test(:ssl_ca_file, "ca.crt", "server.crt").to_hash.should == {'success' => true}
     end
 
     it "should work when using ssl_ca_path with a certificate authority" do
