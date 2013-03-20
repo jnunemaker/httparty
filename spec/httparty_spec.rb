@@ -598,13 +598,17 @@ describe HTTParty do
       @child1.default_options[:imaginary_option].should be_a Proc
     end
 
+    def is(a)
+      RubyVM::InstructionSequence.of(a)
+    end
+
     it 'should dup the proc on the child class' do
       imaginary_option = lambda { "This is a new lambda" }
       @parent.default_options[:imaginary_option] = imaginary_option
-      @parent.default_options[:imaginary_option].should be_equal imaginary_option
+      is(@parent.default_options[:imaginary_option]).should == is(imaginary_option)
       @child1.default_options[:imaginary_option]
-      @child1.default_options[:imaginary_option].should == imaginary_option
-      @child1.default_options[:imaginary_option].should_not be_equal imaginary_option
+      is(@child1.default_options[:imaginary_option]).should == is(imaginary_option)
+      is(@child1.default_options[:imaginary_option]).should be_equal is(imaginary_option)
     end
 
     it "inherits default_cookies from the parent class" do
