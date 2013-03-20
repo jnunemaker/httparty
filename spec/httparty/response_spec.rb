@@ -170,7 +170,7 @@ describe HTTParty::Response do
         :length_required?                 => Net::HTTPLengthRequired,
         :method_not_allowed?              => Net::HTTPMethodNotAllowed,
         :moved_permanently?               => Net::HTTPMovedPermanently,
-        :multiple_choices?                => Net::HTTPMultipleChoices,
+        :multiple_choices?                => Net::HTTPMultipleChoice,
         :no_content?                      => Net::HTTPNoContent,
         :non_authoritative_information?   => Net::HTTPNonAuthoritativeInformation,
         :not_acceptable?                  => Net::HTTPNotAcceptable,
