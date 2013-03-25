@@ -22,5 +22,5 @@ end
 
 Then /it should raise (?:an|a) ([\w:]+) exception/ do |exception|
   @exception_from_httparty.should_not be_nil
-  @exception_from_httparty.class.name.should eql(exception)
+  @exception_from_httparty.should be_a(Object.const_get("::#{exception}"))
 end
