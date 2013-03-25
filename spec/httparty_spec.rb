@@ -598,10 +598,6 @@ describe HTTParty do
       @child1.default_options[:imaginary_option].should be_a Proc
     end
 
-    def is(a)
-      RubyVM::InstructionSequence.of(a)
-    end
-
     it 'should dup the proc on the child class' do
       imaginary_option = lambda { 2 * 3.14 }
       @parent.default_options[:imaginary_option] = imaginary_option
