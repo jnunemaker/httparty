@@ -601,7 +601,7 @@ describe HTTParty do
     it 'should dup the proc on the child class' do
       imaginary_option = lambda { 2 * 3.14 }
       @parent.default_options[:imaginary_option] = imaginary_option
-      @parent.default_options[:imaginary_option].should be_equal imaginary_option
+      @parent.default_options[:imaginary_option].call.should == imaginary_option.call
       @child1.default_options[:imaginary_option]
       @child1.default_options[:imaginary_option].call.should == imaginary_option.call
       @child1.default_options[:imaginary_option].should_not be_equal imaginary_option
