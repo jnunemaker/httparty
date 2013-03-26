@@ -40,6 +40,11 @@ module HTTParty
       end
     end
 
+    # Support old multiple_choice? method from pre 2.0.0 era.
+    if ::RUBY_VERSION >= "2.0.0"
+      alias_method :multiple_choice?, :multiple_choices?
+    end
+
     def respond_to?(name)
       return true if [:request, :response, :parsed_response, :body, :headers].include?(name)
       parsed_response.respond_to?(name) || response.respond_to?(name)
