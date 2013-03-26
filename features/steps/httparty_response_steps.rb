@@ -1,3 +1,17 @@
+# Not needed anymore in ruby 2.0, but needed to resolve constants
+# in nested namespaces. This is taken from rails :)
+def constantize(camel_cased_word)
+  names = camel_cased_word.split('::')
+  names.shift if names.empty? || names.first.empty?
+
+  constant = Object
+  names.each do |name|
+    constant = constant.const_defined?(name) ? constant.const_get(name) : constant.const_missing(name)
+  end
+  constant
+end
+
+
 Then /it should return an? (\w+)$/ do |class_string|
   @response_from_httparty.should be_an_instance_of(class_string.class)
 end
@@ -22,5 +36,5 @@ end
 
 Then /it should raise (?:an|a) ([\w:]+) exception/ do |exception|
   @exception_from_httparty.should_not be_nil
-  @exception_from_httparty.class.name.should eql(exception)
+  @exception_from_httparty.should be_a constantize(exception)
 end
