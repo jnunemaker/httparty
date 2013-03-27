@@ -9,7 +9,7 @@ module HTTParty
     def initialize(request, response, parsed_block, options={})
       @request      = request
       @response     = response
-      @body         = response.body || options[:body]
+      @body         = options[:body] || response.body
       @parsed_block = parsed_block
       @headers      = Headers.new(response.to_hash)
     end
