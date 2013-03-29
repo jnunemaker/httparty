@@ -66,7 +66,7 @@ describe Net::HTTPHeader::DigestAuthenticator do
     end
 
     it "should set nonce-count" do
-      authorization_header.should include(%Q(nc="00000001"))
+      authorization_header.should include(%Q(nc=00000001))
     end
 
     it "should set response" do
