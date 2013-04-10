@@ -195,7 +195,14 @@ describe HTTParty::Response do
         :unsupported_media_type?          => Net::HTTPUnsupportedMediaType,
         :use_proxy?                       => Net::HTTPUseProxy,
         :version_not_supported?           => Net::HTTPVersionNotSupported
-      }.each do |method, klass|
+      }
+
+      # Ruby 2.0, new name for this response.
+      if RUBY_VERSION >= "2.0.0"
+        SPECIFIC_CODES[:multiple_choices?] = Net::HTTPMultipleChoices
+      end
+
+      SPECIFIC_CODES.each do |method, klass|
         it "responds to #{method}" do
           net_response = response_mock(klass)
           response = HTTParty::Response.new(@request_object, net_response, '')
