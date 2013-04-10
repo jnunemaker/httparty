@@ -103,7 +103,7 @@ module HTTParty
       end
 
       handle_deflation
-      handle_response(chunked_body)
+      handle_response(chunked_body, &block)
     end
 
     private
@@ -172,14 +172,14 @@ module HTTParty
       query_string_parts.size > 0 ? query_string_parts.join('&') : nil
     end
 
-    def handle_response(body)
+    def handle_response(body, &block)
       if response_redirects?
         options[:limit] -= 1
         self.path = last_response['location']
         self.redirect = true
         self.http_method = Net::HTTP::Get unless options[:maintain_method_across_redirects]
         capture_cookies(last_response)
-        perform
+        perform(&block)
       else
         body = body || last_response.body
         Response.new(self, last_response, lambda { parse_response(body) }, :body => body)
