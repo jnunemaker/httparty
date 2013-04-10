@@ -32,7 +32,7 @@ module Net
           fields = [
             %Q(cnonce="#{@cnonce}"),
             %Q(qop="#{@response['qop']}"),
-            %Q(nc="00000001")
+            %Q(nc=00000001)
           ]
           fields.each { |field| header << field }
         end
