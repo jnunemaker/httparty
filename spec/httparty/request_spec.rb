@@ -262,6 +262,15 @@ describe HTTParty::Request do
           response.should == {"hash" => {"foo" => "bar"}}
         end
 
+        it "calls block given to perform with each redirect" do
+          @request = HTTParty::Request.new(Net::HTTP::Get, 'http://test.com/redirect', :format => :xml)
+          FakeWeb.register_uri(:get, "http://test.com/redirect", :status => [300, "REDIRECT"], :location => "http://api.foo.com/v2")
+          FakeWeb.register_uri(:get, "http://api.foo.com/v2", :body => "<hash><foo>bar</foo></hash>")
+          body = ""
+          response = @request.perform { |chunk| body += chunk }
+          body.length.should == 27
+        end
+
         it "redirects if a 300 contains a relative location header" do
           redirect = stub_response '', 300
           redirect['location'] = '/foo/bar'
