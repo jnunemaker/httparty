@@ -42,7 +42,11 @@ module HTTParty
     end
 
     def path=(uri)
-      @path = URI.parse(uri)
+      begin
+        @path = URI.parse(uri)
+      rescue URI::InvalidURIError
+        @path = URI.parse(URI.encode(uri))
+      end
     end
 
     def request_uri(uri)
