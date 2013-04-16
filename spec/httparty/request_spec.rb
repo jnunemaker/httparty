@@ -248,6 +248,13 @@ describe HTTParty::Request do
         resp.body.encoding.should == Encoding.find("UTF-8")
       end
 
+      it "should process charset in content type properly if it has a different case" do
+        response = stub_response "Content"
+        response.initialize_http_header("Content-Type" => "text/plain;CHARSET = utf-8")
+        resp = @request.perform
+        resp.body.encoding.should == Encoding.find("UTF-8")
+      end
+
       it "should process quoted charset in content type properly" do
         response = stub_response "Content"
         response.initialize_http_header("Content-Type" => "text/plain;charset = \"utf-8\"")

@@ -179,11 +179,11 @@ module HTTParty
         return nil
       end
 
-      if content_type =~ /;\s*charset\s*=\s*([^=,;"\s]+)/
+      if content_type =~ /;\s*charset\s*=\s*([^=,;"\s]+)/i
         return $1
       end
 
-      if content_type =~ /;\s*charset\s*=\s*"((\\.|[^\\"])+)"/
+      if content_type =~ /;\s*charset\s*=\s*"((\\.|[^\\"])+)"/i
         return $1.gsub(/\\(.)/, '\1')
       end
 
