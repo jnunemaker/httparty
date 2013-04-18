@@ -312,7 +312,7 @@ module HTTParty
 
     # Allows setting of SSL ciphers to use.  This only works in Ruby 1.9+.
     # You can get a list of valid specific ciphers from OpenSSL::Cipher.ciphers.
-    # You also can specify a cipher suite here, listed here at openssl.org: 
+    # You also can specify a cipher suite here, listed here at openssl.org:
     # http://www.openssl.org/docs/apps/ciphers.html#CIPHER_SUITE_NAMES
     #
     #   class Foo
@@ -512,7 +512,7 @@ module HTTParty
   def self.move(*args, &block)
     Basement.move(*args, &block)
   end
-  
+
   def self.copy(*args, &block)
     Basement.move(*args, &block)
   end
