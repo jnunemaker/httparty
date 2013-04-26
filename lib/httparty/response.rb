@@ -41,7 +41,7 @@ module HTTParty
     end
 
     # Support old multiple_choice? method from pre 2.0.0 era.
-    if ::RUBY_VERSION >= "2.0.0"
+    if ::RUBY_VERSION >= "2.0.0" && ::RUBY_PLATFORM != "java"
       alias_method :multiple_choice?, :multiple_choices?
     end
 
