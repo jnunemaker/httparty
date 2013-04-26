@@ -198,7 +198,7 @@ describe HTTParty::Response do
       }
 
       # Ruby 2.0, new name for this response.
-      if RUBY_VERSION >= "2.0.0"
+      if RUBY_VERSION >= "2.0.0" && ::RUBY_PLATFORM != "java"
         SPECIFIC_CODES[:multiple_choices?] = Net::HTTPMultipleChoices
       end
 
