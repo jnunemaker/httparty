@@ -37,12 +37,12 @@ class Twitter
   # options[:query] can be things like since, since_id, count, etc.
   def timeline(which=:friends, options={})
     options.merge!({:basic_auth => @auth})
-    self.class.get("/statuses/#{which}_timeline.json", options)
+    self.class.get("/statuses/#{which}_timeline.json", :query => options)
   end
 
   def post(text)
     options = { :body => {:status => text}, :basic_auth => @auth }
-    self.class.post('/statuses/update.json', options)
+    self.class.post('/statuses/update.json', :query => options)
   end
 end
 
