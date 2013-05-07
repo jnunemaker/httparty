@@ -1,4 +1,4 @@
-# httparty
+# httparty [![Build Status](https://travis-ci.org/jnunemaker/httparty.png?branch=master)](https://travis-ci.org/jnunemaker/httparty)
 
 Makes http fun again!
 
