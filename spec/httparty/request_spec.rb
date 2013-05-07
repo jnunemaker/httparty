@@ -239,6 +239,77 @@ describe HTTParty::Request do
       @request.perform.headers.should == { "key" => ["value"] }
     end
 
+    if "".respond_to?(:encoding)
+
+      it "should process charset in content type properly" do
+        response = stub_response "Content"
+        response.initialize_http_header("Content-Type" => "text/plain;charset = utf-8")
+        resp = @request.perform
+        resp.body.encoding.should == Encoding.find("UTF-8")
+      end
+
+      it "should process charset in content type properly if it has a different case" do
+        response = stub_response "Content"
+        response.initialize_http_header("Content-Type" => "text/plain;CHARSET = utf-8")
+        resp = @request.perform
+        resp.body.encoding.should == Encoding.find("UTF-8")
+      end
+
+      it "should process quoted charset in content type properly" do
+        response = stub_response "Content"
+        response.initialize_http_header("Content-Type" => "text/plain;charset = \"utf-8\"")
+        resp = @request.perform
+        resp.body.encoding.should == Encoding.find("UTF-8")
+      end
+
+      it "should process utf-16 charset with little endian bom correctly" do
+        @request.options[:assume_utf16_is_big_endian] = true
+
+        response = stub_response "\xFF\xFEC\x00o\x00n\x00t\x00e\x00n\x00t\x00"
+        response.initialize_http_header("Content-Type" => "text/plain;charset = utf-16")
+        resp = @request.perform
+        resp.body.encoding.should == Encoding.find("UTF-16LE")
+      end
+
+      it "should process utf-16 charset with big endian bom correctly" do
+        @request.options[:assume_utf16_is_big_endian] = false
+
+        response = stub_response "\xFE\xFF\x00C\x00o\x00n\x00t\x00e\x00n\x00t"
+        response.initialize_http_header("Content-Type" => "text/plain;charset = utf-16")
+        resp = @request.perform
+        resp.body.encoding.should == Encoding.find("UTF-16BE")
+      end
+
+      it "should assume utf-16 little endian if options has been chosen" do
+        @request.options[:assume_utf16_is_big_endian] = false
+
+        response = stub_response "C\x00o\x00n\x00t\x00e\x00n\x00t\x00"
+        response.initialize_http_header("Content-Type" => "text/plain;charset = utf-16")
+        resp = @request.perform
+        resp.body.encoding.should == Encoding.find("UTF-16LE")
+      end
+
+
+      it "should perform no encoding if the charset is not available" do
+
+        response = stub_response "Content"
+        response.initialize_http_header("Content-Type" => "text/plain;charset = utf-lols")
+        resp = @request.perform
+        resp.body.should == "Content"
+        resp.body.encoding.should == "Content".encoding
+      end
+
+      it "should perform no encoding if the content type is specified but no charset is specified" do
+
+        response = stub_response "Content"
+        response.initialize_http_header("Content-Type" => "text/plain")
+        resp = @request.perform
+        resp.body.should == "Content"
+        resp.body.encoding.should == "Content".encoding
+      end
+    end
+
+
     describe 'with non-200 responses' do
       context "3xx responses" do
         it 'returns a valid object for 304 not modified' do
