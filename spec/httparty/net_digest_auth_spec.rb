@@ -30,11 +30,11 @@ describe Net::HTTPHeader::DigestAuthenticator do
     before do
       @digest = setup_digest({
         'www-authenticate' => 'Digest realm="myhost@testrealm.com"'
-      })  
+      })
     end
 
     it "should not set opaque" do
-      authorization_header.should_not include(%Q(opaque=)) 
+      authorization_header.should_not include(%Q(opaque=))
     end
   end
 
