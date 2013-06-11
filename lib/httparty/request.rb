@@ -290,7 +290,7 @@ module HTTParty
       return unless response['Set-Cookie']
       cookies_hash = HTTParty::CookieHash.new()
       cookies_hash.add_cookies(options[:headers]['Cookie']) if options[:headers] && options[:headers]['Cookie']
-      cookies_hash.add_cookies(response['Set-Cookie'])
+      response.get_fields('Set-Cookie').each { |cookie| cookies_hash.add_cookies(cookie) }
       options[:headers] ||= {}
       options[:headers]['Cookie'] = cookies_hash.to_cookie_string
     end
