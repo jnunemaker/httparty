@@ -12,6 +12,8 @@ Gem::Specification.new do |s|
   s.summary     = %q{Makes http fun! Also, makes consuming restful web services dead easy.}
   s.description = %q{Makes http fun! Also, makes consuming restful web services dead easy.}
 
+  s.required_ruby_version     = '>= 1.9.3'
+
   s.add_dependency 'multi_xml', ">= 0.5.2"
 
   s.post_install_message = "When you HTTParty, you must party hard!"
