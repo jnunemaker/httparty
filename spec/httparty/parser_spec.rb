@@ -144,14 +144,8 @@ describe HTTParty::Parser do
       subject.send(:xml)
     end
 
-    it "parses json with MultiJson" do
-      MultiJson.should_receive(:load).with('body')
-      subject.send(:json)
-    end
-
-    it "uses MultiJson.decode if MultiJson does not respond to adapter" do
-      MultiJson.should_receive(:respond_to?).with(:adapter).and_return(false)
-      MultiJson.should_receive(:decode).with('body')
+    it "parses json with JSON" do
+      JSON.should_receive(:load).with('body', nil)
       subject.send(:json)
     end
 
