@@ -110,12 +110,7 @@ module HTTParty
     end
 
     def json
-      # https://github.com/sferik/rails/commit/5e62670131dfa1718eaf21ff8dd3371395a5f1cc
-      if MultiJson.respond_to?(:adapter)
-        MultiJson.load(body)
-      else
-        MultiJson.decode(body)
-      end
+      JSON.load(body, nil)
     end
 
     def html
