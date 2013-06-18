@@ -61,6 +61,7 @@ module HTTParty
   # * :+connection_adapter+: see HTTParty::ClassMethods.connection_adapter.
   # * :+pem+: see HTTParty::ClassMethods.pem.
   # * :+query_string_normalizer+: see HTTParty::ClassMethods.query_string_normalizer
+  # * :+raise_error_on_bad_request+: see HTTParty::ClassMethods.raise_error_on_bad_request
   # * :+ssl_ca_file+: see HTTParty::ClassMethods.ssl_ca_file.
   # * :+ssl_ca_path+: see HTTParty::ClassMethods.ssl_ca_path.
 
@@ -297,6 +298,13 @@ module HTTParty
     # @yieldreturn [Array] an array that will later be joined with '&'
     def query_string_normalizer(normalizer)
       default_options[:query_string_normalizer] = normalizer
+    end
+
+    # Raise an HTTParty::ResponseError on 400- and 500-level response status codes.
+    # 4xx status codes will raise HTTParty::ClientError.
+    # 5xx status codes will raise HTTParty::ServerError.
+    def raise_error_on_bad_request(value = false)
+      default_options[:raise_error_on_bad_request] = value
     end
 
     # Allows setting of SSL version to use. This only works in Ruby 1.9+.

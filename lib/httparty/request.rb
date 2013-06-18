@@ -38,7 +38,8 @@ module HTTParty
         :default_params => {},
         :follow_redirects => true,
         :parser => Parser,
-        :connection_adapter => ConnectionAdapter
+        :connection_adapter => ConnectionAdapter,
+        :raise_error_on_bad_request => false
       }.merge(o)
     end
 
@@ -253,6 +254,10 @@ module HTTParty
       else
         body = body || last_response.body
         body = encode_body(body)
+        if options[:raise_error_on_bad_request]
+          raise ServerError.new(last_response) if last_response.code.to_i >= 500
+          raise ClientError.new(last_response) if last_response.code.to_i >= 400
+        end
         Response.new(self, last_response, lambda { parse_response(body) }, :body => body)
       end
     end
