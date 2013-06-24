@@ -330,7 +330,7 @@ describe HTTParty::Request do
           response.request.path.to_s.should == "http://foo.com/foo"
           response.request.uri.request_uri.should == "/foo"
           response.request.uri.to_s.should == "http://foo.com/foo"
-          response.should == {"hash" => {"foo" => "bar"}}
+          response.to_hash.should == {"hash" => {"foo" => "bar"}}
         end
 
         it "calls block given to perform with each redirect" do
@@ -352,7 +352,7 @@ describe HTTParty::Request do
           response.request.path.to_s.should == "/foo/bar"
           response.request.uri.request_uri.should == "/foo/bar"
           response.request.uri.to_s.should == "http://api.foo.com/foo/bar"
-          response.should == {"hash" => {"foo" => "bar"}}
+          response.to_hash.should == {"hash" => {"foo" => "bar"}}
         end
 
         it "handles multiple redirects and relative location headers on different hosts" do
@@ -365,7 +365,7 @@ describe HTTParty::Request do
           response.request.path.to_s.should == "/v3"
           response.request.uri.request_uri.should == "/v3"
           response.request.uri.to_s.should == "http://api.foo.com/v3"
-          response.should == {"hash" => {"foo" => "bar"}}
+          response.to_hash.should == {"hash" => {"foo" => "bar"}}
         end
 
         it "returns the HTTParty::Response when the 300 does not contain a location header" do
@@ -414,7 +414,7 @@ describe HTTParty::Request do
   it "should not fail for missing mime type" do
     stub_response "Content for you"
     @request.options[:format] = :html
-    @request.perform.should == 'Content for you'
+    @request.perform.to_s.should == 'Content for you'
   end
 
   describe "a request that redirects" do
@@ -431,47 +431,47 @@ describe HTTParty::Request do
       end
 
       it "should be handled by GET transparently" do
-        @request.perform.should == {"hash" => {"foo" => "bar"}}
+        @request.perform.to_hash.should == {"hash" => {"foo" => "bar"}}
       end
 
       it "should be handled by POST transparently" do
         @request.http_method = Net::HTTP::Post
-        @request.perform.should == {"hash" => {"foo" => "bar"}}
+        @request.perform.to_hash.should == {"hash" => {"foo" => "bar"}}
       end
 
       it "should be handled by DELETE transparently" do
         @request.http_method = Net::HTTP::Delete
-        @request.perform.should == {"hash" => {"foo" => "bar"}}
+        @request.perform.to_hash.should == {"hash" => {"foo" => "bar"}}
       end
 
       it "should be handled by MOVE transparently" do
         @request.http_method = Net::HTTP::Move
-        @request.perform.should == {"hash" => {"foo" => "bar"}}
+        @request.perform.to_hash.should == {"hash" => {"foo" => "bar"}}
       end
 
       it "should be handled by COPY transparently" do
         @request.http_method = Net::HTTP::Copy
-        @request.perform.should == {"hash" => {"foo" => "bar"}}
+        @request.perform.to_hash.should == {"hash" => {"foo" => "bar"}}
       end
 
       it "should be handled by PATCH transparently" do
         @request.http_method = Net::HTTP::Patch
-        @request.perform.should == {"hash" => {"foo" => "bar"}}
+        @request.perform.to_hash.should == {"hash" => {"foo" => "bar"}}
       end
 
       it "should be handled by PUT transparently" do
         @request.http_method = Net::HTTP::Put
-        @request.perform.should == {"hash" => {"foo" => "bar"}}
+        @request.perform.to_hash.should == {"hash" => {"foo" => "bar"}}
       end
 
       it "should be handled by HEAD transparently" do
         @request.http_method = Net::HTTP::Head
-        @request.perform.should == {"hash" => {"foo" => "bar"}}
+        @request.perform.to_hash.should == {"hash" => {"foo" => "bar"}}
       end
 
       it "should be handled by OPTIONS transparently" do
         @request.http_method = Net::HTTP::Options
-        @request.perform.should == {"hash" => {"foo" => "bar"}}
+        @request.perform.to_hash.should == {"hash" => {"foo" => "bar"}}
       end
 
       it "should keep track of cookies between redirects" do
@@ -497,14 +497,14 @@ describe HTTParty::Request do
 
       it 'should make resulting request a get request if it not already' do
         @request.http_method = Net::HTTP::Delete
-        @request.perform.should == {"hash" => {"foo" => "bar"}}
+        @request.perform.to_hash.should == {"hash" => {"foo" => "bar"}}
         @request.http_method.should == Net::HTTP::Get
       end
 
       it 'should not make resulting request a get request if options[:maintain_method_across_redirects] is true' do
         @request.options[:maintain_method_across_redirects] = true
         @request.http_method = Net::HTTP::Delete
-        @request.perform.should == {"hash" => {"foo" => "bar"}}
+        @request.perform.to_hash.should == {"hash" => {"foo" => "bar"}}
         @request.http_method.should == Net::HTTP::Delete
       end
     end

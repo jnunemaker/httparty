@@ -1,3 +1,4 @@
+# coding: iso8859-1
 require File.expand_path(File.join(File.dirname(__FILE__), 'spec_helper'))
 
 describe HTTParty do
@@ -369,7 +370,7 @@ describe HTTParty do
       end.with(URI.parse(uri), kind_of(Hash))
       FakeWeb.register_uri(:get, uri, :body => 'stuff')
       @klass.connection_adapter connection_adapter, connection_adapter_options
-      @klass.get(uri).should == 'stuff'
+      @klass.get(uri).to_s.should == 'stuff'
     end
   end
 
@@ -645,7 +646,7 @@ describe HTTParty do
   describe "#get" do
     it "should be able to get html" do
       stub_http_response_with('google.html')
-      HTTParty.get('http://www.google.com').should == file_fixture('google.html')
+      HTTParty.get('http://www.google.com').to_s.should == file_fixture('google.html')
     end
 
     it "should be able to get chunked html" do
@@ -654,7 +655,7 @@ describe HTTParty do
 
       HTTParty.get('http://www.google.com') do |fragment|
         chunks.should include(fragment)
-      end.should == chunks.join
+      end.to_s.should == chunks.join
     end
 
     it "should be able parse response type json automatically" do
@@ -694,7 +695,7 @@ describe HTTParty do
     it "should not get undefined method add_node for nil class for the following xml" do
       stub_http_response_with('undefined_method_add_node_for_nil.xml')
       result = HTTParty.get('http://foobar.com')
-      result.should == {"Entities"=>{"href"=>"https://s3-sandbox.parature.com/api/v1/5578/5633/Account", "results"=>"0", "total"=>"0", "page_size"=>"25", "page"=>"1"}}
+      result.to_hash.should == {"Entities"=>{"href"=>"https://s3-sandbox.parature.com/api/v1/5578/5633/Account", "results"=>"0", "total"=>"0", "page_size"=>"25", "page"=>"1"}}
     end
 
     it "should parse empty response fine" do
