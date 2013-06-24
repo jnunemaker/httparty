@@ -459,6 +459,18 @@ describe HTTParty do
     end
   end
 
+  describe "#raise_error_on_bad_request" do
+    it "sets the raise_error_on_bad_request option to false by default" do
+      @klass.raise_error_on_bad_request
+      @klass.default_options[:raise_error_on_bad_request].should be_false
+    end
+
+    it "sets the raise_error_on_bad_request option to true" do
+      @klass.raise_error_on_bad_request true
+      @klass.default_options[:raise_error_on_bad_request].should be_true
+    end
+  end
+
   describe "with explicit override of automatic redirect handling" do
     before do
       @request = HTTParty::Request.new(Net::HTTP::Get, 'http://api.foo.com/v1', :format => :xml, :no_follow => true)

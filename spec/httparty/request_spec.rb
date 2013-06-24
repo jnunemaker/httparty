@@ -56,6 +56,16 @@ describe HTTParty::Request do
       request = HTTParty::Request.new(Net::HTTP::Get, 'http://google.com', :connection_adapter => my_adapter)
       request.connection_adapter.should == my_adapter
     end
+
+    it "sets raise_error_on_bad_request to false by default" do
+      request = HTTParty::Request.new(Net::HTTP::Get, 'http://google.com')
+      request.options[:raise_error_on_bad_request].should be_false
+    end
+
+    it "sets raise_error_on_bad_request to true" do
+      request = HTTParty::Request.new(Net::HTTP::Get, 'http://google.com', :raise_error_on_bad_request => true)
+      request.options[:raise_error_on_bad_request].should be_true
+    end
   end
 
   describe "#format" do
@@ -579,6 +589,36 @@ describe HTTParty::Request do
       lambda {
         HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', :digest_auth => ["foo", "bar"]).perform
       }.should raise_error(ArgumentError, ":digest_auth must be a hash")
+    end
+  end
+
+  describe "#handle_response" do
+    it "should not raise an error on a bad request with status 400 by default" do
+      @request.options[:format] = :plain
+      @request.last_response = Net::HTTPBadRequest.new('1.1', '400', "Bad Request")
+      lambda { @request.send(:handle_response, 'body') }.should_not raise_error
+    end
+
+    it "should not raise an error on a bad request with status 500 by default" do
+      @request.options[:format] = :plain
+      @request.last_response = Net::HTTPInternalServerError.new('1.1', '500', "Internal Server Error")
+      lambda { @request.send(:handle_response, 'body') }.should_not raise_error
+    end
+
+    it "should raise an error on a bad request with status 400" do
+      @request.options[:raise_error_on_bad_request] = true
+      @request.last_response = Net::HTTPBadRequest.new('1.1', '400', "Bad Request")
+      lambda { @request.send(:handle_response, 'body') }.should raise_error(HTTParty::ClientError) do |e|
+        e.response.should eq(@request.last_response)
+      end
+    end
+
+    it "should raise an error on a bad request with status 500" do
+      @request.options[:raise_error_on_bad_request] = true
+      @request.last_response = Net::HTTPInternalServerError.new('1.1', '500', "Internal Server Error")
+      lambda { @request.send(:handle_response, 'body') }.should raise_error(HTTParty::ServerError) do |e|
+        e.response.should eq(@request.last_response)
+      end
     end
   end
 end

@@ -23,4 +23,14 @@ module HTTParty
   # Exception that is raised when request has redirected too many times.
   # Calling {#response} returns the Net:HTTP response object.
   class RedirectionTooDeep < ResponseError; end
+
+  # Exception that is raised when response has a 400-level status code.
+  # Only used if HTTParty raise_error_on_bad_request option is set.
+  # Calling {#response} returns the Net:HTTP response object.
+  class ClientError < ResponseError; end
+
+  # Exception that is raised when response has a 400-level status code.
+  # Only used if HTTParty raise_error_on_bad_request option is set.
+  # Calling {#response} returns the Net:HTTP response object.
+  class ServerError < ResponseError; end
 end
