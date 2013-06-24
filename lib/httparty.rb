@@ -4,7 +4,7 @@ require 'net/https'
 require 'uri'
 require 'zlib'
 require 'multi_xml'
-require 'multi_json'
+require 'json'
 
 require 'httparty/module_inheritable_attributes'
 require 'httparty/cookie_hash'
