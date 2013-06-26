@@ -495,6 +495,16 @@ describe HTTParty::Request do
         @request.options[:headers]['Cookie'].should match(/keep=me/)
       end
 
+      it "should handle multiple Set-Cookie headers between redirects" do
+        @redirect.add_field 'set-cookie', 'foo=bar; name=value; HTTPOnly'
+        @redirect.add_field 'set-cookie', 'one=1; two=2; HTTPOnly'
+        @request.perform
+        @request.options[:headers]['Cookie'].should match(/foo=bar/)
+        @request.options[:headers]['Cookie'].should match(/name=value/)
+        @request.options[:headers]['Cookie'].should match(/one=1/)
+        @request.options[:headers]['Cookie'].should match(/two=2/)
+      end
+
       it 'should make resulting request a get request if it not already' do
         @request.http_method = Net::HTTP::Delete
         @request.perform.should == {"hash" => {"foo" => "bar"}}

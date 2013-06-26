@@ -35,6 +35,13 @@ describe HTTParty::CookieHash do
         @cookie_hash.length.should eql(1)
         @cookie_hash[:foo].should eql("tar")
       end
+
+      it "should handle '=' within cookie value" do
+          @cookie_hash.add_cookies("first=one=1; second=two=2==")
+          @cookie_hash.keys.should include(:first, :second)
+          @cookie_hash[:first].should == 'one=1'
+          @cookie_hash[:second].should == 'two=2=='
+      end
     end
 
     describe 'with other class' do
