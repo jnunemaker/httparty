@@ -75,6 +75,11 @@ describe HTTParty::Response do
     response.respond_to?(:headers).should be_true
   end
 
+  it "responds to cookies" do
+    response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
+    response.respond_to?(:cookies).should be_true
+  end
+
   it "responds to parsed_response" do
     response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
     response.respond_to?(:parsed_response).should be_true
@@ -103,6 +108,13 @@ describe HTTParty::Response do
     @response_object.add_field 'set-cookie', '_github_ses=A123CdE; path=/'
     response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
     response.headers['set-cookie'].should == "csrf_id=12345; path=/, _github_ses=A123CdE; path=/"
+  end
+
+  it "returns cookies as a list of hash values" do
+    @response_object.add_field 'set-cookie', 'csrf_id=12345; path=/'
+    @response_object.add_field 'set-cookie', '_github_ses=A123CdE; path=/'
+    response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
+    response.cookies.should == [{:csrf_id => '12345', :path => '/'},{:_github_ses => 'A123CdE', :path => '/'}]
   end
 
   # Backwards-compatibility - previously, #headers returned a Hash

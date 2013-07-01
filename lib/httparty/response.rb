@@ -26,6 +26,20 @@ module HTTParty
       response.code.to_i
     end
 
+    def cookies
+      cookie_list = []
+      headers['set-cookie'].split(', ').each do |cookie|
+        cookie_hash = {}
+        cookie.split('; ').each do |cookie_part|
+          array = cookie_part.split('=',2)
+          cookie_hash[array[0].to_sym] = array[1]
+        end
+        cookie_list << cookie_hash
+      end
+
+      cookie_list
+    end
+
     def inspect
       inspect_id = "%x" % (object_id * 2)
       %(#<#{self.class}:0x#{inspect_id} parsed_response=#{parsed_response.inspect}, @response=#{response.inspect}, @headers=#{headers.inspect}>)
@@ -46,7 +60,7 @@ module HTTParty
     end
 
     def respond_to?(name)
-      return true if [:request, :response, :parsed_response, :body, :headers].include?(name)
+      return true if [:request, :response, :parsed_response, :body, :headers, :cookies].include?(name)
       parsed_response.respond_to?(name) || response.respond_to?(name)
     end
 
