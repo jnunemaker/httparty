@@ -27,10 +27,10 @@ describe HTTParty::Request do
     end
 
     it "should work when using ssl_ca_path with a certificate authority" do
-      http = Net::HTTP.new('www.google.com', 443, nil, nil, nil, nil)
+      http = Net::HTTP.new('www.google.com', 443)
       response = stub(Net::HTTPResponse, :[] => '', :body => '', :to_hash => {})
       http.stub(:request).and_return(response)
-      Net::HTTP.should_receive(:new).with('www.google.com', 443, nil, nil, nil, nil).and_return(http)
+      Net::HTTP.should_receive(:new).with('www.google.com', 443).and_return(http)
       http.should_receive(:ca_path=).with('/foo/bar')
       HTTParty.get('https://www.google.com', :ssl_ca_path => '/foo/bar')
     end

@@ -176,6 +176,16 @@ describe HTTParty::ConnectionAdapter do
         end
       end
 
+      context 'when not providing a proxy address' do
+        let(:uri) { URI 'http://proxytest.com' }
+
+        it "does not pass any proxy parameters to the connection" do
+          http = Net::HTTP.new("proxytest.com")
+          Net::HTTP.should_receive(:new).once.with("proxytest.com", 80).and_return(http)
+          adapter.connection
+        end
+      end
+
       context "when providing PEM certificates" do
         let(:pem) { :pem_contents }
         let(:options) { {:pem => pem, :pem_password => "password"} }
