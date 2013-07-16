@@ -323,7 +323,13 @@ module HTTParty
       default_options[:ciphers] = cipher_names
     end
 
-    # Allows setting an OpenSSL certificate authority file
+    # Allows setting an OpenSSL certificate authority file.  The file
+    # should contain one or more certificates in PEM format.
+    #
+    # Setting this option enables certificate verification.  All
+    # certificates along a chain must be available in ssl_ca_file or
+    # ssl_ca_path for verification to succeed.
+    #
     #
     #   class Foo
     #     include HTTParty
@@ -333,7 +339,11 @@ module HTTParty
       default_options[:ssl_ca_file] = path
     end
 
-    # Allows setting an OpenSSL certificate authority path (directory)
+    # Allows setting an OpenSSL certificate authority path (directory).
+    #
+    # Setting this option enables certificate verification.  All
+    # certificates along a chain must be available in ssl_ca_file or
+    # ssl_ca_path for verification to succeed.
     #
     #   class Foo
     #     include HTTParty
