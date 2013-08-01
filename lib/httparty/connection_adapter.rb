@@ -108,7 +108,18 @@ module HTTParty
 
     def attach_ssl_certificates(http, options)
       if http.use_ssl?
-        http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+        if options.fetch(:verify, true)
+          http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+          if options[:cert_store]
+            http.cert_store = options[:cert_store]
+          else
+            # Use the default cert store by default, i.e. system ca certs
+            http.cert_store = OpenSSL::X509::Store.new
+            http.cert_store.set_default_paths
+          end
+        else
+          http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+        end
 
         # Client certificate authentication
         if options[:pem]

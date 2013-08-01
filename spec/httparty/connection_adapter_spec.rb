@@ -64,6 +64,22 @@ describe HTTParty::ConnectionAdapter do
       context "when dealing with ssl" do
         let(:uri) { URI 'https://foobar.com' }
 
+        context "uses the system cert_store, by default" do
+          let(:system_cert_store) do
+            system_cert_store = mock('default_cert_store')
+            system_cert_store.should_receive(:set_default_paths)
+            OpenSSL::X509::Store.should_receive(:new).and_return(system_cert_store)
+            system_cert_store
+          end
+          it { should use_cert_store(system_cert_store) }
+        end
+
+        context "should use the specified cert store, when one is given" do
+          let(:custom_cert_store) { mock('custom_cert_store') }
+          let(:options) { {:cert_store => custom_cert_store} }
+          it { should use_cert_store(custom_cert_store) }
+        end
+
         context "using port 443 for ssl" do
           let(:uri) { URI 'https://api.foo.com/v1:443' }
           it { should use_ssl }

@@ -28,3 +28,9 @@ Spec::Matchers.define :use_ssl do
     connection.use_ssl?
   end
 end
+
+Spec::Matchers.define :use_cert_store do |cert_store|
+  match do |connection|
+    connection.cert_store == cert_store
+  end
+end
