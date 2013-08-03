@@ -10,12 +10,24 @@ describe HTTParty::Request do
       FakeWeb.allow_net_connect = false
     end
 
-    it "should work when no trusted CA list is specified" do
-      ssl_verify_test(nil, nil, "selfsigned.crt").should == {'success' => true}
+    it "should fail when no trusted CA list is specified, by default" do
+      lambda do
+        ssl_verify_test(nil, nil, "selfsigned.crt")
+      end.should raise_error OpenSSL::SSL::SSLError
     end
 
-    it "should work when no trusted CA list is specified, even with a bogus hostname" do
-      ssl_verify_test(nil, nil, "bogushost.crt").should == {'success' => true}
+    it "should work when no trusted CA list is specified, when the verify option is set to false" do
+      ssl_verify_test(nil, nil, "selfsigned.crt", :verify => false).should == {'success' => true}
+    end
+
+    it "should fail when no trusted CA list is specified, with a bogus hostname, by default" do
+      lambda do
+        ssl_verify_test(nil, nil, "bogushost.crt")
+      end.should raise_error OpenSSL::SSL::SSLError
+    end
+
+    it "should work when no trusted CA list is specified, even with a bogus hostname, when the verify option is set to true" do
+      ssl_verify_test(nil, nil, "bogushost.crt", :verify => false).should == {'success' => true}
     end
 
     it "should work when using ssl_ca_file with a self-signed CA" do
