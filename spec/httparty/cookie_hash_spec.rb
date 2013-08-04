@@ -23,7 +23,7 @@ describe HTTParty::CookieHash do
 
     describe "with a string" do
       it "should add new key/value pairs to the hash" do
-        @cookie_hash.add_cookies("first=one; second=two; third")
+        @cookie_hash.add_cookies("first=one, second=two, third")
         @cookie_hash[:first].should == 'one'
         @cookie_hash[:second].should == 'two'
         @cookie_hash[:third].should == nil
@@ -37,10 +37,15 @@ describe HTTParty::CookieHash do
       end
 
       it "should handle '=' within cookie value" do
-          @cookie_hash.add_cookies("first=one=1; second=two=2==")
+          @cookie_hash.add_cookies("first=one=1, second=two=2==")
           @cookie_hash.keys.should include(:first, :second)
           @cookie_hash[:first].should == 'one=1'
           @cookie_hash[:second].should == 'two=2=='
+      end
+
+      it "should handle cookie attribute value pairs" do
+        @cookie_hash.add_cookies("CFID=18370245;path=/, CFTOKEN=1973a7761f5a9072%2DEDC14302%2DDA2D%2D8382%2D10F4C5B06060CF60;path=/, TEST_COOKIES=TRUE;expires=Tue, 28-Jul-2043 20:16:54 GMT;path=/")
+        @cookie_hash.keys.should include(:CFID, :CFTOKEN, :TEST_COOKIES)
       end
     end
 
