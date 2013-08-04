@@ -475,7 +475,7 @@ describe HTTParty::Request do
       end
 
       it "should keep track of cookies between redirects" do
-        @redirect['Set-Cookie'] = 'foo=bar; name=value; HTTPOnly'
+        @redirect['Set-Cookie'] = 'foo=bar, name=value; HTTPOnly'
         @request.perform
         @request.options[:headers]['Cookie'].should match(/foo=bar/)
         @request.options[:headers]['Cookie'].should match(/name=value/)
@@ -496,8 +496,8 @@ describe HTTParty::Request do
       end
 
       it "should handle multiple Set-Cookie headers between redirects" do
-        @redirect.add_field 'set-cookie', 'foo=bar; name=value; HTTPOnly'
-        @redirect.add_field 'set-cookie', 'one=1; two=2; HTTPOnly'
+        @redirect.add_field 'set-cookie', 'foo=bar, name=value; HTTPOnly'
+        @redirect.add_field 'set-cookie', 'one=1, two=2; HTTPOnly'
         @request.perform
         @request.options[:headers]['Cookie'].should match(/foo=bar/)
         @request.options[:headers]['Cookie'].should match(/name=value/)
