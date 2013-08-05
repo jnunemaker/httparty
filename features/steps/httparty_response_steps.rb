@@ -11,7 +11,6 @@ def constantize(camel_cased_word)
   constant
 end
 
-
 Then /it should return an? (\w+)$/ do |class_string|
   @response_from_httparty.should be_an_instance_of(class_string.class)
 end
@@ -32,6 +31,14 @@ end
 
 Then /it should return a response with a (\d+) response code/ do |code|
   @response_from_httparty.code.should eql(code.to_i)
+end
+
+Then /it should return a response with a (.*) content\-encoding$/ do |content_type|
+  @response_from_httparty.headers['content-encoding'].should eql('gzip')
+end
+
+Then /it should return a response with a blank body$/ do
+  @response_from_httparty.body.should be(nil)
 end
 
 Then /it should raise (?:an|a) ([\w:]+) exception/ do |exception|
