@@ -103,7 +103,7 @@ module HTTParty
         end
       end
 
-      handle_deflation unless self.http_method == Net::HTTP::Head
+      handle_deflation unless http_method == Net::HTTP::Head
       handle_response(chunked_body, &block)
     end
 
