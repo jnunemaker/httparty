@@ -17,3 +17,11 @@ Feature: Handles Compressed Responses
     And that service is accessed at the path '/gzip_service.html'
     When I call HTTParty#get with '/gzip_service.html'
     Then the return value should match '<h1>Some HTML</h1>'
+
+  Scenario: Supports HEAD request with gzip encoding
+    Given a remote gzip service
+    And that service is accessed at the path '/gzip_head.gz.js'
+    When I call HTTParty#head with '/gzip_head.gz.js'
+    Then it should return a response with a 200 response code
+    Then it should return a response with a gzip content-encoding
+    Then it should return a response with a blank body
