@@ -10,6 +10,14 @@ When /I call HTTParty#get with '(.*)'$/ do |url|
   end
 end
 
+When /^I call HTTParty#head with '(.*)'$/ do |url|
+  begin
+    @response_from_httparty = HTTParty.head("http://#{@host_and_port}#{url}", @request_options)
+  rescue HTTParty::RedirectionTooDeep, Timeout::Error => e
+    @exception_from_httparty = e
+  end
+end
+
 When /I call HTTParty#get with '(.*)' and a basic_auth hash:/ do |url, auth_table|
   h = auth_table.hashes.first
   @response_from_httparty = HTTParty.get(
