@@ -15,5 +15,5 @@ class Rep
   )
 end
 
-pp Rep.get('http://whoismyrepresentative.com/whoismyrep.php?zip=46544')
-pp Rep.get('http://whoismyrepresentative.com/whoismyrep.php', :query => {:zip => 46544})
+pp Rep.get('http://whoismyrepresentative.com/getall_mems.php?zip=46544')
+pp Rep.get('http://whoismyrepresentative.com/getall_mems.php', :query => {:zip => 46544})
