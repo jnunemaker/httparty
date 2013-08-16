@@ -517,6 +517,13 @@ describe HTTParty::Request do
         @request.perform.should == {"hash" => {"foo" => "bar"}}
         @request.http_method.should == Net::HTTP::Delete
       end
+
+      it 'should log the redirection' do
+        logger_double = double
+        logger_double.should_receive(:info).twice
+        @request.options[:logger] = logger_double
+        @request.perform
+      end
     end
 
     describe "infinitely" do
@@ -592,4 +599,3 @@ describe HTTParty::Request do
     end
   end
 end
-

@@ -245,6 +245,10 @@ module HTTParty
     def handle_response(body, &block)
       if response_redirects?
         options[:limit] -= 1
+        if options[:logger]
+          logger = HTTParty::Logger.build(options[:logger], options[:log_level], options[:log_format])
+          logger.format(self, last_response)
+        end
         self.path = last_response['location']
         self.redirect = true
         self.http_method = Net::HTTP::Get unless options[:maintain_method_across_redirects]
