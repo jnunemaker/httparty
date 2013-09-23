@@ -17,8 +17,6 @@ Gem::Specification.new do |s|
   s.add_dependency 'json',      "~> 1.8"
   s.add_dependency 'multi_xml', ">= 0.5.2"
 
-  s.post_install_message = "When you HTTParty, you must party hard!"
-
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
