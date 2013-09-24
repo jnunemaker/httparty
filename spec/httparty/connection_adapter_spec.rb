@@ -202,6 +202,13 @@ describe HTTParty::ConnectionAdapter do
         end
       end
 
+      context 'when providing a local bind address and port' do
+        let(:options) { {:local_host => "127.0.0.1", :local_port => 12345 } }
+
+        its(:local_host) { should == '127.0.0.1' }
+        its(:local_port) { should == 12345 }
+      end if RUBY_VERSION >= '2.0'
+
       context "when providing PEM certificates" do
         let(:pem) { :pem_contents }
         let(:options) { {:pem => pem, :pem_password => "password"} }

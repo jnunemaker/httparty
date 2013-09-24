@@ -47,6 +47,8 @@ module HTTParty
   # [:+limit+:] Maximum number of redirects to follow. Takes precedences over :+no_follow+.
   # [:+query+:] Query string, or a Hash representing it. Normalized according to the same rules as :+body+. If you specify this on a POST, you must use a Hash. See also HTTParty::ClassMethods.default_params.
   # [:+timeout+:] Timeout for opening connection and reading data.
+  # [:+local_host:] Local address to bind to before connecting.
+  # [:+local_port:] Local port to bind to before connecting.
   #
   # There are also another set of options with names corresponding to various class methods. The methods in question are those that let you set a class-wide default, and the options override the defaults on a request-by-request basis. Those options are:
   # * :+base_uri+: see HTTParty::ClassMethods.base_uri.
