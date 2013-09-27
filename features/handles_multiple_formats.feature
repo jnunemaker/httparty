@@ -32,3 +32,11 @@ Feature: Handles Multiple Formats
     Then it should return a Hash equaling:
        | key    | value           |
        | singer | waylon jennings |
+
+  Scenario: A Javascript remote file
+    Given a remote service that returns '$(function() { alert("hi"); });'
+    And that service is accessed at the path '/service.js'
+    And the response from the service has a Content-Type of 'application/javascript'
+    When I call HTTParty#get with '/service.js'
+    Then it should return a String
+    And the return value should match '$(function() { alert("hi"); });'

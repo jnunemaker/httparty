@@ -42,8 +42,8 @@ module HTTParty
       'application/xml'        => :xml,
       'application/json'       => :json,
       'text/json'              => :json,
-      'application/javascript' => :json,
-      'text/javascript'        => :json,
+      'application/javascript' => :plain,
+      'text/javascript'        => :plain,
       'text/html'              => :html,
       'text/plain'             => :plain
     }
