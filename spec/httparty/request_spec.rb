@@ -198,13 +198,13 @@ describe HTTParty::Request do
 
     it 'should handle text/javascript' do
       ["text/javascript", "text/javascript; charset=iso8859-1"].each do |ct|
-        @request.send(:format_from_mimetype, ct).should == :json
+        @request.send(:format_from_mimetype, ct).should == :plain
       end
     end
 
     it 'should handle application/javascript' do
       ["application/javascript", "application/javascript; charset=iso8859-1"].each do |ct|
-        @request.send(:format_from_mimetype, ct).should == :json
+        @request.send(:format_from_mimetype, ct).should == :plain
       end
     end
 
