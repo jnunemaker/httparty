@@ -31,7 +31,7 @@ module HTTParty
 
     def initialize(http_method, path, o={})
       self.http_method = http_method
-      self.path = path
+      self.path = URI(path).to_s
       self.options = {
         :limit => o.delete(:no_follow) ? 1 : 5,
         :assume_utf16_is_big_endian => true,
