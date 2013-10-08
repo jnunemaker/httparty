@@ -27,7 +27,7 @@ module HTTParty
     end
 
     attr_accessor :http_method, :options, :last_response, :redirect, :last_uri
-    attr_reader :path
+    attr_reader :path, :raw_request
 
     def initialize(http_method, path, o={})
       self.http_method = http_method

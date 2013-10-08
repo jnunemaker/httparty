@@ -23,6 +23,7 @@ module HTTParty
           end
         end
 
+        print_outgoing request.raw_request.body if request.raw_request && request.raw_request.body
         print_outgoing ""
         print_incoming "HTTP/#{response.http_version} #{response.code}"
 
