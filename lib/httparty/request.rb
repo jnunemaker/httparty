@@ -27,7 +27,7 @@ module HTTParty
     end
 
     attr_accessor :http_method, :options, :last_response, :redirect, :last_uri
-    attr_reader :path, :raw_request
+    attr_reader :path
 
     def initialize(http_method, path, o={})
       self.http_method = http_method
@@ -105,6 +105,10 @@ module HTTParty
 
       handle_deflation unless http_method == Net::HTTP::Head
       handle_response(chunked_body, &block)
+    end
+
+    def raw_body
+      @raw_request.body
     end
 
     private
