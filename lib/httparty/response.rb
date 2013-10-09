@@ -12,6 +12,11 @@ module HTTParty
       @body         = options[:body] || response.body
       @parsed_block = parsed_block
       @headers      = Headers.new(response.to_hash)
+
+      if request.options[:logger]
+        logger = ::HTTParty::Logger.build(request.options[:logger], request.options[:log_level], request.options[:log_format])
+        logger.format(request, self)
+      end
     end
 
     def parsed_response
