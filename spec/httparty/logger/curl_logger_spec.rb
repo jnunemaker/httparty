@@ -5,7 +5,7 @@ describe HTTParty::Logger::CurlLogger do
     it "formats a response in a style that resembles a -v curl" do
       logger_double = double
       logger_double.should_receive(:info).with(
-          /\[HTTParty\] \[\d{4}-\d\d-\d\d \d\d:\d\d:\d\d\.\d{3} [+-]\d{4}\] > GET http:\/\/localhost/)
+          /\[HTTParty\] \[\d{4}-\d\d-\d\d \d\d:\d\d:\d\d\ [+-]\d{4}\] > GET http:\/\/localhost/)
 
       subject = described_class.new(logger_double, :info)
 
