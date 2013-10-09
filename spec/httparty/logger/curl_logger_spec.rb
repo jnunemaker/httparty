@@ -3,14 +3,11 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'spec_hel
 describe HTTParty::Logger::CurlLogger do
   describe "#format" do
     it "formats a response in a style that resembles a -v curl" do
-      request_time = Time.new.strftime("%Y-%m-%d %H:%M:%S.%L %z")
-
       logger_double = double
       logger_double.should_receive(:info).with(
-          /\[HTTParty\] \[#{request_time}\] > GET http:\/\/localhost\n/)
+          /\[HTTParty\] \[\d{4}-\d\d-\d\d \d\d:\d\d:\d\d\.\d{3} [+-]\d{4}\] > GET http:\/\/localhost/)
 
       subject = described_class.new(logger_double, :info)
-      subject.current_time = request_time
 
       stub_http_response_with("google.html")
 
