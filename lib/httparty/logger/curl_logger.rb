@@ -12,7 +12,7 @@ module HTTParty
 
       def format(request, response)
         @messages       = []
-        @current_time ||= Time.new.strftime("%Y-%m-%d %H:%M:%S %z")
+        @current_time   = Time.new.strftime("%Y-%m-%d %H:%M:%S %z")
         http_method     = request.http_method.name.split("::").last.upcase
         path            = request.path.to_s
 

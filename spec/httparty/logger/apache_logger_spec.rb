@@ -3,7 +3,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'spec_hel
 describe HTTParty::Logger::ApacheLogger do
   describe "#format" do
     it "formats a response in a style that resembles apache's access log" do
-      request_time = Time.new.strftime("%Y-%m-%d %H:%M:%S.%L %z")
+      request_time = Time.new.strftime("%Y-%m-%d %H:%M:%S %z")
       log_message = "[HTTParty] [#{request_time}] 302 \"GET http://my.domain.com/my_path\" - "
 
       request_double  = double(
