@@ -11,38 +11,30 @@ module HTTParty
       end
 
       def format(request, response)
-        @messages       = []
+        messages       = []
         time            = Time.now.strftime("%Y-%m-%d %H:%M:%S %z")
         http_method     = request.http_method.name.split("::").last.upcase
         path            = request.path.to_s
 
-        print_outgoing time, "#{http_method} #{path}"
+        messages << print(time, ">", "#{http_method} #{path}")
         if request.options[:headers] && request.options[:headers].size > 0
           request.options[:headers].each do |k, v|
-            print_outgoing time, "#{k}: #{v}"
+            messages << print(time, ">", "#{k}: #{v}")
           end
         end
 
-        print_outgoing time, request.raw_body
-        print_outgoing time, ""
-        print_incoming time, "HTTP/#{response.http_version} #{response.code}"
+        messages << print(time, ">", request.raw_body)
+        messages << print(time, ">", "")
+        messages << print(time, "<", "HTTP/#{response.http_version} #{response.code}")
 
         headers = response.respond_to?(:headers) ? response.headers : response
         response.each_header do |response_header|
-          print_incoming time, "#{response_header.capitalize}: #{headers[response_header]}"
+          messages << print(time, "<", "#{response_header.capitalize}: #{headers[response_header]}")
         end
 
-        print_incoming time, "\n#{response.body}"
+        messages << print(time, "<", "\n#{response.body}")
 
-        @logger.send @level, @messages.join("\n")
-      end
-
-      def print_outgoing(time, line)
-        @messages << print(time, ">", line)
-      end
-
-      def print_incoming(time, line)
-        @messages << print(time, "<", line)
+        @logger.send @level, messages.join("\n")
       end
 
       def print(time, direction, line)
