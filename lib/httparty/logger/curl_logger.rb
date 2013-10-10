@@ -11,7 +11,7 @@ module HTTParty
       end
 
       def format(request, response)
-        messages       = []
+        messages        = []
         time            = Time.now.strftime("%Y-%m-%d %H:%M:%S %z")
         http_method     = request.http_method.name.split("::").last.upcase
         path            = request.path.to_s
