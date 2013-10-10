@@ -1,6 +1,3 @@
-require 'bundler'
-Bundler::GemHelper.install_tasks
-
 require 'spec/rake/spectask'
 Spec::Rake::SpecTask.new(:spec) do |spec|
   spec.ruby_opts << '-rubygems'
