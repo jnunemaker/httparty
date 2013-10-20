@@ -23,7 +23,7 @@ module HTTParty
         else
           HashConversions.to_params(key => value)
         end
-      end.flatten.sort.join('&')
+      end.flatten.join('&')
     end
 
     attr_accessor :http_method, :options, :last_response, :redirect, :last_uri

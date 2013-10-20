@@ -17,7 +17,7 @@ describe HTTParty::Request do
 
       it "doesn't include brackets" do
         query_string = normalizer[{:page => 1, :foo => %w(bar baz)}]
-        URI.unescape(query_string).should == "foo=bar&foo=baz&page=1"
+        URI.unescape(query_string).should == "page=1&foo=bar&foo=baz"
       end
 
       it "URI encodes array values" do
@@ -156,7 +156,7 @@ describe HTTParty::Request do
         @request.options[:body] = {:page => 1, :foo => %w(bar baz)}
         @request.send(:setup_raw_request)
         body = @request.instance_variable_get(:@raw_request).body
-        URI.unescape(body).should == "foo=bar&foo=baz&page=1"
+        URI.unescape(body).should == "page=1&foo=bar&foo=baz"
       end
     end
   end
