@@ -17,12 +17,12 @@ describe HTTParty::Request do
 
       it "doesn't include brackets" do
         query_string = normalizer[{:page => 1, :foo => %w(bar baz)}]
-        URI.unescape(query_string).should == "page=1&foo=bar&foo=baz"
+        URI.unescape(query_string).should == "foo=bar&foo=baz&page=1"
       end
 
       it "URI encodes array values" do
-        query_string = normalizer[{:people => ["Bob Marley", "Tim & Jon"]}]
-        query_string.should == "people=Bob%20Marley&people=Tim%20%26%20Jon"
+        query_string = normalizer[{:people => ["Otis Redding", "Bob Marley", "Tim & Jon"], :page => 1, :xyzzy => 3}]
+        query_string.should == "page=1&people=Otis%20Redding&people=Bob%20Marley&people=Tim%20%26%20Jon&xyzzy=3"
       end
     end
 
@@ -156,7 +156,7 @@ describe HTTParty::Request do
         @request.options[:body] = {:page => 1, :foo => %w(bar baz)}
         @request.send(:setup_raw_request)
         body = @request.instance_variable_get(:@raw_request).body
-        URI.unescape(body).should == "page=1&foo=bar&foo=baz"
+        URI.unescape(body).should == "foo=bar&foo=baz&page=1"
       end
     end
   end
