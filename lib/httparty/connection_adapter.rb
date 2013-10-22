@@ -147,6 +147,14 @@ module HTTParty
           http.verify_mode = OpenSSL::SSL::VERIFY_PEER
         end
 
+        # PKCS12 client certificate authentication
+        if options[:p12]
+          p12 = OpenSSL::PKCS12.new(options[:p12], options[:p12_password])
+          http.cert = p12.certificate
+          http.key = p12.key
+          http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+        end
+
         # SSL certificate authority file and/or directory
         if options[:ssl_ca_file]
           http.ca_file = options[:ssl_ca_file]
