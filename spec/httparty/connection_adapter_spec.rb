@@ -258,7 +258,7 @@ describe HTTParty::ConnectionAdapter do
 
         context "when scheme is https" do
           let(:uri) { URI 'https://google.com' }
-          let(:pkcs12) { mock("OpenSSL::PKCS12", certificate: cert, key: key) }
+          let(:pkcs12) { mock("OpenSSL::PKCS12", :certificate => cert, :key => key) }
           let(:cert) { mock("OpenSSL::X509::Certificate") }
           let(:key) { mock("OpenSSL::PKey::RSA") }
 
