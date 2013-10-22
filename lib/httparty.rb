@@ -492,7 +492,7 @@ module HTTParty
     private
 
       def perform_request(http_method, path, options, &block) #:nodoc:
-        options = default_options.dup.merge(options)
+        options = default_options.merge(options)
         process_cookies(options)
         Request.new(http_method, path, options).perform(&block)
       end
