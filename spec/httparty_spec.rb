@@ -38,6 +38,18 @@ describe HTTParty do
     end
   end
 
+  describe "pkcs12" do
+    it 'should set the p12 content' do
+      @klass.pkcs12 'P12-CONTENT', 'PASSWORD'
+      @klass.default_options[:p12].should == 'P12-CONTENT'
+    end
+
+    it 'should set the password' do
+      @klass.pkcs12 'P12-CONTENT', 'PASSWORD'
+      @klass.default_options[:p12_password].should == 'PASSWORD'
+    end
+  end
+
   describe 'ssl_version' do
     it 'should set the ssl_version content' do
       @klass.ssl_version :SSLv3

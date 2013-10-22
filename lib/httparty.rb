@@ -282,6 +282,17 @@ module HTTParty
       default_options[:pem_password] = password
     end
 
+    # Allows setting a PKCS12 file to be used
+    #
+    #   class Foo
+    #     include HTTParty
+    #     pkcs12 File.read('/home/user/my.p12'), "password"
+    #   end
+    def pkcs12(p12_contents, password)
+      default_options[:p12] = p12_contents
+      default_options[:p12_password] = password
+    end
+
     # Override the way query strings are normalized.
     # Helpful for overriding the default rails normalization of Array queries.
     #
