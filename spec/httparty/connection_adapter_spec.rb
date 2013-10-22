@@ -251,6 +251,48 @@ describe HTTParty::ConnectionAdapter do
           end
         end
       end
+
+      context "when providing PKCS12 certificates" do
+        let(:p12) { :p12_contents }
+        let(:options) { {:p12 => p12, :p12_password => "password"} }
+
+        context "when scheme is https" do
+          let(:uri) { URI 'https://google.com' }
+          let(:pkcs12) { mock("OpenSSL::PKCS12", :certificate => cert, :key => key) }
+          let(:cert) { mock("OpenSSL::X509::Certificate") }
+          let(:key) { mock("OpenSSL::PKey::RSA") }
+
+          before do
+            OpenSSL::PKCS12.should_receive(:new).with(p12, "password").and_return(pkcs12)
+          end
+
+          it "uses the provided P12 certificate " do
+            subject.cert.should == cert
+            subject.key.should == key
+          end
+
+          it "will verify the certificate" do
+            subject.verify_mode.should == OpenSSL::SSL::VERIFY_PEER
+          end
+        end
+
+        context "when scheme is not https" do
+          let(:uri) { URI 'http://google.com' }
+          let(:http) { Net::HTTP.new(uri) }
+
+          before do
+            Net::HTTP.stub(:new => http)
+            OpenSSL::PKCS12.new.should_not_receive(:new).with(p12, "password")
+            http.should_not_receive(:cert=)
+            http.should_not_receive(:key=)
+          end
+
+          it "has no PKCS12 certificate " do
+            subject.cert.should be_nil
+            subject.key.should be_nil
+          end
+        end
+      end
     end
   end
 end
