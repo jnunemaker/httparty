@@ -133,6 +133,12 @@ describe HTTParty::Request do
         URI.unescape(@request.uri.query).should == ""
       end
 
+      it "does not append an ampersand when queries are embedded in paths" do
+        @request.path = "/path?a=1"
+        @request.options[:query] = {}
+        @request.uri.query.should == "a=1"
+      end
+
       it "does not duplicate query string parameters when uri is called twice" do
         @request.options[:query] = {:foo => :bar}
         @request.uri

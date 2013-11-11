@@ -174,6 +174,7 @@ module HTTParty
         query_string_parts << options[:query] unless options[:query].nil?
       end
 
+      query_string_parts.reject!(&:empty?) unless query_string_parts == [""]
       query_string_parts.size > 0 ? query_string_parts.join('&') : nil
     end
 
