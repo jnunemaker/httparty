@@ -1,13 +1,16 @@
 module HTTParty
+  # @abstact Exceptions raised by HTTParty inherit from Error
+  class Error < StandardError; end
+
   # Exception raised when you attempt to set a non-existant format
-  class UnsupportedFormat < StandardError; end
+  class UnsupportedFormat < Error; end
 
   # Exception raised when using a URI scheme other than HTTP or HTTPS
-  class UnsupportedURIScheme < StandardError; end
+  class UnsupportedURIScheme < Error; end
 
   # @abstract Exceptions which inherit from ResponseError contain the Net::HTTP
   # response object accessible via the {#response} method.
-  class ResponseError < StandardError
+  class ResponseError < Error
     # Returns the response of the last request
     # @return [Net::HTTPResponse] A subclass of Net::HTTPResponse, e.g.
     # Net::HTTPOK
