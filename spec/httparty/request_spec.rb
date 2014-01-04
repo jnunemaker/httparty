@@ -21,8 +21,8 @@ describe HTTParty::Request do
       end
 
       it "URI encodes array values" do
-        query_string = normalizer[{:people => ["Bob Marley", "Tim & Jon"]}]
-        query_string.should == "people=Bob%20Marley&people=Tim%20%26%20Jon"
+        query_string = normalizer[{:people => ["Otis Redding", "Bob Marley", "Tim & Jon"], :page => 1, :xyzzy => 3}]
+        query_string.should == "page=1&people=Otis%20Redding&people=Bob%20Marley&people=Tim%20%26%20Jon&xyzzy=3"
       end
     end
 

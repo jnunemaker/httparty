@@ -15,7 +15,7 @@ module HTTParty
     SupportedURISchemes  = [URI::HTTP, URI::HTTPS, URI::Generic]
 
     NON_RAILS_QUERY_STRING_NORMALIZER = Proc.new do |query|
-      Array(query).map do |key, value|
+      Array(query).sort_by { |a| a[0].to_s }.map do |key, value|
         if value.nil?
           key.to_s
         elsif value.is_a?(Array)
@@ -23,7 +23,7 @@ module HTTParty
         else
           HashConversions.to_params(key => value)
         end
-      end.flatten.sort.join('&')
+      end.flatten.join('&')
     end
 
     attr_accessor :http_method, :options, :last_response, :redirect, :last_uri
