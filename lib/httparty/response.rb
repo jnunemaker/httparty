@@ -50,9 +50,9 @@ module HTTParty
       alias_method :multiple_choice?, :multiple_choices?
     end
 
-    def respond_to?(name)
+    def respond_to?(name, include_all = false)
       return true if [:request, :response, :parsed_response, :body, :headers].include?(name)
-      parsed_response.respond_to?(name) || response.respond_to?(name)
+      parsed_response.respond_to?(name, include_all) || response.respond_to?(name, include_all)
     end
 
     protected
