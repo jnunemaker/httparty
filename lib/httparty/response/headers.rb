@@ -23,8 +23,8 @@ module HTTParty
         end
       end
 
-      def respond_to?(method)
-        super || @header.respond_to?(method)
+      def respond_to?(method, include_all = false)
+        super || @header.respond_to?(method, include_all)
       end
     end
   end
