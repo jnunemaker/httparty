@@ -2,6 +2,10 @@
 
 Makes http fun again!
 
+## Code Status
+
+* [![Build Status](https://travis-ci.org/jnunemaker/httparty.png)](https://travis-ci.org/jnunemaker/httparty)
+
 ## Install
 
 ```
