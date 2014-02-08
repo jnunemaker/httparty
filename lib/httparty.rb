@@ -551,7 +551,7 @@ module HTTParty
   end
 
   def self.copy(*args, &block)
-    Basement.move(*args, &block)
+    Basement.copy(*args, &block)
   end
 
   def self.head(*args, &block)
