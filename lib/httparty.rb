@@ -5,6 +5,7 @@ require 'uri'
 require 'zlib'
 require 'multi_xml'
 require 'json'
+require 'csv'
 
 require 'httparty/module_inheritable_attributes'
 require 'httparty/cookie_hash'

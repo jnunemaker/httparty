@@ -202,6 +202,24 @@ describe HTTParty::Request do
       end
     end
 
+    it 'should handle text/csv' do
+      ["text/csv", "text/csv; charset=iso8859-1"].each do |ct|
+        @request.send(:format_from_mimetype, ct).should == :csv
+      end
+    end
+
+    it 'should handle application/csv' do
+      ["application/csv", "application/csv; charset=iso8859-1"].each do |ct|
+        @request.send(:format_from_mimetype, ct).should == :csv
+      end
+    end
+
+    it 'should handle text/comma-separated-values' do
+      ["text/comma-separated-values", "text/comma-separated-values; charset=iso8859-1"].each do |ct|
+        @request.send(:format_from_mimetype, ct).should == :csv
+      end
+    end
+
     it 'should handle text/javascript' do
       ["text/javascript", "text/javascript; charset=iso8859-1"].each do |ct|
         @request.send(:format_from_mimetype, ct).should == :plain
@@ -229,6 +247,12 @@ describe HTTParty::Request do
       xml = %q[<books><book><id>1234</id><name>Foo Bar!</name></book></books>]
       @request.options[:format] = :xml
       @request.send(:parse_response, xml).should == {'books' => {'book' => {'id' => '1234', 'name' => 'Foo Bar!'}}}
+    end
+
+    it 'should handle csv automatically' do
+      csv=[%q["id","Name"],%q["1234","Foo Bar!"]].join("\n")
+      @request.options[:format] = :csv
+      @request.send(:parse_response, csv).should == [["id","Name"],["1234","Foo Bar!"]]
     end
 
     it 'should handle json automatically' do
