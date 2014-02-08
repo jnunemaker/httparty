@@ -391,6 +391,11 @@ describe HTTParty do
       @klass.default_options[:format].should == :xml
     end
 
+    it "should allow csv" do
+      @klass.format :csv
+      @klass.default_options[:format].should == :csv
+    end
+
     it "should allow json" do
       @klass.format :json
       @klass.default_options[:format].should == :json
@@ -410,7 +415,7 @@ describe HTTParty do
     it 'should only print each format once with an exception' do
       lambda do
         @klass.format :foobar
-      end.should raise_error(HTTParty::UnsupportedFormat, "':foobar' Must be one of: html, json, plain, xml")
+      end.should raise_error(HTTParty::UnsupportedFormat, "':foobar' Must be one of: csv, html, json, plain, xml")
     end
 
     it 'sets the default parser' do
@@ -701,6 +706,14 @@ describe HTTParty do
         "profile_image_url" => "http://s3.amazonaws.com/twitter_production/profile_images/65565851/8ball_large_normal.jpg",
         "location"          => nil
       }
+    end
+
+    it "should be able parse response type csv automatically" do
+      stub_http_response_with('twitter.csv')
+      profile = HTTParty.get('http://twitter.com/statuses/profile.csv')
+      profile.size.should == 2
+      profile[0].should == ["name","url","id","description","protected","screen_name","followers_count","profile_image_url","location"]
+      profile[1].should == ["Magic 8 Bot",nil,"17656026","ask me a question","false","magic8bot","90","http://s3.amazonaws.com/twitter_production/profile_images/65565851/8ball_large_normal.jpg",nil]
     end
 
     it "should not get undefined method add_node for nil class for the following xml" do

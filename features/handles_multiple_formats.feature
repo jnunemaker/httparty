@@ -14,6 +14,21 @@ Feature: Handles Multiple Formats
     Then it should return a String
     And the return value should match '<h1>Some HTML</h1>'
 
+  Scenario: A CSV service
+    Given a remote service that returns 
+    '"Last Name","Name"
+    "jennings","waylon"
+    "cash","johnny"'
+    And that service is accessed at the path '/service.csv'
+    And the response from the service has a Content-Type of 'application/csv'
+    When I call HTTParty#get with '/service.csv'
+    Then it should return a multidimensional array equaling:
+    [
+      ["Last Name","Name"],
+      ["jennings","waylon"],
+      ["cash","johnny"]
+    ]
+
   Scenario: A JSON service
     Given a remote service that returns '{ "jennings": "waylon", "cash": "johnny" }'
     And that service is accessed at the path '/service.json'

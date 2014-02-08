@@ -156,5 +156,10 @@ describe HTTParty::Parser do
     it "parses plain text by simply returning the body" do
       subject.send(:plain).should == 'body'
     end
+
+    it "parses csv with CSV" do
+      CSV.should_receive(:parse).with('body')
+      subject.send(:csv)
+    end
   end
 end

@@ -1,5 +1,5 @@
 module HTTParty
-  # The default parser used by HTTParty, supports xml, json, html, and
+  # The default parser used by HTTParty, supports xml, json, html, csv and
   # plain text.
   #
   # == Custom Parsers
@@ -45,7 +45,10 @@ module HTTParty
       'application/javascript' => :plain,
       'text/javascript'        => :plain,
       'text/html'              => :html,
-      'text/plain'             => :plain
+      'text/plain'             => :plain,
+      'text/csv'               => :csv,
+      'application/csv'        => :csv,
+      'text/comma-separated-values' => :csv
     }
 
     # The response body of the request
@@ -111,6 +114,10 @@ module HTTParty
 
     def json
       JSON.load(body, nil)
+    end
+
+    def csv
+      CSV.parse(body)
     end
 
     def html

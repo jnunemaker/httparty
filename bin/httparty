@@ -18,7 +18,7 @@ OptionParser.new do |o|
   o.on("-f",
        "--format [FORMAT]",
        "Output format to use instead of pretty-print ruby: " +
-       "plain, json or xml") do |f|
+       "plain, csv, json or xml") do |f|
     opts[:output_format] = f.downcase.to_sym
   end
 
@@ -107,6 +107,9 @@ else
       require 'rexml/document'
       REXML::Document.new(response.body).write(STDOUT, 2)
       puts
+    when :csv
+      require 'csv'
+      puts CSV.parse(response.body).map{|row| row.to_s }
     else
       puts response
   end
