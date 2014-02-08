@@ -15,10 +15,10 @@ Feature: Handles Multiple Formats
     And the return value should match '<h1>Some HTML</h1>'
 
   Scenario: A CSV service
-    Given a remote service that returns 
-    '"Last Name","Name"
+    Given a remote service that returns:
+    "Last Name","Name"
     "jennings","waylon"
-    "cash","johnny"'
+    "cash","johnny"
     And that service is accessed at the path '/service.csv'
     And the response from the service has a Content-Type of 'application/csv'
     When I call HTTParty#get with '/service.csv'
