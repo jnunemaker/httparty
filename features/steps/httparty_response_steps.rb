@@ -29,6 +29,11 @@ Then /it should return a Hash equaling:/ do |hash_table|
   end
 end
 
+Then /it should return an Array equaling:/ do |array|
+  @response_from_httparty.should be_an_instance_of(Array)
+  @response_from_httparty.should eql array.raw
+end
+
 Then /it should return a response with a (\d+) response code/ do |code|
   @response_from_httparty.code.should eql(code.to_i)
 end
