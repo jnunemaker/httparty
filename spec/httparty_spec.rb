@@ -160,10 +160,16 @@ describe HTTParty do
       @klass.get('')
     end
 
-    it "overwrites class headers when passing in headers" do
-      expect_headers(:baz => 'spax')
+    it "merges class headers with request headers" do
+      expect_headers(:baz => 'spax', :foo => 'bar')
       @klass.headers(:foo => 'bar')
       @klass.get('', :headers => {:baz => 'spax'})
+    end
+
+    it 'overrides class headers with request headers' do
+      expect_headers(:baz => 'spax', :foo => 'baz')
+      @klass.headers(:foo => 'bar')
+      @klass.get('', :headers => {:baz => 'spax', :foo => 'baz'})
     end
 
     context "with cookies" do

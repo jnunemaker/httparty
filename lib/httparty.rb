@@ -494,8 +494,15 @@ module HTTParty
 
       def perform_request(http_method, path, options, &block) #:nodoc:
         options = default_options.merge(options)
+        process_headers(options)
         process_cookies(options)
         Request.new(http_method, path, options).perform(&block)
+      end
+
+      def process_headers(options)
+        if options[:headers] && headers.any?
+          options[:headers] = headers.merge(options[:headers])
+        end
       end
 
       def process_cookies(options) #:nodoc:
