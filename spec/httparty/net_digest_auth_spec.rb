@@ -112,4 +112,41 @@ describe Net::HTTPHeader::DigestAuthenticator do
       authorization_header.should include(%Q(response="#{request_digest}"))
     end
   end
+
+  context "with multiple authenticate headers" do
+    before do
+      @digest = setup_digest({
+        'www-authenticate' => 'NTLM, Digest realm="myhost@testrealm.com", nonce="NONCE", qop="auth"',
+      })
+    end
+
+    it "should set prefix" do
+      authorization_header.should =~ /^Digest /
+    end
+
+    it "should set username" do
+      authorization_header.should include(%Q(username="Mufasa"))
+    end
+
+    it "should set digest-uri" do
+      authorization_header.should include(%Q(uri="/dir/index.html"))
+    end
+
+    it "should set qop" do
+      authorization_header.should include(%Q(qop="auth"))
+    end
+
+    it "should set cnonce" do
+      authorization_header.should include(%Q(cnonce="md5(deadbeef)"))
+    end
+
+    it "should set nonce-count" do
+      authorization_header.should include(%Q(nc=00000001))
+    end
+
+    it "should set response" do
+      request_digest = "md5(md5(Mufasa:myhost@testrealm.com:Circle Of Life):NONCE:00000001:md5(deadbeef):auth:md5(GET:/dir/index.html))"
+      authorization_header.should include(%Q(response="#{request_digest}"))
+    end
+  end
 end
