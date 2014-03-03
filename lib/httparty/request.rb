@@ -148,6 +148,7 @@ module HTTParty
     def setup_raw_request
       @raw_request = http_method.new(request_uri(uri))
       @raw_request.body = body if body
+      @raw_request.body_stream = options[:body_stream] if options[:body_stream]
       @raw_request.initialize_http_header(options[:headers])
       @raw_request.basic_auth(username, password) if options[:basic_auth]
       setup_digest_auth if options[:digest_auth]
