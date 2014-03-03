@@ -43,7 +43,7 @@ module HTTParty
     end
 
     def path=(uri)
-      @path = URI.parse(uri)
+      @path = URI(uri)
     end
 
     def request_uri(uri)
