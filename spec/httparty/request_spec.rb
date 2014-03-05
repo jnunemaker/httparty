@@ -117,6 +117,13 @@ describe HTTParty::Request do
       @post_request.options[:digest_auth] = {:username => 'foobar', :password => 'secret'}
       @post_request.send(:setup_raw_request)
     end
+
+    it 'should use body_stream when configured' do
+      stream = StringIO.new('foo')
+      request = HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', body_stream: stream)
+      request.send(:setup_raw_request)
+      request.instance_variable_get(:@raw_request).body_stream.should == stream
+    end
   end
 
   describe "#uri" do
