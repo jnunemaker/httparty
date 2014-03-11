@@ -18,37 +18,31 @@ gem install httparty
 
 ```ruby
 # Use the class methods to get down to business quickly
-response = HTTParty.get('http://twitter.com/statuses/public_timeline.json')
+response = HTTParty.get('https://api.stackexchange.com/2.2/questions?site=stackoverflow')
+
 puts response.body, response.code, response.message, response.headers.inspect
 
-response.each do |item|
-  puts item['user']['screen_name']
-end
-
 # Or wrap things up in your own class
-class Twitter
+class StackExchange
   include HTTParty
-  base_uri 'twitter.com'
+  base_uri 'api.stackexchange.com'
 
-  def initialize(u, p)
-    @auth = {:username => u, :password => p}
+  def initialize(service, page)
+    @options = { :query => {:site => service, :page => page} }
   end
 
-  # which can be :friends, :user or :public
-  # options[:query] can be things like since, since_id, count, etc.
-  def timeline(which=:friends, options={})
-    options.merge!({:basic_auth => @auth})
-    self.class.get("/statuses/#{which}_timeline.json", options)
+  def questions
+    self.class.get("/2.2/questions", @options)
   end
 
-  def post(text)
-    options = { :body => {:status => text}, :basic_auth => @auth }
-    self.class.post('/statuses/update.json', options)
+  def users
+    self.class.get("/2.2/users", @options)
   end
 end
 
-twitter = Twitter.new(config['email'], config['password'])
-pp twitter.timeline
+stack_exchange = StackExchange.new("stackoverflow", 1)
+puts stack_exchange.questions
+puts stack_exchange.users
 ```
 
 See the [examples directory](http://github.com/jnunemaker/httparty/tree/master/examples) for even more goodies.
@@ -63,7 +57,7 @@ formatted XML or JSON. Execute `httparty --help` for all the
 options. Below is an example of how easy it is.
 
 ```
-httparty "http://twitter.com/statuses/public_timeline.json"
+httparty "https://api.stackexchange.com/2.2/questions?site=stackoverflow"
 ```
 
 ## Help and Docs
