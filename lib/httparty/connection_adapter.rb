@@ -38,13 +38,14 @@ module HTTParty
   # in the #options attribute. It is up to you to interpret them within your
   # connection adapter. Take a look at the implementation of
   # HTTParty::ConnectionAdapter#connection for examples of how they are used.
-  # Something are probably interesting are as follows:
+  # Some things that are probably interesting are as follows:
   # * :+timeout+: timeout in seconds
   # * :+debug_output+: see HTTParty::ClassMethods.debug_output.
   # * :+pem+: contains pem data. see HTTParty::ClassMethods.pem.
+  # * :+verify+: verify the server’s certificate against the ca certificate.
   # * :+ssl_ca_file+: see HTTParty::ClassMethods.ssl_ca_file.
   # * :+ssl_ca_path+: see HTTParty::ClassMethods.ssl_ca_path.
-  # * :+connection_adapter_options+: contains the hash your passed to HTTParty.connection_adapter when you configured your connection adapter
+  # * :+connection_adapter_options+: contains the hash you passed to HTTParty.connection_adapter when you configured your connection adapter
   class ConnectionAdapter
 
     # Private: Regex used to strip brackets from IPv6 URIs.
