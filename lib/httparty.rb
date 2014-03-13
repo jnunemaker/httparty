@@ -183,8 +183,8 @@ module HTTParty
     #     open_timeout 10
     #   end
     def open_timeout(t)
-	    raise ArgumentError, 'open_timeout must be an integer or float' unless t && (t.is_a?(Integer) || t.is_a?(Float))
-	    default_options[:open_timeout] = t
+      raise ArgumentError, 'open_timeout must be an integer or float' unless t && (t.is_a?(Integer) || t.is_a?(Float))
+      default_options[:open_timeout] = t
     end
 
     # Allows setting a default read_timeout for all HTTP calls in seconds
