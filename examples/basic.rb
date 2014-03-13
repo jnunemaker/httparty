@@ -3,12 +3,8 @@ require File.join(dir, 'httparty')
 require 'pp'
 
 # You can also use post, put, delete, head, options in the same fashion
-response = HTTParty.get('http://twitter.com/statuses/public_timeline.json')
+response = HTTParty.get('https://api.stackexchange.com/2.2/questions?site=stackoverflow')
 puts response.body, response.code, response.message, response.headers.inspect
-
-response.each do |item|
-  puts item['user']['screen_name']
-end
 
 # An example post to a minimal rails app in the development environment
 # Note that "skip_before_filter :verify_authenticity_token" must be set in the
