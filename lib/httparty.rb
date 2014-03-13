@@ -176,6 +176,28 @@ module HTTParty
       default_options[:timeout] = t
     end
 
+    # Allows setting a default open_timeout for all HTTP calls in seconds
+    #
+    #   class Foo
+    #     include HTTParty
+    #     open_timeout 10
+    #   end
+    def open_timeout(t)
+	    raise ArgumentError, 'open_timeout must be an integer or float' unless t && (t.is_a?(Integer) || t.is_a?(Float))
+	    default_options[:open_timeout] = t
+    end
+
+    # Allows setting a default read_timeout for all HTTP calls in seconds
+    #
+    #   class Foo
+    #     include HTTParty
+    #     read_timeout 10
+    #   end
+    def read_timeout(t)
+      raise ArgumentError, 'read_timeout must be an integer or float' unless t && (t.is_a?(Integer) || t.is_a?(Float))
+      default_options[:read_timeout] = t
+    end
+
     # Set an output stream for debugging, defaults to $stderr.
     # The output stream is passed on to Net::HTTP#set_debug_output.
     #

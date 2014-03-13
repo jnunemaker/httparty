@@ -40,6 +40,8 @@ module HTTParty
   # HTTParty::ConnectionAdapter#connection for examples of how they are used.
   # Something are probably interesting are as follows:
   # * :+timeout+: timeout in seconds
+  # * :+open_timeout+: http connection open_timeout in seconds, overrides timeout if set
+  # * :+read_timeout+: http connection read_timeout in seconds, overrides timeout if set
   # * :+debug_output+: see HTTParty::ClassMethods.debug_output.
   # * :+pem+: contains pem data. see HTTParty::ClassMethods.pem.
   # * :+ssl_ca_file+: see HTTParty::ClassMethods.ssl_ca_file.
@@ -79,6 +81,14 @@ module HTTParty
       if options[:timeout] && (options[:timeout].is_a?(Integer) || options[:timeout].is_a?(Float))
         http.open_timeout = options[:timeout]
         http.read_timeout = options[:timeout]
+      end
+
+      if options[:read_timeout] && (options[:read_timeout].is_a?(Integer) || options[:read_timeout].is_a?(Float))
+        http.read_timeout = options[:read_timeout]
+      end
+
+      if options[:open_timeout] && (options[:open_timeout].is_a?(Integer) || options[:open_timeout].is_a?(Float))
+        http.open_timeout = options[:open_timeout]
       end
 
       if options[:debug_output]
