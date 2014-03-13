@@ -3,11 +3,11 @@ When /^I set my HTTParty timeout option to (\d+)$/ do |timeout|
 end
 
 When /^I set my HTTParty open_timeout option to (\d+)$/ do |timeout|
-	@request_options[:open_timeout] = timeout.to_i
+  @request_options[:open_timeout] = timeout.to_i
 end
 
 When /^I set my HTTParty read_timeout option to (\d+)$/ do |timeout|
-	@request_options[:read_timeout] = timeout.to_i
+  @request_options[:read_timeout] = timeout.to_i
 end
 
 When /I call HTTParty#get with '(.*)'$/ do |url|

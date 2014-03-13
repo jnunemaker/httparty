@@ -154,59 +154,59 @@ describe HTTParty::ConnectionAdapter do
       end
 
       context "when timeout is not set and read_timeout is set to 6 seconds" do
-	      let(:options) { {:read_timeout => 6} }
+        let(:options) { {:read_timeout => 6} }
 
-	      its(:read_timeout) { should == 6 }
+        its(:read_timeout) { should == 6 }
 
-	      it "should not set the open_timeout" do
-		      http = mock("http", :null_object => true)
-		      http.should_not_receive(:open_timeout=)
-		      Net::HTTP.stub(:new => http)
-		      adapter.connection
-	      end
+        it "should not set the open_timeout" do
+          http = mock("http", :null_object => true)
+          http.should_not_receive(:open_timeout=)
+          Net::HTTP.stub(:new => http)
+          adapter.connection
+        end
       end
 
       context "when timeout is set and read_timeout is set to 6 seconds" do
-	      let(:options) { {:timeout => 5, :read_timeout => 6} }
+        let(:options) { {:timeout => 5, :read_timeout => 6} }
 
-	      its(:open_timeout) { should == 5 }
-	      its(:read_timeout) { should == 6 }
+        its(:open_timeout) { should == 5 }
+        its(:read_timeout) { should == 6 }
 
-	      it "should override the timeout option" do
-		      http = mock("http", :null_object => true)
-		      http.should_receive(:open_timeout=)
-		      http.should_receive(:read_timeout=).twice
-		      Net::HTTP.stub(:new => http)
-		      adapter.connection
-	      end
+        it "should override the timeout option" do
+          http = mock("http", :null_object => true)
+          http.should_receive(:open_timeout=)
+          http.should_receive(:read_timeout=).twice
+          Net::HTTP.stub(:new => http)
+          adapter.connection
+        end
       end
 
       context "when timeout is not set and open_timeout is set to 7 seconds" do
-	      let(:options) { {:open_timeout => 7} }
+        let(:options) { {:open_timeout => 7} }
 
-	      its(:open_timeout) { should == 7 }
+        its(:open_timeout) { should == 7 }
 
-	      it "should not set the read_timeout" do
-		      http = mock("http", :null_object => true)
-		      http.should_not_receive(:read_timeout=)
-		      Net::HTTP.stub(:new => http)
-		      adapter.connection
-	      end
+        it "should not set the read_timeout" do
+          http = mock("http", :null_object => true)
+          http.should_not_receive(:read_timeout=)
+          Net::HTTP.stub(:new => http)
+          adapter.connection
+        end
       end
 
       context "when timeout is set and open_timeout is set to 7 seconds" do
-	      let(:options) { {:timeout => 5, :open_timeout => 7} }
+        let(:options) { {:timeout => 5, :open_timeout => 7} }
 
-	      its(:open_timeout) { should == 7 }
-	      its(:read_timeout) { should == 5 }
+        its(:open_timeout) { should == 7 }
+        its(:read_timeout) { should == 5 }
 
-	      it "should override the timeout option" do
-		      http = mock("http", :null_object => true)
-		      http.should_receive(:open_timeout=).twice
-		      http.should_receive(:read_timeout=)
-		      Net::HTTP.stub(:new => http)
-		      adapter.connection
-	      end
+        it "should override the timeout option" do
+          http = mock("http", :null_object => true)
+          http.should_receive(:open_timeout=).twice
+          http.should_receive(:read_timeout=)
+          Net::HTTP.stub(:new => http)
+          adapter.connection
+        end
       end
 
       context "when debug_output" do

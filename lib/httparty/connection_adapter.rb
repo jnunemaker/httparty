@@ -84,11 +84,11 @@ module HTTParty
       end
 
       if options[:read_timeout] && (options[:read_timeout].is_a?(Integer) || options[:read_timeout].is_a?(Float))
-	      http.read_timeout = options[:read_timeout]
+        http.read_timeout = options[:read_timeout]
       end
 
-	    if options[:open_timeout] && (options[:open_timeout].is_a?(Integer) || options[:open_timeout].is_a?(Float))
-	      http.open_timeout = options[:open_timeout]
+      if options[:open_timeout] && (options[:open_timeout].is_a?(Integer) || options[:open_timeout].is_a?(Float))
+        http.open_timeout = options[:open_timeout]
       end
 
       if options[:debug_output]

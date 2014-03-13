@@ -194,8 +194,8 @@ module HTTParty
     #     read_timeout 10
     #   end
     def read_timeout(t)
-	    raise ArgumentError, 'read_timeout must be an integer or float' unless t && (t.is_a?(Integer) || t.is_a?(Float))
-	    default_options[:read_timeout] = t
+      raise ArgumentError, 'read_timeout must be an integer or float' unless t && (t.is_a?(Integer) || t.is_a?(Float))
+      default_options[:read_timeout] = t
     end
 
     # Set an output stream for debugging, defaults to $stderr.
