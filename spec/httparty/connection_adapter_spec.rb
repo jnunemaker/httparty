@@ -289,7 +289,7 @@ describe HTTParty::ConnectionAdapter do
           end
           
           context "when options include verify=false" do
-            let(:options) { {:pem => pem, :pem_password => "password", :verify => false} }
+            let(:options) { {:pem => pem, :pem_password => "password", :verify_peer => false} }
             
             it "should not verify the certificate" do
               subject.verify_mode.should == OpenSSL::SSL::VERIFY_NONE
@@ -340,7 +340,7 @@ describe HTTParty::ConnectionAdapter do
           end
           
           context "when options include verify=false" do
-            let(:options) { {:p12 => p12, :p12_password => "password", :verify => false} }
+            let(:options) { {:p12 => p12, :p12_password => "password", :verify_peer => false} }
             
             it "should not verify the certificate" do
               subject.verify_mode.should == OpenSSL::SSL::VERIFY_NONE
