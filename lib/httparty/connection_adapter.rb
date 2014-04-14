@@ -155,7 +155,6 @@ module HTTParty
         if options[:pem]
           http.cert = OpenSSL::X509::Certificate.new(options[:pem])
           http.key = OpenSSL::PKey::RSA.new(options[:pem], options[:pem_password])
-          http.verify_mode = OpenSSL::SSL::VERIFY_PEER
         end
 
         # PKCS12 client certificate authentication
@@ -163,7 +162,6 @@ module HTTParty
           p12 = OpenSSL::PKCS12.new(options[:p12], options[:p12_password])
           http.cert = p12.certificate
           http.key = p12.key
-          http.verify_mode = OpenSSL::SSL::VERIFY_PEER
         end
 
         # SSL certificate authority file and/or directory
