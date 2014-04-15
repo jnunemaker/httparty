@@ -279,13 +279,21 @@ describe HTTParty::ConnectionAdapter do
             OpenSSL::PKey::RSA.should_receive(:new).with(pem, "password").and_return(key)
           end
 
-          it "uses the provided PEM certificate " do
+          it "uses the provided PEM certificate" do
             subject.cert.should == cert
             subject.key.should == key
           end
 
           it "will verify the certificate" do
             subject.verify_mode.should == OpenSSL::SSL::VERIFY_PEER
+          end
+          
+          context "when options include verify_peer=false" do
+            let(:options) { {:pem => pem, :pem_password => "password", :verify_peer => false} }
+            
+            it "should not verify the certificate" do
+              subject.verify_mode.should == OpenSSL::SSL::VERIFY_NONE
+            end
           end
         end
 
@@ -329,6 +337,14 @@ describe HTTParty::ConnectionAdapter do
 
           it "will verify the certificate" do
             subject.verify_mode.should == OpenSSL::SSL::VERIFY_PEER
+          end
+          
+          context "when options include verify_peer=false" do
+            let(:options) { {:p12 => p12, :p12_password => "password", :verify_peer => false} }
+            
+            it "should not verify the certificate" do
+              subject.verify_mode.should == OpenSSL::SSL::VERIFY_NONE
+            end
           end
         end
 
