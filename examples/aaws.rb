@@ -10,10 +10,10 @@ module AAWS
   class Book
     include HTTParty
     base_uri 'http://ecs.amazonaws.com'
-    default_params :Service => 'AWSECommerceService', :Operation => 'ItemSearch', :SearchIndex => 'Books'
+    default_params Service: 'AWSECommerceService', Operation: 'ItemSearch', SearchIndex: 'Books'
 
     def initialize(key)
-      self.class.default_params :AWSAccessKeyId => key
+      self.class.default_params AWSAccessKeyId: key
     end
 
     def search(options={})
@@ -29,4 +29,4 @@ module AAWS
 end
 
 aaws = AAWS::Book.new(config[:access_key])
-pp aaws.search(:query => {:title => 'Ruby On Rails'})
+pp aaws.search(query: {title: 'Ruby On Rails'})
