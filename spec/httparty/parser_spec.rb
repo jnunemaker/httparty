@@ -162,4 +162,9 @@ describe HTTParty::Parser do
       subject.send(:csv)
     end
   end
+
+  it "doesn't rise an error when parser can't parse body" do
+    parser = HTTParty::Parser.new('body', :json)
+    parser.parse.should == 'body'
+  end
 end

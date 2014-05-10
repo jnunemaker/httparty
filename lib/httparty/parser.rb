@@ -100,7 +100,12 @@ module HTTParty
     def parse
       return nil if body.nil? || body.strip.empty? || body == "null"
       if supports_format?
-        parse_supported_format
+        begin
+          parse_supported_format
+        rescue => ex
+          $stderr.puts(ex)
+          body
+        end
       else
         body
       end
