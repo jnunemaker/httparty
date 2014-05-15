@@ -33,7 +33,7 @@
   basic_auth 'username', 'password'
 end
 
-Twitter.post('/statuses/update.json', :query => {:status => "It's an HTTParty and everyone is invited!"})</code></pre>
+Twitter.post('/statuses/update.json', query: {status: "It's an HTTParty and everyone is invited!"})</code></pre>
 
     <p>That is really it! The object returned is a ruby hash that is decoded from Twitter's json response. JSON parsing is used because of the .json extension in the path of the request. You can also explicitly set a format (see the examples). </p>
 
@@ -44,11 +44,11 @@ Twitter.post('/statuses/update.json', :query => {:status => "It's an HTTParty an
   base_uri 'twitter.com'
 
   def initialize(u, p)
-    @auth = {:username => u, :password => p}
+    @auth = {username: u, password: p}
   end
 
   def post(text)
-    options = { :query => {:status => text}, :basic_auth => @auth }
+    options = { query: {status: text}, basic_auth: @auth }
     self.class.post('/statuses/update.json', options)
   end
 end

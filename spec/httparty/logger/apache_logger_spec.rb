@@ -7,12 +7,12 @@ describe HTTParty::Logger::ApacheLogger do
       log_message = "[HTTParty] [#{request_time}] 302 \"GET http://my.domain.com/my_path\" - "
 
       request_double  = double(
-        :http_method => Net::HTTP::Get,
-        :path => "http://my.domain.com/my_path"
+        http_method: Net::HTTP::Get,
+        path: "http://my.domain.com/my_path"
       )
       response_double = double(
-        :code => 302,
-        :[]   => nil
+        code: 302,
+        []:   nil
       )
 
       logger_double = double

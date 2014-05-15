@@ -7,9 +7,9 @@ $:.unshift(File.join(File.dirname(__FILE__), "/../lib"))
 require "httparty"
 
 opts = {
-  :action => :get,
-  :headers => {},
-  :verbose => false
+  action: :get,
+  headers: {},
+  verbose: false
 }
 
 OptionParser.new do |o|
@@ -51,7 +51,7 @@ OptionParser.new do |o|
   o.on("-u", "--user [CREDS]", "Use basic authentication. Value should be user:password") do |u|
     abort "Invalid credentials format. Must be user:password" unless u =~ /.*:.+/
     user, password = u.split(':')
-    opts[:basic_auth] = { :username => user, :password => password }
+    opts[basic_auth] = { :username: user, password: password }
   end
 
   o.on("-r", "--response-code", "Command fails if response code >= 400") do

@@ -11,17 +11,17 @@ class TripIt
     response = self.class.get('/account/login')
     response = self.class.post(
       '/account/login',
-      :body => {
-        :login_email_address => email,
-        :login_password => password
+      body: {
+        login_email_address: email,
+        login_password: password
       },
-      :headers => {'Cookie' => response.headers['Set-Cookie']}
+      headers: {'Cookie' => response.headers['Set-Cookie']}
     )
     @cookie = response.request.options[:headers]['Cookie']
   end
 
   def account_settings
-    self.class.get('/account/edit', :headers => {'Cookie' => @cookie})
+    self.class.get('/account/edit', headers: {'Cookie' => @cookie})
   end
 
   def logged_in?

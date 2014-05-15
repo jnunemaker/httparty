@@ -16,11 +16,11 @@ class Partay
 end
 
 options = {
-  :body => {
-    :pear => { # your resource
-      :foo => '123', # your columns/data
-      :bar => 'second',
-      :baz => 'last thing'
+  body: {
+    pear: { # your resource
+      foo: '123', # your columns/data
+      bar: 'second',
+      baz: 'last thing'
     }
   }
 }
