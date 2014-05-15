@@ -7,7 +7,7 @@ class Rubyurl
   base_uri 'rubyurl.com'
 
   def self.shorten( website_url )
-    post( '/api/links.json', :query => { :link => { :website_url => website_url } } )
+    post( '/api/links.json', query: { link: { website_url: website_url } } )
   end
 end
 

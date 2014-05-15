@@ -167,7 +167,7 @@
 
 * minor enhancements
   * Timeout option added; will raise a Timeout::Error after the timeout has elapsed (attack). Closes #17
-    HTTParty.get "http://github.com", :timeout => 1
+    HTTParty.get "http://github.com", timeout: 1
   * Building gem with Jeweler
 
 == 0.4.4 2009-07-19

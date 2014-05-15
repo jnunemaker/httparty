@@ -9,14 +9,14 @@ describe HTTParty::Parser do
 
   describe ".call" do
     it "generates an HTTParty::Parser instance with the given body and format" do
-      HTTParty::Parser.should_receive(:new).with('body', :plain).and_return(stub(:parse => nil))
+      HTTParty::Parser.should_receive(:new).with('body', :plain).and_return(stub(parse: nil))
       HTTParty::Parser.call('body', :plain)
     end
 
     it "calls #parse on the parser" do
       parser = mock('Parser')
       parser.should_receive(:parse)
-      HTTParty::Parser.stub(:new => parser)
+      HTTParty::Parser.stub(new: parser)
       parser = HTTParty::Parser.call('body', :plain)
     end
   end
@@ -52,12 +52,12 @@ describe HTTParty::Parser do
 
   describe ".supports_format?" do
     it "returns true for a supported format" do
-      HTTParty::Parser.stub(:supported_formats => [:json])
+      HTTParty::Parser.stub(supported_formats: [:json])
       HTTParty::Parser.supports_format?(:json).should be_true
     end
 
     it "returns false for an unsupported format" do
-      HTTParty::Parser.stub(:supported_formats => [])
+      HTTParty::Parser.stub(supported_formats: [])
       HTTParty::Parser.supports_format?(:json).should be_false
     end
   end
@@ -68,33 +68,33 @@ describe HTTParty::Parser do
     end
 
     it "attempts to parse supported formats" do
-      @parser.stub(:supports_format? => true)
+      @parser.stub(supports_format: true)
       @parser.should_receive(:parse_supported_format)
       @parser.parse
     end
 
     it "returns the unparsed body when the format is unsupported" do
-      @parser.stub(:supports_format? => false)
+      @parser.stub(supports_format: false)
       @parser.parse.should == @parser.body
     end
 
     it "returns nil for an empty body" do
-      @parser.stub(:body => '')
+      @parser.stub(body: '')
       @parser.parse.should be_nil
     end
 
     it "returns nil for a nil body" do
-      @parser.stub(:body => nil)
+      @parser.stub(body: nil)
       @parser.parse.should be_nil
     end
 
     it "returns nil for a 'null' body" do
-      @parser.stub(:body => "null")
+      @parser.stub(body: "null")
       @parser.parse.should be_nil
     end
 
     it "returns nil for a body with spaces only" do
-      @parser.stub(:body => "   ")
+      @parser.stub(body: "   ")
       @parser.parse.should be_nil
     end
   end
