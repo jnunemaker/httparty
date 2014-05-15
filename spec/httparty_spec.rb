@@ -140,8 +140,8 @@ describe HTTParty do
   describe "headers" do
     def expect_headers(header={})
       HTTParty::Request.should_receive(:new) \
-        .with(anything, anything, hash_including({ :headers => header })) \
-        .and_return(mock("mock response", :perform => nil))
+        .with(anything, anything, hash_including({ headers: header })) \
+        .and_return(mock("mock response", perform: nil))
     end
 
     it "should default to empty hash" do
@@ -149,46 +149,46 @@ describe HTTParty do
     end
 
     it "should be able to be updated" do
-      init_headers = {:foo => 'bar', :baz => 'spax'}
+      init_headers = {foo: 'bar', baz: 'spax'}
       @klass.headers init_headers
       @klass.headers.should == init_headers
     end
 
     it "uses the class headers when sending a request" do
-      expect_headers(:foo => 'bar')
-      @klass.headers(:foo => 'bar')
+      expect_headers(foo: 'bar')
+      @klass.headers(foo: 'bar')
       @klass.get('')
     end
 
     it "merges class headers with request headers" do
-      expect_headers(:baz => 'spax', :foo => 'bar')
-      @klass.headers(:foo => 'bar')
-      @klass.get('', :headers => {:baz => 'spax'})
+      expect_headers(baz: 'spax', foo: 'bar')
+      @klass.headers(foo: 'bar')
+      @klass.get('', headers: {baz: 'spax'})
     end
 
     it 'overrides class headers with request headers' do
-      expect_headers(:baz => 'spax', :foo => 'baz')
-      @klass.headers(:foo => 'bar')
-      @klass.get('', :headers => {:baz => 'spax', :foo => 'baz'})
+      expect_headers(baz: 'spax', foo: 'baz')
+      @klass.headers(foo: 'bar')
+      @klass.get('', headers: {baz: 'spax', foo: 'baz'})
     end
 
     context "with cookies" do
       it 'utilizes the class-level cookies' do
-        expect_headers(:foo => 'bar', 'cookie' => 'type=snickerdoodle')
-        @klass.headers(:foo => 'bar')
-        @klass.cookies(:type => 'snickerdoodle')
+        expect_headers(foo: 'bar', 'cookie' => 'type=snickerdoodle')
+        @klass.headers(foo: 'bar')
+        @klass.cookies(type: 'snickerdoodle')
         @klass.get('')
       end
 
       it 'adds cookies to the headers' do
-        expect_headers(:foo => 'bar', 'cookie' => 'type=snickerdoodle')
-        @klass.headers(:foo => 'bar')
-        @klass.get('', :cookies => {:type => 'snickerdoodle'})
+        expect_headers(foo: 'bar', 'cookie' => 'type=snickerdoodle')
+        @klass.headers(foo: 'bar')
+        @klass.get('', cookies: {type: 'snickerdoodle'})
       end
 
       it 'adds optional cookies to the optional headers' do
-        expect_headers(:baz => 'spax', 'cookie' => 'type=snickerdoodle')
-        @klass.get('', :cookies => {:type => 'snickerdoodle'}, :headers => {:baz => 'spax'})
+        expect_headers(baz: 'spax', 'cookie' => 'type=snickerdoodle')
+        @klass.get('', cookies: {type: 'snickerdoodle'}, headers: {baz: 'spax'})
       end
     end
   end
@@ -196,12 +196,12 @@ describe HTTParty do
   describe "cookies" do
     def expect_cookie_header(s)
       HTTParty::Request.should_receive(:new) \
-        .with(anything, anything, hash_including({ :headers => { "cookie" => s } })) \
-        .and_return(mock("mock response", :perform => nil))
+        .with(anything, anything, hash_including({ headers: { "cookie" => s } })) \
+        .and_return(mock("mock response", perform: nil))
     end
 
     it "should not be in the headers by default" do
-      HTTParty::Request.stub!(:new).and_return(stub(nil, :perform => nil))
+      HTTParty::Request.stub!(new).and_return(stub(nil, :perform: nil))
       @klass.get("")
       @klass.headers.keys.should_not include("cookie")
     end
@@ -214,12 +214,12 @@ describe HTTParty do
 
     it "should allow a cookie to be specified with a one-off request" do
       expect_cookie_header "type=snickerdoodle"
-      @klass.get("", :cookies => { :type => "snickerdoodle" })
+      @klass.get("", cookies: { type: "snickerdoodle" })
     end
 
     describe "when a cookie is set at the class level" do
       before(:each) do
-        @klass.cookies({ :type => "snickerdoodle" })
+        @klass.cookies({ type: "snickerdoodle" })
       end
 
       it "should include that cookie in the request" do
@@ -237,7 +237,7 @@ describe HTTParty do
       it "should allow the class defaults to be overridden" do
         expect_cookie_header "type=chocolate_chip"
 
-        @klass.get("", :cookies => { :type => "chocolate_chip" })
+        @klass.get("", cookies: { type: "chocolate_chip" })
       end
     end
 
@@ -245,11 +245,11 @@ describe HTTParty do
       before(:each) do
         @klass.instance_eval do
           def first_method
-            get("first_method", :cookies => { :first_method_cookie => "foo" })
+            get("first_method", cookies: { first_method_cookie: "foo" })
           end
 
           def second_method
-            get("second_method", :cookies => { :second_method_cookie => "foo" })
+            get("second_method", cookies: { second_method_cookie: "foo" })
           end
         end
       end
@@ -270,7 +270,7 @@ describe HTTParty do
     end
 
     it "should be able to be updated" do
-      new_defaults = {:foo => 'bar', :baz => 'spax'}
+      new_defaults = {foo: 'bar', baz: 'spax'}
       @klass.default_params new_defaults
       @klass.default_params.should == new_defaults
     end
@@ -307,21 +307,21 @@ describe HTTParty do
   describe "basic http authentication" do
     it "should work" do
       @klass.basic_auth 'foobar', 'secret'
-      @klass.default_options[:basic_auth].should == {:username => 'foobar', :password => 'secret'}
+      @klass.default_options[basic_auth].should == {:username: 'foobar', password: 'secret'}
     end
   end
 
   describe "digest http authentication" do
     it "should work" do
       @klass.digest_auth 'foobar', 'secret'
-      @klass.default_options[:digest_auth].should == {:username => 'foobar', :password => 'secret'}
+      @klass.default_options[digest_auth].should == {:username: 'foobar', password: 'secret'}
     end
   end
 
   describe "parser" do
     class CustomParser
       def self.parse(body)
-        return {:sexy => true}
+        return {sexy: true}
       end
     end
 
@@ -336,7 +336,7 @@ describe HTTParty do
 
     it "should be able parse response with custom parser" do
       @klass.parser parser
-      FakeWeb.register_uri(:get, 'http://twitter.com/statuses/public_timeline.xml', :body => 'tweets')
+      FakeWeb.register_uri(get, 'http://twitter.com/statuses/public_timeline.xml', :body: 'tweets')
       custom_parsed_response = @klass.get('http://twitter.com/statuses/public_timeline.xml')
       custom_parsed_response[:sexy].should == true
     end
@@ -369,7 +369,7 @@ describe HTTParty do
     end
 
     it "should set the connection_adapter_options when provided" do
-      options = {:foo => :bar}
+      options = {foo: :bar}
       @klass.connection_adapter connection_adapter, options
       @klass.default_options[:connection_adapter_options].should be options
     end
@@ -380,12 +380,12 @@ describe HTTParty do
     end
 
     it "should process a request with a connection from the adapter" do
-      connection_adapter_options = {:foo => :bar}
+      connection_adapter_options = {foo: :bar}
       connection_adapter.should_receive(:call) do |u,o|
         o[:connection_adapter_options].should == connection_adapter_options
         HTTParty::ConnectionAdapter.call(u,o)
       end.with(URI.parse(uri), kind_of(Hash))
-      FakeWeb.register_uri(:get, uri, :body => 'stuff')
+      FakeWeb.register_uri(get, uri, :body: 'stuff')
       @klass.connection_adapter connection_adapter, connection_adapter_options
       @klass.get(uri).should == 'stuff'
     end
@@ -484,63 +484,63 @@ describe HTTParty do
 
   describe "with explicit override of automatic redirect handling" do
     before do
-      @request = HTTParty::Request.new(Net::HTTP::Get, 'http://api.foo.com/v1', :format => :xml, :no_follow => true)
+      @request = HTTParty::Request.new(Net::HTTP::Get, 'http//api.foo.com/v1', :format: xml, :no_follow: true)
       @redirect = stub_response 'first redirect', 302
       @redirect['location'] = 'http://foo.com/bar'
-      HTTParty::Request.stub(:new => @request)
+      HTTParty::Request.stub(new: @request)
     end
 
     it "should fail with redirected GET" do
       lambda do
-        @error = @klass.get('/foo', :no_follow => true)
+        @error = @klass.get('/foo', no_follow: true)
       end.should raise_error(HTTParty::RedirectionTooDeep) {|e| e.response.body.should == 'first redirect'}
     end
 
     it "should fail with redirected POST" do
       lambda do
-        @klass.post('/foo', :no_follow => true)
+        @klass.post('/foo', no_follow: true)
       end.should raise_error(HTTParty::RedirectionTooDeep) {|e| e.response.body.should == 'first redirect'}
     end
 
     it "should fail with redirected PATCH" do
       lambda do
-        @klass.patch('/foo', :no_follow => true)
+        @klass.patch('/foo', no_follow: true)
       end.should raise_error(HTTParty::RedirectionTooDeep) {|e| e.response.body.should == 'first redirect'}
     end
 
     it "should fail with redirected DELETE" do
       lambda do
-        @klass.delete('/foo', :no_follow => true)
+        @klass.delete('/foo', no_follow: true)
       end.should raise_error(HTTParty::RedirectionTooDeep) {|e| e.response.body.should == 'first redirect'}
     end
 
     it "should fail with redirected MOVE" do
       lambda do
-        @klass.move('/foo', :no_follow => true)
+        @klass.move('/foo', no_follow: true)
       end.should raise_error(HTTParty::RedirectionTooDeep) {|e| e.response.body.should == 'first redirect'}
     end
 
     it "should fail with redirected COPY" do
       lambda do
-        @klass.copy('/foo', :no_follow => true)
+        @klass.copy('/foo', no_follow: true)
       end.should raise_error(HTTParty::RedirectionTooDeep) {|e| e.response.body.should == 'first redirect'}
     end
 
     it "should fail with redirected PUT" do
       lambda do
-        @klass.put('/foo', :no_follow => true)
+        @klass.put('/foo', no_follow: true)
       end.should raise_error(HTTParty::RedirectionTooDeep) {|e| e.response.body.should == 'first redirect'}
     end
 
     it "should fail with redirected HEAD" do
       lambda do
-        @klass.head('/foo', :no_follow => true)
+        @klass.head('/foo', no_follow: true)
       end.should raise_error(HTTParty::RedirectionTooDeep) {|e| e.response.body.should == 'first redirect'}
     end
 
     it "should fail with redirected OPTIONS" do
       lambda do
-        @klass.options('/foo', :no_follow => true)
+        @klass.options('/foo', no_follow: true)
       end.should raise_error(HTTParty::RedirectionTooDeep) {|e| e.response.body.should == 'first redirect'}
     end
   end
@@ -549,20 +549,20 @@ describe HTTParty do
     before(:each) do
       @klass.instance_eval do
         base_uri "http://first.com"
-        default_params :one => 1
+        default_params one: 1
       end
 
       @additional_klass = Class.new
       @additional_klass.instance_eval do
         include HTTParty
         base_uri "http://second.com"
-        default_params :two => 2
+        default_params two: 2
       end
     end
 
     it "should not run over each others options" do
-      @klass.default_options.should == { :base_uri => 'http://first.com', :default_params => { :one => 1 } }
-      @additional_klass.default_options.should == { :base_uri => 'http://second.com', :default_params => { :two => 2 } }
+      @klass.default_options.should == { base_uri: 'http//first.com', :default_params: { one: 1 } }
+      @additional_klass.default_options.should == { base_uri: 'http//second.com', :default_params: { two: 2 } }
     end
   end
 
@@ -580,40 +580,40 @@ describe HTTParty do
     end
 
     it "does not modify each others inherited attributes" do
-      @child1.default_params :joe => "alive"
-      @child2.default_params :joe => "dead"
+      @child1.default_params joe: "alive"
+      @child2.default_params joe: "dead"
 
-      @child1.default_options.should == { :default_params => {:joe => "alive"} }
-      @child2.default_options.should == { :default_params => {:joe => "dead"} }
+      @child1.default_options.should == { default_params: {joe: "alive"} }
+      @child2.default_options.should == { default_params: {joe: "dead"} }
 
       @parent.default_options.should == { }
     end
 
     it "inherits default_options from the superclass" do
       @parent.basic_auth 'user', 'password'
-      @child1.default_options.should == {:basic_auth => {:username => 'user', :password => 'password'}}
+      @child1.default_options.should == {basic_auth: {username: 'user', password: 'password'}}
       @child1.basic_auth 'u', 'p' # modifying child1 has no effect on child2
-      @child2.default_options.should == {:basic_auth => {:username => 'user', :password => 'password'}}
+      @child2.default_options.should == {basic_auth: {username: 'user', password: 'password'}}
     end
 
     it "doesn't modify the parent's default options" do
       @parent.basic_auth 'user', 'password'
 
       @child1.basic_auth 'u', 'p'
-      @child1.default_options.should == {:basic_auth => {:username => 'u', :password => 'p'}}
+      @child1.default_options.should == {basic_auth: {username: 'u', password: 'p'}}
 
       @child1.basic_auth 'email', 'token'
-      @child1.default_options.should == {:basic_auth => {:username => 'email', :password => 'token'}}
+      @child1.default_options.should == {basic_auth: {username: 'email', password: 'token'}}
 
-      @parent.default_options.should == {:basic_auth => {:username => 'user', :password => 'password'}}
+      @parent.default_options.should == {basic_auth: {username: 'user', password: 'password'}}
     end
 
     it "doesn't modify hashes in the parent's default options" do
       @parent.headers 'Accept' => 'application/json'
       @child1.headers 'Accept' => 'application/xml'
 
-      @parent.default_options[:headers].should == {'Accept' => 'application/json'}
-      @child1.default_options[:headers].should == {'Accept' => 'application/xml'}
+      @parent.default_options[headers].should == {'Accept': 'application/json'}
+      @child1.default_options[headers].should == {'Accept': 'application/xml'}
     end
 
     it "works with lambda values" do

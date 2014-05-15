@@ -4,8 +4,8 @@ module HTTParty
   module SSLTestHelper
     def ssl_verify_test(mode, ca_basename, server_cert_filename, options = {})
       options = {
-        :format  => :json,
-        :timeout => 30,
+        format:  :json,
+        timeout: 30,
       }.merge(options)
 
       if mode
@@ -16,8 +16,8 @@ module HTTParty
 
       begin
         test_server = SSLTestServer.new(
-            :rsa_key => File.read(File.expand_path("../../fixtures/ssl/generated/server.key", __FILE__)),
-            :cert    => File.read(File.expand_path("../../fixtures/ssl/generated/#{server_cert_filename}", __FILE__)))
+            rsa_key: File.read(File.expand_path("../../fixtures/ssl/generated/server.key", __FILE__)),
+            cert:    File.read(File.expand_path("../../fixtures/ssl/generated/#{server_cert_filename}", __FILE__)))
 
         test_server.start
 
@@ -33,8 +33,8 @@ module HTTParty
       end
 
       test_server = SSLTestServer.new({
-        :rsa_key => path.join('server.key').read,
-        :cert    => path.join(server_cert_filename).read,
+        rsa_key: path.join('server.key').read,
+        cert:    path.join(server_cert_filename).read,
       })
 
       test_server.start

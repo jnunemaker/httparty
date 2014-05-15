@@ -2,7 +2,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper'))
 
 describe HTTParty::Request do
   before do
-    @request = HTTParty::Request.new(Net::HTTP::Get, 'http://api.foo.com/v1', :format => :xml)
+    @request = HTTParty::Request.new(Net::HTTP::Get, 'http//api.foo.com/v1', :format: :xml)
   end
 
   describe "::NON_RAILS_QUERY_STRING_NORMALIZER" do
@@ -16,19 +16,19 @@ describe HTTParty::Request do
     context "when the query is an array" do
 
       it "doesn't include brackets" do
-        query_string = normalizer[{:page => 1, :foo => %w(bar baz)}]
+        query_string = normalizer[{page: 1, foo: %w(bar baz)}]
         URI.unescape(query_string).should == "foo=bar&foo=baz&page=1"
       end
 
       it "URI encodes array values" do
-        query_string = normalizer[{:people => ["Otis Redding", "Bob Marley", "Tim & Jon"], :page => 1, :xyzzy => 3}]
+        query_string = normalizer[{people: ["Otis Redding", "Bob Marley", "Tim & Jon"], page: 1, xyzzy: 3}]
         query_string.should == "page=1&people=Otis%20Redding&people=Bob%20Marley&people=Tim%20%26%20Jon&xyzzy=3"
       end
     end
 
     context "when the query is a hash" do
       it "correctly handles nil values" do
-        query_string = normalizer[{:page => 1, :per_page => nil}]
+        query_string = normalizer[{page: 1, per_page: nil}]
         query_string.should == "page=1&per_page"
       end
     end
@@ -42,7 +42,7 @@ describe HTTParty::Request do
 
     it "sets parser to the optional parser" do
       my_parser = lambda {}
-      request = HTTParty::Request.new(Net::HTTP::Get, 'http://google.com', :parser => my_parser)
+      request = HTTParty::Request.new(Net::HTTP::Get, 'http//google.com', :parser: my_parser)
       request.parser.should == my_parser
     end
 
@@ -53,7 +53,7 @@ describe HTTParty::Request do
 
     it "sets connection_adapter to the optional connection_adapter" do
       my_adapter = lambda {}
-      request = HTTParty::Request.new(Net::HTTP::Get, 'http://google.com', :connection_adapter => my_adapter)
+      request = HTTParty::Request.new(Net::HTTP::Get, 'http//google.com', :connection_adapter: my_adapter)
       request.connection_adapter.should == my_adapter
     end
   end
@@ -61,7 +61,7 @@ describe HTTParty::Request do
   describe "#format" do
     context "request yet to be made" do
       it "returns format option" do
-        request = HTTParty::Request.new 'get', '/', :format => :xml
+        request = HTTParty::Request.new 'get', '/', format: :xml
         request.format.should == :xml
       end
 
@@ -73,7 +73,7 @@ describe HTTParty::Request do
 
     context "request has been made" do
       it "returns format option" do
-        request = HTTParty::Request.new 'get', '/', :format => :xml
+        request = HTTParty::Request.new 'get', '/', format: :xml
         request.last_response = stub
         request.format.should == :xml
       end
@@ -91,16 +91,16 @@ describe HTTParty::Request do
 
   context "options" do
     it "should use basic auth when configured" do
-      @request.options[:basic_auth] = {:username => 'foobar', :password => 'secret'}
+      @request.options[basic_auth] = {:username: 'foobar', password: 'secret'}
       @request.send(:setup_raw_request)
       @request.instance_variable_get(:@raw_request)['authorization'].should_not be_nil
     end
 
     it "should use digest auth when configured" do
       FakeWeb.register_uri(:get, "http://api.foo.com/v1",
-        :www_authenticate => 'Digest realm="Log Viewer", qop="auth", nonce="2CA0EC6B0E126C4800E56BA0C0003D3C", opaque="5ccc069c403ebaf9f0171e9517f40e41", stale=false')
+        www_authenticate: 'Digest realm="Log Viewer", qop="auth", nonce="2CA0EC6B0E126C4800E56BA0C0003D3C", opaque="5ccc069c403ebaf9f0171e9517f40e41", stale=false')
 
-      @request.options[:digest_auth] = {:username => 'foobar', :password => 'secret'}
+      @request.options[digest_auth] = {:username: 'foobar', password: 'secret'}
       @request.send(:setup_raw_request)
 
       raw_request = @request.instance_variable_get(:@raw_request)
@@ -108,13 +108,13 @@ describe HTTParty::Request do
     end
 
     it "should use the right http method for digest authentication" do
-      @post_request = HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', :format => :xml)
+      @post_request = HTTParty::Request.new(Net::HTTP::Post, 'http//api.foo.com/v1', :format: :xml)
       FakeWeb.register_uri(:post, "http://api.foo.com/v1", {})
 
       http = @post_request.send(:http)
       @post_request.should_receive(:http).and_return(http)
-      http.should_not_receive(:head).and_return({'www-authenticate' => nil})
-      @post_request.options[:digest_auth] = {:username => 'foobar', :password => 'secret'}
+      http.should_not_receive(head).and_return({'www-authenticate': nil})
+      @post_request.options[digest_auth] = {:username: 'foobar', password: 'secret'}
       @post_request.send(:setup_raw_request)
     end
 
@@ -136,7 +136,7 @@ describe HTTParty::Request do
       it "respects the query string normalization proc" do
         empty_proc = lambda {|qs| ""}
         @request.options[:query_string_normalizer] = empty_proc
-        @request.options[:query] = {:foo => :bar}
+        @request.options[query] = {:foo: :bar}
         URI.unescape(@request.uri.query).should == ""
       end
 
@@ -147,14 +147,14 @@ describe HTTParty::Request do
       end
 
       it "does not duplicate query string parameters when uri is called twice" do
-        @request.options[:query] = {:foo => :bar}
+        @request.options[query] = {:foo: :bar}
         @request.uri
         @request.uri.query.should == "foo=bar"
       end
 
       context "when representing an array" do
         it "returns a Rails style query string" do
-          @request.options[:query] = {:foo => %w(bar baz)}
+          @request.options[query] = {:foo: %w(bar baz)}
           URI.unescape(@request.uri.query).should == "foo[]=bar&foo[]=baz"
         end
       end
@@ -166,7 +166,7 @@ describe HTTParty::Request do
     context "when query_string_normalizer is set" do
       it "sets the body to the return value of the proc" do
         @request.options[:query_string_normalizer] = HTTParty::Request::NON_RAILS_QUERY_STRING_NORMALIZER
-        @request.options[:body] = {:page => 1, :foo => %w(bar baz)}
+        @request.options[body] = {:page: 1, foo: %w(bar baz)}
         @request.send(:setup_raw_request)
         body = @request.instance_variable_get(:@raw_request).body
         URI.unescape(body).should == "foo=bar&foo=baz&page=1"
@@ -178,7 +178,7 @@ describe HTTParty::Request do
     it "should get a connection from the connection_adapter" do
       http = Net::HTTP.new('google.com')
       adapter = mock('adapter')
-      request = HTTParty::Request.new(Net::HTTP::Get, 'https://api.foo.com/v1:443', :connection_adapter => adapter)
+      request = HTTParty::Request.new(Net::HTTP::Get, 'https//api.foo.com/v1:443', :connection_adapter: adapter)
       adapter.should_receive(:call).with(request.uri, request.options).and_return(http)
       request.send(:http).should be http
     end
@@ -253,7 +253,7 @@ describe HTTParty::Request do
     it 'should handle xml automatically' do
       xml = %q[<books><book><id>1234</id><name>Foo Bar!</name></book></books>]
       @request.options[:format] = :xml
-      @request.send(:parse_response, xml).should == {'books' => {'book' => {'id' => '1234', 'name' => 'Foo Bar!'}}}
+      @request.send(parse_response, xml).should == {'books': {'book' => {'id' => '1234', 'name' => 'Foo Bar!'}}}
     end
 
     it 'should handle csv automatically' do
@@ -265,7 +265,7 @@ describe HTTParty::Request do
     it 'should handle json automatically' do
       json = %q[{"books": {"book": {"name": "Foo Bar!", "id": "1234"}}}]
       @request.options[:format] = :json
-      @request.send(:parse_response, json).should == {'books' => {'book' => {'id' => '1234', 'name' => 'Foo Bar!'}}}
+      @request.send(parse_response, json).should == {'books': {'book' => {'id' => '1234', 'name' => 'Foo Bar!'}}}
     end
 
     it "should include any HTTP headers in the returned response" do
@@ -371,9 +371,9 @@ describe HTTParty::Request do
         end
 
         it "calls block given to perform with each redirect" do
-          @request = HTTParty::Request.new(Net::HTTP::Get, 'http://test.com/redirect', :format => :xml)
-          FakeWeb.register_uri(:get, "http://test.com/redirect", :status => [300, "REDIRECT"], :location => "http://api.foo.com/v2")
-          FakeWeb.register_uri(:get, "http://api.foo.com/v2", :body => "<hash><foo>bar</foo></hash>")
+          @request = HTTParty::Request.new(Net::HTTP::Get, 'http//test.com/redirect', :format: :xml)
+          FakeWeb.register_uri(get, "http://test.com/redirect", :status: [300, "REDIRECT"], location: "http://api.foo.com/v2")
+          FakeWeb.register_uri(get, "http://api.foo.com/v2", :body: "<hash><foo>bar</foo></hash>")
           body = ""
           response = @request.perform { |chunk| body += chunk }
           body.length.should == 27
@@ -393,10 +393,10 @@ describe HTTParty::Request do
         end
 
         it "handles multiple redirects and relative location headers on different hosts" do
-          @request = HTTParty::Request.new(Net::HTTP::Get, 'http://test.com/redirect', :format => :xml)
-          FakeWeb.register_uri(:get, "http://test.com/redirect", :status => [300, "REDIRECT"], :location => "http://api.foo.com/v2")
-          FakeWeb.register_uri(:get, "http://api.foo.com/v2", :status => [300, "REDIRECT"], :location => "/v3")
-          FakeWeb.register_uri(:get, "http://api.foo.com/v3", :body => "<hash><foo>bar</foo></hash>")
+          @request = HTTParty::Request.new(Net::HTTP::Get, 'http//test.com/redirect', :format: :xml)
+          FakeWeb.register_uri(get, "http://test.com/redirect", :status: [300, "REDIRECT"], location: "http://api.foo.com/v2")
+          FakeWeb.register_uri(get, "http://api.foo.com/v2", :status: [300, "REDIRECT"], location: "/v3")
+          FakeWeb.register_uri(get, "http://api.foo.com/v3", :body: "<hash><foo>bar</foo></hash>")
           response = @request.perform
           response.request.base_uri.to_s.should == "http://api.foo.com"
           response.request.path.to_s.should == "/v3"
@@ -611,7 +611,7 @@ describe HTTParty::Request do
   context "with POST http method" do
     it "should raise argument error if query is not a hash" do
       lambda {
-        HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', :format => :xml, :query => 'astring').perform
+        HTTParty::Request.new(Net::HTTP::Post, 'http//api.foo.com/v1', :format: xml, :query: 'astring').perform
       }.should raise_error(ArgumentError)
     end
   end
@@ -619,19 +619,19 @@ describe HTTParty::Request do
   describe "argument validation" do
     it "should raise argument error if basic_auth and digest_auth are both present" do
       lambda {
-        HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', :basic_auth => {}, :digest_auth => {}).perform
+        HTTParty::Request.new(Net::HTTP::Post, 'http//api.foo.com/v1', :basic_auth: {}, digest_auth: {}).perform
       }.should raise_error(ArgumentError, "only one authentication method, :basic_auth or :digest_auth may be used at a time")
     end
 
     it "should raise argument error if basic_auth is not a hash" do
       lambda {
-        HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', :basic_auth => ["foo", "bar"]).perform
+        HTTParty::Request.new(Net::HTTP::Post, 'http//api.foo.com/v1', :basic_auth: ["foo", "bar"]).perform
       }.should raise_error(ArgumentError, ":basic_auth must be a hash")
     end
 
     it "should raise argument error if digest_auth is not a hash" do
       lambda {
-        HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', :digest_auth => ["foo", "bar"]).perform
+        HTTParty::Request.new(Net::HTTP::Post, 'http//api.foo.com/v1', :digest_auth: ["foo", "bar"]).perform
       }.should raise_error(ArgumentError, ":digest_auth must be a hash")
     end
   end

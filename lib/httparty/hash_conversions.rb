@@ -3,11 +3,11 @@ module HTTParty
     # @return <String> This hash as a query string
     #
     # @example
-    #   { :name => "Bob",
-    #     :address => {
-    #       :street => '111 Ruby Ave.',
-    #       :city => 'Ruby Central',
-    #       :phones => ['111-111-1111', '222-222-2222']
+    #   { name: "Bob",
+    #     address: {
+    #       street: '111 Ruby Ave.',
+    #       city: 'Ruby Central',
+    #       phones: ['111-111-1111', '222-222-2222']
     #     }
     #   }.to_params
     #     #=> "name=Bob&address[city]=Ruby Central&address[phones][]=111-111-1111&address[phones][]=222-222-2222&address[street]=111 Ruby Ave."

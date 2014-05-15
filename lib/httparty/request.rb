@@ -33,12 +33,12 @@ module HTTParty
       self.http_method = http_method
       self.path = path
       self.options = {
-        :limit => o.delete(:no_follow) ? 1 : 5,
-        :assume_utf16_is_big_endian => true,
-        :default_params => {},
-        :follow_redirects => true,
-        :parser => Parser,
-        :connection_adapter => ConnectionAdapter
+        limit: o.delete(:no_follow) ? 1 : 5,
+        assume_utf16_is_big_endian: true,
+        default_params: {},
+        follow_redirects: true,
+        parser: Parser,
+        connection_adapter: ConnectionAdapter
       }.merge(o)
     end
 
@@ -263,7 +263,7 @@ module HTTParty
       else
         body = body || last_response.body
         body = encode_body(body)
-        Response.new(self, last_response, lambda { parse_response(body) }, :body => body)
+        Response.new(self, last_response, lambda { parse_response(body) }, body: body)
       end
     end
 
