@@ -68,13 +68,13 @@ describe HTTParty::Parser do
     end
 
     it "attempts to parse supported formats" do
-      @parser.stub(supports_format: true)
+      @parser.stub(supports_format?: true)
       @parser.should_receive(:parse_supported_format)
       @parser.parse
     end
 
     it "returns the unparsed body when the format is unsupported" do
-      @parser.stub(supports_format: false)
+      @parser.stub(supports_format?: false)
       @parser.parse.should == @parser.body
     end
 
