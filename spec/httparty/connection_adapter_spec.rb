@@ -26,7 +26,7 @@ describe HTTParty::ConnectionAdapter do
     end
 
     it "sets the options" do
-      options = {:foo => :bar}
+      options = {foo: :bar}
       adapter = HTTParty::ConnectionAdapter.new(uri, options)
       adapter.options.should be options
     end
@@ -34,7 +34,7 @@ describe HTTParty::ConnectionAdapter do
 
   describe ".call" do
     it "generates an HTTParty::ConnectionAdapter instance with the given uri and options" do
-      HTTParty::ConnectionAdapter.should_receive(:new).with(@uri, @options).and_return(stub(:connection => nil))
+      HTTParty::ConnectionAdapter.should_receive(:new).with(@uri, @options).and_return(stub(connection: nil))
       HTTParty::ConnectionAdapter.call(@uri, @options)
     end
 
@@ -42,7 +42,7 @@ describe HTTParty::ConnectionAdapter do
       adapter = mock('Adapter')
       connection = mock('Connection')
       adapter.should_receive(:connection).and_return(connection)
-      HTTParty::ConnectionAdapter.stub(:new => adapter)
+      HTTParty::ConnectionAdapter.stub(new: adapter)
       HTTParty::ConnectionAdapter.call(@uri, @options).should be connection
     end
   end
@@ -76,7 +76,7 @@ describe HTTParty::ConnectionAdapter do
 
         context "should use the specified cert store, when one is given" do
           let(:custom_cert_store) { mock('custom_cert_store') }
-          let(:options) { {:cert_store => custom_cert_store} }
+          let(:options) { {cert_store: custom_cert_store} }
           it { should use_cert_store(custom_cert_store) }
         end
 
@@ -96,7 +96,7 @@ describe HTTParty::ConnectionAdapter do
 
 
         context "when ssl version is set" do
-          let(:options) { {:ssl_version => :TLSv1} }
+          let(:options) { {ssl_version: :TLSv1} }
 
           it "sets ssl version" do
             subject.ssl_version.should == :TLSv1
@@ -113,7 +113,7 @@ describe HTTParty::ConnectionAdapter do
       end
 
       context "specifying ciphers" do
-        let(:options) { {:ciphers => 'RC4-SHA' } }
+        let(:options) { {ciphers: 'RC4-SHA' } }
 
         it "should set the ciphers on the connection" do
           subject.ciphers.should == 'RC4-SHA'
@@ -122,10 +122,10 @@ describe HTTParty::ConnectionAdapter do
 
       context "when timeout is not set" do
         it "doesn't set the timeout" do
-          http = mock("http", :null_object => true)
+          http = mock("http", null_object: true)
           http.should_not_receive(:open_timeout=)
           http.should_not_receive(:read_timeout=)
-          Net::HTTP.stub(:new => http)
+          Net::HTTP.stub(new: http)
 
           adapter.connection
         end
@@ -133,20 +133,20 @@ describe HTTParty::ConnectionAdapter do
 
       context "when setting timeout" do
         context "to 5 seconds" do
-          let(:options) { {:timeout => 5} }
+          let(:options) { {timeout: 5} }
 
           its(:open_timeout) { should == 5 }
           its(:read_timeout) { should == 5 }
         end
 
         context "and timeout is a string" do
-          let(:options) { {:timeout => "five seconds"} }
+          let(:options) { {timeout: "five seconds"} }
 
           it "doesn't set the timeout" do
-            http = mock("http", :null_object => true)
+            http = mock("http", null_object: true)
             http.should_not_receive(:open_timeout=)
             http.should_not_receive(:read_timeout=)
-            Net::HTTP.stub(:new => http)
+            Net::HTTP.stub(new: http)
 
             adapter.connection
           end
@@ -154,57 +154,57 @@ describe HTTParty::ConnectionAdapter do
       end
 
       context "when timeout is not set and read_timeout is set to 6 seconds" do
-        let(:options) { {:read_timeout => 6} }
+        let(:options) { {read_timeout: 6} }
 
         its(:read_timeout) { should == 6 }
 
         it "should not set the open_timeout" do
-          http = mock("http", :null_object => true)
+          http = mock("http", null_object: true)
           http.should_not_receive(:open_timeout=)
-          Net::HTTP.stub(:new => http)
+          Net::HTTP.stub(new: http)
           adapter.connection
         end
       end
 
       context "when timeout is set and read_timeout is set to 6 seconds" do
-        let(:options) { {:timeout => 5, :read_timeout => 6} }
+        let(:options) { {timeout: 5, read_timeout: 6} }
 
         its(:open_timeout) { should == 5 }
         its(:read_timeout) { should == 6 }
 
         it "should override the timeout option" do
-          http = mock("http", :null_object => true)
+          http = mock("http", null_object: true)
           http.should_receive(:open_timeout=)
           http.should_receive(:read_timeout=).twice
-          Net::HTTP.stub(:new => http)
+          Net::HTTP.stub(new: http)
           adapter.connection
         end
       end
 
       context "when timeout is not set and open_timeout is set to 7 seconds" do
-        let(:options) { {:open_timeout => 7} }
+        let(:options) { {open_timeout: 7} }
 
         its(:open_timeout) { should == 7 }
 
         it "should not set the read_timeout" do
-          http = mock("http", :null_object => true)
+          http = mock("http", null_object: true)
           http.should_not_receive(:read_timeout=)
-          Net::HTTP.stub(:new => http)
+          Net::HTTP.stub(new: http)
           adapter.connection
         end
       end
 
       context "when timeout is set and open_timeout is set to 7 seconds" do
-        let(:options) { {:timeout => 5, :open_timeout => 7} }
+        let(:options) { {timeout: 5, open_timeout: 7} }
 
         its(:open_timeout) { should == 7 }
         its(:read_timeout) { should == 5 }
 
         it "should override the timeout option" do
-          http = mock("http", :null_object => true)
+          http = mock("http", null_object: true)
           http.should_receive(:open_timeout=).twice
           http.should_receive(:read_timeout=)
-          Net::HTTP.stub(:new => http)
+          Net::HTTP.stub(new: http)
           adapter.connection
         end
       end
@@ -212,11 +212,11 @@ describe HTTParty::ConnectionAdapter do
       context "when debug_output" do
         let(:http) { Net::HTTP.new(uri) }
         before do
-          Net::HTTP.stub(:new => http)
+          Net::HTTP.stub(new: http)
         end
 
         context "is set to $stderr" do
-          let(:options) { {:debug_output => $stderr} }
+          let(:options) { {debug_output: $stderr} }
           it "has debug output set" do
             http.should_receive(:set_debug_output).with($stderr)
             adapter.connection
@@ -232,7 +232,7 @@ describe HTTParty::ConnectionAdapter do
       end
 
       context 'when providing proxy address and port' do
-        let(:options) { {:http_proxyaddr => '1.2.3.4', :http_proxyport => 8080} }
+        let(:options) { {http_proxyaddr: '1.2.3.4', http_proxyport: 8080} }
 
         it { should be_a_proxy }
         its(:proxy_address) { should == '1.2.3.4' }
@@ -240,8 +240,8 @@ describe HTTParty::ConnectionAdapter do
 
         context 'as well as proxy user and password' do
           let(:options) do
-            {:http_proxyaddr => '1.2.3.4', :http_proxyport => 8080,
-             :http_proxyuser => 'user', :http_proxypass => 'pass'}
+            {http_proxyaddr: '1.2.3.4', http_proxyport: 8080,
+             http_proxyuser: 'user', http_proxypass: 'pass'}
           end
           its(:proxy_user) { should == 'user' }
           its(:proxy_pass) { should == 'pass' }
@@ -259,7 +259,7 @@ describe HTTParty::ConnectionAdapter do
       end
 
       context 'when providing a local bind address and port' do
-        let(:options) { {:local_host => "127.0.0.1", :local_port => 12345 } }
+        let(:options) { {local_host: "127.0.0.1", local_port: 12345 } }
 
         its(:local_host) { should == '127.0.0.1' }
         its(:local_port) { should == 12345 }
@@ -267,7 +267,7 @@ describe HTTParty::ConnectionAdapter do
 
       context "when providing PEM certificates" do
         let(:pem) { :pem_contents }
-        let(:options) { {:pem => pem, :pem_password => "password"} }
+        let(:options) { {pem: pem, pem_password: "password"} }
 
         context "when scheme is https" do
           let(:uri) { URI 'https://google.com' }
@@ -289,7 +289,7 @@ describe HTTParty::ConnectionAdapter do
           end
           
           context "when options include verify_peer=false" do
-            let(:options) { {:pem => pem, :pem_password => "password", :verify_peer => false} }
+            let(:options) { {pem: pem, pem_password: "password", verify_peer: false} }
             
             it "should not verify the certificate" do
               subject.verify_mode.should == OpenSSL::SSL::VERIFY_NONE
@@ -302,7 +302,7 @@ describe HTTParty::ConnectionAdapter do
           let(:http) { Net::HTTP.new(uri) }
 
           before do
-            Net::HTTP.stub(:new => http)
+            Net::HTTP.stub(new: http)
             OpenSSL::X509::Certificate.should_not_receive(:new).with(pem)
             OpenSSL::PKey::RSA.should_not_receive(:new).with(pem, "password")
             http.should_not_receive(:cert=)
@@ -318,11 +318,11 @@ describe HTTParty::ConnectionAdapter do
 
       context "when providing PKCS12 certificates" do
         let(:p12) { :p12_contents }
-        let(:options) { {:p12 => p12, :p12_password => "password"} }
+        let(:options) { {p12: p12, p12_password: "password"} }
 
         context "when scheme is https" do
           let(:uri) { URI 'https://google.com' }
-          let(:pkcs12) { mock("OpenSSL::PKCS12", :certificate => cert, :key => key) }
+          let(:pkcs12) { mock("OpenSSL::PKCS12", certificate: cert, key: key) }
           let(:cert) { mock("OpenSSL::X509::Certificate") }
           let(:key) { mock("OpenSSL::PKey::RSA") }
 
@@ -340,7 +340,7 @@ describe HTTParty::ConnectionAdapter do
           end
           
           context "when options include verify_peer=false" do
-            let(:options) { {:p12 => p12, :p12_password => "password", :verify_peer => false} }
+            let(:options) { {p12: p12, p12_password: "password", verify_peer: false} }
             
             it "should not verify the certificate" do
               subject.verify_mode.should == OpenSSL::SSL::VERIFY_NONE
@@ -353,7 +353,7 @@ describe HTTParty::ConnectionAdapter do
           let(:http) { Net::HTTP.new(uri) }
 
           before do
-            Net::HTTP.stub(:new => http)
+            Net::HTTP.stub(new: http)
             OpenSSL::PKCS12.new.should_not_receive(:new).with(p12, "password")
             http.should_not_receive(:cert=)
             http.should_not_receive(:key=)

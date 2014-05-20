@@ -116,7 +116,7 @@ module HTTParty
     #     basic_auth 'username', 'password'
     #   end
     def basic_auth(u, p)
-      default_options[:basic_auth] = {:username => u, :password => p}
+      default_options[:basic_auth] = {username: u, password: p}
     end
 
     # Allows setting digest authentication username and password.
@@ -126,14 +126,14 @@ module HTTParty
     #     digest_auth 'username', 'password'
     #   end
     def digest_auth(u, p)
-      default_options[:digest_auth] = {:username => u, :password => p}
+      default_options[:digest_auth] = {username: u, password: p}
     end
 
     # Do not send rails style query strings.
     # Specically, don't use bracket notation when sending an array
     #
     # For a query:
-    #   get '/', :query => {:selected_ids => [1,2,3]}
+    #   get '/', query: {selected_ids: [1,2,3]}
     #
     # The default query string looks like this:
     #   /?selected_ids[]=1&selected_ids[]=2&selected_ids[]=3
@@ -156,7 +156,7 @@ module HTTParty
     #
     #   class Foo
     #     include HTTParty
-    #     default_params :api_key => 'secret', :another => 'foo'
+    #     default_params api_key: 'secret', another: 'foo'
     #   end
     def default_params(h={})
       raise ArgumentError, 'Default params must be a hash' unless h.is_a?(Hash)
@@ -320,7 +320,7 @@ module HTTParty
     # Helpful for overriding the default rails normalization of Array queries.
     #
     # For a query:
-    #   get '/', :query => {:selected_ids => [1,2,3]}
+    #   get '/', query: {selected_ids: [1,2,3]}
     #
     # The default query string normalizer returns:
     #   /?selected_ids[]=1&selected_ids[]=2&selected_ids[]=3
@@ -428,7 +428,7 @@ module HTTParty
     # @example provide optional configuration for your connection_adapter
     #   class Foo
     #     include HTTParty
-    #     connection_adapter Proc.new {|uri, options| ... }, {:foo => :bar}
+    #     connection_adapter Proc.new {|uri, options| ... }, {foo: :bar}
     #   end
     #
     # @see HTTParty::ConnectionAdapter
@@ -452,7 +452,7 @@ module HTTParty
     #
     #   # Simple get with full url and query parameters
     #   # ie: http://foo.com/resource.json?limit=10
-    #   Foo.get('http://foo.com/resource.json', :query => {:limit => 10})
+    #   Foo.get('http://foo.com/resource.json', query: {limit: 10})
     def get(path, options={}, &block)
       perform_request Net::HTTP::Get, path, options, &block
     end
@@ -464,11 +464,11 @@ module HTTParty
     #   end
     #
     #   # Simple post with full url and setting the body
-    #   Foo.post('http://foo.com/resources', :body => {:bar => 'baz'})
+    #   Foo.post('http://foo.com/resources', body: {bar: 'baz'})
     #
     #   # Simple post with full url using :query option,
     #   # which gets set as form data on the request.
-    #   Foo.post('http://foo.com/resources', :query => {:bar => 'baz'})
+    #   Foo.post('http://foo.com/resources', query: {bar: 'baz'})
     def post(path, options={}, &block)
       perform_request Net::HTTP::Post, path, options, &block
     end

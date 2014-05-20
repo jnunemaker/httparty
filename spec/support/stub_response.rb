@@ -7,7 +7,7 @@ module HTTParty
       response = Net::HTTPOK.new("1.1", 200, "Content for you")
       response.stub!(:body).and_return(data)
 
-      http_request = HTTParty::Request.new(Net::HTTP::Get, 'http://localhost', :format => format)
+      http_request = HTTParty::Request.new(Net::HTTP::Get, 'http://localhost', format: format)
       http_request.stub_chain(:http, :request).and_return(response)
 
       HTTParty::Request.should_receive(:new).and_return(http_request)
@@ -20,7 +20,7 @@ module HTTParty
         @body || chunked_data.each(&block)
       end
 
-      http_request = HTTParty::Request.new(Net::HTTP::Get, 'http://localhost', :format => "html")
+      http_request = HTTParty::Request.new(Net::HTTP::Get, 'http://localhost', format: "html")
       http_request.stub_chain(:http, :request).and_yield(response).and_return(response)
 
       HTTParty::Request.should_receive(:new).and_return(http_request)

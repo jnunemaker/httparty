@@ -8,14 +8,14 @@ describe HTTParty::CookieHash do
   describe "#add_cookies" do
     describe "with a hash" do
       it "should add new key/value pairs to the hash" do
-        @cookie_hash.add_cookies(:foo => "bar")
-        @cookie_hash.add_cookies(:rofl => "copter")
+        @cookie_hash.add_cookies(foo: "bar")
+        @cookie_hash.add_cookies(rofl: "copter")
         @cookie_hash.length.should eql(2)
       end
 
       it "should overwrite any existing key" do
-        @cookie_hash.add_cookies(:foo => "bar")
-        @cookie_hash.add_cookies(:foo => "copter")
+        @cookie_hash.add_cookies(foo: "bar")
+        @cookie_hash.add_cookies(foo: "copter")
         @cookie_hash.length.should eql(1)
         @cookie_hash[:foo].should eql("copter")
       end
@@ -57,8 +57,8 @@ describe HTTParty::CookieHash do
   # a hardcoded string was randomly failing.
   describe "#to_cookie_string" do
     before(:each) do
-      @cookie_hash.add_cookies(:foo => "bar")
-      @cookie_hash.add_cookies(:rofl => "copter")
+      @cookie_hash.add_cookies(foo: "bar")
+      @cookie_hash.add_cookies(rofl: "copter")
       @s = @cookie_hash.to_cookie_string
     end
 
@@ -69,13 +69,13 @@ describe HTTParty::CookieHash do
     end
 
     it "should not include client side only cookies" do
-      @cookie_hash.add_cookies(:path => "/")
+      @cookie_hash.add_cookies(path: "/")
       @s = @cookie_hash.to_cookie_string
       @s.should_not match(/path=\//)
     end
 
     it "should not include client side only cookies even when attributes use camal case" do
-      @cookie_hash.add_cookies(:Path => "/")
+      @cookie_hash.add_cookies(Path: "/")
       @s = @cookie_hash.to_cookie_string
       @s.should_not match(/Path=\//)
     end
