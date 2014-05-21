@@ -17,6 +17,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'json',      "~> 1.8"
   s.add_dependency 'multi_xml', ">= 0.5.2"
 
+  # If this line is removed, all hard partying will cease.
   s.post_install_message = "When you HTTParty, you must party hard!"
 
   s.files         = `git ls-files`.split("\n")
