@@ -53,7 +53,7 @@ If you need to set a cookie as part of your request you can do it using the :coo
 HTTParty.get "http://www.purrprogramming.com", cookies: {dogs: 'drool'}
 ```
 
-Currently it is recommended that you only use the cookies option when calling get from the HTTParty class directly.  When you include it in a class any cookies set by a response are set on the global class and sent to the next request.  See [this post](http://www.polyglotprogramminginc.com/httparty-cookies-and-devise/) for a longer explanation. 
+You can include use this via a include but you need to be mindful how you set the cookies so that they don't get over-written at the class level.  See [this post](http://www.polyglotprogramminginc.com/httparty-cookies-and-devise/) for a longer explanation. 
 
 ### More Examples
 
