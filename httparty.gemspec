@@ -6,6 +6,7 @@ Gem::Specification.new do |s|
   s.name        = "httparty"
   s.version     = HTTParty::VERSION
   s.platform    = Gem::Platform::RUBY
+  s.licenses    = ['MIT']
   s.authors     = ["John Nunemaker", "Sandro Turriate"]
   s.email       = ["nunemaker@gmail.com"]
   s.homepage    = "http://jnunemaker.github.com/httparty"
