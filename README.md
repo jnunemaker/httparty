@@ -60,6 +60,10 @@ options. Below is an example of how easy it is.
 httparty "https://api.stackexchange.com/2.2/questions?site=stackoverflow"
 ```
 
+# Troubleshooting on Windows
+
+* If you are experiencing SSL validation errors, it is most likely because your installation does not have any valid certificates. This can be taken care of by [downloading a certificate file](http://curl.haxx.se/ca/cacert.pem) and [setting a the SSL_CERT_PATH environment variable on your system](http://www.computerhope.com/issues/ch000549.htm). For more details check out the following [gist](https://gist.github.com/fnichol/867550).
+
 ## Help and Docs
 
 * https://groups.google.com/forum/#!forum/httparty-gem
