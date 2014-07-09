@@ -186,6 +186,13 @@ describe HTTParty do
         @klass.get('', cookies: {type: 'snickerdoodle'})
       end
 
+      it 'doesnt modify default_options' do
+        @klass.headers.should == {}
+        expect_headers('cookie' => 'type=snickerdoodle')
+        @klass.get('', cookies: {type: 'snickerdoodle'})
+        @klass.default_options[:headers].should == {}
+      end
+
       it 'adds optional cookies to the optional headers' do
         expect_headers(baz: 'spax', 'cookie' => 'type=snickerdoodle')
         @klass.get('', cookies: {type: 'snickerdoodle'}, headers: {baz: 'spax'})
