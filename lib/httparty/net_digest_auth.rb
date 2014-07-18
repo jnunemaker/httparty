@@ -6,8 +6,18 @@ module Net
     def digest_auth(username, password, response)
       @header['Authorization'] = DigestAuthenticator.new(username, password,
           @method, @path, response).authorization_header
+
+      add_cookies(response) if response['Set-Cookie']
     end
 
+    def add_cookies(response)
+      @header['cookie'] = [] unless @header['cookie']
+
+      cookies = response['Set-Cookie'].split('; ')
+      cookies.each do |cookie|
+        @header['cookie'] << cookie
+      end
+    end
 
     class DigestAuthenticator
       def initialize(username, password, method, path, response_header)
