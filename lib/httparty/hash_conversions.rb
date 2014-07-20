@@ -12,7 +12,7 @@ module HTTParty
     #   }.to_params
     #     #=> "name=Bob&address[city]=Ruby Central&address[phones][]=111-111-1111&address[phones][]=222-222-2222&address[street]=111 Ruby Ave."
     def self.to_params(hash)
-      params = hash.map { |k,v| normalize_param(k,v) }.join
+      params = hash.to_hash.map { |k,v| normalize_param(k,v) }.join
       params.chop! # trailing &
       params
     end
@@ -29,16 +29,16 @@ module HTTParty
 
       if value.is_a?(Array)
         param << value.map { |element| normalize_param("#{key}[]", element) }.join
-      elsif value.is_a?(Hash)
-        stack << [key,value]
+      elsif value.respond_to?(:to_hash)
+        stack << [key,value.to_hash]
       else
         param << "#{key}=#{URI.encode(value.to_s, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}&"
       end
 
       stack.each do |parent, hash|
         hash.each do |k, v|
-          if v.is_a?(Hash)
-            stack << ["#{parent}[#{k}]", v]
+          if v.respond_to?(:to_hash)
+            stack << ["#{parent}[#{k}]", v.to_hash]
           else
             param << normalize_param("#{parent}[#{k}]", v)
           end

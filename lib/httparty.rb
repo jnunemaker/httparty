@@ -41,13 +41,13 @@ module HTTParty
   # == Common Request Options
   # Request methods (get, post, patch, put, delete, head, options) all take a common set of options. These are:
   #
-  # [:+body+:] Body of the request. If passed a Hash, will try to normalize it first, by default passing it to ActiveSupport::to_params. Any other kind of object will get used as-is.
+  # [:+body+:] Body of the request. If passed an object that responds to #to_hash, will try to normalize it first, by default passing it to ActiveSupport::to_params. Any other kind of object will get used as-is.
   # [:+http_proxyaddr+:] Address of proxy server to use.
   # [:+http_proxyport+:]  Port of proxy server to use.
   # [:+http_proxyuser+:] User for proxy server authentication.
   # [:+http_proxypass+:] Password for proxy server authentication.
   # [:+limit+:] Maximum number of redirects to follow. Takes precedences over :+no_follow+.
-  # [:+query+:] Query string, or a Hash representing it. Normalized according to the same rules as :+body+. If you specify this on a POST, you must use a Hash. See also HTTParty::ClassMethods.default_params.
+  # [:+query+:] Query string, or an object that responds to #to_hash representing it. Normalized according to the same rules as :+body+. If you specify this on a POST, you must use an object which responds to #to_hash. See also HTTParty::ClassMethods.default_params.
   # [:+timeout+:] Timeout for opening connection and reading data.
   # [:+local_host:] Local address to bind to before connecting.
   # [:+local_port:] Local port to bind to before connecting.
@@ -58,7 +58,7 @@ module HTTParty
   # * :+debug_output+: see HTTParty::ClassMethods.debug_output.
   # * :+digest_auth+: see HTTParty::ClassMethods.digest_auth. Only one of :+basic_auth+ and :+digest_auth+ can be used at a time; if you try using both, you'll get an ArgumentError.
   # * :+format+: see HTTParty::ClassMethods.format.
-  # * :+headers+: see HTTParty::ClassMethods.headers. Must be a Hash.
+  # * :+headers+: see HTTParty::ClassMethods.headers. Must be a an object which responds to #to_hash.
   # * :+maintain_method_across_redirects+: see HTTParty::ClassMethods.maintain_method_across_redirects.
   # * :+no_follow+: see HTTParty::ClassMethods.no_follow.
   # * :+parser+: see HTTParty::ClassMethods.parser.
@@ -159,7 +159,7 @@ module HTTParty
     #     default_params api_key: 'secret', another: 'foo'
     #   end
     def default_params(h={})
-      raise ArgumentError, 'Default params must be a hash' unless h.is_a?(Hash)
+      raise ArgumentError, 'Default params must an object which respond to #to_hash' unless h.respond_to?(:to_hash)
       default_options[:default_params] ||= {}
       default_options[:default_params].merge!(h)
     end
@@ -216,13 +216,13 @@ module HTTParty
     #     headers 'Accept' => 'text/html'
     #   end
     def headers(h={})
-      raise ArgumentError, 'Headers must be a hash' unless h.is_a?(Hash)
+      raise ArgumentError, 'Headers must an object which responds to #to_hash' unless h.respond_to?(:to_hash)
       default_options[:headers] ||= {}
-      default_options[:headers].merge!(h)
+      default_options[:headers].merge!(h.to_hash)
     end
 
     def cookies(h={})
-      raise ArgumentError, 'Cookies must be a hash' unless h.is_a?(Hash)
+      raise ArgumentError, 'Cookies must an object which respond to #to_hash' unless h.respond_to?(:to_hash)
       default_cookies.add_cookies(h)
     end
 

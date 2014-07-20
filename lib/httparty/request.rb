@@ -118,11 +118,11 @@ module HTTParty
     end
 
     def body
-      options[:body].is_a?(Hash) ? normalize_query(options[:body]) : options[:body]
+      options[:body].respond_to?(:to_hash) ? normalize_query(options[:body]) : options[:body]
     end
 
     def credentials
-      options[:basic_auth] || options[:digest_auth]
+      (options[:basic_auth] || options[:digest_auth]).to_hash
     end
 
     def username
@@ -149,14 +149,14 @@ module HTTParty
       @raw_request = http_method.new(request_uri(uri))
       @raw_request.body = body if body
       @raw_request.body_stream = options[:body_stream] if options[:body_stream]
-      @raw_request.initialize_http_header(options[:headers])
+      @raw_request.initialize_http_header(options[:headers].to_hash) if options[:headers].respond_to?(:to_hash)
       @raw_request.basic_auth(username, password) if options[:basic_auth]
       setup_digest_auth if options[:digest_auth]
     end
 
     def setup_digest_auth
       auth_request = http_method.new(uri.request_uri)
-      auth_request.initialize_http_header(options[:headers])
+      auth_request.initialize_http_header(options[:headers].to_hash) if options[:headers].respond_to?(:to_hash)
       res = http.request(auth_request)
 
       if res['www-authenticate'] != nil && res['www-authenticate'].length > 0
@@ -168,8 +168,8 @@ module HTTParty
       query_string_parts = []
       query_string_parts << uri.query unless uri.query.nil?
 
-      if options[:query].is_a?(Hash)
-        query_string_parts << normalize_query(options[:default_params].merge(options[:query]))
+      if options[:query].respond_to?(:to_hash)
+        query_string_parts << normalize_query(options[:default_params].merge(options[:query].to_hash))
       else
         query_string_parts << normalize_query(options[:default_params]) unless options[:default_params].empty?
         query_string_parts << options[:query] unless options[:query].nil?
@@ -299,7 +299,7 @@ module HTTParty
     def capture_cookies(response)
       return unless response['Set-Cookie']
       cookies_hash = HTTParty::CookieHash.new()
-      cookies_hash.add_cookies(options[:headers]['Cookie']) if options[:headers] && options[:headers]['Cookie']
+      cookies_hash.add_cookies(options[:headers].to_hash['Cookie']) if options[:headers] && options[:headers].to_hash['Cookie']
       response.get_fields('Set-Cookie').each { |cookie| cookies_hash.add_cookies(cookie) }
       options[:headers] ||= {}
       options[:headers]['Cookie'] = cookies_hash.to_cookie_string
@@ -317,11 +317,11 @@ module HTTParty
     def validate
       raise HTTParty::RedirectionTooDeep.new(last_response), 'HTTP redirects too deep' if options[:limit].to_i <= 0
       raise ArgumentError, 'only get, post, patch, put, delete, head, and options methods are supported' unless SupportedHTTPMethods.include?(http_method)
-      raise ArgumentError, ':headers must be a hash' if options[:headers] && !options[:headers].is_a?(Hash)
+      raise ArgumentError, ':headers must be a hash' if options[:headers] && !options[:headers].respond_to?(:to_hash)
       raise ArgumentError, 'only one authentication method, :basic_auth or :digest_auth may be used at a time' if options[:basic_auth] && options[:digest_auth]
-      raise ArgumentError, ':basic_auth must be a hash' if options[:basic_auth] && !options[:basic_auth].is_a?(Hash)
-      raise ArgumentError, ':digest_auth must be a hash' if options[:digest_auth] && !options[:digest_auth].is_a?(Hash)
-      raise ArgumentError, ':query must be hash if using HTTP Post' if post? && !options[:query].nil? && !options[:query].is_a?(Hash)
+      raise ArgumentError, ':basic_auth must be a hash' if options[:basic_auth] && !options[:basic_auth].respond_to?(:to_hash)
+      raise ArgumentError, ':digest_auth must be a hash' if options[:digest_auth] && !options[:digest_auth].respond_to?(:to_hash)
+      raise ArgumentError, ':query must be hash if using HTTP Post' if post? && !options[:query].nil? && !options[:query].respond_to?(:to_hash)
     end
 
     def post?
