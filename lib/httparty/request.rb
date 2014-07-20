@@ -18,8 +18,8 @@ module HTTParty
       Array(query).sort_by { |a| a[0].to_s }.map do |key, value|
         if value.nil?
           key.to_s
-        elsif value.is_a?(Array)
-          value.map {|v| "#{key}=#{URI.encode(v.to_s, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}"}
+        elsif value.respond_to?(:to_ary)
+          value.to_ary.map {|v| "#{key}=#{URI.encode(v.to_s, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}"}
         else
           HashConversions.to_params(key => value)
         end
