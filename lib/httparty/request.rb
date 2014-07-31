@@ -257,7 +257,15 @@ module HTTParty
         end
         self.path = last_response['location']
         self.redirect = true
-        self.http_method = Net::HTTP::Get unless options[:maintain_method_across_redirects]
+        if last_response.class == Net::HTTPSeeOther
+          unless options[:maintain_method_across_redirects] and options[:resend_on_redirect]
+            self.http_method = Net::HTTP::Get
+          end
+        else
+          unless options[:maintain_method_across_redirects]
+            self.http_method = Net::HTTP::Get
+          end
+        end
         capture_cookies(last_response)
         perform(&block)
       else
