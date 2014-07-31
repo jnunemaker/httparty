@@ -454,7 +454,7 @@ describe HTTParty::Request do
     @request.perform.should == 'Content for you'
   end
 
-  describe "a request that redirects" do
+  describe "a request that 302 redirects" do
     before(:each) do
       @redirect = stub_response("", 302)
       @redirect['location'] = '/foo'
@@ -550,6 +550,142 @@ describe HTTParty::Request do
 
       it 'should not make resulting request a get request if options[:maintain_method_across_redirects] is true' do
         @request.options[:maintain_method_across_redirects] = true
+        @request.http_method = Net::HTTP::Delete
+        @request.perform.should == {"hash" => {"foo" => "bar"}}
+        @request.http_method.should == Net::HTTP::Delete
+      end
+
+      it 'should log the redirection' do
+        logger_double = double
+        logger_double.should_receive(:info).twice
+        @request.options[:logger] = logger_double
+        @request.perform
+      end
+    end
+
+    describe "infinitely" do
+      before(:each) do
+        @http.stub!(:request).and_return(@redirect)
+      end
+
+      it "should raise an exception" do
+        lambda { @request.perform }.should raise_error(HTTParty::RedirectionTooDeep)
+      end
+    end
+  end
+
+  describe "a request that 303 redirects" do
+    before(:each) do
+      @redirect = stub_response("", 303)
+      @redirect['location'] = '/foo'
+
+      @ok = stub_response('<hash><foo>bar</foo></hash>', 200)
+    end
+
+    describe "once" do
+      before(:each) do
+        @http.stub!(:request).and_return(@redirect, @ok)
+      end
+
+      it "should be handled by GET transparently" do
+        @request.perform.should == {"hash" => {"foo" => "bar"}}
+      end
+
+      it "should be handled by POST transparently" do
+        @request.http_method = Net::HTTP::Post
+        @request.perform.should == {"hash" => {"foo" => "bar"}}
+      end
+
+      it "should be handled by DELETE transparently" do
+        @request.http_method = Net::HTTP::Delete
+        @request.perform.should == {"hash" => {"foo" => "bar"}}
+      end
+
+      it "should be handled by MOVE transparently" do
+        @request.http_method = Net::HTTP::Move
+        @request.perform.should == {"hash" => {"foo" => "bar"}}
+      end
+
+      it "should be handled by COPY transparently" do
+        @request.http_method = Net::HTTP::Copy
+        @request.perform.should == {"hash" => {"foo" => "bar"}}
+      end
+
+      it "should be handled by PATCH transparently" do
+        @request.http_method = Net::HTTP::Patch
+        @request.perform.should == {"hash" => {"foo" => "bar"}}
+      end
+
+      it "should be handled by PUT transparently" do
+        @request.http_method = Net::HTTP::Put
+        @request.perform.should == {"hash" => {"foo" => "bar"}}
+      end
+
+      it "should be handled by HEAD transparently" do
+        @request.http_method = Net::HTTP::Head
+        @request.perform.should == {"hash" => {"foo" => "bar"}}
+      end
+
+      it "should be handled by OPTIONS transparently" do
+        @request.http_method = Net::HTTP::Options
+        @request.perform.should == {"hash" => {"foo" => "bar"}}
+      end
+
+      it "should keep track of cookies between redirects" do
+        @redirect['Set-Cookie'] = 'foo=bar; name=value; HTTPOnly'
+        @request.perform
+        @request.options[:headers]['Cookie'].should match(/foo=bar/)
+        @request.options[:headers]['Cookie'].should match(/name=value/)
+      end
+
+      it 'should update cookies with rediects' do
+        @request.options[:headers] = {'Cookie'=> 'foo=bar;'}
+        @redirect['Set-Cookie'] = 'foo=tar;'
+        @request.perform
+        @request.options[:headers]['Cookie'].should match(/foo=tar/)
+      end
+
+      it 'should keep cookies between rediects' do
+        @request.options[:headers] = {'Cookie'=> 'keep=me'}
+        @redirect['Set-Cookie'] = 'foo=tar;'
+        @request.perform
+        @request.options[:headers]['Cookie'].should match(/keep=me/)
+      end
+
+      it "should handle multiple Set-Cookie headers between redirects" do
+        @redirect.add_field 'set-cookie', 'foo=bar; name=value; HTTPOnly'
+        @redirect.add_field 'set-cookie', 'one=1; two=2; HTTPOnly'
+        @request.perform
+        @request.options[:headers]['Cookie'].should match(/foo=bar/)
+        @request.options[:headers]['Cookie'].should match(/name=value/)
+        @request.options[:headers]['Cookie'].should match(/one=1/)
+        @request.options[:headers]['Cookie'].should match(/two=2/)
+      end
+
+      it 'should make resulting request a get request if it not already' do
+        @request.http_method = Net::HTTP::Delete
+        @request.perform.should == {"hash" => {"foo" => "bar"}}
+        @request.http_method.should == Net::HTTP::Get
+      end
+
+      it 'should make resulting request a get request if options[:maintain_method_across_redirects] is false' do
+        @request.options[:maintain_method_across_redirects] = false
+        @request.http_method = Net::HTTP::Delete
+        @request.perform.should == {"hash" => {"foo" => "bar"}}
+        @request.http_method.should == Net::HTTP::Get
+      end
+
+      it 'should make resulting request a get request if options[:maintain_method_across_redirects] is true but options[:resend_on_redirect] is false' do
+        @request.options[:maintain_method_across_redirects] = true
+        @request.options[:resend_on_redirect] = false
+        @request.http_method = Net::HTTP::Delete
+        @request.perform.should == {"hash" => {"foo" => "bar"}}
+        @request.http_method.should == Net::HTTP::Get
+      end
+
+      it 'should not make resulting request a get request if options[:maintain_method_across_redirects] and options[:resend_on_redirect] is true' do
+        @request.options[:maintain_method_across_redirects] = true
+        @request.options[:resend_on_redirect] = true
         @request.http_method = Net::HTTP::Delete
         @request.perform.should == {"hash" => {"foo" => "bar"}}
         @request.http_method.should == Net::HTTP::Delete

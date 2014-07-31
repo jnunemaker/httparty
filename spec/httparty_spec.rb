@@ -468,6 +468,18 @@ describe HTTParty do
       @klass.default_options[:maintain_method_across_redirects].should be_false
     end
   end
+  
+  describe "#resend_on_redirect" do
+    it "sets resend_on_redirect to true by default" do
+      @klass.resend_on_redirect
+      @klass.default_options[:resend_on_redirect].should be_true
+    end
+    
+    it "sets resend_on_redirect option to false" do
+      @klass.resend_on_redirect false
+      @klass.default_options[:resend_on_redirect].should be_false
+    end
+  end
 
   describe ".follow_redirects" do
     it "sets follow redirects to true by default" do
