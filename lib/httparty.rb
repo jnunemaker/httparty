@@ -294,6 +294,24 @@ module HTTParty
       default_options[:maintain_method_across_redirects] = value
     end
 
+    # Declare that you wish to resend the full HTTP request across redirects,
+    # even on redirects that should logically become GET requests.
+    # A 303 redirect in HTTP signifies that the redirected url should normally
+    # retrieved using a GET request, for instance, it is the output of a previous
+    # POST. maintain_method_across_redirects respects this behavior, but you
+    # can force HTTParty to resend_on_redirect even on 303 responses.
+    #
+    # @example
+    #   class Foo
+    #     include HTTParty
+    #     base_uri 'http://google.com'
+    #     resend_on_redirect
+    #   end
+
+    def resend_on_redirect(value = true)
+      default_options[:resend_on_redirect] = value
+    end
+
     # Allows setting a PEM file to be used
     #
     #   class Foo
