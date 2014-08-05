@@ -118,6 +118,35 @@ describe HTTParty::Request do
       @post_request.send(:setup_raw_request)
     end
 
+    it 'should maintain cookies returned from setup_digest_auth' do
+      FakeWeb.register_uri(
+        :get, "http://api.foo.com/v1",
+        set_cookie: 'custom-cookie=1234567',
+        www_authenticate: 'Digest realm="Log Viewer", qop="auth", nonce="2CA0EC6B0E126C4800E56BA0C0003D3C", opaque="5ccc069c403ebaf9f0171e9517f40e41", stale=false'
+      )
+
+      @request.options[:digest_auth] = {username: 'foobar', password: 'secret'}
+      @request.send(:setup_raw_request)
+
+      raw_request = @request.instance_variable_get(:@raw_request)
+      raw_request.instance_variable_get(:@header)['cookie'].should eql ["custom-cookie=1234567"]
+    end
+
+    it 'should merge cookies from setup_digest_auth and request' do
+      FakeWeb.register_uri(
+        :get, "http://api.foo.com/v1",
+        set_cookie: 'custom-cookie=1234567',
+        www_authenticate: 'Digest realm="Log Viewer", qop="auth", nonce="2CA0EC6B0E126C4800E56BA0C0003D3C", opaque="5ccc069c403ebaf9f0171e9517f40e41", stale=false'
+      )
+
+      @request.options[:digest_auth] = {username: 'foobar', password: 'secret'}
+      @request.options[:headers] = {'cookie' => 'request-cookie=test'}
+      @request.send(:setup_raw_request)
+
+      raw_request = @request.instance_variable_get(:@raw_request)
+      raw_request.instance_variable_get(:@header)['cookie'].should eql ['request-cookie=test', 'custom-cookie=1234567']
+    end
+
     it 'should use body_stream when configured' do
       stream = StringIO.new('foo')
       request = HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', body_stream: stream)

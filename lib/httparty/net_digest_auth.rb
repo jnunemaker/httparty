@@ -4,19 +4,21 @@ require 'net/http'
 module Net
   module HTTPHeader
     def digest_auth(username, password, response)
-      @header['Authorization'] = DigestAuthenticator.new(username, password,
-          @method, @path, response).authorization_header
+      authenticator = DigestAuthenticator.new(
+        username,
+        password,
+        @method,
+        @path,
+        response
+      )
 
-      add_cookies(response) if response['Set-Cookie']
+      @header['Authorization'] = authenticator.authorization_header
+      @header['cookie'] = append_cookies(authenticator) if response['Set-Cookie']
     end
 
-    def add_cookies(response)
-      @header['cookie'] = [] unless @header['cookie']
-
-      cookies = response['Set-Cookie'].split('; ')
-      cookies.each do |cookie|
-        @header['cookie'] << cookie
-      end
+    def append_cookies(authenticator)
+      cookies = @header['cookie'] ? @header['cookie'] : []
+      cookies.concat(authenticator.cookie_header)
     end
 
     class DigestAuthenticator
@@ -26,6 +28,7 @@ module Net
         @method   = method
         @path     = path
         @response = parse(response_header)
+        @cookies  = parse_cookies(response_header)
       end
 
       def authorization_header
@@ -51,6 +54,10 @@ module Net
         header
       end
 
+      def cookie_header
+        @cookies
+      end
+
     private
 
       def parse(response_header)
@@ -58,6 +65,19 @@ module Net
         params = {}
         $1.gsub(/(\w+)="(.*?)"/) { params[$1] = $2 }
         params
+      end
+
+      def parse_cookies(response_header)
+        return [] unless response_header['Set-Cookie']
+
+        cookies = response_header['Set-Cookie'].split('; ')
+
+        cookies.reduce([]) do |ret, cookie|
+          ret << cookie
+          ret
+        end
+
+        cookies
       end
 
       def opaque_present?
