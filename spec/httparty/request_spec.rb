@@ -56,6 +56,23 @@ describe HTTParty::Request do
       request = HTTParty::Request.new(Net::HTTP::Get, 'http://google.com', connection_adapter: my_adapter)
       request.connection_adapter.should == my_adapter
     end
+
+    context "when basic authentication credentials provided in uri" do
+      context "when basic auth options wasn't set explicitly" do
+        it "sets basic auth from uri" do
+          request = HTTParty::Request.new(Net::HTTP::Get, 'http://user1:pass1@example.com')
+          request.options[:basic_auth].should == {:username => 'user1', :password => 'pass1'}
+        end
+      end
+
+      context "when basic auth options was set explicitly" do
+        it "uses basic auth from url anyway" do
+          basic_auth = {:username => 'user2', :password => 'pass2'}
+          request = HTTParty::Request.new(Net::HTTP::Get, 'http://user1:pass1@example.com', :basic_auth => basic_auth)
+          request.options[:basic_auth].should == {:username => 'user1', :password => 'pass1'}
+        end
+      end
+    end
   end
 
   describe "#format" do
