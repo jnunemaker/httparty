@@ -446,14 +446,14 @@ describe HTTParty do
   end
 
   describe "#no_follow" do
-    it "sets no_follow to false by default" do
+    it "sets no_follow to true by default" do
       @klass.no_follow
-      @klass.default_options[:no_follow].should be_false
+      @klass.default_options[:no_follow].should be_true
     end
 
-    it "sets the no_follow option to true" do
-      @klass.no_follow true
-      @klass.default_options[:no_follow].should be_true
+    it "sets the no_follow option to false" do
+      @klass.no_follow false
+      @klass.default_options[:no_follow].should be_false
     end
   end
 
@@ -468,13 +468,13 @@ describe HTTParty do
       @klass.default_options[:maintain_method_across_redirects].should be_false
     end
   end
-  
+
   describe "#resend_on_redirect" do
     it "sets resend_on_redirect to true by default" do
       @klass.resend_on_redirect
       @klass.default_options[:resend_on_redirect].should be_true
     end
-    
+
     it "sets resend_on_redirect option to false" do
       @klass.resend_on_redirect false
       @klass.default_options[:resend_on_redirect].should be_false
@@ -503,7 +503,7 @@ describe HTTParty do
 
   describe "with explicit override of automatic redirect handling" do
     before do
-      @request = HTTParty::Request.new(Net::HTTP::Get, 'http://api.foo.com/v1', format: :xml, no_follow: true)
+      @request = HTTParty::Request.new(Net::HTTP::Get, 'http://api.foo.com/v1', format: :xml)
       @redirect = stub_response 'first redirect', 302
       @redirect['location'] = 'http://foo.com/bar'
       HTTParty::Request.stub(new: @request)
@@ -511,55 +511,55 @@ describe HTTParty do
 
     it "should fail with redirected GET" do
       lambda do
-        @error = @klass.get('/foo', no_follow: true)
+        @error = @klass.get('/foo')
       end.should raise_error(HTTParty::RedirectionTooDeep) {|e| e.response.body.should == 'first redirect'}
     end
 
     it "should fail with redirected POST" do
       lambda do
-        @klass.post('/foo', no_follow: true)
+        @klass.post('/foo')
       end.should raise_error(HTTParty::RedirectionTooDeep) {|e| e.response.body.should == 'first redirect'}
     end
 
     it "should fail with redirected PATCH" do
       lambda do
-        @klass.patch('/foo', no_follow: true)
+        @klass.patch('/foo')
       end.should raise_error(HTTParty::RedirectionTooDeep) {|e| e.response.body.should == 'first redirect'}
     end
 
     it "should fail with redirected DELETE" do
       lambda do
-        @klass.delete('/foo', no_follow: true)
+        @klass.delete('/foo')
       end.should raise_error(HTTParty::RedirectionTooDeep) {|e| e.response.body.should == 'first redirect'}
     end
 
     it "should fail with redirected MOVE" do
       lambda do
-        @klass.move('/foo', no_follow: true)
+        @klass.move('/foo')
       end.should raise_error(HTTParty::RedirectionTooDeep) {|e| e.response.body.should == 'first redirect'}
     end
 
     it "should fail with redirected COPY" do
       lambda do
-        @klass.copy('/foo', no_follow: true)
+        @klass.copy('/foo')
       end.should raise_error(HTTParty::RedirectionTooDeep) {|e| e.response.body.should == 'first redirect'}
     end
 
     it "should fail with redirected PUT" do
       lambda do
-        @klass.put('/foo', no_follow: true)
+        @klass.put('/foo')
       end.should raise_error(HTTParty::RedirectionTooDeep) {|e| e.response.body.should == 'first redirect'}
     end
 
     it "should fail with redirected HEAD" do
       lambda do
-        @klass.head('/foo', no_follow: true)
+        @klass.head('/foo')
       end.should raise_error(HTTParty::RedirectionTooDeep) {|e| e.response.body.should == 'first redirect'}
     end
 
     it "should fail with redirected OPTIONS" do
       lambda do
-        @klass.options('/foo', no_follow: true)
+        @klass.options('/foo')
       end.should raise_error(HTTParty::RedirectionTooDeep) {|e| e.response.body.should == 'first redirect'}
     end
   end

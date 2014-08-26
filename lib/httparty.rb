@@ -275,7 +275,7 @@ module HTTParty
     #   rescue HTTParty::RedirectionTooDeep => e
     #     puts e.response.body
     #   end
-    def no_follow(value = false)
+    def no_follow(value = true)
       default_options[:no_follow] = value
     end
 
