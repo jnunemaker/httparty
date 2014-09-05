@@ -41,24 +41,24 @@
   * create a log file and have httparty log requests
 
 * [Accessing StackExchange](stackexchange.rb)
-  * Httparty includes into poro class
+  * Httparty included into poro class
   * Creates methods for different endpoints
   * Uses `get` requests
   
 * [Accessing Tripit](tripit_sign_in.rb)
-  * Httparty includes into poro class
+  * Httparty included into poro class
   * Example of using `debug_output` to see headers/urls passed
   * Getting and using Cookies
   * Uses `get` requests
   
 * [Accessing Twitter](twitter.rb)
-  * Httparty includes into poro class
+  * Httparty included into poro class
   * Basic Auth
   * Loads settings from a config file 
   * Uses `get` requests
   * Uses `post` requests
   
 * [Accessing WhoIsMyRep](whoismyrep.rb)
-  * Httparty includes into poro class
+  * Httparty included into poro class
   * Uses `get` requests     
   * Two ways to pass params to get, inline on the url or in query hash
