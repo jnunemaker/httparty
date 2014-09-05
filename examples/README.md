@@ -1,6 +1,6 @@
 ## Examples
 
-* [Amazon Book Search](awws.rb)
+* [Amazon Book Search](aaws.rb)
     * Httparty included into poro class
     * Uses `get` requests
     * Transforms query params to uppercased params
@@ -17,7 +17,7 @@
     * Adds Html as a format
     * passed the body of request to Nokogiri
     
-* [More Custom Parser](custom_parsers.rb)
+* [More Custom Parsers](custom_parsers.rb)
   * Create an additional parser for atom or make it the ONLY parser
   
 * [Basic Auth, Delicious](delicious.rb)
@@ -33,7 +33,7 @@
     * Httparty included into poro class
     * Uses `post` requests
 
-* [Access Rubyurl Shortern](rubyurl.rb)
+* [Access Rubyurl Shortener](rubyurl.rb)
   * Httparty included into poro class
   * Uses `post` requests
   
