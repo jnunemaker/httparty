@@ -1,22 +1,88 @@
-== 0.10.1 2013-01-26
-
+== 0.13.1 2014-04-08
 * new
-  * [added support for MOVE requests](https://github.com/jnunemaker/httparty/pull/183)
-  * [bump multi xml version](https://github.com/jnunemaker/httparty/pull/181)
+  * [Added ability to specify a body_stream in HttpRequest](https://github.com/jnunemaker/httparty/pull/275)
+  * [Added read_timeout and open_timeout options](https://github.com/jnunemaker/httparty/pull/278)
+* change
+  * [Initialize HTTParty requests with an URI object and a String](https://github.com/jnunemaker/httparty/pull/274)
+* minor improvement
+  * [Add stackexchange API example](https://github.com/jnunemaker/httparty/pull/280)
+
+
+== 0.13.0 2014-02-14
+* new
+  * [Add CSV support](https://github.com/jnunemaker/httparty/pull/269)
+  * [Allows PKCS12 client certificates](https://github.com/jnunemaker/httparty/pull/246)
+* bug fix
+  * [Digest auth no longer fails when multiple headers are sent by the server](https://github.com/jnunemaker/httparty/pull/272)
+  * [Use 'Basement.copy' when calling 'HTTParty.copy'](https://github.com/jnunemaker/httparty/pull/268)
+  * [No longer appends ampersand when queries are embedded in paths](https://github.com/jnunemaker/httparty/pull/252)
+* change
+  * [Merge - instead of overwrite - default headers with request provided headers](https://github.com/jnunemaker/httparty/pull/270)
+  * [Modernize respond_to implementations to support second param](https://github.com/jnunemaker/httparty/pull/264)
+  * [Sort query parameters by key before processing](https://github.com/jnunemaker/httparty/pull/245)
+* minor improvement
+  * [Add HTTParty::Error base class](https://github.com/jnunemaker/httparty/pull/260)
+
+
+== 0.12.0 2013-10-10
+* new
+  * [Added initial logging support](https://github.com/jnunemaker/httparty/pull/243)
+  * [Add support for local host and port binding](https://github.com/jnunemaker/httparty/pull/238)
+  * [content_type_charset_support](https://github.com/jnunemaker/httparty/commit/82e351f0904e8ecc856015ff2854698a2ca47fbc)
+* bug fix
+  * [No longer attempt to decompress the body on HEAD requests](https://github.com/jnunemaker/httparty/commit/f2b8cc3d49e0e9363d7054b14f30c340d7b8e7f1)
+  * [Adding java check in aliasing of multiple choices](https://github.com/jnunemaker/httparty/pull/204/commits)
+* change
+  * [MIME-type files of javascript are returned as a string instead of JSON](https://github.com/jnunemaker/httparty/pull/239)
+  * [Made SSL connections use the system certificate store by default](https://github.com/jnunemaker/httparty/pull/226)
+  * [Do not pass proxy options to Net::HTTP connection if not specified](https://github.com/jnunemaker/httparty/pull/222)
+  * [Replace multi_json with stdlib json](https://github.com/jnunemaker/httparty/pull/214)
+    * [Require Ruby >= 1.9.3]
+  * [Response returns array of returned cookie strings](https://github.com/jnunemaker/httparty/pull/218)
+    * [Allow '=' within value of a cookie]
+* minor improvements
+  * [Improve documentation of ssl_ca_file, ssl_ca_path](https://github.com/jnunemaker/httparty/pull/223)
+  * [Fix example URLs](https://github.com/jnunemaker/httparty/pull/232)
+
+
+== 0.11.0 2013-04-10
+* new
+  * [Add COPY http request handling](https://github.com/jnunemaker/httparty/pull/190)
+  * [Ruby 2.0 tests](https://github.com/jnunemaker/httparty/pull/194)
+    * [Ruby >= 2.0.0 support both multiple_choice? and multiple_choices?]
+* bug fix
+  * [Maintain blocks passed to 'perform' in redirects](https://github.com/jnunemaker/httparty/pull/191)
+  * [Fixed nc value being quoted, this was against spec](https://github.com/jnunemaker/httparty/pull/196)
+  * [Request#uri no longer duplicates non-relative-path params](https://github.com/jnunemaker/httparty/pull/189)
+* change
+  * [Client-side-only cookie attributes are removed: case-insensitive](https://github.com/jnunemaker/httparty/pull/188)
+
+
+== 0.10.2 2013-01-26
+* bug fix
+  * [hash_conversions misnamed variable](https://github.com/jnunemaker/httparty/pull/187)
+
+
+== 0.10.1 2013-01-26
+* new
+  * [Added support for MOVE requests](https://github.com/jnunemaker/httparty/pull/183)
+  * [Bump multi xml version](https://github.com/jnunemaker/httparty/pull/181)
+
 
 == 0.10.0 2013-01-10
 * changes
   * removed yaml support because of security risk (see rails yaml issues)
 
+
 == 0.9.0 2012-09-07
 * new
   * [support for connection adapters](https://github.com/jnunemaker/httparty/pull/157)
   * [allow ssl_version on ruby 1.9](https://github.com/jnunemaker/httparty/pull/159)
-
 * bug fixes
   * [don't treat port 4430 as ssl](https://github.com/jnunemaker/httparty/commit/a296b1c97f83d7dcc6ef85720a43664c265685ac)
   * [deep clone default options](https://github.com/jnunemaker/httparty/commit/f74227d30f9389b4b23a888c9af49fb9b8248e1f)
   * a few net digest auth fixes
+
 
 == 0.8.3 2012-04-21
 * new
@@ -24,6 +90,7 @@
   * [add support for PATCH requests](https://github.com/jnunemaker/httparty/commit/7ab6641e37a9e31517e46f6124f38c615395d38a)
 * bug fixes
   * [subclasses no longer override superclass options](https://github.com/jnunemaker/httparty/commit/682af8fbf672e7b3009e650da776c85cdfe78d39)
+
 
 == 0.8.2 2012-04-12
 * new
@@ -282,20 +349,20 @@
 == 0.1.3 2008-08-22
 
 * 3 major enhancements:
-	* Added http_proxy key for setting proxy server and port (francxk@gmail.com)
-	* Now raises exception when http error occurs (francxk@gmail.com)
-	* Changed auto format detection from file extension to response content type (Jay Pignata)
+  * Added http_proxy key for setting proxy server and port (francxk@gmail.com)
+  * Now raises exception when http error occurs (francxk@gmail.com)
+  * Changed auto format detection from file extension to response content type (Jay Pignata)
 
 == 0.1.2 2008-08-09
 
 * 1 major enhancement:
-	* default_params were not being appended to query string if option[:query] was blank
+  * default_params were not being appended to query string if option[:query] was blank
 
 == 0.1.1 2008-07-30
 
 * 2 major enhancement:
-	* Added :basic_auth key for options when making a request
-	* :query and :body both now work with query string or hash
+  * Added :basic_auth key for options when making a request
+  * :query and :body both now work with query string or hash
 
 == 0.1.0 2008-07-27
 
