@@ -56,6 +56,10 @@ module HTTParty
     end
 
     def uri
+      if redirect && path.relative? && path.path[0] != "/"
+        path.path = @last_uri.path.gsub(/[^\/]+$/, "") + path.path
+      end
+
       new_uri = path.relative? ? URI.parse("#{base_uri}#{path}") : path.clone
 
       # avoid double query string on redirects [#12]

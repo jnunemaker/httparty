@@ -144,6 +144,32 @@ describe HTTParty::Request do
   end
 
   describe "#uri" do
+    context "redirects" do
+      it "returns correct path when the server sets the location header to a filename" do
+        @request.last_uri = URI.parse("http://example.com/foo/bar")
+        @request.path = URI.parse("bar?foo=bar")
+        @request.redirect = true
+
+        @request.uri.should == URI.parse("http://example.com/foo/bar?foo=bar")
+      end
+
+      it "returns correct path when the server sets the location header to a relative path" do
+        @request.last_uri = URI.parse("http://example.com/foo/bar")
+        @request.path = URI.parse("/bar?foo=bar")
+        @request.redirect = true
+
+        @request.uri.should == URI.parse("http://example.com/bar?foo=bar")
+      end
+
+      it "returns correct path when the server sets the location header to an absolute path" do
+        @request.last_uri = URI.parse("http://example.com/foo/bar")
+        @request.path = URI.parse("http://example.com/bar?foo=bar")
+        @request.redirect = true
+
+        @request.uri.should == URI.parse("http://example.com/bar?foo=bar")
+      end
+    end
+
     context "query strings" do
       it "does not add an empty query string when default_params are blank" do
         @request.options[:default_params] = {}
