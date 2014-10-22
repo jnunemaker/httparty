@@ -153,7 +153,7 @@ describe HTTParty::Request do
         @request.uri.should == URI.parse("http://example.com/foo/bar?foo=bar")
       end
 
-      it "returns correct path when the server sets the location header to a relative path" do
+      it "returns correct path when the server sets the location header to an absolute path" do
         @request.last_uri = URI.parse("http://example.com/foo/bar")
         @request.path = URI.parse("/bar?foo=bar")
         @request.redirect = true
@@ -161,7 +161,7 @@ describe HTTParty::Request do
         @request.uri.should == URI.parse("http://example.com/bar?foo=bar")
       end
 
-      it "returns correct path when the server sets the location header to an absolute path" do
+      it "returns correct path when the server sets the location header to a full uri" do
         @request.last_uri = URI.parse("http://example.com/foo/bar")
         @request.path = URI.parse("http://example.com/bar?foo=bar")
         @request.redirect = true
