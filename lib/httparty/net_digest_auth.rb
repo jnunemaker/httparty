@@ -44,7 +44,10 @@ module Net
     private
 
       def parse(response_header)
-        response_header['www-authenticate'] =~ /Digest (.*)/
+        header = response_header['www-authenticate']
+          .gsub(/qop=(auth(?:-int)?)/, %Q(qop="\\1"))
+
+        header =~ /Digest (.*)/
         params = {}
         $1.gsub(/(\w+)="(.*?)"/) { params[$1] = $2 }
         params

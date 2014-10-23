@@ -75,6 +75,17 @@ describe Net::HTTPHeader::DigestAuthenticator do
     end
   end
 
+  context "when quality of protection (qop) is unquoted" do
+    before do
+      @digest = setup_digest({
+        'www-authenticate' => 'Digest realm="myhost@testrealm.com", nonce="NONCE", qop=auth',
+      })
+    end
+
+    it "should still set qop" do
+      authorization_header.should include(%Q(qop="auth"))
+    end
+  end
 
   context "with unspecified quality of protection (qop)" do
     before do
