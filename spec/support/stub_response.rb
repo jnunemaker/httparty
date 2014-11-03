@@ -13,14 +13,14 @@ module HTTParty
       HTTParty::Request.should_receive(:new).and_return(http_request)
     end
 
-    def stub_chunked_http_response_with(chunks)
+    def stub_chunked_http_response_with(chunks, options={format: "html"})
       response = Net::HTTPResponse.new("1.1", 200, nil)
       response.stub(:chunked_data).and_return(chunks)
       def response.read_body(&block)
         @body || chunked_data.each(&block)
       end
 
-      http_request = HTTParty::Request.new(Net::HTTP::Get, 'http://localhost', format: "html")
+      http_request = HTTParty::Request.new(Net::HTTP::Get, 'http://localhost', options)
       http_request.stub_chain(:http, :request).and_yield(response).and_return(response)
 
       HTTParty::Request.should_receive(:new).and_return(http_request)

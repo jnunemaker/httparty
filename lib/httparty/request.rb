@@ -100,7 +100,7 @@ module HTTParty
           chunks = []
 
           http_response.read_body do |fragment|
-            chunks << fragment
+            chunks << fragment unless options[:stream_body]
             block.call(fragment)
           end
 

@@ -699,6 +699,16 @@ describe HTTParty do
       end.should == chunks.join
     end
 
+    it "should return an empty body if stream_body option is turned on" do
+      chunks = ["Chunk1", "Chunk2", "Chunk3", "Chunk4"]
+      options = {stream_body: true, format: 'html'}
+      stub_chunked_http_response_with(chunks, options)
+
+      HTTParty.get('http://www.google.com', options) do |fragment|
+        chunks.should include(fragment)
+      end.should == nil
+    end
+
     it "should be able parse response type json automatically" do
       stub_http_response_with('twitter.json')
       tweets = HTTParty.get('http://twitter.com/statuses/public_timeline.json')
