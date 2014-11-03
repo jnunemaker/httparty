@@ -5,7 +5,7 @@ module HTTParty
   module Logger
     def self.build(logger, level, formatter)
       level  ||= :info
-      format ||= :apache
+      formatter ||= :apache
 
       case formatter
       when :curl
