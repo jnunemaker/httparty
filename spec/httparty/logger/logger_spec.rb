@@ -18,5 +18,10 @@ describe HTTParty::Logger do
       logger_double = double()
       subject.build(logger_double, nil, :curl).should be_an_instance_of(HTTParty::Logger::CurlLogger)
     end
+
+    it "builds simple logger" do
+      logger_double = double()
+      subject.build(logger_double, nil, :simple).should be_an_instance_of(HTTParty::Logger::SimpleLogger)
+    end
   end
 end
