@@ -1,6 +1,7 @@
-== master
+== 0.13.2
 * minor improvement
   * [Set correct path on redirect to filename](https://github.com/jnunemaker/httparty/pull/337)
+  * ensure logger works with curl format
 
 == 0.13.1 2014-04-08
 * new
@@ -10,7 +11,6 @@
   * [Initialize HTTParty requests with an URI object and a String](https://github.com/jnunemaker/httparty/pull/274)
 * minor improvement
   * [Add stackexchange API example](https://github.com/jnunemaker/httparty/pull/280)
-
 
 == 0.13.0 2014-02-14
 * new
@@ -26,7 +26,6 @@
   * [Sort query parameters by key before processing](https://github.com/jnunemaker/httparty/pull/245)
 * minor improvement
   * [Add HTTParty::Error base class](https://github.com/jnunemaker/httparty/pull/260)
-
 
 == 0.12.0 2013-10-10
 * new
@@ -48,7 +47,6 @@
   * [Improve documentation of ssl_ca_file, ssl_ca_path](https://github.com/jnunemaker/httparty/pull/223)
   * [Fix example URLs](https://github.com/jnunemaker/httparty/pull/232)
 
-
 == 0.11.0 2013-04-10
 * new
   * [Add COPY http request handling](https://github.com/jnunemaker/httparty/pull/190)
@@ -61,22 +59,18 @@
 * change
   * [Client-side-only cookie attributes are removed: case-insensitive](https://github.com/jnunemaker/httparty/pull/188)
 
-
 == 0.10.2 2013-01-26
 * bug fix
   * [hash_conversions misnamed variable](https://github.com/jnunemaker/httparty/pull/187)
-
 
 == 0.10.1 2013-01-26
 * new
   * [Added support for MOVE requests](https://github.com/jnunemaker/httparty/pull/183)
   * [Bump multi xml version](https://github.com/jnunemaker/httparty/pull/181)
 
-
 == 0.10.0 2013-01-10
 * changes
   * removed yaml support because of security risk (see rails yaml issues)
-
 
 == 0.9.0 2012-09-07
 * new
@@ -87,14 +81,12 @@
   * [deep clone default options](https://github.com/jnunemaker/httparty/commit/f74227d30f9389b4b23a888c9af49fb9b8248e1f)
   * a few net digest auth fixes
 
-
 == 0.8.3 2012-04-21
 * new
   * [lazy parsing of responses](https://github.com/jnunemaker/httparty/commit/9fd5259c8dab00e426082b66af44ede2c9068f45)
   * [add support for PATCH requests](https://github.com/jnunemaker/httparty/commit/7ab6641e37a9e31517e46f6124f38c615395d38a)
 * bug fixes
   * [subclasses no longer override superclass options](https://github.com/jnunemaker/httparty/commit/682af8fbf672e7b3009e650da776c85cdfe78d39)
-
 
 == 0.8.2 2012-04-12
 * new
