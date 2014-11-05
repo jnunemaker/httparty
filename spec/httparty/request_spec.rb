@@ -389,7 +389,6 @@ describe HTTParty::Request do
       end
     end
 
-
     describe 'with non-200 responses' do
       context "3xx responses" do
         it 'returns a valid object for 304 not modified' do
