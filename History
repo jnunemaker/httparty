@@ -1,3 +1,7 @@
+== 0.13.3
+* minor improvement
+  * added option to allow for streaming large files without loading them into memory (672cdae)
+
 == 0.13.2
 * minor improvement
   * [Set correct path on redirect to filename](https://github.com/jnunemaker/httparty/pull/337)
