@@ -1,3 +1,4 @@
+require 'simplecov'
 require 'mongrel'
 require './lib/httparty'
 require 'spec/expectations'

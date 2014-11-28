@@ -8,3 +8,4 @@ pkg/
 *.swp
 /.bundle
 .rvmrc
+coverage
