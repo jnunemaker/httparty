@@ -1,5 +1,5 @@
 module HTTParty
-  class Response < HTTParty::BasicObject #:nodoc:
+  class Response < BasicObject
     def self.underscore(string)
       string.gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').gsub(/([a-z])([A-Z])/,'\1_\2').downcase
     end
