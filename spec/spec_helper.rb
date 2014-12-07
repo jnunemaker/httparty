@@ -48,3 +48,15 @@ RSpec.configure do |config|
 
   Kernel.srand config.seed
 end
+
+RSpec::Matchers.define :use_ssl do
+  match do |connection|
+    connection.use_ssl?
+  end
+end
+
+RSpec::Matchers.define :use_cert_store do |cert_store|
+  match do |connection|
+    connection.cert_store == cert_store
+  end
+end

@@ -65,7 +65,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
         let(:uri) { URI 'https://foobar.com' }
 
         context "uses the system cert_store, by default" do
-          let(:system_cert_store) do
+          let!(:system_cert_store) do
             system_cert_store = double('default_cert_store')
             expect(system_cert_store).to receive(:set_default_paths)
             expect(OpenSSL::X509::Store).to receive(:new).and_return(system_cert_store)
@@ -122,7 +122,12 @@ RSpec.describe HTTParty::ConnectionAdapter do
 
       context "when timeout is not set" do
         it "doesn't set the timeout" do
-          http = double("http", null_object: true)
+          http = double(
+            "http",
+            :null_object => true,
+            :use_ssl= => false,
+            :use_ssl? => false
+          )
           expect(http).not_to receive(:open_timeout=)
           expect(http).not_to receive(:read_timeout=)
           allow(Net::HTTP).to receive_messages(new: http)
@@ -150,7 +155,12 @@ RSpec.describe HTTParty::ConnectionAdapter do
           let(:options) { {timeout: "five seconds"} }
 
           it "doesn't set the timeout" do
-            http = double("http", null_object: true)
+            http = double(
+              "http",
+              :null_object => true,
+              :use_ssl= => false,
+              :use_ssl? => false
+            )
             expect(http).not_to receive(:open_timeout=)
             expect(http).not_to receive(:read_timeout=)
             allow(Net::HTTP).to receive_messages(new: http)
@@ -169,7 +179,13 @@ RSpec.describe HTTParty::ConnectionAdapter do
         end
 
         it "should not set the open_timeout" do
-          http = double("http", null_object: true)
+          http = double(
+            "http",
+            :null_object => true,
+            :use_ssl= => false,
+            :use_ssl? => false,
+            :read_timeout= => 0
+          )
           expect(http).not_to receive(:open_timeout=)
           allow(Net::HTTP).to receive_messages(new: http)
           adapter.connection
@@ -190,7 +206,14 @@ RSpec.describe HTTParty::ConnectionAdapter do
         end
 
         it "should override the timeout option" do
-          http = double("http", null_object: true)
+          http = double(
+            "http",
+            :null_object => true,
+            :use_ssl= => false,
+            :use_ssl? => false,
+            :read_timeout= => 0,
+            :open_timeout= => 0
+          )
           expect(http).to receive(:open_timeout=)
           expect(http).to receive(:read_timeout=).twice
           allow(Net::HTTP).to receive_messages(new: http)
@@ -207,7 +230,13 @@ RSpec.describe HTTParty::ConnectionAdapter do
         end
 
         it "should not set the read_timeout" do
-          http = double("http", null_object: true)
+          http = double(
+            "http",
+            :null_object => true,
+            :use_ssl= => false,
+            :use_ssl? => false,
+            :open_timeout= => 0
+          )
           expect(http).not_to receive(:read_timeout=)
           allow(Net::HTTP).to receive_messages(new: http)
           adapter.connection
@@ -228,7 +257,14 @@ RSpec.describe HTTParty::ConnectionAdapter do
         end
 
         it "should override the timeout option" do
-          http = double("http", null_object: true)
+          http = double(
+            "http",
+            :null_object => true,
+            :use_ssl= => false,
+            :use_ssl? => false,
+            :read_timeout= => 0,
+            :open_timeout= => 0
+          )
           expect(http).to receive(:open_timeout=).twice
           expect(http).to receive(:read_timeout=)
           allow(Net::HTTP).to receive_messages(new: http)
@@ -337,10 +373,10 @@ RSpec.describe HTTParty::ConnectionAdapter do
           it "will verify the certificate" do
             expect(subject.verify_mode).to eq(OpenSSL::SSL::VERIFY_PEER)
           end
-          
+
           context "when options include verify_peer=false" do
             let(:options) { {pem: pem, pem_password: "password", verify_peer: false} }
-            
+
             it "should not verify the certificate" do
               expect(subject.verify_mode).to eq(OpenSSL::SSL::VERIFY_NONE)
             end
@@ -388,10 +424,10 @@ RSpec.describe HTTParty::ConnectionAdapter do
           it "will verify the certificate" do
             expect(subject.verify_mode).to eq(OpenSSL::SSL::VERIFY_PEER)
           end
-          
+
           context "when options include verify_peer=false" do
             let(:options) { {p12: p12, p12_password: "password", verify_peer: false} }
-            
+
             it "should not verify the certificate" do
               expect(subject.verify_mode).to eq(OpenSSL::SSL::VERIFY_NONE)
             end
@@ -404,7 +440,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
 
           before do
             allow(Net::HTTP).to receive_messages(new: http)
-            expect(OpenSSL::PKCS12.new).not_to receive(:new).with(p12, "password")
+            expect(OpenSSL::PKCS12).not_to receive(:new).with(p12, "password")
             expect(http).not_to receive(:cert=)
             expect(http).not_to receive(:key=)
           end
