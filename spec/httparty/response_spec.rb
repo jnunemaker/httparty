@@ -37,7 +37,7 @@ RSpec.describe HTTParty::Response do
     end
 
     it "should set code" do
-      expect(@response.code).to.to_s == @response_object.code
+      expect(@response.code).to eq(@response_object.code)
     end
 
     it "should set code as a Fixnum" do
