@@ -394,7 +394,7 @@ RSpec.describe HTTParty do
       }.with(URI.parse(uri), kind_of(Hash))
       FakeWeb.register_uri(:get, uri, body: 'stuff')
       @klass.connection_adapter connection_adapter, connection_adapter_options
-      expect(@klass.get(uri)).to eq('stuff')
+      expect(@klass.get(uri)).to include('stuff')
     end
   end
 
@@ -687,16 +687,18 @@ RSpec.describe HTTParty do
   describe "#get" do
     it "should be able to get html" do
       stub_http_response_with('google.html')
-      expect(HTTParty.get('http://www.google.com')).to eq(file_fixture('google.html'))
+      expect(HTTParty.get('http://www.google.com')).to include(file_fixture('google.html'))
     end
 
     it "should be able to get chunked html" do
       chunks = ["Chunk1", "Chunk2", "Chunk3", "Chunk4"]
       stub_chunked_http_response_with(chunks)
 
-      expect(HTTParty.get('http://www.google.com') do |fragment|
-        expect(chunks).to include(fragment)
-      end).to eq(chunks.join)
+      expect(
+        HTTParty.get('http://www.google.com') do |fragment|
+          expect(chunks).to include(fragment)
+        end
+      ).to eq(chunks.join)
     end
 
     it "should return an empty body if stream_body option is turned on" do
@@ -704,9 +706,11 @@ RSpec.describe HTTParty do
       options = {stream_body: true, format: 'html'}
       stub_chunked_http_response_with(chunks, options)
 
-      expect(HTTParty.get('http://www.google.com', options) do |fragment|
-        expect(chunks).to include(fragment)
-      end).to eq(nil)
+      expect(
+        HTTParty.get('http://www.google.com', options) do |fragment|
+          expect(chunks).to include(fragment)
+        end
+      ).to eq(nil)
     end
 
     it "should be able parse response type json automatically" do
@@ -754,7 +758,7 @@ RSpec.describe HTTParty do
     it "should not get undefined method add_node for nil class for the following xml" do
       stub_http_response_with('undefined_method_add_node_for_nil.xml')
       result = HTTParty.get('http://foobar.com')
-      expect(result).to eq({"Entities"=>{"href"=>"https://s3-sandbox.parature.com/api/v1/5578/5633/Account", "results"=>"0", "total"=>"0", "page_size"=>"25", "page"=>"1"}})
+      expect(result).to include({"Entities"=>{"href"=>"https://s3-sandbox.parature.com/api/v1/5578/5633/Account", "results"=>"0", "total"=>"0", "page_size"=>"25", "page"=>"1"}})
     end
 
     it "should parse empty response fine" do
