@@ -12,41 +12,41 @@ def constantize(camel_cased_word)
 end
 
 Then /it should return an? (\w+)$/ do |class_string|
-  @response_from_httparty.should be_an_instance_of(class_string.class)
+  expect(@response_from_httparty).to be_a(class_string.class)
 end
 
 Then /the return value should match '(.*)'/ do |expected_text|
-  @response_from_httparty.should eql(expected_text)
+  expect(@response_from_httparty).to include(expected_text)
 end
 
 Then /it should return a Hash equaling:/ do |hash_table|
-  @response_from_httparty.should be_an_instance_of(Hash)
-  @response_from_httparty.keys.length.should eql(hash_table.rows.length)
+  expect(@response_from_httparty).to be_a(Hash)
+  expect(@response_from_httparty.keys.length).to eq(hash_table.rows.length)
   hash_table.hashes.each do |pair|
     key, value = pair["key"], pair["value"]
-    @response_from_httparty.keys.should include(key)
-    @response_from_httparty[key].should eql(value)
+    expect(@response_from_httparty.keys).to include(key)
+    expect(@response_from_httparty[key]).to eq(value)
   end
 end
 
 Then /it should return an Array equaling:/ do |array|
-  @response_from_httparty.should be_an_instance_of(Array)
-  @response_from_httparty.should eql array.raw
+  expect(@response_from_httparty).to be_a(Array)
+  expect(@response_from_httparty.parsed_response).to eq(array.raw)
 end
 
 Then /it should return a response with a (\d+) response code/ do |code|
-  @response_from_httparty.code.should eql(code.to_i)
+  expect(@response_from_httparty.code).to eq(code.to_i)
 end
 
 Then /it should return a response with a (.*) content\-encoding$/ do |content_type|
-  @response_from_httparty.headers['content-encoding'].should eql('gzip')
+  expect(@response_from_httparty.headers['content-encoding']).to eq('gzip')
 end
 
 Then /it should return a response with a blank body$/ do
-  @response_from_httparty.body.should be(nil)
+  expect(@response_from_httparty.body).to be_nil
 end
 
 Then /it should raise (?:an|a) ([\w:]+) exception/ do |exception|
-  @exception_from_httparty.should_not be_nil
-  @exception_from_httparty.should be_a constantize(exception)
+  expect(@exception_from_httparty).to_not be_nil
+  expect(@exception_from_httparty).to be_a constantize(exception)
 end
