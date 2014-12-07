@@ -1,6 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '../spec_helper'))
 
-describe HTTParty::CookieHash do
+RSpec.describe HTTParty::CookieHash do
   before(:each) do
     @cookie_hash = HTTParty::CookieHash.new
   end

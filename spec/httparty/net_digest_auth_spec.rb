@@ -1,6 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper'))
 
-describe Net::HTTPHeader::DigestAuthenticator do
+RSpec.describe Net::HTTPHeader::DigestAuthenticator do
   def setup_digest(response)
     digest = Net::HTTPHeader::DigestAuthenticator.new("Mufasa",
       "Circle Of Life", "GET", "/dir/index.html", response)

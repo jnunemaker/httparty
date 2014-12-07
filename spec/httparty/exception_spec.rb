@@ -1,6 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper'))
 
-describe HTTParty::Error do
+RSpec.describe HTTParty::Error do
   subject { described_class }
 
   describe '#ancestors' do

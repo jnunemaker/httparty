@@ -1,6 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper'))
 
-describe HTTParty::Response do
+RSpec.describe HTTParty::Response do
   before do
     @last_modified = Date.new(2010, 1, 15).to_s
     @content_length = '1024'

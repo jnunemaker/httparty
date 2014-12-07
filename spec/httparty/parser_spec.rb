@@ -1,6 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper'))
 
-describe HTTParty::Parser do
+RSpec.describe HTTParty::Parser do
   describe ".SupportedFormats" do
     it "returns a hash" do
       expect(HTTParty::Parser::SupportedFormats).to be_instance_of(Hash)
