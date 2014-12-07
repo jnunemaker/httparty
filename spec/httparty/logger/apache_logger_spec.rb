@@ -8,7 +8,7 @@ describe HTTParty::Logger::ApacheLogger do
 
   before do
     subject.current_time = request_time
-    logger_double.should_receive(:info).with(log_message)
+    expect(logger_double).to receive(:info).with(log_message)
   end
 
   describe "#format" do
@@ -32,7 +32,7 @@ describe HTTParty::Logger::ApacheLogger do
             code: 200,
             headers: { 'Content-Length' => 512 }
         )
-        response_double.stub(:[]).with('Content-Length').and_raise(TypeError.new('no implicit conversion of String into Integer'))
+        allow(response_double).to receive(:[]).with('Content-Length').and_raise(TypeError.new('no implicit conversion of String into Integer'))
 
         subject.format(request_double, response_double)
       end

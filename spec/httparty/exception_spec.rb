@@ -3,21 +3,36 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper'))
 describe HTTParty::Error do
   subject { described_class }
 
-  its(:ancestors) { should include(StandardError) }
+  describe '#ancestors' do
+    subject { super().ancestors }
+    it { is_expected.to include(StandardError) }
+  end
 
   describe HTTParty::UnsupportedFormat do
-    its(:ancestors) { should include(HTTParty::Error) }
+    describe '#ancestors' do
+      subject { super().ancestors }
+      it { is_expected.to include(HTTParty::Error) }
+    end
   end
   
   describe HTTParty::UnsupportedURIScheme do
-    its(:ancestors) { should include(HTTParty::Error) }
+    describe '#ancestors' do
+      subject { super().ancestors }
+      it { is_expected.to include(HTTParty::Error) }
+    end
   end
 
   describe HTTParty::ResponseError do
-    its(:ancestors) { should include(HTTParty::Error) }
+    describe '#ancestors' do
+      subject { super().ancestors }
+      it { is_expected.to include(HTTParty::Error) }
+    end
   end
 
   describe HTTParty::RedirectionTooDeep do
-    its(:ancestors) { should include(HTTParty::ResponseError) }
+    describe '#ancestors' do
+      subject { super().ancestors }
+      it { is_expected.to include(HTTParty::ResponseError) }
+    end
   end
 end
