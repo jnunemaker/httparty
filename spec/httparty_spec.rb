@@ -1,6 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), 'spec_helper'))
 
-describe HTTParty do
+RSpec.describe HTTParty do
   before(:each) do
     @klass = Class.new
     @klass.instance_eval { include HTTParty }
@@ -8,60 +8,60 @@ describe HTTParty do
 
   describe "AllowedFormats deprecated" do
     before do
-      Kernel.stub(:warn)
+      allow(Kernel).to receive(:warn)
     end
 
     it "warns with a deprecation message" do
-      Kernel.should_receive(:warn).with("Deprecated: Use HTTParty::Parser::SupportedFormats")
+      expect(Kernel).to receive(:warn).with("Deprecated: Use HTTParty::Parser::SupportedFormats")
       HTTParty::AllowedFormats
     end
 
     it "returns HTTPart::Parser::SupportedFormats" do
-      HTTParty::AllowedFormats.should == HTTParty::Parser::SupportedFormats
+      expect(HTTParty::AllowedFormats).to eq(HTTParty::Parser::SupportedFormats)
     end
   end
 
   describe "pem" do
     it 'should set the pem content' do
       @klass.pem 'PEM-CONTENT'
-      @klass.default_options[:pem].should == 'PEM-CONTENT'
+      expect(@klass.default_options[:pem]).to eq('PEM-CONTENT')
     end
 
     it "should set the password to nil if it's not provided" do
       @klass.pem 'PEM-CONTENT'
-      @klass.default_options[:pem_password].should be_nil
+      expect(@klass.default_options[:pem_password]).to be_nil
     end
 
     it 'should set the password' do
       @klass.pem 'PEM-CONTENT', 'PASSWORD'
-      @klass.default_options[:pem_password].should == 'PASSWORD'
+      expect(@klass.default_options[:pem_password]).to eq('PASSWORD')
     end
   end
 
   describe "pkcs12" do
     it 'should set the p12 content' do
       @klass.pkcs12 'P12-CONTENT', 'PASSWORD'
-      @klass.default_options[:p12].should == 'P12-CONTENT'
+      expect(@klass.default_options[:p12]).to eq('P12-CONTENT')
     end
 
     it 'should set the password' do
       @klass.pkcs12 'P12-CONTENT', 'PASSWORD'
-      @klass.default_options[:p12_password].should == 'PASSWORD'
+      expect(@klass.default_options[:p12_password]).to eq('PASSWORD')
     end
   end
 
   describe 'ssl_version' do
     it 'should set the ssl_version content' do
       @klass.ssl_version :SSLv3
-      @klass.default_options[:ssl_version].should == :SSLv3
+      expect(@klass.default_options[:ssl_version]).to eq(:SSLv3)
     end
   end
 
   describe 'ciphers' do
     it 'should set the ciphers content' do
-      @klass.default_options[:ciphers].should be_nil
+      expect(@klass.default_options[:ciphers]).to be_nil
       @klass.ciphers 'RC4-SHA'
-      @klass.default_options[:ciphers].should == 'RC4-SHA'
+      expect(@klass.default_options[:ciphers]).to eq('RC4-SHA')
     end
   end
 
@@ -69,15 +69,15 @@ describe HTTParty do
     it 'should set the address' do
       @klass.http_proxy 'proxy.foo.com', 80
       options = @klass.default_options
-      options[:http_proxyaddr].should == 'proxy.foo.com'
-      options[:http_proxyport].should == 80
+      expect(options[:http_proxyaddr]).to eq('proxy.foo.com')
+      expect(options[:http_proxyport]).to eq(80)
     end
 
     it 'should set the proxy user and pass when they are provided' do
       @klass.http_proxy 'proxy.foo.com', 80, 'user', 'pass'
       options = @klass.default_options
-      options[:http_proxyuser].should == 'user'
-      options[:http_proxypass].should == 'pass'
+      expect(options[:http_proxyuser]).to eq('user')
+      expect(options[:http_proxypass]).to eq('pass')
     end
   end
 
@@ -87,71 +87,71 @@ describe HTTParty do
     end
 
     it "should have reader" do
-      @klass.base_uri.should == 'http://api.foo.com/v1'
+      expect(@klass.base_uri).to eq('http://api.foo.com/v1')
     end
 
     it 'should have writer' do
       @klass.base_uri('http://api.foobar.com')
-      @klass.base_uri.should == 'http://api.foobar.com'
+      expect(@klass.base_uri).to eq('http://api.foobar.com')
     end
 
     it 'should not modify the parameter during assignment' do
       uri = 'http://api.foobar.com'
       @klass.base_uri(uri)
-      uri.should == 'http://api.foobar.com'
+      expect(uri).to eq('http://api.foobar.com')
     end
   end
 
   describe ".disable_rails_query_string_format" do
     it "sets the query string normalizer to HTTParty::Request::NON_RAILS_QUERY_STRING_NORMALIZER" do
       @klass.disable_rails_query_string_format
-      @klass.default_options[:query_string_normalizer].should == HTTParty::Request::NON_RAILS_QUERY_STRING_NORMALIZER
+      expect(@klass.default_options[:query_string_normalizer]).to eq(HTTParty::Request::NON_RAILS_QUERY_STRING_NORMALIZER)
     end
   end
 
   describe ".normalize_base_uri" do
     it "should add http if not present for non ssl requests" do
       uri = HTTParty.normalize_base_uri('api.foobar.com')
-      uri.should == 'http://api.foobar.com'
+      expect(uri).to eq('http://api.foobar.com')
     end
 
     it "should add https if not present for ssl requests" do
       uri = HTTParty.normalize_base_uri('api.foo.com/v1:443')
-      uri.should == 'https://api.foo.com/v1:443'
+      expect(uri).to eq('https://api.foo.com/v1:443')
     end
 
     it "should not remove https for ssl requests" do
       uri = HTTParty.normalize_base_uri('https://api.foo.com/v1:443')
-      uri.should == 'https://api.foo.com/v1:443'
+      expect(uri).to eq('https://api.foo.com/v1:443')
     end
 
     it 'should not modify the parameter' do
       uri = 'http://api.foobar.com'
       HTTParty.normalize_base_uri(uri)
-      uri.should == 'http://api.foobar.com'
+      expect(uri).to eq('http://api.foobar.com')
     end
 
     it "should not treat uri's with a port of 4430 as ssl" do
       uri = HTTParty.normalize_base_uri('http://api.foo.com:4430/v1')
-      uri.should == 'http://api.foo.com:4430/v1'
+      expect(uri).to eq('http://api.foo.com:4430/v1')
     end
   end
 
   describe "headers" do
     def expect_headers(header={})
-      HTTParty::Request.should_receive(:new) \
+      expect(HTTParty::Request).to receive(:new) \
         .with(anything, anything, hash_including({ headers: header })) \
-        .and_return(mock("mock response", perform: nil))
+        .and_return(double("mock response", perform: nil))
     end
 
     it "should default to empty hash" do
-      @klass.headers.should == {}
+      expect(@klass.headers).to eq({})
     end
 
     it "should be able to be updated" do
       init_headers = {foo: 'bar', baz: 'spax'}
       @klass.headers init_headers
-      @klass.headers.should == init_headers
+      expect(@klass.headers).to eq(init_headers)
     end
 
     it "uses the class headers when sending a request" do
@@ -187,10 +187,10 @@ describe HTTParty do
       end
 
       it 'doesnt modify default_options' do
-        @klass.headers.should == {}
+        expect(@klass.headers).to eq({})
         expect_headers('cookie' => 'type=snickerdoodle')
         @klass.get('', cookies: {type: 'snickerdoodle'})
-        @klass.default_options[:headers].should == {}
+        expect(@klass.default_options[:headers]).to eq({})
       end
 
       it 'adds optional cookies to the optional headers' do
@@ -202,21 +202,21 @@ describe HTTParty do
 
   describe "cookies" do
     def expect_cookie_header(s)
-      HTTParty::Request.should_receive(:new) \
+      expect(HTTParty::Request).to receive(:new) \
         .with(anything, anything, hash_including({ headers: { "cookie" => s } })) \
-        .and_return(mock("mock response", perform: nil))
+        .and_return(double("mock response", perform: nil))
     end
 
     it "should not be in the headers by default" do
-      HTTParty::Request.stub!(:new).and_return(stub(nil, perform: nil))
+      allow(HTTParty::Request).to receive(:new).and_return(double(nil, perform: nil))
       @klass.get("")
-      @klass.headers.keys.should_not include("cookie")
+      expect(@klass.headers.keys).not_to include("cookie")
     end
 
     it "should raise an ArgumentError if passed a non-Hash" do
-      lambda do
+      expect do
         @klass.cookies("nonsense")
-      end.should raise_error(ArgumentError)
+      end.to raise_error(ArgumentError)
     end
 
     it "should allow a cookie to be specified with a one-off request" do
@@ -273,55 +273,55 @@ describe HTTParty do
 
   describe "default params" do
     it "should default to empty hash" do
-      @klass.default_params.should == {}
+      expect(@klass.default_params).to eq({})
     end
 
     it "should be able to be updated" do
       new_defaults = {foo: 'bar', baz: 'spax'}
       @klass.default_params new_defaults
-      @klass.default_params.should == new_defaults
+      expect(@klass.default_params).to eq(new_defaults)
     end
   end
 
   describe "default timeout" do
     it "should default to nil" do
-      @klass.default_options[:timeout].should == nil
+      expect(@klass.default_options[:timeout]).to eq(nil)
     end
 
     it "should support updating" do
       @klass.default_timeout 10
-      @klass.default_options[:timeout].should == 10
+      expect(@klass.default_options[:timeout]).to eq(10)
     end
 
     it "should support floats" do
       @klass.default_timeout 0.5
-      @klass.default_options[:timeout].should == 0.5
+      expect(@klass.default_options[:timeout]).to eq(0.5)
     end
   end
 
   describe "debug_output" do
     it "stores the given stream as a default_option" do
       @klass.debug_output $stdout
-      @klass.default_options[:debug_output].should == $stdout
+      expect(@klass.default_options[:debug_output]).to eq($stdout)
     end
 
     it "stores the $stderr stream by default" do
       @klass.debug_output
-      @klass.default_options[:debug_output].should == $stderr
+      expect(@klass.default_options[:debug_output]).to eq($stderr)
     end
   end
 
   describe "basic http authentication" do
     it "should work" do
       @klass.basic_auth 'foobar', 'secret'
-      @klass.default_options[:basic_auth].should == {username: 'foobar', password: 'secret'}
+      expect(@klass.default_options[:basic_auth]).to eq({username: 'foobar', password: 'secret'})
     end
   end
 
   describe "digest http authentication" do
     it "should work" do
       @klass.digest_auth 'foobar', 'secret'
-      @klass.default_options[:digest_auth].should == {username: 'foobar', password: 'secret'}
+      expect(@klass.default_options[:digest_auth]).to eq({username: 'foobar', password: 'secret'})
     end
   end
 
@@ -338,14 +338,14 @@ describe HTTParty do
 
     it "should set parser options" do
       @klass.parser parser
-      @klass.default_options[:parser].should == parser
+      expect(@klass.default_options[:parser]).to eq(parser)
     end
 
     it "should be able parse response with custom parser" do
       @klass.parser parser
       FakeWeb.register_uri(:get, 'http://twitter.com/statuses/public_timeline.xml', body: 'tweets')
       custom_parsed_response = @klass.get('http://twitter.com/statuses/public_timeline.xml')
-      custom_parsed_response[:sexy].should == true
+      expect(custom_parsed_response[:sexy]).to eq(true)
     end
 
     it "raises UnsupportedFormat when the parser cannot handle the format" do
@@ -362,134 +362,134 @@ describe HTTParty do
       expect do
         @klass.format :json
         @klass.parser lambda {|body, format|}
-      end.to_not raise_error(HTTParty::UnsupportedFormat)
+      end.to_not raise_error
     end
   end
 
   describe "connection_adapter" do
     let(:uri) { 'http://google.com/api.json' }
-    let(:connection_adapter) { mock('CustomConnectionAdapter') }
+    let(:connection_adapter) { double('CustomConnectionAdapter') }
 
     it "should set the connection_adapter" do
       @klass.connection_adapter connection_adapter
-      @klass.default_options[:connection_adapter].should be connection_adapter
+      expect(@klass.default_options[:connection_adapter]).to be connection_adapter
     end
 
     it "should set the connection_adapter_options when provided" do
       options = {foo: :bar}
       @klass.connection_adapter connection_adapter, options
-      @klass.default_options[:connection_adapter_options].should be options
+      expect(@klass.default_options[:connection_adapter_options]).to be options
     end
 
     it "should not set the connection_adapter_options when not provided" do
       @klass.connection_adapter connection_adapter
-      @klass.default_options[:connection_adapter_options].should be_nil
+      expect(@klass.default_options[:connection_adapter_options]).to be_nil
     end
 
     it "should process a request with a connection from the adapter" do
       connection_adapter_options = {foo: :bar}
-      connection_adapter.should_receive(:call) do |u,o|
-        o[:connection_adapter_options].should == connection_adapter_options
+      expect(connection_adapter).to receive(:call) { |u,o|
+        expect(o[:connection_adapter_options]).to eq(connection_adapter_options)
         HTTParty::ConnectionAdapter.call(u,o)
-      end.with(URI.parse(uri), kind_of(Hash))
+      }.with(URI.parse(uri), kind_of(Hash))
       FakeWeb.register_uri(:get, uri, body: 'stuff')
       @klass.connection_adapter connection_adapter, connection_adapter_options
-      @klass.get(uri).should == 'stuff'
+      expect(@klass.get(uri)).to include('stuff')
     end
   end
 
   describe "format" do
     it "should allow xml" do
       @klass.format :xml
-      @klass.default_options[:format].should == :xml
+      expect(@klass.default_options[:format]).to eq(:xml)
     end
 
     it "should allow csv" do
       @klass.format :csv
-      @klass.default_options[:format].should == :csv
+      expect(@klass.default_options[:format]).to eq(:csv)
     end
 
     it "should allow json" do
       @klass.format :json
-      @klass.default_options[:format].should == :json
+      expect(@klass.default_options[:format]).to eq(:json)
     end
 
     it "should allow plain" do
       @klass.format :plain
-      @klass.default_options[:format].should == :plain
+      expect(@klass.default_options[:format]).to eq(:plain)
     end
 
     it 'should not allow funky format' do
-      lambda do
+      expect do
         @klass.format :foobar
-      end.should raise_error(HTTParty::UnsupportedFormat)
+      end.to raise_error(HTTParty::UnsupportedFormat)
     end
 
     it 'should only print each format once with an exception' do
-      lambda do
+      expect do
         @klass.format :foobar
-      end.should raise_error(HTTParty::UnsupportedFormat, "':foobar' Must be one of: csv, html, json, plain, xml")
+      end.to raise_error(HTTParty::UnsupportedFormat, "':foobar' Must be one of: csv, html, json, plain, xml")
     end
 
     it 'sets the default parser' do
-      @klass.default_options[:parser].should be_nil
+      expect(@klass.default_options[:parser]).to be_nil
       @klass.format :json
-      @klass.default_options[:parser].should == HTTParty::Parser
+      expect(@klass.default_options[:parser]).to eq(HTTParty::Parser)
     end
 
     it 'does not reset parser to the default parser' do
       my_parser = lambda {}
       @klass.parser my_parser
       @klass.format :json
-      @klass.parser.should == my_parser
+      expect(@klass.parser).to eq(my_parser)
     end
   end
 
   describe "#no_follow" do
     it "sets no_follow to false by default" do
       @klass.no_follow
-      @klass.default_options[:no_follow].should be_false
+      expect(@klass.default_options[:no_follow]).to be_falsey
     end
 
     it "sets the no_follow option to true" do
       @klass.no_follow true
-      @klass.default_options[:no_follow].should be_true
+      expect(@klass.default_options[:no_follow]).to be_truthy
     end
   end
 
   describe "#maintain_method_across_redirects" do
     it "sets maintain_method_across_redirects to true by default" do
       @klass.maintain_method_across_redirects
-      @klass.default_options[:maintain_method_across_redirects].should be_true
+      expect(@klass.default_options[:maintain_method_across_redirects]).to be_truthy
     end
 
     it "sets the maintain_method_across_redirects option to false" do
       @klass.maintain_method_across_redirects false
-      @klass.default_options[:maintain_method_across_redirects].should be_false
+      expect(@klass.default_options[:maintain_method_across_redirects]).to be_falsey
     end
   end
   
   describe "#resend_on_redirect" do
     it "sets resend_on_redirect to true by default" do
       @klass.resend_on_redirect
-      @klass.default_options[:resend_on_redirect].should be_true
+      expect(@klass.default_options[:resend_on_redirect]).to be_truthy
     end
     
     it "sets resend_on_redirect option to false" do
       @klass.resend_on_redirect false
-      @klass.default_options[:resend_on_redirect].should be_false
+      expect(@klass.default_options[:resend_on_redirect]).to be_falsey
     end
   end
 
   describe ".follow_redirects" do
     it "sets follow redirects to true by default" do
       @klass.follow_redirects
-      @klass.default_options[:follow_redirects].should be_true
+      expect(@klass.default_options[:follow_redirects]).to be_truthy
     end
 
     it "sets the follow_redirects option to false" do
       @klass.follow_redirects false
-      @klass.default_options[:follow_redirects].should be_false
+      expect(@klass.default_options[:follow_redirects]).to be_falsey
     end
   end
 
@@ -497,7 +497,7 @@ describe HTTParty do
     it "sets the query_string_normalizer option" do
       normalizer = proc {}
       @klass.query_string_normalizer normalizer
-      @klass.default_options[:query_string_normalizer].should == normalizer
+      expect(@klass.default_options[:query_string_normalizer]).to eq(normalizer)
     end
   end
 
@@ -506,61 +506,61 @@ describe HTTParty do
       @request = HTTParty::Request.new(Net::HTTP::Get, 'http://api.foo.com/v1', format: :xml, no_follow: true)
       @redirect = stub_response 'first redirect', 302
       @redirect['location'] = 'http://foo.com/bar'
-      HTTParty::Request.stub(new: @request)
+      allow(HTTParty::Request).to receive_messages(new: @request)
     end
 
     it "should fail with redirected GET" do
-      lambda do
+      expect do
         @error = @klass.get('/foo', no_follow: true)
-      end.should raise_error(HTTParty::RedirectionTooDeep) {|e| e.response.body.should == 'first redirect'}
+      end.to raise_error(HTTParty::RedirectionTooDeep) {|e| expect(e.response.body).to eq('first redirect')}
     end
 
     it "should fail with redirected POST" do
-      lambda do
+      expect do
         @klass.post('/foo', no_follow: true)
-      end.should raise_error(HTTParty::RedirectionTooDeep) {|e| e.response.body.should == 'first redirect'}
+      end.to raise_error(HTTParty::RedirectionTooDeep) {|e| expect(e.response.body).to eq('first redirect')}
     end
 
     it "should fail with redirected PATCH" do
-      lambda do
+      expect do
         @klass.patch('/foo', no_follow: true)
-      end.should raise_error(HTTParty::RedirectionTooDeep) {|e| e.response.body.should == 'first redirect'}
+      end.to raise_error(HTTParty::RedirectionTooDeep) {|e| expect(e.response.body).to eq('first redirect')}
     end
 
     it "should fail with redirected DELETE" do
-      lambda do
+      expect do
         @klass.delete('/foo', no_follow: true)
-      end.should raise_error(HTTParty::RedirectionTooDeep) {|e| e.response.body.should == 'first redirect'}
+      end.to raise_error(HTTParty::RedirectionTooDeep) {|e| expect(e.response.body).to eq('first redirect')}
     end
 
     it "should fail with redirected MOVE" do
-      lambda do
+      expect do
         @klass.move('/foo', no_follow: true)
-      end.should raise_error(HTTParty::RedirectionTooDeep) {|e| e.response.body.should == 'first redirect'}
+      end.to raise_error(HTTParty::RedirectionTooDeep) {|e| expect(e.response.body).to eq('first redirect')}
     end
 
     it "should fail with redirected COPY" do
-      lambda do
+      expect do
         @klass.copy('/foo', no_follow: true)
-      end.should raise_error(HTTParty::RedirectionTooDeep) {|e| e.response.body.should == 'first redirect'}
+      end.to raise_error(HTTParty::RedirectionTooDeep) {|e| expect(e.response.body).to eq('first redirect')}
     end
 
     it "should fail with redirected PUT" do
-      lambda do
+      expect do
         @klass.put('/foo', no_follow: true)
-      end.should raise_error(HTTParty::RedirectionTooDeep) {|e| e.response.body.should == 'first redirect'}
+      end.to raise_error(HTTParty::RedirectionTooDeep) {|e| expect(e.response.body).to eq('first redirect')}
     end
 
     it "should fail with redirected HEAD" do
-      lambda do
+      expect do
         @klass.head('/foo', no_follow: true)
-      end.should raise_error(HTTParty::RedirectionTooDeep) {|e| e.response.body.should == 'first redirect'}
+      end.to raise_error(HTTParty::RedirectionTooDeep) {|e| expect(e.response.body).to eq('first redirect')}
     end
 
     it "should fail with redirected OPTIONS" do
-      lambda do
+      expect do
         @klass.options('/foo', no_follow: true)
-      end.should raise_error(HTTParty::RedirectionTooDeep) {|e| e.response.body.should == 'first redirect'}
+      end.to raise_error(HTTParty::RedirectionTooDeep) {|e| expect(e.response.body).to eq('first redirect')}
     end
   end
 
@@ -580,8 +580,8 @@ describe HTTParty do
     end
 
     it "should not run over each others options" do
-      @klass.default_options.should == { base_uri: 'http://first.com', default_params: { one: 1 } }
-      @additional_klass.default_options.should == { base_uri: 'http://second.com', default_params: { two: 2 } }
+      expect(@klass.default_options).to eq({ base_uri: 'http://first.com', default_params: { one: 1 } })
+      expect(@additional_klass.default_options).to eq({ base_uri: 'http://second.com', default_params: { two: 2 } })
     end
   end
 
@@ -602,68 +602,68 @@ describe HTTParty do
       @child1.default_params joe: "alive"
       @child2.default_params joe: "dead"
 
-      @child1.default_options.should == { default_params: {joe: "alive"} }
-      @child2.default_options.should == { default_params: {joe: "dead"} }
+      expect(@child1.default_options).to eq({ default_params: {joe: "alive"} })
+      expect(@child2.default_options).to eq({ default_params: {joe: "dead"} })
 
-      @parent.default_options.should == { }
+      expect(@parent.default_options).to eq({ })
     end
 
     it "inherits default_options from the superclass" do
       @parent.basic_auth 'user', 'password'
-      @child1.default_options.should == {basic_auth: {username: 'user', password: 'password'}}
+      expect(@child1.default_options).to eq({basic_auth: {username: 'user', password: 'password'}})
       @child1.basic_auth 'u', 'p' # modifying child1 has no effect on child2
-      @child2.default_options.should == {basic_auth: {username: 'user', password: 'password'}}
+      expect(@child2.default_options).to eq({basic_auth: {username: 'user', password: 'password'}})
     end
 
     it "doesn't modify the parent's default options" do
       @parent.basic_auth 'user', 'password'
 
       @child1.basic_auth 'u', 'p'
-      @child1.default_options.should == {basic_auth: {username: 'u', password: 'p'}}
+      expect(@child1.default_options).to eq({basic_auth: {username: 'u', password: 'p'}})
 
       @child1.basic_auth 'email', 'token'
-      @child1.default_options.should == {basic_auth: {username: 'email', password: 'token'}}
+      expect(@child1.default_options).to eq({basic_auth: {username: 'email', password: 'token'}})
 
-      @parent.default_options.should == {basic_auth: {username: 'user', password: 'password'}}
+      expect(@parent.default_options).to eq({basic_auth: {username: 'user', password: 'password'}})
     end
 
     it "doesn't modify hashes in the parent's default options" do
       @parent.headers 'Accept' => 'application/json'
       @child1.headers 'Accept' => 'application/xml'
 
-      @parent.default_options[:headers].should == {'Accept' => 'application/json'}
-      @child1.default_options[:headers].should == {'Accept' => 'application/xml'}
+      expect(@parent.default_options[:headers]).to eq({'Accept' => 'application/json'})
+      expect(@child1.default_options[:headers]).to eq({'Accept' => 'application/xml'})
     end
 
     it "works with lambda values" do
       @child1.default_options[:imaginary_option] = lambda { "This is a new lambda "}
-      @child1.default_options[:imaginary_option].should be_a Proc
+      expect(@child1.default_options[:imaginary_option]).to be_a Proc
     end
 
     it 'should dup the proc on the child class' do
       imaginary_option = lambda { 2 * 3.14 }
       @parent.default_options[:imaginary_option] = imaginary_option
-      @parent.default_options[:imaginary_option].call.should == imaginary_option.call
+      expect(@parent.default_options[:imaginary_option].call).to eq(imaginary_option.call)
       @child1.default_options[:imaginary_option]
-      @child1.default_options[:imaginary_option].call.should == imaginary_option.call
-      @child1.default_options[:imaginary_option].should_not be_equal imaginary_option
+      expect(@child1.default_options[:imaginary_option].call).to eq(imaginary_option.call)
+      expect(@child1.default_options[:imaginary_option]).not_to be_equal imaginary_option
     end
 
     it "inherits default_cookies from the parent class" do
       @parent.cookies 'type' => 'chocolate_chip'
-      @child1.default_cookies.should == {"type" => "chocolate_chip"}
+      expect(@child1.default_cookies).to eq({"type" => "chocolate_chip"})
       @child1.cookies 'type' => 'snickerdoodle'
-      @child1.default_cookies.should == {"type" => "snickerdoodle"}
-      @child2.default_cookies.should == {"type" => "chocolate_chip"}
+      expect(@child1.default_cookies).to eq({"type" => "snickerdoodle"})
+      expect(@child2.default_cookies).to eq({"type" => "chocolate_chip"})
     end
 
     it "doesn't modify the parent's default cookies" do
       @parent.cookies 'type' => 'chocolate_chip'
 
       @child1.cookies 'type' => 'snickerdoodle'
-      @child1.default_cookies.should == {"type" => "snickerdoodle"}
+      expect(@child1.default_cookies).to eq({"type" => "snickerdoodle"})
 
-      @parent.default_cookies.should == {"type" => "chocolate_chip"}
+      expect(@parent.default_cookies).to eq({"type" => "chocolate_chip"})
     end
   end
 
@@ -680,23 +680,25 @@ describe HTTParty do
     end
     it "continues running the #inherited on the parent" do
       child = Class.new(@parent)
-      child.instance_variable_get(:@grand_parent).should be_true
+      expect(child.instance_variable_get(:@grand_parent)).to be_truthy
     end
   end
 
   describe "#get" do
     it "should be able to get html" do
       stub_http_response_with('google.html')
-      HTTParty.get('http://www.google.com').should == file_fixture('google.html')
+      expect(HTTParty.get('http://www.google.com')).to include(file_fixture('google.html'))
     end
 
     it "should be able to get chunked html" do
       chunks = ["Chunk1", "Chunk2", "Chunk3", "Chunk4"]
       stub_chunked_http_response_with(chunks)
 
-      HTTParty.get('http://www.google.com') do |fragment|
-        chunks.should include(fragment)
-      end.should == chunks.join
+      expect(
+        HTTParty.get('http://www.google.com') do |fragment|
+          expect(chunks).to include(fragment)
+        end
+      ).to eq(chunks.join)
     end
 
     it "should return an empty body if stream_body option is turned on" do
@@ -704,16 +706,18 @@ describe HTTParty do
       options = {stream_body: true, format: 'html'}
       stub_chunked_http_response_with(chunks, options)
 
-      HTTParty.get('http://www.google.com', options) do |fragment|
-        chunks.should include(fragment)
-      end.should == nil
+      expect(
+        HTTParty.get('http://www.google.com', options) do |fragment|
+          expect(chunks).to include(fragment)
+        end
+      ).to eq(nil)
     end
 
     it "should be able parse response type json automatically" do
       stub_http_response_with('twitter.json')
       tweets = HTTParty.get('http://twitter.com/statuses/public_timeline.json')
-      tweets.size.should == 20
-      tweets.first['user'].should == {
+      expect(tweets.size).to eq(20)
+      expect(tweets.first['user']).to eq({
         "name"              => "Pyk",
         "url"               => nil,
         "id"                => "7694602",
@@ -723,14 +727,14 @@ describe HTTParty do
         "followers_count"   => 1,
         "location"          => "Opera Plaza, California",
         "profile_image_url" => "http://static.twitter.com/images/default_profile_normal.png"
-      }
+      })
     end
 
     it "should be able parse response type xml automatically" do
       stub_http_response_with('twitter.xml')
       tweets = HTTParty.get('http://twitter.com/statuses/public_timeline.xml')
-      tweets['statuses'].size.should == 20
-      tweets['statuses'].first['user'].should == {
+      expect(tweets['statuses'].size).to eq(20)
+      expect(tweets['statuses'].first['user']).to eq({
         "name"              => "Magic 8 Bot",
         "url"               => nil,
         "id"                => "17656026",
@@ -740,54 +744,54 @@ describe HTTParty do
         "followers_count"   => "90",
         "profile_image_url" => "http://s3.amazonaws.com/twitter_production/profile_images/65565851/8ball_large_normal.jpg",
         "location"          => nil
-      }
+      })
     end
 
     it "should be able parse response type csv automatically" do
       stub_http_response_with('twitter.csv')
       profile = HTTParty.get('http://twitter.com/statuses/profile.csv')
-      profile.size.should == 2
-      profile[0].should == ["name","url","id","description","protected","screen_name","followers_count","profile_image_url","location"]
-      profile[1].should == ["Magic 8 Bot",nil,"17656026","ask me a question","false","magic8bot","90","http://s3.amazonaws.com/twitter_production/profile_images/65565851/8ball_large_normal.jpg",nil]
+      expect(profile.size).to eq(2)
+      expect(profile[0]).to eq(["name","url","id","description","protected","screen_name","followers_count","profile_image_url","location"])
+      expect(profile[1]).to eq(["Magic 8 Bot",nil,"17656026","ask me a question","false","magic8bot","90","http://s3.amazonaws.com/twitter_production/profile_images/65565851/8ball_large_normal.jpg",nil])
     end
 
     it "should not get undefined method add_node for nil class for the following xml" do
       stub_http_response_with('undefined_method_add_node_for_nil.xml')
       result = HTTParty.get('http://foobar.com')
-      result.should == {"Entities"=>{"href"=>"https://s3-sandbox.parature.com/api/v1/5578/5633/Account", "results"=>"0", "total"=>"0", "page_size"=>"25", "page"=>"1"}}
+      expect(result).to include({"Entities"=>{"href"=>"https://s3-sandbox.parature.com/api/v1/5578/5633/Account", "results"=>"0", "total"=>"0", "page_size"=>"25", "page"=>"1"}})
     end
 
     it "should parse empty response fine" do
       stub_http_response_with('empty.xml')
       result = HTTParty.get('http://foobar.com')
-      result.should be_nil
+      expect(result).to be_nil
     end
 
     it "should accept http URIs" do
       stub_http_response_with('google.html')
-      lambda do
+      expect do
         HTTParty.get('http://google.com')
-      end.should_not raise_error(HTTParty::UnsupportedURIScheme)
+      end.not_to raise_error
     end
 
     it "should accept https URIs" do
       stub_http_response_with('google.html')
-      lambda do
+      expect do
         HTTParty.get('https://google.com')
-      end.should_not raise_error(HTTParty::UnsupportedURIScheme)
+      end.not_to raise_error
     end
 
     it "should accept webcal URIs" do
       stub_http_response_with('google.html')
-      lambda do
+      expect do
         HTTParty.get('webcal://google.com')
-      end.should_not raise_error(HTTParty::UnsupportedURIScheme)
+      end.not_to raise_error
     end
 
     it "should raise an InvalidURIError on URIs that can't be parsed at all" do
-      lambda do
+      expect do
         HTTParty.get("It's the one that says 'Bad URI'")
-      end.should raise_error(URI::InvalidURIError)
+      end.to raise_error(URI::InvalidURIError)
     end
   end
 end

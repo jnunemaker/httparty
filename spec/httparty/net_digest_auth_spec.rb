@@ -1,11 +1,11 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper'))
 
-describe Net::HTTPHeader::DigestAuthenticator do
+RSpec.describe Net::HTTPHeader::DigestAuthenticator do
   def setup_digest(response)
     digest = Net::HTTPHeader::DigestAuthenticator.new("Mufasa",
       "Circle Of Life", "GET", "/dir/index.html", response)
-    digest.stub(:random).and_return("deadbeef")
-    Digest::MD5.stub(:hexdigest) { |str| "md5(#{str})" }
+    allow(digest).to receive(:random).and_return("deadbeef")
+    allow(Digest::MD5).to receive(:hexdigest) { |str| "md5(#{str})" }
     digest
   end
 
@@ -22,7 +22,7 @@ describe Net::HTTPHeader::DigestAuthenticator do
     end
 
     it "should set opaque" do
-      authorization_header.should include(%Q(opaque="solid"))
+      expect(authorization_header).to include(%Q(opaque="solid"))
     end
   end
 
@@ -34,7 +34,7 @@ describe Net::HTTPHeader::DigestAuthenticator do
     end
 
     it "should not set opaque" do
-      authorization_header.should_not include(%Q(opaque=))
+      expect(authorization_header).not_to include(%Q(opaque=))
     end
   end
 
@@ -46,32 +46,32 @@ describe Net::HTTPHeader::DigestAuthenticator do
     end
 
     it "should set prefix" do
-      authorization_header.should =~ /^Digest /
+      expect(authorization_header).to match(/^Digest /)
     end
 
     it "should set username" do
-      authorization_header.should include(%Q(username="Mufasa"))
+      expect(authorization_header).to include(%Q(username="Mufasa"))
     end
 
     it "should set digest-uri" do
-      authorization_header.should include(%Q(uri="/dir/index.html"))
+      expect(authorization_header).to include(%Q(uri="/dir/index.html"))
     end
 
     it "should set qop" do
-      authorization_header.should include(%Q(qop="auth"))
+      expect(authorization_header).to include(%Q(qop="auth"))
     end
 
     it "should set cnonce" do
-      authorization_header.should include(%Q(cnonce="md5(deadbeef)"))
+      expect(authorization_header).to include(%Q(cnonce="md5(deadbeef)"))
     end
 
     it "should set nonce-count" do
-      authorization_header.should include(%Q(nc=00000001))
+      expect(authorization_header).to include(%Q(nc=00000001))
     end
 
     it "should set response" do
       request_digest = "md5(md5(Mufasa:myhost@testrealm.com:Circle Of Life):NONCE:00000001:md5(deadbeef):auth:md5(GET:/dir/index.html))"
-      authorization_header.should include(%Q(response="#{request_digest}"))
+      expect(authorization_header).to include(%Q(response="#{request_digest}"))
     end
   end
 
@@ -83,7 +83,7 @@ describe Net::HTTPHeader::DigestAuthenticator do
     end
 
     it "should still set qop" do
-      authorization_header.should include(%Q(qop="auth"))
+      expect(authorization_header).to include(%Q(qop="auth"))
     end
   end
 
@@ -95,32 +95,32 @@ describe Net::HTTPHeader::DigestAuthenticator do
     end
 
     it "should set prefix" do
-      authorization_header.should =~ /^Digest /
+      expect(authorization_header).to match(/^Digest /)
     end
 
     it "should set username" do
-      authorization_header.should include(%Q(username="Mufasa"))
+      expect(authorization_header).to include(%Q(username="Mufasa"))
     end
 
     it "should set digest-uri" do
-      authorization_header.should include(%Q(uri="/dir/index.html"))
+      expect(authorization_header).to include(%Q(uri="/dir/index.html"))
     end
 
     it "should not set qop" do
-      authorization_header.should_not include(%Q(qop=))
+      expect(authorization_header).not_to include(%Q(qop=))
     end
 
     it "should not set cnonce" do
-      authorization_header.should_not include(%Q(cnonce=))
+      expect(authorization_header).not_to include(%Q(cnonce=))
     end
 
     it "should not set nonce-count" do
-      authorization_header.should_not include(%Q(nc=))
+      expect(authorization_header).not_to include(%Q(nc=))
     end
 
     it "should set response" do
       request_digest = "md5(md5(Mufasa:myhost@testrealm.com:Circle Of Life):NONCE:md5(GET:/dir/index.html))"
-      authorization_header.should include(%Q(response="#{request_digest}"))
+      expect(authorization_header).to include(%Q(response="#{request_digest}"))
     end
   end
 
@@ -132,32 +132,32 @@ describe Net::HTTPHeader::DigestAuthenticator do
     end
 
     it "should set prefix" do
-      authorization_header.should =~ /^Digest /
+      expect(authorization_header).to match(/^Digest /)
     end
 
     it "should set username" do
-      authorization_header.should include(%Q(username="Mufasa"))
+      expect(authorization_header).to include(%Q(username="Mufasa"))
     end
 
     it "should set digest-uri" do
-      authorization_header.should include(%Q(uri="/dir/index.html"))
+      expect(authorization_header).to include(%Q(uri="/dir/index.html"))
     end
 
     it "should set qop" do
-      authorization_header.should include(%Q(qop="auth"))
+      expect(authorization_header).to include(%Q(qop="auth"))
     end
 
     it "should set cnonce" do
-      authorization_header.should include(%Q(cnonce="md5(deadbeef)"))
+      expect(authorization_header).to include(%Q(cnonce="md5(deadbeef)"))
     end
 
     it "should set nonce-count" do
-      authorization_header.should include(%Q(nc=00000001))
+      expect(authorization_header).to include(%Q(nc=00000001))
     end
 
     it "should set response" do
       request_digest = "md5(md5(Mufasa:myhost@testrealm.com:Circle Of Life):NONCE:00000001:md5(deadbeef):auth:md5(GET:/dir/index.html))"
-      authorization_header.should include(%Q(response="#{request_digest}"))
+      expect(authorization_header).to include(%Q(response="#{request_digest}"))
     end
   end
 end
