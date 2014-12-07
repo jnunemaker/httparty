@@ -697,7 +697,7 @@ RSpec.describe HTTParty do
       expect(
         HTTParty.get('http://www.google.com') do |fragment|
           expect(chunks).to include(fragment)
-        end
+        end.parsed_response
       ).to eq(chunks.join)
     end
 
@@ -709,7 +709,7 @@ RSpec.describe HTTParty do
       expect(
         HTTParty.get('http://www.google.com', options) do |fragment|
           expect(chunks).to include(fragment)
-        end
+        end.parsed_response
       ).to eq(nil)
     end
 
