@@ -1,6 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper'))
 
-describe HTTParty::Request do
+RSpec.describe HTTParty::Request do
   context "SSL certificate verification" do
     before do
       FakeWeb.allow_net_connect = true
@@ -17,7 +17,7 @@ describe HTTParty::Request do
     end
 
     it "should work when no trusted CA list is specified, when the verify option is set to false" do
-      expect(ssl_verify_test(nil, nil, "selfsigned.crt", verify: false)).to eq({'success' => true})
+      expect(ssl_verify_test(nil, nil, "selfsigned.crt", verify: false)).to include({'success' => true})
     end
 
     it "should fail when no trusted CA list is specified, with a bogus hostname, by default" do
@@ -27,15 +27,15 @@ describe HTTParty::Request do
     end
 
     it "should work when no trusted CA list is specified, even with a bogus hostname, when the verify option is set to true" do
-      expect(ssl_verify_test(nil, nil, "bogushost.crt", verify: false)).to eq({'success' => true})
+      expect(ssl_verify_test(nil, nil, "bogushost.crt", verify: false)).to include({'success' => true})
     end
 
     it "should work when using ssl_ca_file with a self-signed CA" do
-      expect(ssl_verify_test(:ssl_ca_file, "selfsigned.crt", "selfsigned.crt")).to eq({'success' => true})
+      expect(ssl_verify_test(:ssl_ca_file, "selfsigned.crt", "selfsigned.crt")).to include({'success' => true})
     end
 
     it "should work when using ssl_ca_file with a certificate authority" do
-      expect(ssl_verify_test(:ssl_ca_file, "ca.crt", "server.crt")).to eq({'success' => true})
+      expect(ssl_verify_test(:ssl_ca_file, "ca.crt", "server.crt")).to include({'success' => true})
     end
 
     it "should work when using ssl_ca_path with a certificate authority" do
