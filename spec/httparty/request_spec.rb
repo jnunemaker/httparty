@@ -1,6 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper'))
 
-describe HTTParty::Request do
+RSpec.describe HTTParty::Request do
   before do
     @request = HTTParty::Request.new(Net::HTTP::Get, 'http://api.foo.com/v1', format: :xml)
   end
@@ -10,26 +10,26 @@ describe HTTParty::Request do
 
     it "doesn't modify strings" do
       query_string = normalizer["foo=bar&foo=baz"]
-      URI.unescape(query_string).should == "foo=bar&foo=baz"
+      expect(URI.unescape(query_string)).to eq("foo=bar&foo=baz")
     end
 
     context "when the query is an array" do
 
       it "doesn't include brackets" do
         query_string = normalizer[{page: 1, foo: %w(bar baz)}]
-        URI.unescape(query_string).should == "foo=bar&foo=baz&page=1"
+        expect(URI.unescape(query_string)).to eq("foo=bar&foo=baz&page=1")
       end
 
       it "URI encodes array values" do
         query_string = normalizer[{people: ["Otis Redding", "Bob Marley", "Tim & Jon"], page: 1, xyzzy: 3}]
-        query_string.should == "page=1&people=Otis%20Redding&people=Bob%20Marley&people=Tim%20%26%20Jon&xyzzy=3"
+        expect(query_string).to eq("page=1&people=Otis%20Redding&people=Bob%20Marley&people=Tim%20%26%20Jon&xyzzy=3")
       end
     end
 
     context "when the query is a hash" do
       it "correctly handles nil values" do
         query_string = normalizer[{page: 1, per_page: nil}]
-        query_string.should == "page=1&per_page"
+        expect(query_string).to eq("page=1&per_page")
       end
     end
   end
@@ -37,31 +37,31 @@ describe HTTParty::Request do
   describe "initialization" do
     it "sets parser to HTTParty::Parser" do
       request = HTTParty::Request.new(Net::HTTP::Get, 'http://google.com')
-      request.parser.should == HTTParty::Parser
+      expect(request.parser).to eq(HTTParty::Parser)
     end
 
     it "sets parser to the optional parser" do
       my_parser = lambda {}
       request = HTTParty::Request.new(Net::HTTP::Get, 'http://google.com', parser: my_parser)
-      request.parser.should == my_parser
+      expect(request.parser).to eq(my_parser)
     end
 
     it "sets connection_adapter to HTTPParty::ConnectionAdapter" do
       request = HTTParty::Request.new(Net::HTTP::Get, 'http://google.com')
-      request.connection_adapter.should == HTTParty::ConnectionAdapter
+      expect(request.connection_adapter).to eq(HTTParty::ConnectionAdapter)
     end
 
     it "sets connection_adapter to the optional connection_adapter" do
       my_adapter = lambda {}
       request = HTTParty::Request.new(Net::HTTP::Get, 'http://google.com', connection_adapter: my_adapter)
-      request.connection_adapter.should == my_adapter
+      expect(request.connection_adapter).to eq(my_adapter)
     end
 
     context "when basic authentication credentials provided in uri" do
       context "when basic auth options wasn't set explicitly" do
         it "sets basic auth from uri" do
           request = HTTParty::Request.new(Net::HTTP::Get, 'http://user1:pass1@example.com')
-          request.options[:basic_auth].should == {:username => 'user1', :password => 'pass1'}
+          expect(request.options[:basic_auth]).to eq({:username => 'user1', :password => 'pass1'})
         end
       end
 
@@ -69,7 +69,7 @@ describe HTTParty::Request do
         it "uses basic auth from url anyway" do
           basic_auth = {:username => 'user2', :password => 'pass2'}
           request = HTTParty::Request.new(Net::HTTP::Get, 'http://user1:pass1@example.com', :basic_auth => basic_auth)
-          request.options[:basic_auth].should == {:username => 'user1', :password => 'pass1'}
+          expect(request.options[:basic_auth]).to eq({:username => 'user1', :password => 'pass1'})
         end
       end
     end
@@ -79,28 +79,28 @@ describe HTTParty::Request do
     context "request yet to be made" do
       it "returns format option" do
         request = HTTParty::Request.new 'get', '/', format: :xml
-        request.format.should == :xml
+        expect(request.format).to eq(:xml)
       end
 
       it "returns nil format" do
         request = HTTParty::Request.new 'get', '/'
-        request.format.should be_nil
+        expect(request.format).to be_nil
       end
     end
 
     context "request has been made" do
       it "returns format option" do
         request = HTTParty::Request.new 'get', '/', format: :xml
-        request.last_response = stub
-        request.format.should == :xml
+        request.last_response = double
+        expect(request.format).to eq(:xml)
       end
 
       it "returns the content-type from the last response when the option is not set" do
         request = HTTParty::Request.new 'get', '/'
-        response = stub
-        response.should_receive(:[]).with('content-type').and_return('text/json')
+        response = double
+        expect(response).to receive(:[]).with('content-type').and_return('text/json')
         request.last_response = response
-        request.format.should == :json
+        expect(request.format).to eq(:json)
       end
     end
 
@@ -110,7 +110,7 @@ describe HTTParty::Request do
     it "should use basic auth when configured" do
       @request.options[:basic_auth] = {username: 'foobar', password: 'secret'}
       @request.send(:setup_raw_request)
-      @request.instance_variable_get(:@raw_request)['authorization'].should_not be_nil
+      expect(@request.instance_variable_get(:@raw_request)['authorization']).not_to be_nil
     end
 
     it "should use digest auth when configured" do
@@ -121,7 +121,7 @@ describe HTTParty::Request do
       @request.send(:setup_raw_request)
 
       raw_request = @request.instance_variable_get(:@raw_request)
-      raw_request.instance_variable_get(:@header)['Authorization'].should_not be_nil
+      expect(raw_request.instance_variable_get(:@header)['Authorization']).not_to be_nil
     end
 
     it "should use the right http method for digest authentication" do
@@ -129,8 +129,8 @@ describe HTTParty::Request do
       FakeWeb.register_uri(:post, "http://api.foo.com/v1", {})
 
       http = @post_request.send(:http)
-      @post_request.should_receive(:http).and_return(http)
-      http.should_not_receive(:head).and_return({'www-authenticate' => nil})
+      expect(@post_request).to receive(:http).and_return(http)
+      expect(http).not_to receive(:head).with({'www-authenticate' => nil})
       @post_request.options[:digest_auth] = {username: 'foobar', password: 'secret'}
       @post_request.send(:setup_raw_request)
     end
@@ -139,7 +139,7 @@ describe HTTParty::Request do
       stream = StringIO.new('foo')
       request = HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', body_stream: stream)
       request.send(:setup_raw_request)
-      request.instance_variable_get(:@raw_request).body_stream.should == stream
+      expect(request.instance_variable_get(:@raw_request).body_stream).to eq(stream)
     end
   end
 
@@ -150,7 +150,7 @@ describe HTTParty::Request do
         @request.path = URI.parse("bar?foo=bar")
         @request.redirect = true
 
-        @request.uri.should == URI.parse("http://example.com/foo/bar?foo=bar")
+        expect(@request.uri).to eq(URI.parse("http://example.com/foo/bar?foo=bar"))
       end
 
       it "returns correct path when the server sets the location header to an absolute path" do
@@ -158,7 +158,7 @@ describe HTTParty::Request do
         @request.path = URI.parse("/bar?foo=bar")
         @request.redirect = true
 
-        @request.uri.should == URI.parse("http://example.com/bar?foo=bar")
+        expect(@request.uri).to eq(URI.parse("http://example.com/bar?foo=bar"))
       end
 
       it "returns correct path when the server sets the location header to a full uri" do
@@ -166,39 +166,39 @@ describe HTTParty::Request do
         @request.path = URI.parse("http://example.com/bar?foo=bar")
         @request.redirect = true
 
-        @request.uri.should == URI.parse("http://example.com/bar?foo=bar")
+        expect(@request.uri).to eq(URI.parse("http://example.com/bar?foo=bar"))
       end
     end
 
     context "query strings" do
       it "does not add an empty query string when default_params are blank" do
         @request.options[:default_params] = {}
-        @request.uri.query.should be_nil
+        expect(@request.uri.query).to be_nil
       end
 
       it "respects the query string normalization proc" do
         empty_proc = lambda {|qs| ""}
         @request.options[:query_string_normalizer] = empty_proc
         @request.options[:query] = {foo: :bar}
-        URI.unescape(@request.uri.query).should == ""
+        expect(URI.unescape(@request.uri.query)).to eq("")
       end
 
       it "does not append an ampersand when queries are embedded in paths" do
         @request.path = "/path?a=1"
         @request.options[:query] = {}
-        @request.uri.query.should == "a=1"
+        expect(@request.uri.query).to eq("a=1")
       end
 
       it "does not duplicate query string parameters when uri is called twice" do
         @request.options[:query] = {foo: :bar}
         @request.uri
-        @request.uri.query.should == "foo=bar"
+        expect(@request.uri.query).to eq("foo=bar")
       end
 
       context "when representing an array" do
         it "returns a Rails style query string" do
           @request.options[:query] = {foo: %w(bar baz)}
-          URI.unescape(@request.uri.query).should == "foo[]=bar&foo[]=baz"
+          expect(URI.unescape(@request.uri.query)).to eq("foo[]=bar&foo[]=baz")
         end
       end
 
@@ -212,7 +212,7 @@ describe HTTParty::Request do
         @request.options[:body] = {page: 1, foo: %w(bar baz)}
         @request.send(:setup_raw_request)
         body = @request.instance_variable_get(:@raw_request).body
-        URI.unescape(body).should == "foo=bar&foo=baz&page=1"
+        expect(URI.unescape(body)).to eq("foo=bar&foo=baz&page=1")
       end
     end
   end
@@ -220,75 +220,75 @@ describe HTTParty::Request do
   describe 'http' do
     it "should get a connection from the connection_adapter" do
       http = Net::HTTP.new('google.com')
-      adapter = mock('adapter')
+      adapter = double('adapter')
       request = HTTParty::Request.new(Net::HTTP::Get, 'https://api.foo.com/v1:443', connection_adapter: adapter)
-      adapter.should_receive(:call).with(request.uri, request.options).and_return(http)
-      request.send(:http).should be http
+      expect(adapter).to receive(:call).with(request.uri, request.options).and_return(http)
+      expect(request.send(:http)).to be http
     end
   end
 
   describe '#format_from_mimetype' do
     it 'should handle text/xml' do
       ["text/xml", "text/xml; charset=iso8859-1"].each do |ct|
-        @request.send(:format_from_mimetype, ct).should == :xml
+        expect(@request.send(:format_from_mimetype, ct)).to eq(:xml)
       end
     end
 
     it 'should handle application/xml' do
       ["application/xml", "application/xml; charset=iso8859-1"].each do |ct|
-        @request.send(:format_from_mimetype, ct).should == :xml
+        expect(@request.send(:format_from_mimetype, ct)).to eq(:xml)
       end
     end
 
     it 'should handle text/json' do
       ["text/json", "text/json; charset=iso8859-1"].each do |ct|
-        @request.send(:format_from_mimetype, ct).should == :json
+        expect(@request.send(:format_from_mimetype, ct)).to eq(:json)
       end
     end
 
     it 'should handle application/json' do
       ["application/json", "application/json; charset=iso8859-1"].each do |ct|
-        @request.send(:format_from_mimetype, ct).should == :json
+        expect(@request.send(:format_from_mimetype, ct)).to eq(:json)
       end
     end
 
     it 'should handle text/csv' do
       ["text/csv", "text/csv; charset=iso8859-1"].each do |ct|
-        @request.send(:format_from_mimetype, ct).should == :csv
+        expect(@request.send(:format_from_mimetype, ct)).to eq(:csv)
       end
     end
 
     it 'should handle application/csv' do
       ["application/csv", "application/csv; charset=iso8859-1"].each do |ct|
-        @request.send(:format_from_mimetype, ct).should == :csv
+        expect(@request.send(:format_from_mimetype, ct)).to eq(:csv)
       end
     end
 
     it 'should handle text/comma-separated-values' do
       ["text/comma-separated-values", "text/comma-separated-values; charset=iso8859-1"].each do |ct|
-        @request.send(:format_from_mimetype, ct).should == :csv
+        expect(@request.send(:format_from_mimetype, ct)).to eq(:csv)
       end
     end
 
     it 'should handle text/javascript' do
       ["text/javascript", "text/javascript; charset=iso8859-1"].each do |ct|
-        @request.send(:format_from_mimetype, ct).should == :plain
+        expect(@request.send(:format_from_mimetype, ct)).to eq(:plain)
       end
     end
 
     it 'should handle application/javascript' do
       ["application/javascript", "application/javascript; charset=iso8859-1"].each do |ct|
-        @request.send(:format_from_mimetype, ct).should == :plain
+        expect(@request.send(:format_from_mimetype, ct)).to eq(:plain)
       end
     end
 
     it "returns nil for an unrecognized mimetype" do
-      @request.send(:format_from_mimetype, "application/atom+xml").should be_nil
+      expect(@request.send(:format_from_mimetype, "application/atom+xml")).to be_nil
     end
 
     it "returns nil when using a default parser" do
       @request.options[:parser] = lambda {}
-      @request.send(:format_from_mimetype, "text/json").should be_nil
+      expect(@request.send(:format_from_mimetype, "text/json")).to be_nil
     end
   end
 
@@ -296,19 +296,19 @@ describe HTTParty::Request do
     it 'should handle xml automatically' do
       xml = %q[<books><book><id>1234</id><name>Foo Bar!</name></book></books>]
       @request.options[:format] = :xml
-      @request.send(:parse_response, xml).should == {'books' => {'book' => {'id' => '1234', 'name' => 'Foo Bar!'}}}
+      expect(@request.send(:parse_response, xml)).to eq({'books' => {'book' => {'id' => '1234', 'name' => 'Foo Bar!'}}})
     end
 
     it 'should handle csv automatically' do
       csv=[%q["id","Name"],%q["1234","Foo Bar!"]].join("\n")
       @request.options[:format] = :csv
-      @request.send(:parse_response, csv).should == [["id","Name"],["1234","Foo Bar!"]]
+      expect(@request.send(:parse_response, csv)).to eq([["id","Name"],["1234","Foo Bar!"]])
     end
 
     it 'should handle json automatically' do
       json = %q[{"books": {"book": {"name": "Foo Bar!", "id": "1234"}}}]
       @request.options[:format] = :json
-      @request.send(:parse_response, json).should == {'books' => {'book' => {'id' => '1234', 'name' => 'Foo Bar!'}}}
+      expect(@request.send(:parse_response, json)).to eq({'books' => {'book' => {'id' => '1234', 'name' => 'Foo Bar!'}}})
     end
 
     it "should include any HTTP headers in the returned response" do
@@ -316,7 +316,7 @@ describe HTTParty::Request do
       response = stub_response "Content"
       response.initialize_http_header("key" => "value")
 
-      @request.perform.headers.should == { "key" => ["value"] }
+      expect(@request.perform.headers).to eq({ "key" => ["value"] })
     end
 
     if "".respond_to?(:encoding)
@@ -325,21 +325,21 @@ describe HTTParty::Request do
         response = stub_response "Content"
         response.initialize_http_header("Content-Type" => "text/plain;charset = utf-8")
         resp = @request.perform
-        resp.body.encoding.should == Encoding.find("UTF-8")
+        expect(resp.body.encoding).to eq(Encoding.find("UTF-8"))
       end
 
       it "should process charset in content type properly if it has a different case" do
         response = stub_response "Content"
         response.initialize_http_header("Content-Type" => "text/plain;CHARSET = utf-8")
         resp = @request.perform
-        resp.body.encoding.should == Encoding.find("UTF-8")
+        expect(resp.body.encoding).to eq(Encoding.find("UTF-8"))
       end
 
       it "should process quoted charset in content type properly" do
         response = stub_response "Content"
         response.initialize_http_header("Content-Type" => "text/plain;charset = \"utf-8\"")
         resp = @request.perform
-        resp.body.encoding.should == Encoding.find("UTF-8")
+        expect(resp.body.encoding).to eq(Encoding.find("UTF-8"))
       end
 
       it "should process utf-16 charset with little endian bom correctly" do
@@ -348,7 +348,7 @@ describe HTTParty::Request do
         response = stub_response "\xFF\xFEC\x00o\x00n\x00t\x00e\x00n\x00t\x00"
         response.initialize_http_header("Content-Type" => "text/plain;charset = utf-16")
         resp = @request.perform
-        resp.body.encoding.should == Encoding.find("UTF-16LE")
+        expect(resp.body.encoding).to eq(Encoding.find("UTF-16LE"))
       end
 
       it "should process utf-16 charset with big endian bom correctly" do
@@ -357,7 +357,7 @@ describe HTTParty::Request do
         response = stub_response "\xFE\xFF\x00C\x00o\x00n\x00t\x00e\x00n\x00t"
         response.initialize_http_header("Content-Type" => "text/plain;charset = utf-16")
         resp = @request.perform
-        resp.body.encoding.should == Encoding.find("UTF-16BE")
+        expect(resp.body.encoding).to eq(Encoding.find("UTF-16BE"))
       end
 
       it "should assume utf-16 little endian if options has been chosen" do
@@ -366,7 +366,7 @@ describe HTTParty::Request do
         response = stub_response "C\x00o\x00n\x00t\x00e\x00n\x00t\x00"
         response.initialize_http_header("Content-Type" => "text/plain;charset = utf-16")
         resp = @request.perform
-        resp.body.encoding.should == Encoding.find("UTF-16LE")
+        expect(resp.body.encoding).to eq(Encoding.find("UTF-16LE"))
       end
 
 
@@ -375,8 +375,8 @@ describe HTTParty::Request do
         response = stub_response "Content"
         response.initialize_http_header("Content-Type" => "text/plain;charset = utf-lols")
         resp = @request.perform
-        resp.body.should == "Content"
-        resp.body.encoding.should == "Content".encoding
+        expect(resp.body).to eq("Content")
+        expect(resp.body.encoding).to eq("Content".encoding)
       end
 
       it "should perform no encoding if the content type is specified but no charset is specified" do
@@ -384,8 +384,8 @@ describe HTTParty::Request do
         response = stub_response "Content"
         response.initialize_http_header("Content-Type" => "text/plain")
         resp = @request.perform
-        resp.body.should == "Content"
-        resp.body.encoding.should == "Content".encoding
+        expect(resp.body).to eq("Content")
+        expect(resp.body.encoding).to eq("Content".encoding)
       end
     end
 
@@ -394,22 +394,22 @@ describe HTTParty::Request do
         it 'returns a valid object for 304 not modified' do
           stub_response '', 304
           resp = @request.perform
-          resp.code.should == 304
-          resp.body.should == ''
-          resp.should be_nil
+          expect(resp.code).to eq(304)
+          expect(resp.body).to eq('')
+          expect(resp).to be_nil
         end
 
         it "redirects if a 300 contains a location header" do
           redirect = stub_response '', 300
           redirect['location'] = 'http://foo.com/foo'
           ok = stub_response('<hash><foo>bar</foo></hash>', 200)
-          @http.stub!(:request).and_return(redirect, ok)
+          allow(@http).to receive(:request).and_return(redirect, ok)
           response = @request.perform
-          response.request.base_uri.to_s.should == "http://foo.com"
-          response.request.path.to_s.should == "http://foo.com/foo"
-          response.request.uri.request_uri.should == "/foo"
-          response.request.uri.to_s.should == "http://foo.com/foo"
-          response.should == {"hash" => {"foo" => "bar"}}
+          expect(response.request.base_uri.to_s).to eq("http://foo.com")
+          expect(response.request.path.to_s).to eq("http://foo.com/foo")
+          expect(response.request.uri.request_uri).to eq("/foo")
+          expect(response.request.uri.to_s).to eq("http://foo.com/foo")
+          expect(response.parsed_response).to eq({"hash" => {"foo" => "bar"}})
         end
 
         it "calls block given to perform with each redirect" do
@@ -418,20 +418,20 @@ describe HTTParty::Request do
           FakeWeb.register_uri(:get, "http://api.foo.com/v2", body: "<hash><foo>bar</foo></hash>")
           body = ""
           response = @request.perform { |chunk| body += chunk }
-          body.length.should == 27
+          expect(body.length).to eq(27)
         end
 
         it "redirects if a 300 contains a relative location header" do
           redirect = stub_response '', 300
           redirect['location'] = '/foo/bar'
           ok = stub_response('<hash><foo>bar</foo></hash>', 200)
-          @http.stub!(:request).and_return(redirect, ok)
+          allow(@http).to receive(:request).and_return(redirect, ok)
           response = @request.perform
-          response.request.base_uri.to_s.should == "http://api.foo.com"
-          response.request.path.to_s.should == "/foo/bar"
-          response.request.uri.request_uri.should == "/foo/bar"
-          response.request.uri.to_s.should == "http://api.foo.com/foo/bar"
-          response.should == {"hash" => {"foo" => "bar"}}
+          expect(response.request.base_uri.to_s).to eq("http://api.foo.com")
+          expect(response.request.path.to_s).to eq("/foo/bar")
+          expect(response.request.uri.request_uri).to eq("/foo/bar")
+          expect(response.request.uri.to_s).to eq("http://api.foo.com/foo/bar")
+          expect(response.parsed_response).to eq({"hash" => {"foo" => "bar"}})
         end
 
         it "handles multiple redirects and relative location headers on different hosts" do
@@ -440,43 +440,43 @@ describe HTTParty::Request do
           FakeWeb.register_uri(:get, "http://api.foo.com/v2", status: [300, "REDIRECT"], location: "/v3")
           FakeWeb.register_uri(:get, "http://api.foo.com/v3", body: "<hash><foo>bar</foo></hash>")
           response = @request.perform
-          response.request.base_uri.to_s.should == "http://api.foo.com"
-          response.request.path.to_s.should == "/v3"
-          response.request.uri.request_uri.should == "/v3"
-          response.request.uri.to_s.should == "http://api.foo.com/v3"
-          response.should == {"hash" => {"foo" => "bar"}}
+          expect(response.request.base_uri.to_s).to eq("http://api.foo.com")
+          expect(response.request.path.to_s).to eq("/v3")
+          expect(response.request.uri.request_uri).to eq("/v3")
+          expect(response.request.uri.to_s).to eq("http://api.foo.com/v3")
+          expect(response.parsed_response).to eq({"hash" => {"foo" => "bar"}})
         end
 
         it "returns the HTTParty::Response when the 300 does not contain a location header" do
           stub_response '', 300
-          HTTParty::Response.should === @request.perform
+          expect(HTTParty::Response).to be === @request.perform
         end
       end
 
       it 'should return a valid object for 4xx response' do
         stub_response '<foo><bar>yes</bar></foo>', 401
         resp = @request.perform
-        resp.code.should == 401
-        resp.body.should == "<foo><bar>yes</bar></foo>"
-        resp['foo']['bar'].should == "yes"
+        expect(resp.code).to eq(401)
+        expect(resp.body).to eq("<foo><bar>yes</bar></foo>")
+        expect(resp['foo']['bar']).to eq("yes")
       end
 
       it 'should return a valid object for 5xx response' do
         stub_response '<foo><bar>error</bar></foo>', 500
         resp = @request.perform
-        resp.code.should == 500
-        resp.body.should == "<foo><bar>error</bar></foo>"
-        resp['foo']['bar'].should == "error"
+        expect(resp.code).to eq(500)
+        expect(resp.body).to eq("<foo><bar>error</bar></foo>")
+        expect(resp['foo']['bar']).to eq("error")
       end
 
       it "parses response lazily so codes can be checked prior" do
         stub_response 'not xml', 500
         @request.options[:format] = :xml
-        lambda {
+        expect {
           response = @request.perform
-          response.code.should == 500
-          response.body.should == 'not xml'
-        }.should_not raise_error
+          expect(response.code).to eq(500)
+          expect(response.body).to eq('not xml')
+        }.not_to raise_error
       end
     end
   end
@@ -486,14 +486,14 @@ describe HTTParty::Request do
       stub_response "", code
 
       @request.options[:format] = :xml
-      @request.perform.should be_nil
+      expect(@request.perform).to be_nil
     end
   end
 
   it "should not fail for missing mime type" do
     stub_response "Content for you"
     @request.options[:format] = :html
-    @request.perform.should == 'Content for you'
+    expect(@request.perform.parsed_response).to eq('Content for you')
   end
 
   describe "a request that 302 redirects" do
@@ -506,100 +506,100 @@ describe HTTParty::Request do
 
     describe "once" do
       before(:each) do
-        @http.stub!(:request).and_return(@redirect, @ok)
+        allow(@http).to receive(:request).and_return(@redirect, @ok)
       end
 
       it "should be handled by GET transparently" do
-        @request.perform.should == {"hash" => {"foo" => "bar"}}
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
       end
 
       it "should be handled by POST transparently" do
         @request.http_method = Net::HTTP::Post
-        @request.perform.should == {"hash" => {"foo" => "bar"}}
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
       end
 
       it "should be handled by DELETE transparently" do
         @request.http_method = Net::HTTP::Delete
-        @request.perform.should == {"hash" => {"foo" => "bar"}}
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
       end
 
       it "should be handled by MOVE transparently" do
         @request.http_method = Net::HTTP::Move
-        @request.perform.should == {"hash" => {"foo" => "bar"}}
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
       end
 
       it "should be handled by COPY transparently" do
         @request.http_method = Net::HTTP::Copy
-        @request.perform.should == {"hash" => {"foo" => "bar"}}
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
       end
 
       it "should be handled by PATCH transparently" do
         @request.http_method = Net::HTTP::Patch
-        @request.perform.should == {"hash" => {"foo" => "bar"}}
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
       end
 
       it "should be handled by PUT transparently" do
         @request.http_method = Net::HTTP::Put
-        @request.perform.should == {"hash" => {"foo" => "bar"}}
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
       end
 
       it "should be handled by HEAD transparently" do
         @request.http_method = Net::HTTP::Head
-        @request.perform.should == {"hash" => {"foo" => "bar"}}
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
       end
 
       it "should be handled by OPTIONS transparently" do
         @request.http_method = Net::HTTP::Options
-        @request.perform.should == {"hash" => {"foo" => "bar"}}
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
       end
 
       it "should keep track of cookies between redirects" do
         @redirect['Set-Cookie'] = 'foo=bar; name=value; HTTPOnly'
         @request.perform
-        @request.options[:headers]['Cookie'].should match(/foo=bar/)
-        @request.options[:headers]['Cookie'].should match(/name=value/)
+        expect(@request.options[:headers]['Cookie']).to match(/foo=bar/)
+        expect(@request.options[:headers]['Cookie']).to match(/name=value/)
       end
 
       it 'should update cookies with rediects' do
         @request.options[:headers] = {'Cookie'=> 'foo=bar;'}
         @redirect['Set-Cookie'] = 'foo=tar;'
         @request.perform
-        @request.options[:headers]['Cookie'].should match(/foo=tar/)
+        expect(@request.options[:headers]['Cookie']).to match(/foo=tar/)
       end
 
       it 'should keep cookies between rediects' do
         @request.options[:headers] = {'Cookie'=> 'keep=me'}
         @redirect['Set-Cookie'] = 'foo=tar;'
         @request.perform
-        @request.options[:headers]['Cookie'].should match(/keep=me/)
+        expect(@request.options[:headers]['Cookie']).to match(/keep=me/)
       end
 
       it "should handle multiple Set-Cookie headers between redirects" do
         @redirect.add_field 'set-cookie', 'foo=bar; name=value; HTTPOnly'
         @redirect.add_field 'set-cookie', 'one=1; two=2; HTTPOnly'
         @request.perform
-        @request.options[:headers]['Cookie'].should match(/foo=bar/)
-        @request.options[:headers]['Cookie'].should match(/name=value/)
-        @request.options[:headers]['Cookie'].should match(/one=1/)
-        @request.options[:headers]['Cookie'].should match(/two=2/)
+        expect(@request.options[:headers]['Cookie']).to match(/foo=bar/)
+        expect(@request.options[:headers]['Cookie']).to match(/name=value/)
+        expect(@request.options[:headers]['Cookie']).to match(/one=1/)
+        expect(@request.options[:headers]['Cookie']).to match(/two=2/)
       end
 
       it 'should make resulting request a get request if it not already' do
         @request.http_method = Net::HTTP::Delete
-        @request.perform.should == {"hash" => {"foo" => "bar"}}
-        @request.http_method.should == Net::HTTP::Get
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+        expect(@request.http_method).to eq(Net::HTTP::Get)
       end
 
       it 'should not make resulting request a get request if options[:maintain_method_across_redirects] is true' do
         @request.options[:maintain_method_across_redirects] = true
         @request.http_method = Net::HTTP::Delete
-        @request.perform.should == {"hash" => {"foo" => "bar"}}
-        @request.http_method.should == Net::HTTP::Delete
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+        expect(@request.http_method).to eq(Net::HTTP::Delete)
       end
 
       it 'should log the redirection' do
         logger_double = double
-        logger_double.should_receive(:info).twice
+        expect(logger_double).to receive(:info).twice
         @request.options[:logger] = logger_double
         @request.perform
       end
@@ -607,11 +607,11 @@ describe HTTParty::Request do
 
     describe "infinitely" do
       before(:each) do
-        @http.stub!(:request).and_return(@redirect)
+        allow(@http).to receive(:request).and_return(@redirect)
       end
 
       it "should raise an exception" do
-        lambda { @request.perform }.should raise_error(HTTParty::RedirectionTooDeep)
+        expect { @request.perform }.to raise_error(HTTParty::RedirectionTooDeep)
       end
     end
   end
@@ -626,116 +626,116 @@ describe HTTParty::Request do
 
     describe "once" do
       before(:each) do
-        @http.stub!(:request).and_return(@redirect, @ok)
+        allow(@http).to receive(:request).and_return(@redirect, @ok)
       end
 
       it "should be handled by GET transparently" do
-        @request.perform.should == {"hash" => {"foo" => "bar"}}
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
       end
 
       it "should be handled by POST transparently" do
         @request.http_method = Net::HTTP::Post
-        @request.perform.should == {"hash" => {"foo" => "bar"}}
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
       end
 
       it "should be handled by DELETE transparently" do
         @request.http_method = Net::HTTP::Delete
-        @request.perform.should == {"hash" => {"foo" => "bar"}}
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
       end
 
       it "should be handled by MOVE transparently" do
         @request.http_method = Net::HTTP::Move
-        @request.perform.should == {"hash" => {"foo" => "bar"}}
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
       end
 
       it "should be handled by COPY transparently" do
         @request.http_method = Net::HTTP::Copy
-        @request.perform.should == {"hash" => {"foo" => "bar"}}
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
       end
 
       it "should be handled by PATCH transparently" do
         @request.http_method = Net::HTTP::Patch
-        @request.perform.should == {"hash" => {"foo" => "bar"}}
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
       end
 
       it "should be handled by PUT transparently" do
         @request.http_method = Net::HTTP::Put
-        @request.perform.should == {"hash" => {"foo" => "bar"}}
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
       end
 
       it "should be handled by HEAD transparently" do
         @request.http_method = Net::HTTP::Head
-        @request.perform.should == {"hash" => {"foo" => "bar"}}
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
       end
 
       it "should be handled by OPTIONS transparently" do
         @request.http_method = Net::HTTP::Options
-        @request.perform.should == {"hash" => {"foo" => "bar"}}
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
       end
 
       it "should keep track of cookies between redirects" do
         @redirect['Set-Cookie'] = 'foo=bar; name=value; HTTPOnly'
         @request.perform
-        @request.options[:headers]['Cookie'].should match(/foo=bar/)
-        @request.options[:headers]['Cookie'].should match(/name=value/)
+        expect(@request.options[:headers]['Cookie']).to match(/foo=bar/)
+        expect(@request.options[:headers]['Cookie']).to match(/name=value/)
       end
 
       it 'should update cookies with rediects' do
         @request.options[:headers] = {'Cookie'=> 'foo=bar;'}
         @redirect['Set-Cookie'] = 'foo=tar;'
         @request.perform
-        @request.options[:headers]['Cookie'].should match(/foo=tar/)
+        expect(@request.options[:headers]['Cookie']).to match(/foo=tar/)
       end
 
       it 'should keep cookies between rediects' do
         @request.options[:headers] = {'Cookie'=> 'keep=me'}
         @redirect['Set-Cookie'] = 'foo=tar;'
         @request.perform
-        @request.options[:headers]['Cookie'].should match(/keep=me/)
+        expect(@request.options[:headers]['Cookie']).to match(/keep=me/)
       end
 
       it "should handle multiple Set-Cookie headers between redirects" do
         @redirect.add_field 'set-cookie', 'foo=bar; name=value; HTTPOnly'
         @redirect.add_field 'set-cookie', 'one=1; two=2; HTTPOnly'
         @request.perform
-        @request.options[:headers]['Cookie'].should match(/foo=bar/)
-        @request.options[:headers]['Cookie'].should match(/name=value/)
-        @request.options[:headers]['Cookie'].should match(/one=1/)
-        @request.options[:headers]['Cookie'].should match(/two=2/)
+        expect(@request.options[:headers]['Cookie']).to match(/foo=bar/)
+        expect(@request.options[:headers]['Cookie']).to match(/name=value/)
+        expect(@request.options[:headers]['Cookie']).to match(/one=1/)
+        expect(@request.options[:headers]['Cookie']).to match(/two=2/)
       end
 
       it 'should make resulting request a get request if it not already' do
         @request.http_method = Net::HTTP::Delete
-        @request.perform.should == {"hash" => {"foo" => "bar"}}
-        @request.http_method.should == Net::HTTP::Get
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+        expect(@request.http_method).to eq(Net::HTTP::Get)
       end
 
       it 'should make resulting request a get request if options[:maintain_method_across_redirects] is false' do
         @request.options[:maintain_method_across_redirects] = false
         @request.http_method = Net::HTTP::Delete
-        @request.perform.should == {"hash" => {"foo" => "bar"}}
-        @request.http_method.should == Net::HTTP::Get
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+        expect(@request.http_method).to eq(Net::HTTP::Get)
       end
 
       it 'should make resulting request a get request if options[:maintain_method_across_redirects] is true but options[:resend_on_redirect] is false' do
         @request.options[:maintain_method_across_redirects] = true
         @request.options[:resend_on_redirect] = false
         @request.http_method = Net::HTTP::Delete
-        @request.perform.should == {"hash" => {"foo" => "bar"}}
-        @request.http_method.should == Net::HTTP::Get
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+        expect(@request.http_method).to eq(Net::HTTP::Get)
       end
 
       it 'should not make resulting request a get request if options[:maintain_method_across_redirects] and options[:resend_on_redirect] is true' do
         @request.options[:maintain_method_across_redirects] = true
         @request.options[:resend_on_redirect] = true
         @request.http_method = Net::HTTP::Delete
-        @request.perform.should == {"hash" => {"foo" => "bar"}}
-        @request.http_method.should == Net::HTTP::Delete
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+        expect(@request.http_method).to eq(Net::HTTP::Delete)
       end
 
       it 'should log the redirection' do
         logger_double = double
-        logger_double.should_receive(:info).twice
+        expect(logger_double).to receive(:info).twice
         @request.options[:logger] = logger_double
         @request.perform
       end
@@ -743,11 +743,11 @@ describe HTTParty::Request do
 
     describe "infinitely" do
       before(:each) do
-        @http.stub!(:request).and_return(@redirect)
+        allow(@http).to receive(:request).and_return(@redirect)
       end
 
       it "should raise an exception" do
-        lambda { @request.perform }.should raise_error(HTTParty::RedirectionTooDeep)
+        expect { @request.perform }.to raise_error(HTTParty::RedirectionTooDeep)
       end
     end
   end
@@ -756,31 +756,31 @@ describe HTTParty::Request do
     context "context-encoding" do
       before do
         @request.options[:format] = :html
-        @last_response = mock()
-        @last_response.stub!(:body).and_return('')
+        @last_response = double()
+        allow(@last_response).to receive(:body).and_return('')
       end
 
       it "should inflate the gzipped body with content-encoding: gzip" do
-        @last_response.stub!(:[]).with("content-encoding").and_return("gzip")
-        @request.stub!(:last_response).and_return(@last_response)
-        Zlib::GzipReader.should_receive(:new).and_return(StringIO.new(''))
-        @request.last_response.should_receive(:delete).with('content-encoding')
+        allow(@last_response).to receive(:[]).with("content-encoding").and_return("gzip")
+        allow(@request).to receive(:last_response).and_return(@last_response)
+        expect(Zlib::GzipReader).to receive(:new).and_return(StringIO.new(''))
+        expect(@request.last_response).to receive(:delete).with('content-encoding')
         @request.send(:handle_deflation)
       end
 
       it "should inflate the gzipped body with content-encoding: x-gzip" do
-        @last_response.stub!(:[]).with("content-encoding").and_return("x-gzip")
-        @request.stub!(:last_response).and_return(@last_response)
-        Zlib::GzipReader.should_receive(:new).and_return(StringIO.new(''))
-        @request.last_response.should_receive(:delete).with('content-encoding')
+        allow(@last_response).to receive(:[]).with("content-encoding").and_return("x-gzip")
+        allow(@request).to receive(:last_response).and_return(@last_response)
+        expect(Zlib::GzipReader).to receive(:new).and_return(StringIO.new(''))
+        expect(@request.last_response).to receive(:delete).with('content-encoding')
         @request.send(:handle_deflation)
       end
 
       it "should inflate the deflated body" do
-        @last_response.stub!(:[]).with("content-encoding").and_return("deflate")
-        @request.stub!(:last_response).and_return(@last_response)
-        Zlib::Inflate.should_receive(:inflate).and_return('')
-        @request.last_response.should_receive(:delete).with('content-encoding')
+        allow(@last_response).to receive(:[]).with("content-encoding").and_return("deflate")
+        allow(@request).to receive(:last_response).and_return(@last_response)
+        expect(Zlib::Inflate).to receive(:inflate).and_return('')
+        expect(@request.last_response).to receive(:delete).with('content-encoding')
         @request.send(:handle_deflation)
       end
     end
@@ -788,29 +788,29 @@ describe HTTParty::Request do
 
   context "with POST http method" do
     it "should raise argument error if query is not a hash" do
-      lambda {
+      expect {
         HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', format: :xml, query: 'astring').perform
-      }.should raise_error(ArgumentError)
+      }.to raise_error(ArgumentError)
     end
   end
 
   describe "argument validation" do
     it "should raise argument error if basic_auth and digest_auth are both present" do
-      lambda {
+      expect {
         HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', basic_auth: {}, digest_auth: {}).perform
-      }.should raise_error(ArgumentError, "only one authentication method, :basic_auth or :digest_auth may be used at a time")
+      }.to raise_error(ArgumentError, "only one authentication method, :basic_auth or :digest_auth may be used at a time")
     end
 
     it "should raise argument error if basic_auth is not a hash" do
-      lambda {
+      expect {
         HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', basic_auth: ["foo", "bar"]).perform
-      }.should raise_error(ArgumentError, ":basic_auth must be a hash")
+      }.to raise_error(ArgumentError, ":basic_auth must be a hash")
     end
 
     it "should raise argument error if digest_auth is not a hash" do
-      lambda {
+      expect {
         HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', digest_auth: ["foo", "bar"]).perform
-      }.should raise_error(ArgumentError, ":digest_auth must be a hash")
+      }.to raise_error(ArgumentError, ":digest_auth must be a hash")
     end
   end
 end

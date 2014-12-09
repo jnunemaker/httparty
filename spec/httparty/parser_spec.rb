@@ -1,64 +1,64 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper'))
 
-describe HTTParty::Parser do
+RSpec.describe HTTParty::Parser do
   describe ".SupportedFormats" do
     it "returns a hash" do
-      HTTParty::Parser::SupportedFormats.should be_instance_of(Hash)
+      expect(HTTParty::Parser::SupportedFormats).to be_instance_of(Hash)
     end
   end
 
   describe ".call" do
     it "generates an HTTParty::Parser instance with the given body and format" do
-      HTTParty::Parser.should_receive(:new).with('body', :plain).and_return(stub(parse: nil))
+      expect(HTTParty::Parser).to receive(:new).with('body', :plain).and_return(double(parse: nil))
       HTTParty::Parser.call('body', :plain)
     end
 
     it "calls #parse on the parser" do
-      parser = mock('Parser')
-      parser.should_receive(:parse)
-      HTTParty::Parser.stub(new: parser)
+      parser = double('Parser')
+      expect(parser).to receive(:parse)
+      allow(HTTParty::Parser).to receive_messages(new: parser)
       parser = HTTParty::Parser.call('body', :plain)
     end
   end
 
   describe ".formats" do
     it "returns the SupportedFormats constant" do
-      HTTParty::Parser.formats.should == HTTParty::Parser::SupportedFormats
+      expect(HTTParty::Parser.formats).to eq(HTTParty::Parser::SupportedFormats)
     end
 
     it "returns the SupportedFormats constant for subclasses" do
       class MyParser < HTTParty::Parser
         SupportedFormats = {"application/atom+xml" => :atom}
       end
-      MyParser.formats.should == {"application/atom+xml" => :atom}
+      expect(MyParser.formats).to eq({"application/atom+xml" => :atom})
     end
   end
 
   describe ".format_from_mimetype" do
     it "returns a symbol representing the format mimetype" do
-      HTTParty::Parser.format_from_mimetype("text/plain").should == :plain
+      expect(HTTParty::Parser.format_from_mimetype("text/plain")).to eq(:plain)
     end
 
     it "returns nil when the mimetype is not supported" do
-      HTTParty::Parser.format_from_mimetype("application/atom+xml").should be_nil
+      expect(HTTParty::Parser.format_from_mimetype("application/atom+xml")).to be_nil
     end
   end
 
   describe ".supported_formats" do
     it "returns a unique set of supported formats represented by symbols" do
-      HTTParty::Parser.supported_formats.should == HTTParty::Parser::SupportedFormats.values.uniq
+      expect(HTTParty::Parser.supported_formats).to eq(HTTParty::Parser::SupportedFormats.values.uniq)
     end
   end
 
   describe ".supports_format?" do
     it "returns true for a supported format" do
-      HTTParty::Parser.stub(supported_formats: [:json])
-      HTTParty::Parser.supports_format?(:json).should be_true
+      allow(HTTParty::Parser).to receive_messages(supported_formats: [:json])
+      expect(HTTParty::Parser.supports_format?(:json)).to be_truthy
     end
 
     it "returns false for an unsupported format" do
-      HTTParty::Parser.stub(supported_formats: [])
-      HTTParty::Parser.supports_format?(:json).should be_false
+      allow(HTTParty::Parser).to receive_messages(supported_formats: [])
+      expect(HTTParty::Parser.supports_format?(:json)).to be_falsey
     end
   end
 
@@ -68,40 +68,40 @@ describe HTTParty::Parser do
     end
 
     it "attempts to parse supported formats" do
-      @parser.stub(supports_format?: true)
-      @parser.should_receive(:parse_supported_format)
+      allow(@parser).to receive_messages(supports_format?: true)
+      expect(@parser).to receive(:parse_supported_format)
       @parser.parse
     end
 
     it "returns the unparsed body when the format is unsupported" do
-      @parser.stub(supports_format?: false)
-      @parser.parse.should == @parser.body
+      allow(@parser).to receive_messages(supports_format?: false)
+      expect(@parser.parse).to eq(@parser.body)
     end
 
     it "returns nil for an empty body" do
-      @parser.stub(body: '')
-      @parser.parse.should be_nil
+      allow(@parser).to receive_messages(body: '')
+      expect(@parser.parse).to be_nil
     end
 
     it "returns nil for a nil body" do
-      @parser.stub(body: nil)
-      @parser.parse.should be_nil
+      allow(@parser).to receive_messages(body: nil)
+      expect(@parser.parse).to be_nil
     end
 
     it "returns nil for a 'null' body" do
-      @parser.stub(body: "null")
-      @parser.parse.should be_nil
+      allow(@parser).to receive_messages(body: "null")
+      expect(@parser.parse).to be_nil
     end
 
     it "returns nil for a body with spaces only" do
-      @parser.stub(body: "   ")
-      @parser.parse.should be_nil
+      allow(@parser).to receive_messages(body: "   ")
+      expect(@parser.parse).to be_nil
     end
   end
 
   describe "#supports_format?" do
     it "utilizes the class method to determine if the format is supported" do
-      HTTParty::Parser.should_receive(:supports_format?).with(:json)
+      expect(HTTParty::Parser).to receive(:supports_format?).with(:json)
       parser = HTTParty::Parser.new('body', :json)
       parser.send(:supports_format?)
     end
@@ -110,7 +110,7 @@ describe HTTParty::Parser do
   describe "#parse_supported_format" do
     it "calls the parser for the given format" do
       parser = HTTParty::Parser.new('body', :json)
-      parser.should_receive(:json)
+      expect(parser).to receive(:json)
       parser.send(:parse_supported_format)
     end
 
@@ -140,25 +140,25 @@ describe HTTParty::Parser do
     end
 
     it "parses xml with MultiXml" do
-      MultiXml.should_receive(:parse).with('body')
+      expect(MultiXml).to receive(:parse).with('body')
       subject.send(:xml)
     end
 
     it "parses json with JSON" do
-      JSON.should_receive(:load).with('body', nil)
+      expect(JSON).to receive(:load).with('body', nil)
       subject.send(:json)
     end
 
     it "parses html by simply returning the body" do
-      subject.send(:html).should == 'body'
+      expect(subject.send(:html)).to eq('body')
     end
 
     it "parses plain text by simply returning the body" do
-      subject.send(:plain).should == 'body'
+      expect(subject.send(:plain)).to eq('body')
     end
 
     it "parses csv with CSV" do
-      CSV.should_receive(:parse).with('body')
+      expect(CSV).to receive(:parse).with('body')
       subject.send(:csv)
     end
   end

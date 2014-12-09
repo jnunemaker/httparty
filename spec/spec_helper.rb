@@ -1,10 +1,9 @@
-require 'simplecov'
-$:.push File.expand_path("../lib", __FILE__)
+require "simplecov"
+SimpleCov.start
+
 
 require "httparty"
-
-require 'spec/autorun'
-require 'fakeweb'
+require "fakeweb"
 
 def file_fixture(filename)
   open(File.join(File.dirname(__FILE__), 'fixtures', "#{filename.to_s}")).read
@@ -12,7 +11,7 @@ end
 
 Dir[File.expand_path(File.join(File.dirname(__FILE__),'support','**','*.rb'))].each {|f| require f}
 
-Spec::Runner.configure do |config|
+RSpec.configure do |config|
   config.include HTTParty::StubResponse
   config.include HTTParty::SSLTestHelper
 
@@ -23,15 +22,40 @@ Spec::Runner.configure do |config|
   config.after(:suite) do
     FakeWeb.allow_net_connect = true
   end
+
+  config.expect_with :rspec do |expectations|
+    expectations.include_chain_clauses_in_custom_matcher_descriptions = true
+  end
+
+  config.mock_with :rspec do |mocks|
+    mocks.verify_partial_doubles = false
+  end
+
+  config.filter_run :focus
+  config.run_all_when_everything_filtered = true
+
+  config.disable_monkey_patching!
+
+  config.warnings = true
+
+  if config.files_to_run.one?
+    config.default_formatter = 'doc'
+  end
+
+  config.profile_examples = 10
+
+  config.order = :random
+
+  Kernel.srand config.seed
 end
 
-Spec::Matchers.define :use_ssl do
+RSpec::Matchers.define :use_ssl do
   match do |connection|
     connection.use_ssl?
   end
 end
 
-Spec::Matchers.define :use_cert_store do |cert_store|
+RSpec::Matchers.define :use_cert_store do |cert_store|
   match do |connection|
     connection.cert_store == cert_store
   end

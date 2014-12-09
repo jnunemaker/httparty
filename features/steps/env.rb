@@ -1,7 +1,7 @@
 require 'simplecov'
 require 'mongrel'
 require './lib/httparty'
-require 'spec/expectations'
+require 'rspec/expectations'
 
 Before do
   def new_port
