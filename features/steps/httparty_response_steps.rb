@@ -16,7 +16,7 @@ Then /it should return an? (\w+)$/ do |class_string|
 end
 
 Then /the return value should match '(.*)'/ do |expected_text|
-  expect(@response_from_httparty).to include(expected_text)
+  expect(@response_from_httparty.parsed_response).to eq(expected_text)
 end
 
 Then /it should return a Hash equaling:/ do |hash_table|

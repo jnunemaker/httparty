@@ -409,7 +409,7 @@ RSpec.describe HTTParty::Request do
           expect(response.request.path.to_s).to eq("http://foo.com/foo")
           expect(response.request.uri.request_uri).to eq("/foo")
           expect(response.request.uri.to_s).to eq("http://foo.com/foo")
-          expect(response).to include({"hash" => {"foo" => "bar"}})
+          expect(response.parsed_response).to eq({"hash" => {"foo" => "bar"}})
         end
 
         it "calls block given to perform with each redirect" do
@@ -431,7 +431,7 @@ RSpec.describe HTTParty::Request do
           expect(response.request.path.to_s).to eq("/foo/bar")
           expect(response.request.uri.request_uri).to eq("/foo/bar")
           expect(response.request.uri.to_s).to eq("http://api.foo.com/foo/bar")
-          expect(response).to include({"hash" => {"foo" => "bar"}})
+          expect(response.parsed_response).to eq({"hash" => {"foo" => "bar"}})
         end
 
         it "handles multiple redirects and relative location headers on different hosts" do
@@ -444,7 +444,7 @@ RSpec.describe HTTParty::Request do
           expect(response.request.path.to_s).to eq("/v3")
           expect(response.request.uri.request_uri).to eq("/v3")
           expect(response.request.uri.to_s).to eq("http://api.foo.com/v3")
-          expect(response).to include({"hash" => {"foo" => "bar"}})
+          expect(response.parsed_response).to eq({"hash" => {"foo" => "bar"}})
         end
 
         it "returns the HTTParty::Response when the 300 does not contain a location header" do
@@ -493,7 +493,7 @@ RSpec.describe HTTParty::Request do
   it "should not fail for missing mime type" do
     stub_response "Content for you"
     @request.options[:format] = :html
-    expect(@request.perform).to include('Content for you')
+    expect(@request.perform.parsed_response).to eq('Content for you')
   end
 
   describe "a request that 302 redirects" do
@@ -510,47 +510,47 @@ RSpec.describe HTTParty::Request do
       end
 
       it "should be handled by GET transparently" do
-        expect(@request.perform).to include({"hash" => {"foo" => "bar"}})
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
       end
 
       it "should be handled by POST transparently" do
         @request.http_method = Net::HTTP::Post
-        expect(@request.perform).to include({"hash" => {"foo" => "bar"}})
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
       end
 
       it "should be handled by DELETE transparently" do
         @request.http_method = Net::HTTP::Delete
-        expect(@request.perform).to include({"hash" => {"foo" => "bar"}})
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
       end
 
       it "should be handled by MOVE transparently" do
         @request.http_method = Net::HTTP::Move
-        expect(@request.perform).to include({"hash" => {"foo" => "bar"}})
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
       end
 
       it "should be handled by COPY transparently" do
         @request.http_method = Net::HTTP::Copy
-        expect(@request.perform).to include({"hash" => {"foo" => "bar"}})
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
       end
 
       it "should be handled by PATCH transparently" do
         @request.http_method = Net::HTTP::Patch
-        expect(@request.perform).to include({"hash" => {"foo" => "bar"}})
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
       end
 
       it "should be handled by PUT transparently" do
         @request.http_method = Net::HTTP::Put
-        expect(@request.perform).to include({"hash" => {"foo" => "bar"}})
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
       end
 
       it "should be handled by HEAD transparently" do
         @request.http_method = Net::HTTP::Head
-        expect(@request.perform).to include({"hash" => {"foo" => "bar"}})
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
       end
 
       it "should be handled by OPTIONS transparently" do
         @request.http_method = Net::HTTP::Options
-        expect(@request.perform).to include({"hash" => {"foo" => "bar"}})
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
       end
 
       it "should keep track of cookies between redirects" do
@@ -586,14 +586,14 @@ RSpec.describe HTTParty::Request do
 
       it 'should make resulting request a get request if it not already' do
         @request.http_method = Net::HTTP::Delete
-        expect(@request.perform).to include({"hash" => {"foo" => "bar"}})
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
         expect(@request.http_method).to eq(Net::HTTP::Get)
       end
 
       it 'should not make resulting request a get request if options[:maintain_method_across_redirects] is true' do
         @request.options[:maintain_method_across_redirects] = true
         @request.http_method = Net::HTTP::Delete
-        expect(@request.perform).to include({"hash" => {"foo" => "bar"}})
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
         expect(@request.http_method).to eq(Net::HTTP::Delete)
       end
 
@@ -630,47 +630,47 @@ RSpec.describe HTTParty::Request do
       end
 
       it "should be handled by GET transparently" do
-        expect(@request.perform).to include({"hash" => {"foo" => "bar"}})
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
       end
 
       it "should be handled by POST transparently" do
         @request.http_method = Net::HTTP::Post
-        expect(@request.perform).to include({"hash" => {"foo" => "bar"}})
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
       end
 
       it "should be handled by DELETE transparently" do
         @request.http_method = Net::HTTP::Delete
-        expect(@request.perform).to include({"hash" => {"foo" => "bar"}})
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
       end
 
       it "should be handled by MOVE transparently" do
         @request.http_method = Net::HTTP::Move
-        expect(@request.perform).to include({"hash" => {"foo" => "bar"}})
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
       end
 
       it "should be handled by COPY transparently" do
         @request.http_method = Net::HTTP::Copy
-        expect(@request.perform).to include({"hash" => {"foo" => "bar"}})
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
       end
 
       it "should be handled by PATCH transparently" do
         @request.http_method = Net::HTTP::Patch
-        expect(@request.perform).to include({"hash" => {"foo" => "bar"}})
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
       end
 
       it "should be handled by PUT transparently" do
         @request.http_method = Net::HTTP::Put
-        expect(@request.perform).to include({"hash" => {"foo" => "bar"}})
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
       end
 
       it "should be handled by HEAD transparently" do
         @request.http_method = Net::HTTP::Head
-        expect(@request.perform).to include({"hash" => {"foo" => "bar"}})
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
       end
 
       it "should be handled by OPTIONS transparently" do
         @request.http_method = Net::HTTP::Options
-        expect(@request.perform).to include({"hash" => {"foo" => "bar"}})
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
       end
 
       it "should keep track of cookies between redirects" do
@@ -706,14 +706,14 @@ RSpec.describe HTTParty::Request do
 
       it 'should make resulting request a get request if it not already' do
         @request.http_method = Net::HTTP::Delete
-        expect(@request.perform).to include({"hash" => {"foo" => "bar"}})
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
         expect(@request.http_method).to eq(Net::HTTP::Get)
       end
 
       it 'should make resulting request a get request if options[:maintain_method_across_redirects] is false' do
         @request.options[:maintain_method_across_redirects] = false
         @request.http_method = Net::HTTP::Delete
-        expect(@request.perform).to include({"hash" => {"foo" => "bar"}})
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
         expect(@request.http_method).to eq(Net::HTTP::Get)
       end
 
@@ -721,7 +721,7 @@ RSpec.describe HTTParty::Request do
         @request.options[:maintain_method_across_redirects] = true
         @request.options[:resend_on_redirect] = false
         @request.http_method = Net::HTTP::Delete
-        expect(@request.perform).to include({"hash" => {"foo" => "bar"}})
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
         expect(@request.http_method).to eq(Net::HTTP::Get)
       end
 
@@ -729,7 +729,7 @@ RSpec.describe HTTParty::Request do
         @request.options[:maintain_method_across_redirects] = true
         @request.options[:resend_on_redirect] = true
         @request.http_method = Net::HTTP::Delete
-        expect(@request.perform).to include({"hash" => {"foo" => "bar"}})
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
         expect(@request.http_method).to eq(Net::HTTP::Delete)
       end
 
