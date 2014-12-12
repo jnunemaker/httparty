@@ -62,3 +62,6 @@
   * Httparty included into poro class
   * Uses `get` requests     
   * Two ways to pass params to get, inline on the url or in query hash
+
+* [Rescue Json Error](rescue_json.rb)
+  * Rescue errors due to parsing response
