@@ -812,5 +812,29 @@ RSpec.describe HTTParty::Request do
         HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', digest_auth: ["foo", "bar"]).perform
       }.to raise_error(ArgumentError, ":digest_auth must be a hash")
     end
+
+    it "should raise argument error if headers is not a hash" do
+      expect {
+        HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', headers: ["foo", "bar"]).perform
+      }.to raise_error(ArgumentError, ":headers must be a hash")
+    end
+
+    it "should raise argument error if options method is not http accepted method" do
+      expect {
+        HTTParty::Request.new('SuperPost', 'http://api.foo.com/v1').perform
+      }.to raise_error(ArgumentError, "only get, post, patch, put, delete, head, and options methods are supported")
+    end
+
+    it "should raise argument error if http method is post and query is not hash" do
+      expect {
+        HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', query: "message: hello").perform
+      }.to raise_error(ArgumentError, ":query must be hash if using HTTP Post")
+    end
+
+    it "should raise RedirectionTooDeep error if limit is negative" do
+      expect {
+          HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', limit: -1).perform
+      }.to raise_error(HTTParty::RedirectionTooDeep, 'HTTP redirects too deep')
+    end
   end
 end
