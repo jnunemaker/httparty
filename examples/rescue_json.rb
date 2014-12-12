@@ -12,6 +12,6 @@ begin
   request.inspect
   # This would also suffice by forcing the request to be parsed:
   # request.parsed_response
-rescue StandardError => e
+rescue => e
   puts "Rescued #{e.inspect}"
 end
