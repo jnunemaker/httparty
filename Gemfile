@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 gemspec
 
 gem 'rake'
-gem 'cucumber', '~> 0.7'
+gem 'cucumber', '~> 2.0.0beta.3'
 gem 'fakeweb',  '~> 1.3'
 gem 'rspec',    '~> 3.1'
 gem 'mongrel',  '1.2.0.pre2'

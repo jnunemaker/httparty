@@ -1,6 +1,6 @@
 Given /a remote service that returns '(.*)'/ do |response_body|
   @handler = BasicMongrelHandler.new
-  Given "the response from the service has a body of '#{response_body}'"
+  step "the response from the service has a body of '#{response_body}'"
 end
 
 Given /^a remote service that returns:$/ do |response_body|
@@ -56,10 +56,12 @@ Given /that service requires the username '(.*)' with the password '(.*)'/ do |u
 end
 
 Given /a restricted page at '(.*)'/ do |url|
-  Given "a remote service that returns 'A response I will never see'"
-  And "that service is accessed at the path '#{url}'"
-  And "that service is protected by Basic Authentication"
-  And "that service requires the username 'something' with the password 'secret'"
+  steps %Q{
+    Given a remote service that returns 'A response I will never see'
+    And that service is accessed at the path '#{url}'
+    And that service is protected by Basic Authentication
+    And that service requires the username 'something' with the password 'secret'
+  }
 end
 
 # This joins the server thread, and halts cucumber, so you can actually hit the
