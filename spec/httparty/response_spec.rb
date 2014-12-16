@@ -218,4 +218,12 @@ RSpec.describe HTTParty::Response do
       expect(headers).to eq({})
     end
   end
+
+  describe "#tap" do
+    it "is possible to tap into a response" do
+      result = @response.tap(&:code)
+
+      expect(result).to eq @response
+    end
+  end
 end

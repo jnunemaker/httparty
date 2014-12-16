@@ -31,6 +31,11 @@ module HTTParty
       response.code.to_i
     end
 
+    def tap
+      yield self
+      self
+    end
+
     def inspect
       inspect_id = "%x" % (object_id * 2)
       %(#<#{self.class}:0x#{inspect_id} parsed_response=#{parsed_response.inspect}, @response=#{response.inspect}, @headers=#{headers.inspect}>)
