@@ -16,18 +16,6 @@ require 'httparty/logger/logger'
 
 # @see HTTParty::ClassMethods
 module HTTParty
-  module AllowedFormatsDeprecation
-    def const_missing(const)
-      if const.to_s =~ /AllowedFormats$/
-        Kernel.warn("Deprecated: Use HTTParty::Parser::SupportedFormats")
-        HTTParty::Parser::SupportedFormats
-      else
-        super
-      end
-    end
-  end
-
-  extend AllowedFormatsDeprecation
 
   def self.included(base)
     base.extend ClassMethods
@@ -69,8 +57,6 @@ module HTTParty
   # * :+ssl_ca_path+: see HTTParty::ClassMethods.ssl_ca_path.
 
   module ClassMethods
-
-    extend AllowedFormatsDeprecation
 
     # Turns on logging
     #

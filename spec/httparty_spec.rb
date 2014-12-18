@@ -6,21 +6,6 @@ RSpec.describe HTTParty do
     @klass.instance_eval { include HTTParty }
   end
 
-  describe "AllowedFormats deprecated" do
-    before do
-      allow(Kernel).to receive(:warn)
-    end
-
-    it "warns with a deprecation message" do
-      expect(Kernel).to receive(:warn).with("Deprecated: Use HTTParty::Parser::SupportedFormats")
-      HTTParty::AllowedFormats
-    end
-
-    it "returns HTTPart::Parser::SupportedFormats" do
-      expect(HTTParty::AllowedFormats).to eq(HTTParty::Parser::SupportedFormats)
-    end
-  end
-
   describe "pem" do
     it 'should set the pem content' do
       @klass.pem 'PEM-CONTENT'
@@ -468,13 +453,13 @@ RSpec.describe HTTParty do
       expect(@klass.default_options[:maintain_method_across_redirects]).to be_falsey
     end
   end
-  
+
   describe "#resend_on_redirect" do
     it "sets resend_on_redirect to true by default" do
       @klass.resend_on_redirect
       expect(@klass.default_options[:resend_on_redirect]).to be_truthy
     end
-    
+
     it "sets resend_on_redirect option to false" do
       @klass.resend_on_redirect false
       expect(@klass.default_options[:resend_on_redirect]).to be_falsey
