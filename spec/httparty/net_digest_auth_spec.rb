@@ -13,6 +13,34 @@ RSpec.describe Net::HTTPHeader::DigestAuthenticator do
     @digest.authorization_header.join(", ")
   end
 
+  def cookie_header
+    @digest.cookie_header
+  end
+
+  context "with a cookie value in the response header" do
+    before do
+      @digest = setup_digest({
+        'www-authenticate' => 'Digest realm="myhost@testrealm.com"',
+        'Set-Cookie' => 'custom-cookie=1234567'
+      })
+    end
+
+    it "should set cookie header" do
+      cookie_header.should include('custom-cookie=1234567')
+    end
+  end
+
+  context "without a cookie value in the response header" do
+    before do
+      @digest = setup_digest({
+        'www-authenticate' => 'Digest realm="myhost@testrealm.com"'
+      })
+    end
+
+    it "should set empty cookie header array" do
+      cookie_header.should eql []
+    end
+  end
 
   context "with an opaque value in the response header" do
     before do
