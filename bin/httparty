@@ -99,9 +99,9 @@ else
     when :json
       begin
         require 'json'
-        puts JSON.pretty_generate(response.delegate)
+        puts JSON.pretty_generate(response)
       rescue LoadError
-        puts YAML.dump(response.delegate)
+        puts YAML.dump(response)
       end
     when :xml
       require 'rexml/document'

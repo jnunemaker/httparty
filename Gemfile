@@ -2,9 +2,7 @@ source 'https://rubygems.org'
 gemspec
 
 gem 'rake'
-gem 'cucumber', '~> 0.7'
 gem 'fakeweb',  '~> 1.3'
-gem 'rspec',    '~> 3.1'
 gem 'mongrel',  '1.2.0.pre2'
 
 group :development do
@@ -14,5 +12,8 @@ group :development do
 end
 
 group :test do
+  gem 'rspec',    '~> 3.1'
   gem 'simplecov', require: false
+  gem 'aruba'
+  gem 'cucumber', '~> 1.3.17'
 end
