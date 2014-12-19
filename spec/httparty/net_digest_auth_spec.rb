@@ -26,7 +26,7 @@ RSpec.describe Net::HTTPHeader::DigestAuthenticator do
     end
 
     it "should set cookie header" do
-      cookie_header.should include('custom-cookie=1234567')
+      expect(cookie_header).to include('custom-cookie=1234567')
     end
   end
 
@@ -38,7 +38,7 @@ RSpec.describe Net::HTTPHeader::DigestAuthenticator do
     end
 
     it "should set empty cookie header array" do
-      cookie_header.should eql []
+      expect(cookie_header).to eql []
     end
   end
 
