@@ -17,15 +17,6 @@ require 'httparty/logger/logger'
 # @see HTTParty::ClassMethods
 module HTTParty
 
-  def self.included(base)
-    base.extend ClassMethods
-    base.send :include, HTTParty::ModuleInheritableAttributes
-    base.send(:mattr_inheritable, :default_options)
-    base.send(:mattr_inheritable, :default_cookies)
-    base.instance_variable_set("@default_options", {})
-    base.instance_variable_set("@default_cookies", CookieHash.new)
-  end
-
   # == Common Request Options
   # Request methods (get, post, patch, put, delete, head, options) all take a common set of options. These are:
   #
@@ -544,56 +535,41 @@ module HTTParty
       end
   end
 
-  def self.normalize_base_uri(url) #:nodoc:
-    normalized_url = url.dup
-    use_ssl = (normalized_url =~ /^https/) || (normalized_url =~ /:443\b/)
-    ends_with_slash = normalized_url =~ /\/$/
+  class << self
 
-    normalized_url.chop! if ends_with_slash
-    normalized_url.gsub!(/^https?:\/\//i, '')
+    def included(base)
+      base.extend ClassMethods
+      base.send :include, HTTParty::ModuleInheritableAttributes
+      base.send(:mattr_inheritable, :default_options)
+      base.send(:mattr_inheritable, :default_cookies)
+      base.instance_variable_set("@default_options", {})
+      base.instance_variable_set("@default_cookies", CookieHash.new)
+    end
 
-    "http#{'s' if use_ssl}://#{normalized_url}"
+    def normalize_base_uri(url) #:nodoc:
+      normalized_url = url.dup
+      use_ssl = (normalized_url =~ /^https/) || (normalized_url =~ /:443\b/)
+      ends_with_slash = normalized_url =~ /\/$/
+
+      normalized_url.chop! if ends_with_slash
+      normalized_url.gsub!(/^https?:\/\//i, '')
+
+      "http#{'s' if use_ssl}://#{normalized_url}"
+    end
+
+    def method_missing(name, *args, &block)
+      if Basement.respond_to?(name)
+        Basement.send(name, *args, &block)
+      else
+        super
+      end
+    end
   end
 
   class Basement #:nodoc:
     include HTTParty
   end
 
-  def self.get(*args, &block)
-    Basement.get(*args, &block)
-  end
-
-  def self.post(*args, &block)
-    Basement.post(*args, &block)
-  end
-
-  def self.patch(*args, &block)
-    Basement.patch(*args, &block)
-  end
-
-  def self.put(*args, &block)
-    Basement.put(*args, &block)
-  end
-
-  def self.delete(*args, &block)
-    Basement.delete(*args, &block)
-  end
-
-  def self.move(*args, &block)
-    Basement.move(*args, &block)
-  end
-
-  def self.copy(*args, &block)
-    Basement.copy(*args, &block)
-  end
-
-  def self.head(*args, &block)
-    Basement.head(*args, &block)
-  end
-
-  def self.options(*args, &block)
-    Basement.options(*args, &block)
-  end
 end
 
 require 'httparty/core_extensions'
