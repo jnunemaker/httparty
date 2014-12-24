@@ -7,8 +7,6 @@ require File.join(dir, 'httparty')
 require 'pp'
 
 class HtmlParserIncluded < HTTParty::Parser
-  SupportedFormats.merge!('text/html' => :html)
-
   def html
     Nokogiri::HTML(body)
   end
