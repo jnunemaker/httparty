@@ -19,7 +19,7 @@ module HTTParty
 
   def self.included(base)
     base.extend ClassMethods
-    base.send :include, HTTParty::ModuleInheritableAttributes
+    base.send :include, ModuleInheritableAttributes
     base.send(:mattr_inheritable, :default_options)
     base.send(:mattr_inheritable, :default_cookies)
     base.instance_variable_set("@default_options", {})
