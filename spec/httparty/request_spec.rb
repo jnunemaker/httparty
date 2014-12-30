@@ -10,14 +10,14 @@ RSpec.describe HTTParty::Request do
 
     it "doesn't modify strings" do
       query_string = normalizer["foo=bar&foo=baz"]
-      expect(URI.unescape(query_string)).to eq("foo=bar&foo=baz")
+      expect(CGI.unescape(query_string)).to eq("foo=bar&foo=baz")
     end
 
     context "when the query is an array" do
 
       it "doesn't include brackets" do
         query_string = normalizer[{page: 1, foo: %w(bar baz)}]
-        expect(URI.unescape(query_string)).to eq("foo=bar&foo=baz&page=1")
+        expect(CGI.unescape(query_string)).to eq("foo=bar&foo=baz&page=1")
       end
 
       it "URI encodes array values" do
@@ -209,7 +209,7 @@ RSpec.describe HTTParty::Request do
         empty_proc = lambda {|qs| ""}
         @request.options[:query_string_normalizer] = empty_proc
         @request.options[:query] = {foo: :bar}
-        expect(URI.unescape(@request.uri.query)).to eq("")
+        expect(CGI.unescape(@request.uri.query)).to eq("")
       end
 
       it "does not append an ampersand when queries are embedded in paths" do
@@ -227,7 +227,7 @@ RSpec.describe HTTParty::Request do
       context "when representing an array" do
         it "returns a Rails style query string" do
           @request.options[:query] = {foo: %w(bar baz)}
-          expect(URI.unescape(@request.uri.query)).to eq("foo[]=bar&foo[]=baz")
+          expect(CGI.unescape(@request.uri.query)).to eq("foo[]=bar&foo[]=baz")
         end
       end
 
@@ -241,7 +241,7 @@ RSpec.describe HTTParty::Request do
         @request.options[:body] = {page: 1, foo: %w(bar baz)}
         @request.send(:setup_raw_request)
         body = @request.instance_variable_get(:@raw_request).body
-        expect(URI.unescape(body)).to eq("foo=bar&foo=baz&page=1")
+        expect(CGI.unescape(body)).to eq("foo=bar&foo=baz&page=1")
       end
     end
   end
