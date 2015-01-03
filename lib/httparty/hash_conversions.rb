@@ -12,9 +12,7 @@ module HTTParty
     #   }.to_params
     #     #=> "name=Bob&address[city]=Ruby Central&address[phones][]=111-111-1111&address[phones][]=222-222-2222&address[street]=111 Ruby Ave."
     def self.to_params(hash)
-      params = hash.to_hash.map { |k,v| normalize_param(k,v) }.join
-      params.chop! # trailing &
-      params
+      hash.to_hash.map { |k,v| normalize_param(k,v) }.join.chop
     end
 
     # @param key<Object> The key for the param.
