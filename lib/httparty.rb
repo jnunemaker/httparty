@@ -596,7 +596,6 @@ module HTTParty
   end
 end
 
-require 'httparty/core_extensions'
 require 'httparty/hash_conversions'
 require 'httparty/exceptions'
 require 'httparty/parser'
