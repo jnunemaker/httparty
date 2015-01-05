@@ -30,7 +30,7 @@ module HTTParty
       elsif value.respond_to?(:to_hash)
         stack << [key,value.to_hash]
       else
-        param << "#{key}=#{URI.encode(value.to_s, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}&"
+        param << "#{key}=#{ERB::Util.url_encode(value.to_s)}&"
       end
 
       stack.each do |parent, hash|
