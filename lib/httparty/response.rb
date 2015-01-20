@@ -27,6 +27,15 @@ module HTTParty
       Response
     end
 
+    def socket_info
+      ::Socket.getaddrinfo @request.last_uri.host, @request.last_uri.scheme, nil, :STREAM
+    end
+
+    def remote_ip
+      domain, port, ip = socket_info.first
+      ip
+    end
+
     def code
       response.code.to_i
     end
