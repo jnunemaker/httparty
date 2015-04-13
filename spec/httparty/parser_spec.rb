@@ -30,7 +30,7 @@ RSpec.describe HTTParty::Parser do
       class MyParser < HTTParty::Parser
         SupportedFormats = { 'application/atom+xml' => :atom }
       end
-      expect(MyParser.formats).to eq({ 'application/atom+xml' => :atom })
+      expect(MyParser.formats).to eq('application/atom+xml' => :atom)
     end
   end
 
