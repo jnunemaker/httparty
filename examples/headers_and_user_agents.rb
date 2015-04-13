@@ -2,5 +2,5 @@
 
 require 'httparty'
 
-APPLICATION_NAME = "Httparty"
-response = HTTParty.get('http://example.com', headers: {"User-Agent" => APPLICATION_NAME})
+APPLICATION_NAME = 'Httparty'
+response = HTTParty.get('http://example.com', headers: {'User-Agent' => APPLICATION_NAME})

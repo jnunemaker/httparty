@@ -1,9 +1,9 @@
-require "simplecov"
+require 'simplecov'
 SimpleCov.start
 
 
-require "httparty"
-require "fakeweb"
+require 'httparty'
+require 'fakeweb'
 
 def file_fixture(filename)
   open(File.join(File.dirname(__FILE__), 'fixtures', "#{filename.to_s}")).read

@@ -30,7 +30,7 @@ When /I call HTTParty#get with '(.*)' and a basic_auth hash:/ do |url, auth_tabl
   h = auth_table.hashes.first
   @response_from_httparty = HTTParty.get(
     "http://#{@host_and_port}#{url}",
-    basic_auth: { username: h["username"], password: h["password"] }
+    basic_auth: { username: h['username'], password: h['password'] }
   )
 end
 
@@ -38,6 +38,6 @@ When /I call HTTParty#get with '(.*)' and a digest_auth hash:/ do |url, auth_tab
   h = auth_table.hashes.first
   @response_from_httparty = HTTParty.get(
     "http://#{@host_and_port}#{url}",
-    digest_auth: { username: h["username"], password: h["password"] }
+    digest_auth: { username: h['username'], password: h['password'] }
   )
 end

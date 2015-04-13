@@ -5,7 +5,7 @@ require 'aruba/cucumber'
 
 def run_server(port)
   @host_and_port = "0.0.0.0:#{port}"
-  @server = Mongrel::HttpServer.new("0.0.0.0", port)
+  @server = Mongrel::HttpServer.new('0.0.0.0', port)
   @server.run
   @request_options = {}
 end
@@ -18,7 +18,7 @@ ensure
 end
 
 Before('~@command_line') do
-  port = ENV["HTTPARTY_PORT"] || new_port
+  port = ENV['HTTPARTY_PORT'] || new_port
   run_server(port)
 end
 

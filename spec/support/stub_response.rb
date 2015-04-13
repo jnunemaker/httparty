@@ -4,7 +4,7 @@ module HTTParty
       format = filename.split('.').last.intern
       data = file_fixture(filename)
 
-      response = Net::HTTPOK.new("1.1", 200, "Content for you")
+      response = Net::HTTPOK.new('1.1', 200, 'Content for you')
       allow(response).to receive(:body).and_return(data)
 
       http_request = HTTParty::Request.new(Net::HTTP::Get, 'http://localhost', format: format)
@@ -13,8 +13,8 @@ module HTTParty
       expect(HTTParty::Request).to receive(:new).and_return(http_request)
     end
 
-    def stub_chunked_http_response_with(chunks, options={format: "html"})
-      response = Net::HTTPResponse.new("1.1", 200, nil)
+    def stub_chunked_http_response_with(chunks, options={format: 'html'})
+      response = Net::HTTPResponse.new('1.1', 200, nil)
       allow(response).to receive(:chunked_data).and_return(chunks)
       def response.read_body(&block)
         @body || chunked_data.each(&block)
@@ -33,7 +33,7 @@ module HTTParty
         allow(@request).to receive(:http).and_return(@http)
       end
 
-      response = Net::HTTPResponse::CODE_TO_OBJ[code.to_s].new("1.1", code, body)
+      response = Net::HTTPResponse::CODE_TO_OBJ[code.to_s].new('1.1', code, body)
       allow(response).to receive(:body).and_return(body)
 
       allow(@http).to receive(:request).and_return(response)

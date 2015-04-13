@@ -2,8 +2,8 @@ module HTTParty
   module Logger
     class CurlLogger #:nodoc:
       TAG_NAME = HTTParty.name
-      OUT = ">"
-      IN = "<"
+      OUT = '>'
+      IN = '<'
 
       attr_accessor :level, :logger, :current_time
 
@@ -14,8 +14,8 @@ module HTTParty
 
       def format(request, response)
         messages        = []
-        time            = Time.now.strftime("%Y-%m-%d %H:%M:%S %z")
-        http_method     = request.http_method.name.split("::").last.upcase
+        time            = Time.now.strftime('%Y-%m-%d %H:%M:%S %z')
+        http_method     = request.http_method.name.split('::').last.upcase
         path            = request.path.to_s
 
         messages << print(time, OUT, "#{http_method} #{path}")
@@ -27,7 +27,7 @@ module HTTParty
         end
 
         messages << print(time, OUT, request.raw_body)
-        messages << print(time, OUT, "")
+        messages << print(time, OUT, '')
         messages << print(time, IN, "HTTP/#{response.http_version} #{response.code}")
 
         headers = response.respond_to?(:headers) ? response.headers : response

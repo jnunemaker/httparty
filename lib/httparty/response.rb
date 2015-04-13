@@ -37,21 +37,21 @@ module HTTParty
     end
 
     def inspect
-      inspect_id = "%x" % (object_id * 2)
+      inspect_id = '%x' % (object_id * 2)
       %(#<#{self.class}:0x#{inspect_id} parsed_response=#{parsed_response.inspect}, @response=#{response.inspect}, @headers=#{headers.inspect}>)
     end
 
     CODES_TO_OBJ = ::Net::HTTPResponse::CODE_CLASS_TO_OBJ.merge ::Net::HTTPResponse::CODE_TO_OBJ
 
     CODES_TO_OBJ.each do |response_code, klass|
-      name = klass.name.sub("Net::HTTP", '')
+      name = klass.name.sub('Net::HTTP', '')
       define_method("#{underscore(name)}?") do
         klass === response
       end
     end
 
     # Support old multiple_choice? method from pre 2.0.0 era.
-    if ::RUBY_VERSION >= "2.0.0" && ::RUBY_PLATFORM != "java"
+    if ::RUBY_VERSION >= '2.0.0' && ::RUBY_PLATFORM != 'java'
       alias_method :multiple_choice?, :multiple_choices?
     end
 
