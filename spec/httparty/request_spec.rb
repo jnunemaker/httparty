@@ -215,7 +215,7 @@ RSpec.describe HTTParty::Request do
       end
 
       it 'respects the query string normalization proc' do
-        empty_proc = lambda {|qs| ''}
+        empty_proc = lambda { |qs| '' }
         @request.options[:query_string_normalizer] = empty_proc
         @request.options[:query] = { foo: :bar }
         expect(CGI.unescape(@request.uri.query)).to eq('')

@@ -346,7 +346,7 @@ RSpec.describe HTTParty do
     it 'does not validate format whe custom parser is a proc' do
       expect do
         @klass.format :json
-        @klass.parser lambda {|body, format|}
+        @klass.parser lambda { |body, format| }
       end.to_not raise_error
     end
   end
@@ -497,55 +497,55 @@ RSpec.describe HTTParty do
     it 'should fail with redirected GET' do
       expect do
         @error = @klass.get('/foo', no_follow: true)
-      end.to raise_error(HTTParty::RedirectionTooDeep) {|e| expect(e.response.body).to eq('first redirect')}
+      end.to raise_error(HTTParty::RedirectionTooDeep) { |e| expect(e.response.body).to eq('first redirect') }
     end
 
     it 'should fail with redirected POST' do
       expect do
         @klass.post('/foo', no_follow: true)
-      end.to raise_error(HTTParty::RedirectionTooDeep) {|e| expect(e.response.body).to eq('first redirect')}
+      end.to raise_error(HTTParty::RedirectionTooDeep) { |e| expect(e.response.body).to eq('first redirect') }
     end
 
     it 'should fail with redirected PATCH' do
       expect do
         @klass.patch('/foo', no_follow: true)
-      end.to raise_error(HTTParty::RedirectionTooDeep) {|e| expect(e.response.body).to eq('first redirect')}
+      end.to raise_error(HTTParty::RedirectionTooDeep) { |e| expect(e.response.body).to eq('first redirect') }
     end
 
     it 'should fail with redirected DELETE' do
       expect do
         @klass.delete('/foo', no_follow: true)
-      end.to raise_error(HTTParty::RedirectionTooDeep) {|e| expect(e.response.body).to eq('first redirect')}
+      end.to raise_error(HTTParty::RedirectionTooDeep) { |e| expect(e.response.body).to eq('first redirect') }
     end
 
     it 'should fail with redirected MOVE' do
       expect do
         @klass.move('/foo', no_follow: true)
-      end.to raise_error(HTTParty::RedirectionTooDeep) {|e| expect(e.response.body).to eq('first redirect')}
+      end.to raise_error(HTTParty::RedirectionTooDeep) { |e| expect(e.response.body).to eq('first redirect') }
     end
 
     it 'should fail with redirected COPY' do
       expect do
         @klass.copy('/foo', no_follow: true)
-      end.to raise_error(HTTParty::RedirectionTooDeep) {|e| expect(e.response.body).to eq('first redirect')}
+      end.to raise_error(HTTParty::RedirectionTooDeep) { |e| expect(e.response.body).to eq('first redirect') }
     end
 
     it 'should fail with redirected PUT' do
       expect do
         @klass.put('/foo', no_follow: true)
-      end.to raise_error(HTTParty::RedirectionTooDeep) {|e| expect(e.response.body).to eq('first redirect')}
+      end.to raise_error(HTTParty::RedirectionTooDeep) { |e| expect(e.response.body).to eq('first redirect') }
     end
 
     it 'should fail with redirected HEAD' do
       expect do
         @klass.head('/foo', no_follow: true)
-      end.to raise_error(HTTParty::RedirectionTooDeep) {|e| expect(e.response.body).to eq('first redirect')}
+      end.to raise_error(HTTParty::RedirectionTooDeep) { |e| expect(e.response.body).to eq('first redirect') }
     end
 
     it 'should fail with redirected OPTIONS' do
       expect do
         @klass.options('/foo', no_follow: true)
-      end.to raise_error(HTTParty::RedirectionTooDeep) {|e| expect(e.response.body).to eq('first redirect')}
+      end.to raise_error(HTTParty::RedirectionTooDeep) { |e| expect(e.response.body).to eq('first redirect') }
     end
   end
 
@@ -621,7 +621,7 @@ RSpec.describe HTTParty do
     end
 
     it 'works with lambda values' do
-      @child1.default_options[:imaginary_option] = lambda { 'This is a new lambda '}
+      @child1.default_options[:imaginary_option] = lambda { 'This is a new lambda ' }
       expect(@child1.default_options[:imaginary_option]).to be_a Proc
     end
 

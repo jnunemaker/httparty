@@ -24,7 +24,7 @@ RSpec.describe HTTParty::Logger::ApacheLogger do
     end
 
     context 'when there is a parsed response' do
-      let(:log_message) { "[HTTParty] [#{request_time}] 200 \"GET http://my.domain.com/my_path\" 512 "}
+      let(:log_message) { "[HTTParty] [#{request_time}] 200 \"GET http://my.domain.com/my_path\" 512 " }
 
       it 'can handle the Content-Length header' do
         # Simulate a parsed response that is an array, where accessing a string key will raise an error. See Issue #299.

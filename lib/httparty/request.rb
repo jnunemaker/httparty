@@ -19,7 +19,7 @@ module HTTParty
         if value.nil?
           key.to_s
         elsif value.respond_to?(:to_ary)
-          value.to_ary.map {|v| "#{key}=#{ERB::Util.url_encode(v.to_s)}"}
+          value.to_ary.map { |v| "#{key}=#{ERB::Util.url_encode(v.to_s)}" }
         else
           HashConversions.to_params(key => value)
         end
