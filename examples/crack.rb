@@ -9,7 +9,7 @@ class Rep
   include HTTParty
 
   parser(
-    Proc.new do |body, format|
+    proc do |body, format|
       Crack::XML.parse(body)
     end
   )

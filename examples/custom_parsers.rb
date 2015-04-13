@@ -53,7 +53,7 @@ end
 class AdHocParsing
   include HTTParty
   parser(
-    Proc.new do |body, format|
+    proc do |body, format|
       case format
       when :json
         body.to_json

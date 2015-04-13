@@ -318,7 +318,7 @@ RSpec.describe HTTParty do
     end
 
     let(:parser) do
-      Proc.new { |data, format| CustomParser.parse(data) }
+      proc { |data, format| CustomParser.parse(data) }
     end
 
     it 'should set parser options' do
