@@ -1,12 +1,12 @@
 module HTTParty
   class Response < BasicObject
     def self.underscore(string)
-      string.gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').gsub(/([a-z])([A-Z])/,'\1_\2').downcase
+      string.gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2').gsub(/([a-z])([A-Z])/, '\1_\2').downcase
     end
 
     attr_reader :request, :response, :body, :headers
 
-    def initialize(request, response, parsed_block, options={})
+    def initialize(request, response, parsed_block, options = {})
       @request      = request
       @response     = response
       @body         = options[:body] || response.body

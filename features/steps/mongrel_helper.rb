@@ -17,7 +17,7 @@ class BasicMongrelHandler < Mongrel::HttpHandler
   def reply_with(response, code, response_body)
     response.start(code) do |head, body|
       head['Content-Type'] = content_type
-      custom_headers.each { |k,v| head[k] = v }
+      custom_headers.each { |k, v| head[k] = v }
       body.write(response_body)
     end
   end

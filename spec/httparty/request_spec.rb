@@ -338,9 +338,9 @@ RSpec.describe HTTParty::Request do
     end
 
     it 'should handle csv automatically' do
-      csv=['"id","Name"','"1234","Foo Bar!"'].join("\n")
+      csv = ['"id","Name"', '"1234","Foo Bar!"'].join("\n")
       @request.options[:format] = :csv
-      expect(@request.send(:parse_response, csv)).to eq([%w(id Name),['1234','Foo Bar!']])
+      expect(@request.send(:parse_response, csv)).to eq([%w(id Name), ['1234', 'Foo Bar!']])
     end
 
     it 'should handle json automatically' do
@@ -599,14 +599,14 @@ RSpec.describe HTTParty::Request do
       end
 
       it 'should update cookies with rediects' do
-        @request.options[:headers] = { 'Cookie'=> 'foo=bar;' }
+        @request.options[:headers] = { 'Cookie' => 'foo=bar;' }
         @redirect['Set-Cookie'] = 'foo=tar;'
         @request.perform
         expect(@request.options[:headers]['Cookie']).to match(/foo=tar/)
       end
 
       it 'should keep cookies between rediects' do
-        @request.options[:headers] = { 'Cookie'=> 'keep=me' }
+        @request.options[:headers] = { 'Cookie' => 'keep=me' }
         @redirect['Set-Cookie'] = 'foo=tar;'
         @request.perform
         expect(@request.options[:headers]['Cookie']).to match(/keep=me/)
@@ -719,14 +719,14 @@ RSpec.describe HTTParty::Request do
       end
 
       it 'should update cookies with rediects' do
-        @request.options[:headers] = { 'Cookie'=> 'foo=bar;' }
+        @request.options[:headers] = { 'Cookie' => 'foo=bar;' }
         @redirect['Set-Cookie'] = 'foo=tar;'
         @request.perform
         expect(@request.options[:headers]['Cookie']).to match(/foo=tar/)
       end
 
       it 'should keep cookies between rediects' do
-        @request.options[:headers] = { 'Cookie'=> 'keep=me' }
+        @request.options[:headers] = { 'Cookie' => 'keep=me' }
         @redirect['Set-Cookie'] = 'foo=tar;'
         @request.perform
         expect(@request.options[:headers]['Cookie']).to match(/keep=me/)

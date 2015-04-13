@@ -10,7 +10,7 @@ end
 # google.com redirects to www.google.com so this is live test for redirection
 pp Google.get('http://google.com')
 
-puts '', '*'*70, ''
+puts '', '*' * 70, ''
 
 # check that ssl is requesting right
 pp Google.get('https://www.google.com')

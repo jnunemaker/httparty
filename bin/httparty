@@ -73,7 +73,7 @@ end
 def dump_headers(response)
   resp_type = Net::HTTPResponse::CODE_TO_OBJ[response.code.to_s]
   puts "#{response.code} #{resp_type.to_s.sub(/^Net::HTTP/, '')}"
-  response.headers.each do |n,v|
+  response.headers.each do |n, v|
     puts "#{n}: #{v}"
   end
   puts
@@ -81,7 +81,7 @@ end
 
 if opts[:verbose]
   puts "#{opts[:action].to_s.upcase} #{ARGV.first}"
-  opts[:headers].each do |n,v|
+  opts[:headers].each do |n, v|
     puts "#{n}: #{v}"
   end
   puts

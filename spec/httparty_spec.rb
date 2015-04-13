@@ -123,7 +123,7 @@ RSpec.describe HTTParty do
   end
 
   describe 'headers' do
-    def expect_headers(header={})
+    def expect_headers(header = {})
       expect(HTTParty::Request).to receive(:new) \
         .with(anything, anything, hash_including(headers: header)) \
         .and_return(double('mock response', perform: nil))
@@ -318,7 +318,7 @@ RSpec.describe HTTParty do
     end
 
     let(:parser) do
-      Proc.new{ |data, format| CustomParser.parse(data) }
+      Proc.new { |data, format| CustomParser.parse(data) }
     end
 
     it 'should set parser options' do
@@ -373,9 +373,9 @@ RSpec.describe HTTParty do
 
     it 'should process a request with a connection from the adapter' do
       connection_adapter_options = { foo: :bar }
-      expect(connection_adapter).to receive(:call) { |u,o|
+      expect(connection_adapter).to receive(:call) { |u, o|
         expect(o[:connection_adapter_options]).to eq(connection_adapter_options)
-        HTTParty::ConnectionAdapter.call(u,o)
+        HTTParty::ConnectionAdapter.call(u, o)
       }.with(URI.parse(uri), kind_of(Hash))
       FakeWeb.register_uri(:get, uri, body: 'stuff')
       @klass.connection_adapter connection_adapter, connection_adapter_options
@@ -733,13 +733,13 @@ RSpec.describe HTTParty do
       profile = HTTParty.get('http://twitter.com/statuses/profile.csv')
       expect(profile.size).to eq(2)
       expect(profile[0]).to eq(%w(name url id description protected screen_name followers_count profile_image_url location))
-      expect(profile[1]).to eq(['Magic 8 Bot',nil,'17656026','ask me a question','false','magic8bot','90','http://s3.amazonaws.com/twitter_production/profile_images/65565851/8ball_large_normal.jpg',nil])
+      expect(profile[1]).to eq(['Magic 8 Bot', nil, '17656026', 'ask me a question', 'false', 'magic8bot', '90', 'http://s3.amazonaws.com/twitter_production/profile_images/65565851/8ball_large_normal.jpg', nil])
     end
 
     it 'should not get undefined method add_node for nil class for the following xml' do
       stub_http_response_with('undefined_method_add_node_for_nil.xml')
       result = HTTParty.get('http://foobar.com')
-      expect(result.parsed_response).to eq('Entities'=>{ 'href'=>'https://s3-sandbox.parature.com/api/v1/5578/5633/Account', 'results'=>'0', 'total'=>'0', 'page_size'=>'25', 'page'=>'1' })
+      expect(result.parsed_response).to eq('Entities' => { 'href' => 'https://s3-sandbox.parature.com/api/v1/5578/5633/Account', 'results' => '0', 'total' => '0', 'page_size' => '25', 'page' => '1' })
     end
 
     it 'should parse empty response fine' do
