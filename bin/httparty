@@ -3,7 +3,7 @@
 require 'optparse'
 require 'pp'
 
-$:.unshift(File.join(File.dirname(__FILE__), '/../lib'))
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '/../lib'))
 require 'httparty'
 
 opts = {
@@ -13,7 +13,7 @@ opts = {
 }
 
 OptionParser.new do |o|
-  o.banner = "USAGE: #{$0} [options] [url]"
+  o.banner = "USAGE: #{$PROGRAM_NAME} [options] [url]"
 
   o.on('-f',
        '--format [FORMAT]',
@@ -67,7 +67,7 @@ end.parse!
 
 if ARGV.empty?
   STDERR.puts 'You need to provide a URL'
-  STDERR.puts "USAGE: #{$0} [options] [url]"
+  STDERR.puts "USAGE: #{$PROGRAM_NAME} [options] [url]"
 end
 
 def dump_headers(response)
