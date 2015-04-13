@@ -130,7 +130,7 @@ module HTTParty
     end
 
     def strip_ipv6_brackets(host)
-      StripIpv6BracketsRegex =~ host ? $1 : host
+      StripIpv6BracketsRegex =~ host ? Regexp.last_match(1) : host
     end
 
     def ssl_implied?(uri)
