@@ -277,7 +277,7 @@ module HTTParty
         capture_cookies(last_response)
         perform(&block)
       else
-        body = body || last_response.body
+        body ||= last_response.body
         body = encode_body(body)
         Response.new(self, last_response, lambda { parse_response(body) }, body: body)
       end
