@@ -10,7 +10,7 @@ module HTTParty
 
       if mode
         ca_path = File.expand_path("../../fixtures/ssl/generated/#{ca_basename}", __FILE__)
-        raise ArgumentError.new("#{ca_path} does not exist") unless File.exist?(ca_path)
+        fail ArgumentError.new("#{ca_path} does not exist") unless File.exist?(ca_path)
         options[mode] = ca_path
       end
 
@@ -23,7 +23,7 @@ module HTTParty
 
         if mode
           ca_path = File.expand_path("../../fixtures/ssl/generated/#{ca_basename}", __FILE__)
-          raise ArgumentError.new("#{ca_path} does not exist") unless File.exist?(ca_path)
+          fail ArgumentError.new("#{ca_path} does not exist") unless File.exist?(ca_path)
           return HTTParty.get("https://localhost:#{test_server.port}/", options)
         else
           return HTTParty.get("https://localhost:#{test_server.port}/", options)

@@ -17,7 +17,7 @@ module AAWS
     end
 
     def search(options = {})
-      raise ArgumentError, 'You must search for something' if options[:query].blank?
+      fail ArgumentError, 'You must search for something' if options[:query].blank?
 
       # amazon uses nasty camelized query params
       options[:query] = options[:query].inject({}) { |h, q| h[q[0].to_s.camelize] = q[1]; h }
