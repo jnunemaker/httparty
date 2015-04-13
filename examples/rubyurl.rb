@@ -6,9 +6,9 @@ class Rubyurl
   include HTTParty
   base_uri 'rubyurl.com'
 
-  def self.shorten( website_url )
-    post( '/api/links.json', query: { link: { website_url: website_url } } )
+  def self.shorten(website_url)
+    post('/api/links.json', query: { link: { website_url: website_url } })
   end
 end
 
-pp Rubyurl.shorten( 'http://istwitterdown.com/')
+pp Rubyurl.shorten('http://istwitterdown.com/')
