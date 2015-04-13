@@ -109,7 +109,7 @@ else
       puts
     when :csv
       require 'csv'
-      puts CSV.parse(response.body).map{|row| row.to_s }
+      puts CSV.parse(response.body).map(&:to_s)
     else
       puts response
   end

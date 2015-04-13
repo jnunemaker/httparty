@@ -537,7 +537,7 @@ module HTTParty
 
       def validate_format
         if format && parser.respond_to?(:supports_format?) && !parser.supports_format?(format)
-          raise UnsupportedFormat, "'#{format.inspect}' Must be one of: #{parser.supported_formats.map{|f| f.to_s}.sort.join(', ')}"
+          raise UnsupportedFormat, "'#{format.inspect}' Must be one of: #{parser.supported_formats.map(&:to_s).sort.join(', ')}"
         end
       end
   end
