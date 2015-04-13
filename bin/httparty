@@ -64,7 +64,6 @@ OptionParser.new do |o|
   end
 end.parse!
 
-
 if ARGV.empty?
   STDERR.puts 'You need to provide a URL'
   STDERR.puts "USAGE: #{$PROGRAM_NAME} [options] [url]"

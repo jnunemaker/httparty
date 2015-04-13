@@ -16,7 +16,6 @@ require 'httparty/logger/logger'
 
 # @see HTTParty::ClassMethods
 module HTTParty
-
   def self.included(base)
     base.extend ClassMethods
     base.send :include, ModuleInheritableAttributes
@@ -57,7 +56,6 @@ module HTTParty
   # * :+ssl_ca_path+: see HTTParty::ClassMethods.ssl_ca_path.
 
   module ClassMethods
-
     # Turns on logging
     #
     #   class Foo

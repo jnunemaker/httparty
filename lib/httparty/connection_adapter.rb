@@ -50,7 +50,6 @@ module HTTParty
   # * :+ssl_ca_path+: see HTTParty::ClassMethods.ssl_ca_path.
   # * :+connection_adapter_options+: contains the hash you passed to HTTParty.connection_adapter when you configured your connection adapter
   class ConnectionAdapter
-
     # Private: Regex used to strip brackets from IPv6 URIs.
     StripIpv6BracketsRegex = /\A\[(.*)\]\z/
 

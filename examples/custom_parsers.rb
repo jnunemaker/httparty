@@ -16,7 +16,6 @@ class ParseAtom
   parser Parser::Atom
 end
 
-
 class OnlyParseAtom
   include HTTParty
 
@@ -35,7 +34,6 @@ class OnlyParseAtom
   parser Parser::OnlyAtom
 end
 
-
 class SkipParsing
   include HTTParty
 
@@ -48,7 +46,6 @@ class SkipParsing
 
   parser Parser::Simple
 end
-
 
 class AdHocParsing
   include HTTParty
