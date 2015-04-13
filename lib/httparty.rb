@@ -102,7 +102,7 @@ module HTTParty
     #     basic_auth 'username', 'password'
     #   end
     def basic_auth(u, p)
-      default_options[:basic_auth] = {username: u, password: p}
+      default_options[:basic_auth] = { username: u, password: p }
     end
 
     # Allows setting digest authentication username and password.
@@ -112,7 +112,7 @@ module HTTParty
     #     digest_auth 'username', 'password'
     #   end
     def digest_auth(u, p)
-      default_options[:digest_auth] = {username: u, password: p}
+      default_options[:digest_auth] = { username: u, password: p }
     end
 
     # Do not send rails style query strings.

@@ -134,7 +134,7 @@ RSpec.describe HTTParty do
     end
 
     it 'should be able to be updated' do
-      init_headers = {foo: 'bar', baz: 'spax'}
+      init_headers = { foo: 'bar', baz: 'spax' }
       @klass.headers init_headers
       expect(@klass.headers).to eq(init_headers)
     end
@@ -148,13 +148,13 @@ RSpec.describe HTTParty do
     it 'merges class headers with request headers' do
       expect_headers(baz: 'spax', foo: 'bar')
       @klass.headers(foo: 'bar')
-      @klass.get('', headers: {baz: 'spax'})
+      @klass.get('', headers: { baz: 'spax' })
     end
 
     it 'overrides class headers with request headers' do
       expect_headers(baz: 'spax', foo: 'baz')
       @klass.headers(foo: 'bar')
-      @klass.get('', headers: {baz: 'spax', foo: 'baz'})
+      @klass.get('', headers: { baz: 'spax', foo: 'baz' })
     end
 
     context 'with cookies' do
@@ -168,19 +168,19 @@ RSpec.describe HTTParty do
       it 'adds cookies to the headers' do
         expect_headers(foo: 'bar', 'cookie' => 'type=snickerdoodle')
         @klass.headers(foo: 'bar')
-        @klass.get('', cookies: {type: 'snickerdoodle'})
+        @klass.get('', cookies: { type: 'snickerdoodle' })
       end
 
       it 'doesnt modify default_options' do
         expect(@klass.headers).to eq({})
         expect_headers('cookie' => 'type=snickerdoodle')
-        @klass.get('', cookies: {type: 'snickerdoodle'})
+        @klass.get('', cookies: { type: 'snickerdoodle' })
         expect(@klass.default_options[:headers]).to eq({})
       end
 
       it 'adds optional cookies to the optional headers' do
         expect_headers(baz: 'spax', 'cookie' => 'type=snickerdoodle')
-        @klass.get('', cookies: {type: 'snickerdoodle'}, headers: {baz: 'spax'})
+        @klass.get('', cookies: { type: 'snickerdoodle' }, headers: { baz: 'spax' })
       end
     end
   end
@@ -262,7 +262,7 @@ RSpec.describe HTTParty do
     end
 
     it 'should be able to be updated' do
-      new_defaults = {foo: 'bar', baz: 'spax'}
+      new_defaults = { foo: 'bar', baz: 'spax' }
       @klass.default_params new_defaults
       expect(@klass.default_params).to eq(new_defaults)
     end
@@ -299,21 +299,21 @@ RSpec.describe HTTParty do
   describe 'basic http authentication' do
     it 'should work' do
       @klass.basic_auth 'foobar', 'secret'
-      expect(@klass.default_options[:basic_auth]).to eq({username: 'foobar', password: 'secret'})
+      expect(@klass.default_options[:basic_auth]).to eq({ username: 'foobar', password: 'secret' })
     end
   end
 
   describe 'digest http authentication' do
     it 'should work' do
       @klass.digest_auth 'foobar', 'secret'
-      expect(@klass.default_options[:digest_auth]).to eq({username: 'foobar', password: 'secret'})
+      expect(@klass.default_options[:digest_auth]).to eq({ username: 'foobar', password: 'secret' })
     end
   end
 
   describe 'parser' do
     class CustomParser
       def self.parse(body)
-        return {sexy: true}
+        return { sexy: true }
       end
     end
 
@@ -361,7 +361,7 @@ RSpec.describe HTTParty do
     end
 
     it 'should set the connection_adapter_options when provided' do
-      options = {foo: :bar}
+      options = { foo: :bar }
       @klass.connection_adapter connection_adapter, options
       expect(@klass.default_options[:connection_adapter_options]).to be options
     end
@@ -372,7 +372,7 @@ RSpec.describe HTTParty do
     end
 
     it 'should process a request with a connection from the adapter' do
-      connection_adapter_options = {foo: :bar}
+      connection_adapter_options = { foo: :bar }
       expect(connection_adapter).to receive(:call) { |u,o|
         expect(o[:connection_adapter_options]).to eq(connection_adapter_options)
         HTTParty::ConnectionAdapter.call(u,o)
@@ -587,37 +587,37 @@ RSpec.describe HTTParty do
       @child1.default_params joe: 'alive'
       @child2.default_params joe: 'dead'
 
-      expect(@child1.default_options).to eq({ default_params: {joe: 'alive'} })
-      expect(@child2.default_options).to eq({ default_params: {joe: 'dead'} })
+      expect(@child1.default_options).to eq({ default_params: { joe: 'alive' } })
+      expect(@child2.default_options).to eq({ default_params: { joe: 'dead' } })
 
-      expect(@parent.default_options).to eq({ })
+      expect(@parent.default_options).to eq({})
     end
 
     it 'inherits default_options from the superclass' do
       @parent.basic_auth 'user', 'password'
-      expect(@child1.default_options).to eq({basic_auth: {username: 'user', password: 'password'}})
+      expect(@child1.default_options).to eq({ basic_auth: { username: 'user', password: 'password' } })
       @child1.basic_auth 'u', 'p' # modifying child1 has no effect on child2
-      expect(@child2.default_options).to eq({basic_auth: {username: 'user', password: 'password'}})
+      expect(@child2.default_options).to eq({ basic_auth: { username: 'user', password: 'password' } })
     end
 
     it "doesn't modify the parent's default options" do
       @parent.basic_auth 'user', 'password'
 
       @child1.basic_auth 'u', 'p'
-      expect(@child1.default_options).to eq({basic_auth: {username: 'u', password: 'p'}})
+      expect(@child1.default_options).to eq({ basic_auth: { username: 'u', password: 'p' } })
 
       @child1.basic_auth 'email', 'token'
-      expect(@child1.default_options).to eq({basic_auth: {username: 'email', password: 'token'}})
+      expect(@child1.default_options).to eq({ basic_auth: { username: 'email', password: 'token' } })
 
-      expect(@parent.default_options).to eq({basic_auth: {username: 'user', password: 'password'}})
+      expect(@parent.default_options).to eq({ basic_auth: { username: 'user', password: 'password' } })
     end
 
     it "doesn't modify hashes in the parent's default options" do
       @parent.headers 'Accept' => 'application/json'
       @child1.headers 'Accept' => 'application/xml'
 
-      expect(@parent.default_options[:headers]).to eq({'Accept' => 'application/json'})
-      expect(@child1.default_options[:headers]).to eq({'Accept' => 'application/xml'})
+      expect(@parent.default_options[:headers]).to eq({ 'Accept' => 'application/json' })
+      expect(@child1.default_options[:headers]).to eq({ 'Accept' => 'application/xml' })
     end
 
     it 'works with lambda values' do
@@ -636,19 +636,19 @@ RSpec.describe HTTParty do
 
     it 'inherits default_cookies from the parent class' do
       @parent.cookies 'type' => 'chocolate_chip'
-      expect(@child1.default_cookies).to eq({'type' => 'chocolate_chip'})
+      expect(@child1.default_cookies).to eq({ 'type' => 'chocolate_chip' })
       @child1.cookies 'type' => 'snickerdoodle'
-      expect(@child1.default_cookies).to eq({'type' => 'snickerdoodle'})
-      expect(@child2.default_cookies).to eq({'type' => 'chocolate_chip'})
+      expect(@child1.default_cookies).to eq({ 'type' => 'snickerdoodle' })
+      expect(@child2.default_cookies).to eq({ 'type' => 'chocolate_chip' })
     end
 
     it "doesn't modify the parent's default cookies" do
       @parent.cookies 'type' => 'chocolate_chip'
 
       @child1.cookies 'type' => 'snickerdoodle'
-      expect(@child1.default_cookies).to eq({'type' => 'snickerdoodle'})
+      expect(@child1.default_cookies).to eq({ 'type' => 'snickerdoodle' })
 
-      expect(@parent.default_cookies).to eq({'type' => 'chocolate_chip'})
+      expect(@parent.default_cookies).to eq({ 'type' => 'chocolate_chip' })
     end
   end
 
@@ -688,7 +688,7 @@ RSpec.describe HTTParty do
 
     it 'should return an empty body if stream_body option is turned on' do
       chunks = %w(Chunk1 Chunk2 Chunk3 Chunk4)
-      options = {stream_body: true, format: 'html'}
+      options = { stream_body: true, format: 'html' }
       stub_chunked_http_response_with(chunks, options)
 
       expect(
@@ -743,7 +743,7 @@ RSpec.describe HTTParty do
     it 'should not get undefined method add_node for nil class for the following xml' do
       stub_http_response_with('undefined_method_add_node_for_nil.xml')
       result = HTTParty.get('http://foobar.com')
-      expect(result.parsed_response).to eq({'Entities'=>{'href'=>'https://s3-sandbox.parature.com/api/v1/5578/5633/Account', 'results'=>'0', 'total'=>'0', 'page_size'=>'25', 'page'=>'1'}})
+      expect(result.parsed_response).to eq({ 'Entities'=>{ 'href'=>'https://s3-sandbox.parature.com/api/v1/5578/5633/Account', 'results'=>'0', 'total'=>'0', 'page_size'=>'25', 'page'=>'1' } })
     end
 
     it 'should parse empty response fine' do

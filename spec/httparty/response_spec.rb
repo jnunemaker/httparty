@@ -9,7 +9,7 @@ RSpec.describe HTTParty::Response do
     allow(@response_object).to receive_messages(body: "{foo:'bar'}")
     @response_object['last-modified'] = @last_modified
     @response_object['content-length'] = @content_length
-    @parsed_response = lambda { {'foo' => 'bar'} }
+    @parsed_response = lambda { { 'foo' => 'bar' } }
     @response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
   end
 
@@ -47,7 +47,7 @@ RSpec.describe HTTParty::Response do
 
   it 'returns response headers' do
     response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
-    expect(response.headers).to eq({'last-modified' => [@last_modified], 'content-length' => [@content_length]})
+    expect(response.headers).to eq({ 'last-modified' => [@last_modified], 'content-length' => [@content_length] })
   end
 
   it 'should send missing methods to delegate' do
@@ -86,7 +86,7 @@ RSpec.describe HTTParty::Response do
   end
 
   it 'should be able to iterate if it is array' do
-    response = HTTParty::Response.new(@request_object, @response_object, lambda { [{'foo' => 'bar'}, {'foo' => 'baz'}] })
+    response = HTTParty::Response.new(@request_object, @response_object, lambda { [{ 'foo' => 'bar' }, { 'foo' => 'baz' }] })
     expect(response.size).to eq(2)
     expect {
       response.each { |item| }
