@@ -66,12 +66,12 @@ Then /^the output should contain '(.*)'$/ do |expected|
 end
 
 Given /a restricted page at '(.*)'/ do |url|
-  steps %Q{
+  steps "
     Given a remote service that returns 'A response I will never see'
     And that service is accessed at the path '#{url}'
     And that service is protected by Basic Authentication
     And that service requires the username 'something' with the password 'secret'
-  }
+  "
 end
 
 # This joins the server thread, and halts cucumber, so you can actually hit the
