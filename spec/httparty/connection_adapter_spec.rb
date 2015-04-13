@@ -338,7 +338,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
       end
 
       context 'when providing a local bind address and port' do
-        let(:options) { { local_host: '127.0.0.1', local_port: 12345 } }
+        let(:options) { { local_host: '127.0.0.1', local_port: 12_345 } }
 
         describe '#local_host' do
           subject { super().local_host }
@@ -347,7 +347,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
 
         describe '#local_port' do
           subject { super().local_port }
-          it { is_expected.to eq(12345) }
+          it { is_expected.to eq(12_345) }
         end
       end if RUBY_VERSION >= '2.0'
 
