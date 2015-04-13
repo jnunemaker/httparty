@@ -14,7 +14,7 @@ RSpec.describe HTTParty::Error do
       it { is_expected.to include(HTTParty::Error) }
     end
   end
-  
+
   describe HTTParty::UnsupportedURIScheme do
     describe '#ancestors' do
       subject { super().ancestors }
