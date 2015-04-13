@@ -38,7 +38,7 @@ module Net
           %Q(realm="#{@response['realm']}"),
           %Q(nonce="#{@response['nonce']}"),
           %Q(uri="#{@path}"),
-          %Q(response="#{request_digest}"),
+          %Q(response="#{request_digest}")
         ]
 
         if qop_present?
