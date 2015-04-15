@@ -20,7 +20,7 @@ module AAWS
       fail ArgumentError, 'You must search for something' if options[:query].blank?
 
       # amazon uses nasty camelized query params
-      options[:query] = options[:query].inject({}) { |a, e| a[e[0].to_s.camelize] = e[1]; h }
+      options[:query] = options[:query].inject({}) { |h, q| h[q[0].to_s.camelize] = q[1]; h }
 
       # make a request and return the items (NOTE: this doesn't handle errors at this point)
       self.class.get('/onca/xml', options)['ItemSearchResponse']['Items']
