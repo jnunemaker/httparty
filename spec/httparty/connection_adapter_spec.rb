@@ -25,7 +25,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
     end
 
     it 'sets the options' do
-      options = { foo: :bar }
+      options = {foo: :bar}
       adapter = HTTParty::ConnectionAdapter.new(uri, options)
       expect(adapter.options).to be options
     end
@@ -75,7 +75,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
 
         context 'should use the specified cert store, when one is given' do
           let(:custom_cert_store) { double('custom_cert_store') }
-          let(:options) { { cert_store: custom_cert_store } }
+          let(:options) { {cert_store: custom_cert_store} }
           it { is_expected.to use_cert_store(custom_cert_store) }
         end
 
@@ -94,7 +94,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
         end
 
         context 'when ssl version is set' do
-          let(:options) { { ssl_version: :TLSv1 } }
+          let(:options) { {ssl_version: :TLSv1} }
 
           it 'sets ssl version' do
             expect(subject.ssl_version).to eq(:TLSv1)
@@ -111,7 +111,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
       end
 
       context 'specifying ciphers' do
-        let(:options) { { ciphers: 'RC4-SHA' } }
+        let(:options) { {ciphers: 'RC4-SHA' } }
 
         it 'should set the ciphers on the connection' do
           expect(subject.ciphers).to eq('RC4-SHA')
@@ -136,7 +136,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
 
       context 'when setting timeout' do
         context 'to 5 seconds' do
-          let(:options) { { timeout: 5 } }
+          let(:options) { {timeout: 5} }
 
           describe '#open_timeout' do
             subject { super().open_timeout }
@@ -150,7 +150,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
         end
 
         context 'and timeout is a string' do
-          let(:options) { { timeout: 'five seconds' } }
+          let(:options) { {timeout: 'five seconds'} }
 
           it "doesn't set the timeout" do
             http = double(
@@ -169,7 +169,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
       end
 
       context 'when timeout is not set and read_timeout is set to 6 seconds' do
-        let(:options) { { read_timeout: 6 } }
+        let(:options) { {read_timeout: 6} }
 
         describe '#read_timeout' do
           subject { super().read_timeout }
@@ -191,7 +191,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
       end
 
       context 'when timeout is set and read_timeout is set to 6 seconds' do
-        let(:options) { { timeout: 5, read_timeout: 6 } }
+        let(:options) { {timeout: 5, read_timeout: 6} }
 
         describe '#open_timeout' do
           subject { super().open_timeout }
@@ -220,7 +220,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
       end
 
       context 'when timeout is not set and open_timeout is set to 7 seconds' do
-        let(:options) { { open_timeout: 7 } }
+        let(:options) { {open_timeout: 7} }
 
         describe '#open_timeout' do
           subject { super().open_timeout }
@@ -242,7 +242,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
       end
 
       context 'when timeout is set and open_timeout is set to 7 seconds' do
-        let(:options) { { timeout: 5, open_timeout: 7 } }
+        let(:options) { {timeout: 5, open_timeout: 7} }
 
         describe '#open_timeout' do
           subject { super().open_timeout }
@@ -277,7 +277,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
         end
 
         context 'is set to $stderr' do
-          let(:options) { { debug_output: $stderr } }
+          let(:options) { {debug_output: $stderr} }
           it 'has debug output set' do
             expect(http).to receive(:set_debug_output).with($stderr)
             adapter.connection
@@ -293,7 +293,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
       end
 
       context 'when providing proxy address and port' do
-        let(:options) { { http_proxyaddr: '1.2.3.4', http_proxyport: 8080 } }
+        let(:options) { {http_proxyaddr: '1.2.3.4', http_proxyport: 8080} }
 
         it { is_expected.to be_a_proxy }
 
@@ -309,8 +309,8 @@ RSpec.describe HTTParty::ConnectionAdapter do
 
         context 'as well as proxy user and password' do
           let(:options) do
-            { http_proxyaddr: '1.2.3.4', http_proxyport: 8080,
-              http_proxyuser: 'user', http_proxypass: 'pass' }
+            {http_proxyaddr: '1.2.3.4', http_proxyport: 8080,
+             http_proxyuser: 'user', http_proxypass: 'pass'}
           end
 
           describe '#proxy_user' do
@@ -336,7 +336,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
       end
 
       context 'when providing a local bind address and port' do
-        let(:options) { { local_host: '127.0.0.1', local_port: 12345 } }
+        let(:options) { {local_host: '127.0.0.1', local_port: 12345 } }
 
         describe '#local_host' do
           subject { super().local_host }
@@ -351,7 +351,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
 
       context 'when providing PEM certificates' do
         let(:pem) { :pem_contents }
-        let(:options) { { pem: pem, pem_password: 'password' } }
+        let(:options) { {pem: pem, pem_password: 'password'} }
 
         context 'when scheme is https' do
           let(:uri) { URI 'https://google.com' }
@@ -373,7 +373,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
           end
 
           context 'when options include verify_peer=false' do
-            let(:options) { { pem: pem, pem_password: 'password', verify_peer: false } }
+            let(:options) { {pem: pem, pem_password: 'password', verify_peer: false} }
 
             it 'should not verify the certificate' do
               expect(subject.verify_mode).to eq(OpenSSL::SSL::VERIFY_NONE)
@@ -402,7 +402,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
 
       context 'when providing PKCS12 certificates' do
         let(:p12) { :p12_contents }
-        let(:options) { { p12: p12, p12_password: 'password' } }
+        let(:options) { {p12: p12, p12_password: 'password'} }
 
         context 'when scheme is https' do
           let(:uri) { URI 'https://google.com' }
@@ -424,7 +424,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
           end
 
           context 'when options include verify_peer=false' do
-            let(:options) { { p12: p12, p12_password: 'password', verify_peer: false } }
+            let(:options) { {p12: p12, p12_password: 'password', verify_peer: false} }
 
             it 'should not verify the certificate' do
               expect(subject.verify_mode).to eq(OpenSSL::SSL::VERIFY_NONE)

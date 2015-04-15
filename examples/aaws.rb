@@ -29,4 +29,4 @@ module AAWS
 end
 
 aaws = AAWS::Book.new(config[:access_key])
-pp aaws.search(query: { title: 'Ruby On Rails' })
+pp aaws.search(query: {title: 'Ruby On Rails'})

@@ -28,9 +28,9 @@ RSpec.describe HTTParty::Parser do
 
     it 'returns the SupportedFormats constant for subclasses' do
       class MyParser < HTTParty::Parser
-        SupportedFormats = { 'application/atom+xml' => :atom }
+        SupportedFormats = {'application/atom+xml' => :atom}
       end
-      expect(MyParser.formats).to eq({ 'application/atom+xml' => :atom })
+      expect(MyParser.formats).to eq({'application/atom+xml' => :atom})
     end
   end
 
