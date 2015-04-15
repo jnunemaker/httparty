@@ -194,11 +194,11 @@ module HTTParty
       end
 
       if content_type =~ /;\s*charset\s*=\s*([^=,;"\s]+)/i
-        return Regexp.last_match(1)
+        return $1
       end
 
       if content_type =~ /;\s*charset\s*=\s*"((\\.|[^\\"])+)"/i
-        return Regexp.last_match(1).gsub(/\\(.)/, '\1')
+        return $1.gsub(/\\(.)/, '\1')
       end
 
       nil

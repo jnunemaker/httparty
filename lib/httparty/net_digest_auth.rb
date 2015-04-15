@@ -66,7 +66,7 @@ module Net
 
         header =~ /Digest (.*)/
         params = {}
-        Regexp.last_match(1).gsub(/(\w+)="(.*?)"/) { params[Regexp.last_match(1)] = Regexp.last_match(2) }
+        $1.gsub(/(\w+)="(.*?)"/) { params[$1] = $2 }
         params
       end
 
