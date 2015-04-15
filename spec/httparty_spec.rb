@@ -313,7 +313,7 @@ RSpec.describe HTTParty do
   describe 'parser' do
     class CustomParser
       def self.parse(body)
-        { sexy: true }
+        return { sexy: true }
       end
     end
 
