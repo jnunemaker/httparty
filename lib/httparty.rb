@@ -21,8 +21,8 @@ module HTTParty
     base.send :include, ModuleInheritableAttributes
     base.send(:mattr_inheritable, :default_options)
     base.send(:mattr_inheritable, :default_cookies)
-    base.instance_variable_set('@default_options', {})
-    base.instance_variable_set('@default_cookies', CookieHash.new)
+    base.instance_variable_set("@default_options", {})
+    base.instance_variable_set("@default_cookies", CookieHash.new)
   end
 
   # == Common Request Options
@@ -530,7 +530,7 @@ module HTTParty
       def process_cookies(options) #:nodoc:
         return unless options[:cookies] || default_cookies.any?
         options[:headers] ||= headers.dup
-        options[:headers]['cookie'] = cookies.merge(options.delete(:cookies) || {}).to_cookie_string
+        options[:headers]["cookie"] = cookies.merge(options.delete(:cookies) || {}).to_cookie_string
       end
 
       def validate_format

@@ -98,7 +98,7 @@ module HTTParty
     # @return [Object] the parsed body
     # @return [nil] when the response body is nil, an empty string, spaces only or "null"
     def parse
-      return nil if body.nil? || body.strip.empty? || body == 'null'
+      return nil if body.nil? || body.strip.empty? || body == "null"
       if supports_format?
         parse_supported_format
       else

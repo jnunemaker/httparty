@@ -45,7 +45,7 @@ module Net
           fields = [
             %Q(cnonce="#{@cnonce}"),
             %Q(qop="#{@response['qop']}"),
-            'nc=00000001'
+            "nc=00000001"
           ]
           fields.each { |field| header << field }
         end
@@ -92,13 +92,13 @@ module Net
       end
 
       def random
-        '%x' % (Time.now.to_i + rand(65535))
+        "%x" % (Time.now.to_i + rand(65535))
       end
 
       def request_digest
         a = [md5(a1), @response['nonce'], md5(a2)]
-        a.insert(2, '00000001', @cnonce, @response['qop']) if qop_present?
-        md5(a.join(':'))
+        a.insert(2, "00000001", @cnonce, @response['qop']) if qop_present?
+        md5(a.join(":"))
       end
 
       def md5(str)
@@ -106,11 +106,11 @@ module Net
       end
 
       def a1
-        [@username, @response['realm'], @password].join(':')
+        [@username, @response['realm'], @password].join(":")
       end
 
       def a2
-        [@method, @path].join(':')
+        [@method, @path].join(":")
       end
     end
   end

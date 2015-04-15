@@ -104,18 +104,18 @@ module HTTParty
       #
       # @see https://bugs.ruby-lang.org/issues/6617
       if options[:local_host]
-        if RUBY_VERSION >= '2.0.0'
+        if RUBY_VERSION >= "2.0.0"
           http.local_host = options[:local_host]
         else
-          Kernel.warn('Warning: option :local_host requires Ruby version 2.0 or later')
+          Kernel.warn("Warning: option :local_host requires Ruby version 2.0 or later")
         end
       end
 
       if options[:local_port]
-        if RUBY_VERSION >= '2.0.0'
+        if RUBY_VERSION >= "2.0.0"
           http.local_port = options[:local_port]
         else
-          Kernel.warn('Warning: option :local_port requires Ruby version 2.0 or later')
+          Kernel.warn("Warning: option :local_port requires Ruby version 2.0 or later")
         end
       end
 

@@ -16,7 +16,7 @@ module HTTParty
 
       begin
         test_server = SSLTestServer.new(
-            rsa_key: File.read(File.expand_path('../../fixtures/ssl/generated/server.key', __FILE__)),
+            rsa_key: File.read(File.expand_path("../../fixtures/ssl/generated/server.key", __FILE__)),
             cert:    File.read(File.expand_path("../../fixtures/ssl/generated/#{server_cert_filename}", __FILE__)))
 
         test_server.start

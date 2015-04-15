@@ -1,8 +1,14 @@
-require 'simplecov'
+require "simplecov"
 SimpleCov.start
 
+<<<<<<< HEAD
 require 'httparty'
 require 'fakeweb'
+=======
+
+require "httparty"
+require "fakeweb"
+>>>>>>> parent of 3bbba7e... Mitigates Style/StringLiterals
 
 def file_fixture(filename)
   open(File.join(File.dirname(__FILE__), 'fixtures', "#{filename}")).read

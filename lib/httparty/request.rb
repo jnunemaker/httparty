@@ -56,10 +56,10 @@ module HTTParty
     end
 
     def uri
-      if redirect && path.relative? && path.path[0] != '/'
-        last_uri_host = @last_uri.path.gsub(/[^\/]+$/, '')
+      if redirect && path.relative? && path.path[0] != "/"
+        last_uri_host = @last_uri.path.gsub(/[^\/]+$/, "")
 
-        path.path = "/#{path.path}" if last_uri_host[-1] != '/'
+        path.path = "/#{path.path}" if last_uri_host[-1] != "/"
         path.path = last_uri_host + path.path
       end
 
@@ -183,12 +183,12 @@ module HTTParty
         query_string_parts << options[:query] unless options[:query].nil?
       end
 
-      query_string_parts.reject!(&:empty?) unless query_string_parts == ['']
+      query_string_parts.reject!(&:empty?) unless query_string_parts == [""]
       query_string_parts.size > 0 ? query_string_parts.join('&') : nil
     end
 
     def get_charset
-      content_type = last_response['content-type']
+      content_type = last_response["content-type"]
       if content_type.nil?
         return nil
       end
@@ -220,16 +220,16 @@ module HTTParty
     def encode_utf_16(body)
       if body.bytesize >= 2
         if body.getbyte(0) == 0xFF && body.getbyte(1) == 0xFE
-          return body.force_encoding('UTF-16LE')
+          return body.force_encoding("UTF-16LE")
         elsif body.getbyte(0) == 0xFE && body.getbyte(1) == 0xFF
-          return body.force_encoding('UTF-16BE')
+          return body.force_encoding("UTF-16BE")
         end
       end
 
       if assume_utf16_is_big_endian
-        body.force_encoding('UTF-16BE')
+        body.force_encoding("UTF-16BE")
       else
-        body.force_encoding('UTF-16LE')
+        body.force_encoding("UTF-16LE")
       end
     end
 
@@ -240,7 +240,7 @@ module HTTParty
         return body
       end
 
-      if 'utf-16'.casecmp(charset) == 0
+      if "utf-16".casecmp(charset) == 0
         encode_utf_16(body)
       else
         encode_with_ruby_encoding(body, charset)
@@ -248,7 +248,7 @@ module HTTParty
     end
 
     def encode_body(body)
-      if ''.respond_to?(:encoding)
+      if "".respond_to?(:encoding)
         _encode_body(body)
       else
         body
@@ -284,12 +284,12 @@ module HTTParty
 
     # Inspired by Ruby 1.9
     def handle_deflation
-      case last_response['content-encoding']
-      when 'gzip', 'x-gzip'
+      case last_response["content-encoding"]
+      when "gzip", "x-gzip"
         body_io = StringIO.new(last_response.body)
         last_response.body.replace Zlib::GzipReader.new(body_io).read
         last_response.delete('content-encoding')
-      when 'deflate'
+      when "deflate"
         last_response.body.replace Zlib::Inflate.inflate(last_response.body)
         last_response.delete('content-encoding')
       end

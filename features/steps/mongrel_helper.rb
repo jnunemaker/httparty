@@ -3,8 +3,8 @@ class BasicMongrelHandler < Mongrel::HttpHandler
   attr_accessor :content_type, :custom_headers, :response_body, :response_code, :preprocessor, :username, :password
 
   def initialize
-    @content_type = 'text/html'
-    @response_body = ''
+    @content_type = "text/html"
+    @response_body = ""
     @response_code = 200
     @custom_headers = {}
   end
@@ -16,8 +16,8 @@ class BasicMongrelHandler < Mongrel::HttpHandler
 
   def reply_with(response, code, response_body)
     response.start(code) do |head, body|
-      head['Content-Type'] = content_type
-      custom_headers.each { |k, v| head[k] = v }
+      head["Content-Type"] = content_type
+      custom_headers.each { |k,v| head[k] = v }
       body.write(response_body)
     end
   end
@@ -54,37 +54,37 @@ end
 
 module BasicAuthentication
   def self.extended(base)
-    base.custom_headers['WWW-Authenticate'] = 'Basic Realm="Super Secret Page"'
+    base.custom_headers["WWW-Authenticate"] = 'Basic Realm="Super Secret Page"'
   end
 
   def process(request, response)
     if authorized?(request)
       super
     else
-      reply_with(response, 401, 'Incorrect.  You have 20 seconds to comply.')
+      reply_with(response, 401, "Incorrect.  You have 20 seconds to comply.")
     end
   end
 
   def authorized?(request)
-    request.params['HTTP_AUTHORIZATION'] == 'Basic ' + Base64.encode64("#{@username}:#{@password}").strip
+    request.params["HTTP_AUTHORIZATION"] == "Basic " + Base64.encode64("#{@username}:#{@password}").strip
   end
 end
 
 module DigestAuthentication
   def self.extended(base)
-    base.custom_headers['WWW-Authenticate'] = 'Digest realm="testrealm@host.com",qop="auth,auth-int",nonce="nonce",opaque="opaque"'
+    base.custom_headers["WWW-Authenticate"] = 'Digest realm="testrealm@host.com",qop="auth,auth-int",nonce="nonce",opaque="opaque"'
   end
 
   def process(request, response)
     if authorized?(request)
       super
     else
-      reply_with(response, 401, 'Incorrect.  You have 20 seconds to comply.')
+      reply_with(response, 401, "Incorrect.  You have 20 seconds to comply.")
     end
   end
 
   def authorized?(request)
-    request.params['HTTP_AUTHORIZATION'] =~ /Digest.*uri=/
+    request.params["HTTP_AUTHORIZATION"] =~ /Digest.*uri=/
   end
 end
 
