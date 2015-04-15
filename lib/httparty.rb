@@ -143,7 +143,7 @@ module HTTParty
     #     default_params api_key: 'secret', another: 'foo'
     #   end
     def default_params(h = {})
-      fail ArgumentError, 'Default params must an object which respond to #to_hash' unless h.respond_to?(:to_hash)
+      raise ArgumentError, 'Default params must an object which respond to #to_hash' unless h.respond_to?(:to_hash)
       default_options[:default_params] ||= {}
       default_options[:default_params].merge!(h)
     end
@@ -156,7 +156,7 @@ module HTTParty
     #     default_timeout 10
     #   end
     def default_timeout(t)
-      fail ArgumentError, 'Timeout must be an integer or float' unless t && (t.is_a?(Integer) || t.is_a?(Float))
+      raise ArgumentError, 'Timeout must be an integer or float' unless t && (t.is_a?(Integer) || t.is_a?(Float))
       default_options[:timeout] = t
     end
 
@@ -167,7 +167,7 @@ module HTTParty
     #     open_timeout 10
     #   end
     def open_timeout(t)
-      fail ArgumentError, 'open_timeout must be an integer or float' unless t && (t.is_a?(Integer) || t.is_a?(Float))
+      raise ArgumentError, 'open_timeout must be an integer or float' unless t && (t.is_a?(Integer) || t.is_a?(Float))
       default_options[:open_timeout] = t
     end
 
@@ -178,7 +178,7 @@ module HTTParty
     #     read_timeout 10
     #   end
     def read_timeout(t)
-      fail ArgumentError, 'read_timeout must be an integer or float' unless t && (t.is_a?(Integer) || t.is_a?(Float))
+      raise ArgumentError, 'read_timeout must be an integer or float' unless t && (t.is_a?(Integer) || t.is_a?(Float))
       default_options[:read_timeout] = t
     end
 
@@ -200,13 +200,13 @@ module HTTParty
     #     headers 'Accept' => 'text/html'
     #   end
     def headers(h = {})
-      fail ArgumentError, 'Headers must an object which responds to #to_hash' unless h.respond_to?(:to_hash)
+      raise ArgumentError, 'Headers must an object which responds to #to_hash' unless h.respond_to?(:to_hash)
       default_options[:headers] ||= {}
       default_options[:headers].merge!(h.to_hash)
     end
 
     def cookies(h = {})
-      fail ArgumentError, 'Cookies must an object which respond to #to_hash' unless h.respond_to?(:to_hash)
+      raise ArgumentError, 'Cookies must an object which respond to #to_hash' unless h.respond_to?(:to_hash)
       default_cookies.add_cookies(h)
     end
 
@@ -535,7 +535,7 @@ module HTTParty
 
       def validate_format
         if format && parser.respond_to?(:supports_format?) && !parser.supports_format?(format)
-          fail UnsupportedFormat, "'#{format.inspect}' Must be one of: #{parser.supported_formats.map(&:to_s).sort.join(', ')}"
+          raise UnsupportedFormat, "'#{format.inspect}' Must be one of: #{parser.supported_formats.map(&:to_s).sort.join(', ')}"
         end
       end
   end

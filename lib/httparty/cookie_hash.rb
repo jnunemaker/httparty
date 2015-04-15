@@ -11,7 +11,7 @@ class HTTParty::CookieHash < Hash #:nodoc:
         self[array[0].to_sym] = array[1]
       end
     else
-      fail 'add_cookies only takes a Hash or a String'
+      raise 'add_cookies only takes a Hash or a String'
     end
   end
 
