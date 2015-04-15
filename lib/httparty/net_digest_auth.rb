@@ -92,7 +92,7 @@ module Net
       end
 
       def random
-        '%x' % (Time.now.to_i + rand(65_535))
+        '%x' % (Time.now.to_i + rand(65535))
       end
 
       def request_digest
