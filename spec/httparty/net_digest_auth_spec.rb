@@ -19,8 +19,10 @@ RSpec.describe Net::HTTPHeader::DigestAuthenticator do
 
   context 'with a cookie value in the response header' do
     before do
-      @digest = setup_digest('www-authenticate' => 'Digest realm="myhost@testrealm.com"',
-                             'Set-Cookie' => 'custom-cookie=1234567')
+      @digest = setup_digest({
+        'www-authenticate' => 'Digest realm="myhost@testrealm.com"',
+        'Set-Cookie' => 'custom-cookie=1234567'
+      })
     end
 
     it 'should set cookie header' do
@@ -30,7 +32,9 @@ RSpec.describe Net::HTTPHeader::DigestAuthenticator do
 
   context 'without a cookie value in the response header' do
     before do
-      @digest = setup_digest('www-authenticate' => 'Digest realm="myhost@testrealm.com"')
+      @digest = setup_digest({
+        'www-authenticate' => 'Digest realm="myhost@testrealm.com"'
+      })
     end
 
     it 'should set empty cookie header array' do
@@ -40,7 +44,9 @@ RSpec.describe Net::HTTPHeader::DigestAuthenticator do
 
   context 'with an opaque value in the response header' do
     before do
-      @digest = setup_digest('www-authenticate' => 'Digest realm="myhost@testrealm.com", opaque="solid"')
+      @digest = setup_digest({
+        'www-authenticate' => 'Digest realm="myhost@testrealm.com", opaque="solid"'
+      })
     end
 
     it 'should set opaque' do
@@ -50,7 +56,9 @@ RSpec.describe Net::HTTPHeader::DigestAuthenticator do
 
   context 'without an opaque valid in the response header' do
     before do
-      @digest = setup_digest('www-authenticate' => 'Digest realm="myhost@testrealm.com"')
+      @digest = setup_digest({
+        'www-authenticate' => 'Digest realm="myhost@testrealm.com"'
+      })
     end
 
     it 'should not set opaque' do
@@ -60,7 +68,9 @@ RSpec.describe Net::HTTPHeader::DigestAuthenticator do
 
   context 'with specified quality of protection (qop)' do
     before do
-      @digest = setup_digest('www-authenticate' => 'Digest realm="myhost@testrealm.com", nonce="NONCE", qop="auth"')
+      @digest = setup_digest({
+        'www-authenticate' => 'Digest realm="myhost@testrealm.com", nonce="NONCE", qop="auth"'
+      })
     end
 
     it 'should set prefix' do
@@ -95,7 +105,9 @@ RSpec.describe Net::HTTPHeader::DigestAuthenticator do
 
   context 'when quality of protection (qop) is unquoted' do
     before do
-      @digest = setup_digest('www-authenticate' => 'Digest realm="myhost@testrealm.com", nonce="NONCE", qop=auth')
+      @digest = setup_digest({
+        'www-authenticate' => 'Digest realm="myhost@testrealm.com", nonce="NONCE", qop=auth'
+      })
     end
 
     it 'should still set qop' do
@@ -105,7 +117,9 @@ RSpec.describe Net::HTTPHeader::DigestAuthenticator do
 
   context 'with unspecified quality of protection (qop)' do
     before do
-      @digest = setup_digest('www-authenticate' => 'Digest realm="myhost@testrealm.com", nonce="NONCE"')
+      @digest = setup_digest({
+        'www-authenticate' => 'Digest realm="myhost@testrealm.com", nonce="NONCE"'
+      })
     end
 
     it 'should set prefix' do
@@ -140,7 +154,9 @@ RSpec.describe Net::HTTPHeader::DigestAuthenticator do
 
   context 'with multiple authenticate headers' do
     before do
-      @digest = setup_digest('www-authenticate' => 'NTLM, Digest realm="myhost@testrealm.com", nonce="NONCE", qop="auth"')
+      @digest = setup_digest({
+        'www-authenticate' => 'NTLM, Digest realm="myhost@testrealm.com", nonce="NONCE", qop="auth"'
+      })
     end
 
     it 'should set prefix' do

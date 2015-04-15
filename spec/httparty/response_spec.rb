@@ -47,7 +47,7 @@ RSpec.describe HTTParty::Response do
 
   it 'returns response headers' do
     response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
-    expect(response.headers).to eq('last-modified' => [@last_modified], 'content-length' => [@content_length])
+    expect(response.headers).to eq({ 'last-modified' => [@last_modified], 'content-length' => [@content_length] })
   end
 
   it 'should send missing methods to delegate' do

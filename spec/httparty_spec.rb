@@ -125,7 +125,7 @@ RSpec.describe HTTParty do
   describe 'headers' do
     def expect_headers(header = {})
       expect(HTTParty::Request).to receive(:new) \
-        .with(anything, anything, hash_including(headers: header)) \
+        .with(anything, anything, hash_including({ headers: header })) \
         .and_return(double('mock response', perform: nil))
     end
 
@@ -188,7 +188,7 @@ RSpec.describe HTTParty do
   describe 'cookies' do
     def expect_cookie_header(s)
       expect(HTTParty::Request).to receive(:new) \
-        .with(anything, anything, hash_including(headers: { 'cookie' => s })) \
+        .with(anything, anything, hash_including({ headers: { 'cookie' => s } })) \
         .and_return(double('mock response', perform: nil))
     end
 
@@ -211,7 +211,7 @@ RSpec.describe HTTParty do
 
     describe 'when a cookie is set at the class level' do
       before(:each) do
-        @klass.cookies(type: 'snickerdoodle')
+        @klass.cookies({ type: 'snickerdoodle' })
       end
 
       it 'should include that cookie in the request' do
@@ -299,14 +299,14 @@ RSpec.describe HTTParty do
   describe 'basic http authentication' do
     it 'should work' do
       @klass.basic_auth 'foobar', 'secret'
-      expect(@klass.default_options[:basic_auth]).to eq(username: 'foobar', password: 'secret')
+      expect(@klass.default_options[:basic_auth]).to eq({ username: 'foobar', password: 'secret' })
     end
   end
 
   describe 'digest http authentication' do
     it 'should work' do
       @klass.digest_auth 'foobar', 'secret'
-      expect(@klass.default_options[:digest_auth]).to eq(username: 'foobar', password: 'secret')
+      expect(@klass.default_options[:digest_auth]).to eq({ username: 'foobar', password: 'secret' })
     end
   end
 
@@ -565,8 +565,8 @@ RSpec.describe HTTParty do
     end
 
     it 'should not run over each others options' do
-      expect(@klass.default_options).to eq(base_uri: 'http://first.com', default_params: { one: 1 })
-      expect(@additional_klass.default_options).to eq(base_uri: 'http://second.com', default_params: { two: 2 })
+      expect(@klass.default_options).to eq({ base_uri: 'http://first.com', default_params: { one: 1 } })
+      expect(@additional_klass.default_options).to eq({ base_uri: 'http://second.com', default_params: { two: 2 } })
     end
   end
 
@@ -587,37 +587,37 @@ RSpec.describe HTTParty do
       @child1.default_params joe: 'alive'
       @child2.default_params joe: 'dead'
 
-      expect(@child1.default_options).to eq(default_params: { joe: 'alive' })
-      expect(@child2.default_options).to eq(default_params: { joe: 'dead' })
+      expect(@child1.default_options).to eq({ default_params: { joe: 'alive' } })
+      expect(@child2.default_options).to eq({ default_params: { joe: 'dead' } })
 
       expect(@parent.default_options).to eq({})
     end
 
     it 'inherits default_options from the superclass' do
       @parent.basic_auth 'user', 'password'
-      expect(@child1.default_options).to eq(basic_auth: { username: 'user', password: 'password' })
+      expect(@child1.default_options).to eq({ basic_auth: { username: 'user', password: 'password' } })
       @child1.basic_auth 'u', 'p' # modifying child1 has no effect on child2
-      expect(@child2.default_options).to eq(basic_auth: { username: 'user', password: 'password' })
+      expect(@child2.default_options).to eq({ basic_auth: { username: 'user', password: 'password' } })
     end
 
     it "doesn't modify the parent's default options" do
       @parent.basic_auth 'user', 'password'
 
       @child1.basic_auth 'u', 'p'
-      expect(@child1.default_options).to eq(basic_auth: { username: 'u', password: 'p' })
+      expect(@child1.default_options).to eq({ basic_auth: { username: 'u', password: 'p' } })
 
       @child1.basic_auth 'email', 'token'
-      expect(@child1.default_options).to eq(basic_auth: { username: 'email', password: 'token' })
+      expect(@child1.default_options).to eq({ basic_auth: { username: 'email', password: 'token' } })
 
-      expect(@parent.default_options).to eq(basic_auth: { username: 'user', password: 'password' })
+      expect(@parent.default_options).to eq({ basic_auth: { username: 'user', password: 'password' } })
     end
 
     it "doesn't modify hashes in the parent's default options" do
       @parent.headers 'Accept' => 'application/json'
       @child1.headers 'Accept' => 'application/xml'
 
-      expect(@parent.default_options[:headers]).to eq('Accept' => 'application/json')
-      expect(@child1.default_options[:headers]).to eq('Accept' => 'application/xml')
+      expect(@parent.default_options[:headers]).to eq({ 'Accept' => 'application/json' })
+      expect(@child1.default_options[:headers]).to eq({ 'Accept' => 'application/xml' })
     end
 
     it 'works with lambda values' do
@@ -636,19 +636,19 @@ RSpec.describe HTTParty do
 
     it 'inherits default_cookies from the parent class' do
       @parent.cookies 'type' => 'chocolate_chip'
-      expect(@child1.default_cookies).to eq('type' => 'chocolate_chip')
+      expect(@child1.default_cookies).to eq({ 'type' => 'chocolate_chip' })
       @child1.cookies 'type' => 'snickerdoodle'
-      expect(@child1.default_cookies).to eq('type' => 'snickerdoodle')
-      expect(@child2.default_cookies).to eq('type' => 'chocolate_chip')
+      expect(@child1.default_cookies).to eq({ 'type' => 'snickerdoodle' })
+      expect(@child2.default_cookies).to eq({ 'type' => 'chocolate_chip' })
     end
 
     it "doesn't modify the parent's default cookies" do
       @parent.cookies 'type' => 'chocolate_chip'
 
       @child1.cookies 'type' => 'snickerdoodle'
-      expect(@child1.default_cookies).to eq('type' => 'snickerdoodle')
+      expect(@child1.default_cookies).to eq({ 'type' => 'snickerdoodle' })
 
-      expect(@parent.default_cookies).to eq('type' => 'chocolate_chip')
+      expect(@parent.default_cookies).to eq({ 'type' => 'chocolate_chip' })
     end
   end
 
@@ -702,30 +702,34 @@ RSpec.describe HTTParty do
       stub_http_response_with('twitter.json')
       tweets = HTTParty.get('http://twitter.com/statuses/public_timeline.json')
       expect(tweets.size).to eq(20)
-      expect(tweets.first['user']).to eq('name'              => 'Pyk',
-                                         'url'               => nil,
-                                         'id'                => '7694602',
-                                         'description'       => nil,
-                                         'protected'         => false,
-                                         'screen_name'       => 'Pyk',
-                                         'followers_count'   => 1,
-                                         'location'          => 'Opera Plaza, California',
-                                         'profile_image_url' => 'http://static.twitter.com/images/default_profile_normal.png')
+      expect(tweets.first['user']).to eq({
+        'name'              => 'Pyk',
+        'url'               => nil,
+        'id'                => '7694602',
+        'description'       => nil,
+        'protected'         => false,
+        'screen_name'       => 'Pyk',
+        'followers_count'   => 1,
+        'location'          => 'Opera Plaza, California',
+        'profile_image_url' => 'http://static.twitter.com/images/default_profile_normal.png'
+      })
     end
 
     it 'should be able parse response type xml automatically' do
       stub_http_response_with('twitter.xml')
       tweets = HTTParty.get('http://twitter.com/statuses/public_timeline.xml')
       expect(tweets['statuses'].size).to eq(20)
-      expect(tweets['statuses'].first['user']).to eq('name'              => 'Magic 8 Bot',
-                                                     'url'               => nil,
-                                                     'id'                => '17656026',
-                                                     'description'       => 'ask me a question',
-                                                     'protected'         => 'false',
-                                                     'screen_name'       => 'magic8bot',
-                                                     'followers_count'   => '90',
-                                                     'profile_image_url' => 'http://s3.amazonaws.com/twitter_production/profile_images/65565851/8ball_large_normal.jpg',
-                                                     'location'          => nil)
+      expect(tweets['statuses'].first['user']).to eq({
+        'name'              => 'Magic 8 Bot',
+        'url'               => nil,
+        'id'                => '17656026',
+        'description'       => 'ask me a question',
+        'protected'         => 'false',
+        'screen_name'       => 'magic8bot',
+        'followers_count'   => '90',
+        'profile_image_url' => 'http://s3.amazonaws.com/twitter_production/profile_images/65565851/8ball_large_normal.jpg',
+        'location'          => nil
+      })
     end
 
     it 'should be able parse response type csv automatically' do
@@ -739,7 +743,11 @@ RSpec.describe HTTParty do
     it 'should not get undefined method add_node for nil class for the following xml' do
       stub_http_response_with('undefined_method_add_node_for_nil.xml')
       result = HTTParty.get('http://foobar.com')
+<<<<<<< HEAD
       expect(result.parsed_response).to eq('Entities' => { 'href' => 'https://s3-sandbox.parature.com/api/v1/5578/5633/Account', 'results' => '0', 'total' => '0', 'page_size' => '25', 'page' => '1' })
+=======
+      expect(result.parsed_response).to eq({ 'Entities'=>{ 'href'=>'https://s3-sandbox.parature.com/api/v1/5578/5633/Account', 'results'=>'0', 'total'=>'0', 'page_size'=>'25', 'page'=>'1' } })
+>>>>>>> parent of c6fb4d6... Mitigates Style/bracesAroundHashParameters
     end
 
     it 'should parse empty response fine' do

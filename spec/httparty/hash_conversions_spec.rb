@@ -25,7 +25,7 @@ RSpec.describe HTTParty::HashConversions do
     context 'value is hash' do
       it 'creates a params string' do
         expect(
-          HTTParty::HashConversions.normalize_param(:person, name: 'Bob Jones')
+          HTTParty::HashConversions.normalize_param(:person, { name: 'Bob Jones' })
         ).to eq('person[name]=Bob%20Jones&')
       end
     end

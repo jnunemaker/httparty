@@ -32,8 +32,10 @@ module HTTParty
         test_server.stop if test_server
       end
 
-      test_server = SSLTestServer.new(rsa_key: path.join('server.key').read,
-                                      cert:    path.join(server_cert_filename).read)
+      test_server = SSLTestServer.new({
+        rsa_key: path.join('server.key').read,
+        cert:    path.join(server_cert_filename).read
+      })
 
       test_server.start
 
