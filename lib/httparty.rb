@@ -512,9 +512,7 @@ module HTTParty
       perform_request Net::HTTP::Options, path, options, &block
     end
 
-    def default_options #:nodoc:
-      @default_options
-    end
+    attr_reader :default_options
 
     private
 
