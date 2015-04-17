@@ -50,9 +50,7 @@ RSpec.configure do |config|
 end
 
 RSpec::Matchers.define :use_ssl do
-  match do |connection|
-    connection.use_ssl?
-  end
+  match(&:use_ssl?)
 end
 
 RSpec::Matchers.define :use_cert_store do |cert_store|
