@@ -35,4 +35,3 @@ class Google
 end
 
 Google.get "http://google.com"
-
