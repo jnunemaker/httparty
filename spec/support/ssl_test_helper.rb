@@ -5,7 +5,7 @@ module HTTParty
     def ssl_verify_test(mode, ca_basename, server_cert_filename, options = {})
       options = {
         format:  :json,
-        timeout: 30,
+        timeout: 30
       }.merge(options)
 
       if mode
@@ -34,7 +34,7 @@ module HTTParty
 
       test_server = SSLTestServer.new({
         rsa_key: path.join('server.key').read,
-        cert:    path.join(server_cert_filename).read,
+        cert:    path.join(server_cert_filename).read
       })
 
       test_server.start
