@@ -340,7 +340,7 @@ RSpec.describe HTTParty::Request do
     it 'should handle csv automatically' do
       csv=['"id","Name"','"1234","Foo Bar!"'].join("\n")
       @request.options[:format] = :csv
-      expect(@request.send(:parse_response, csv)).to eq([["id","Name"],["1234","Foo Bar!"]])
+      expect(@request.send(:parse_response, csv)).to eq([%w(id Name),["1234","Foo Bar!"]])
     end
 
     it 'should handle json automatically' do
@@ -841,19 +841,19 @@ RSpec.describe HTTParty::Request do
 
     it "should raise argument error if basic_auth is not a hash" do
       expect {
-        HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', basic_auth: ["foo", "bar"]).perform
+        HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', basic_auth: %w(foo bar)).perform
       }.to raise_error(ArgumentError, ":basic_auth must be a hash")
     end
 
     it "should raise argument error if digest_auth is not a hash" do
       expect {
-        HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', digest_auth: ["foo", "bar"]).perform
+        HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', digest_auth: %w(foo bar)).perform
       }.to raise_error(ArgumentError, ":digest_auth must be a hash")
     end
 
     it "should raise argument error if headers is not a hash" do
       expect {
-        HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', headers: ["foo", "bar"]).perform
+        HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', headers: %w(foo bar)).perform
       }.to raise_error(ArgumentError, ":headers must be a hash")
     end
 

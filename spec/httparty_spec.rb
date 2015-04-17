@@ -676,7 +676,7 @@ RSpec.describe HTTParty do
     end
 
     it "should be able to get chunked html" do
-      chunks = ["Chunk1", "Chunk2", "Chunk3", "Chunk4"]
+      chunks = %w(Chunk1 Chunk2 Chunk3 Chunk4)
       stub_chunked_http_response_with(chunks)
 
       expect(
@@ -687,7 +687,7 @@ RSpec.describe HTTParty do
     end
 
     it "should return an empty body if stream_body option is turned on" do
-      chunks = ["Chunk1", "Chunk2", "Chunk3", "Chunk4"]
+      chunks = %w(Chunk1 Chunk2 Chunk3 Chunk4)
       options = {stream_body: true, format: 'html'}
       stub_chunked_http_response_with(chunks, options)
 
@@ -736,7 +736,7 @@ RSpec.describe HTTParty do
       stub_http_response_with('twitter.csv')
       profile = HTTParty.get('http://twitter.com/statuses/profile.csv')
       expect(profile.size).to eq(2)
-      expect(profile[0]).to eq(["name","url","id","description","protected","screen_name","followers_count","profile_image_url","location"])
+      expect(profile[0]).to eq(%w(name url id description protected screen_name followers_count profile_image_url location))
       expect(profile[1]).to eq(["Magic 8 Bot",nil,"17656026","ask me a question","false","magic8bot","90","http://s3.amazonaws.com/twitter_production/profile_images/65565851/8ball_large_normal.jpg",nil])
     end
 
