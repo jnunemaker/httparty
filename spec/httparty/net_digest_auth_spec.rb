@@ -50,7 +50,7 @@ RSpec.describe Net::HTTPHeader::DigestAuthenticator do
     end
 
     it "should set opaque" do
-      expect(authorization_header).to include(%Q(opaque="solid"))
+      expect(authorization_header).to include('opaque="solid"')
     end
   end
 
@@ -62,7 +62,7 @@ RSpec.describe Net::HTTPHeader::DigestAuthenticator do
     end
 
     it "should not set opaque" do
-      expect(authorization_header).not_to include(%Q(opaque=))
+      expect(authorization_header).not_to include("opaque=")
     end
   end
 
@@ -78,23 +78,23 @@ RSpec.describe Net::HTTPHeader::DigestAuthenticator do
     end
 
     it "should set username" do
-      expect(authorization_header).to include(%Q(username="Mufasa"))
+      expect(authorization_header).to include('username="Mufasa"')
     end
 
     it "should set digest-uri" do
-      expect(authorization_header).to include(%Q(uri="/dir/index.html"))
+      expect(authorization_header).to include('uri="/dir/index.html"')
     end
 
     it "should set qop" do
-      expect(authorization_header).to include(%Q(qop="auth"))
+      expect(authorization_header).to include('qop="auth"')
     end
 
     it "should set cnonce" do
-      expect(authorization_header).to include(%Q(cnonce="md5(deadbeef)"))
+      expect(authorization_header).to include('cnonce="md5(deadbeef)"')
     end
 
     it "should set nonce-count" do
-      expect(authorization_header).to include(%Q(nc=00000001))
+      expect(authorization_header).to include("nc=00000001")
     end
 
     it "should set response" do
@@ -111,7 +111,7 @@ RSpec.describe Net::HTTPHeader::DigestAuthenticator do
     end
 
     it "should still set qop" do
-      expect(authorization_header).to include(%Q(qop="auth"))
+      expect(authorization_header).to include('qop="auth"')
     end
   end
 
@@ -127,23 +127,23 @@ RSpec.describe Net::HTTPHeader::DigestAuthenticator do
     end
 
     it "should set username" do
-      expect(authorization_header).to include(%Q(username="Mufasa"))
+      expect(authorization_header).to include('username="Mufasa"')
     end
 
     it "should set digest-uri" do
-      expect(authorization_header).to include(%Q(uri="/dir/index.html"))
+      expect(authorization_header).to include('uri="/dir/index.html"')
     end
 
     it "should not set qop" do
-      expect(authorization_header).not_to include(%Q(qop=))
+      expect(authorization_header).not_to include("qop=")
     end
 
     it "should not set cnonce" do
-      expect(authorization_header).not_to include(%Q(cnonce=))
+      expect(authorization_header).not_to include("cnonce=")
     end
 
     it "should not set nonce-count" do
-      expect(authorization_header).not_to include(%Q(nc=))
+      expect(authorization_header).not_to include("nc=")
     end
 
     it "should set response" do
@@ -164,23 +164,23 @@ RSpec.describe Net::HTTPHeader::DigestAuthenticator do
     end
 
     it "should set username" do
-      expect(authorization_header).to include(%Q(username="Mufasa"))
+      expect(authorization_header).to include('username="Mufasa"')
     end
 
     it "should set digest-uri" do
-      expect(authorization_header).to include(%Q(uri="/dir/index.html"))
+      expect(authorization_header).to include('uri="/dir/index.html"')
     end
 
     it "should set qop" do
-      expect(authorization_header).to include(%Q(qop="auth"))
+      expect(authorization_header).to include('qop="auth"')
     end
 
     it "should set cnonce" do
-      expect(authorization_header).to include(%Q(cnonce="md5(deadbeef)"))
+      expect(authorization_header).to include('cnonce="md5(deadbeef)"')
     end
 
     it "should set nonce-count" do
-      expect(authorization_header).to include(%Q(nc=00000001))
+      expect(authorization_header).to include("nc=00000001")
     end
 
     it "should set response" do

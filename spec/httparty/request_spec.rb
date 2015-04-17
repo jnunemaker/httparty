@@ -332,19 +332,19 @@ RSpec.describe HTTParty::Request do
 
   describe 'parsing responses' do
     it 'should handle xml automatically' do
-      xml = %q[<books><book><id>1234</id><name>Foo Bar!</name></book></books>]
+      xml = '<books><book><id>1234</id><name>Foo Bar!</name></book></books>'
       @request.options[:format] = :xml
       expect(@request.send(:parse_response, xml)).to eq({'books' => {'book' => {'id' => '1234', 'name' => 'Foo Bar!'}}})
     end
 
     it 'should handle csv automatically' do
-      csv=[%q["id","Name"],%q["1234","Foo Bar!"]].join("\n")
+      csv=['"id","Name"','"1234","Foo Bar!"'].join("\n")
       @request.options[:format] = :csv
       expect(@request.send(:parse_response, csv)).to eq([["id","Name"],["1234","Foo Bar!"]])
     end
 
     it 'should handle json automatically' do
-      json = %q[{"books": {"book": {"name": "Foo Bar!", "id": "1234"}}}]
+      json = '{"books": {"book": {"name": "Foo Bar!", "id": "1234"}}}'
       @request.options[:format] = :json
       expect(@request.send(:parse_response, json)).to eq({'books' => {'book' => {'id' => '1234', 'name' => 'Foo Bar!'}}})
     end
