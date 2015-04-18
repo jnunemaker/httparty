@@ -99,7 +99,7 @@ RSpec.describe Net::HTTPHeader::DigestAuthenticator do
 
     it "should set response" do
       request_digest = "md5(md5(Mufasa:myhost@testrealm.com:Circle Of Life):NONCE:00000001:md5(deadbeef):auth:md5(GET:/dir/index.html))"
-      expect(authorization_header).to include(%Q(response="#{request_digest}"))
+      expect(authorization_header).to include(%(response="#{request_digest}"))
     end
   end
 
@@ -148,7 +148,7 @@ RSpec.describe Net::HTTPHeader::DigestAuthenticator do
 
     it "should set response" do
       request_digest = "md5(md5(Mufasa:myhost@testrealm.com:Circle Of Life):NONCE:md5(GET:/dir/index.html))"
-      expect(authorization_header).to include(%Q(response="#{request_digest}"))
+      expect(authorization_header).to include(%(response="#{request_digest}"))
     end
   end
 
@@ -185,7 +185,7 @@ RSpec.describe Net::HTTPHeader::DigestAuthenticator do
 
     it "should set response" do
       request_digest = "md5(md5(Mufasa:myhost@testrealm.com:Circle Of Life):NONCE:00000001:md5(deadbeef):auth:md5(GET:/dir/index.html))"
-      expect(authorization_header).to include(%Q(response="#{request_digest}"))
+      expect(authorization_header).to include(%(response="#{request_digest}"))
     end
   end
 end

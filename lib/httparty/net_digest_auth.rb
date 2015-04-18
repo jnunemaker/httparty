@@ -34,23 +34,23 @@ module Net
       def authorization_header
         @cnonce = md5(random)
         header = [
-          %Q(Digest username="#{@username}"),
-          %Q(realm="#{@response['realm']}"),
-          %Q(nonce="#{@response['nonce']}"),
-          %Q(uri="#{@path}"),
-          %Q(response="#{request_digest}")
+          %(Digest username="#{@username}"),
+          %(realm="#{@response['realm']}"),
+          %(nonce="#{@response['nonce']}"),
+          %(uri="#{@path}"),
+          %(response="#{request_digest}")
         ]
 
         if qop_present?
           fields = [
-            %Q(cnonce="#{@cnonce}"),
-            %Q(qop="#{@response['qop']}"),
+            %(cnonce="#{@cnonce}"),
+            %(qop="#{@response['qop']}"),
             "nc=00000001"
           ]
           fields.each { |field| header << field }
         end
 
-        header << %Q(opaque="#{@response['opaque']}") if opaque_present?
+        header << %(opaque="#{@response['opaque']}") if opaque_present?
         header
       end
 
