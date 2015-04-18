@@ -338,9 +338,9 @@ RSpec.describe HTTParty::Request do
     end
 
     it 'should handle csv automatically' do
-      csv = ['"id","Name"','"1234","Foo Bar!"'].join("\n")
+      csv = ['"id","Name"', '"1234","Foo Bar!"'].join("\n")
       @request.options[:format] = :csv
-      expect(@request.send(:parse_response, csv)).to eq([%w(id Name),["1234","Foo Bar!"]])
+      expect(@request.send(:parse_response, csv)).to eq([%w(id Name), ["1234", "Foo Bar!"]])
     end
 
     it 'should handle json automatically' do

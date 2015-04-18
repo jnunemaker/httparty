@@ -373,9 +373,9 @@ RSpec.describe HTTParty do
 
     it "should process a request with a connection from the adapter" do
       connection_adapter_options = {foo: :bar}
-      expect(connection_adapter).to receive(:call) { |u,o|
+      expect(connection_adapter).to receive(:call) { |u, o|
         expect(o[:connection_adapter_options]).to eq(connection_adapter_options)
-        HTTParty::ConnectionAdapter.call(u,o)
+        HTTParty::ConnectionAdapter.call(u, o)
       }.with(URI.parse(uri), kind_of(Hash))
       FakeWeb.register_uri(:get, uri, body: 'stuff')
       @klass.connection_adapter connection_adapter, connection_adapter_options
@@ -737,7 +737,7 @@ RSpec.describe HTTParty do
       profile = HTTParty.get('http://twitter.com/statuses/profile.csv')
       expect(profile.size).to eq(2)
       expect(profile[0]).to eq(%w(name url id description protected screen_name followers_count profile_image_url location))
-      expect(profile[1]).to eq(["Magic 8 Bot",nil,"17656026","ask me a question","false","magic8bot","90","http://s3.amazonaws.com/twitter_production/profile_images/65565851/8ball_large_normal.jpg",nil])
+      expect(profile[1]).to eq(["Magic 8 Bot", nil, "17656026", "ask me a question", "false", "magic8bot", "90", "http://s3.amazonaws.com/twitter_production/profile_images/65565851/8ball_large_normal.jpg", nil])
     end
 
     it "should not get undefined method add_node for nil class for the following xml" do

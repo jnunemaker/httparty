@@ -8,7 +8,7 @@ class HTTParty::CookieHash < Hash #:nodoc:
       merge!(value)
     when String
       value.split('; ').each do |cookie|
-        array = cookie.split('=',2)
+        array = cookie.split('=', 2)
         self[array[0].to_sym] = array[1]
       end
     else
