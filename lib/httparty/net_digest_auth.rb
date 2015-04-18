@@ -84,11 +84,11 @@ module Net
       end
 
       def opaque_present?
-        @response.has_key?('opaque') && !@response['opaque'].empty?
+        @response.key?('opaque') && !@response['opaque'].empty?
       end
 
       def qop_present?
-        @response.has_key?('qop') && !@response['qop'].empty?
+        @response.key?('qop') && !@response['qop'].empty?
       end
 
       def random
