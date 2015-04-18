@@ -205,12 +205,10 @@ module HTTParty
     end
 
     def encode_with_ruby_encoding(body, charset)
-      begin
-        encoding = Encoding.find(charset)
-        body.force_encoding(encoding)
-      rescue
-        body
-      end
+      encoding = Encoding.find(charset)
+      body.force_encoding(encoding)
+    rescue
+      body
     end
 
     def assume_utf16_is_big_endian
