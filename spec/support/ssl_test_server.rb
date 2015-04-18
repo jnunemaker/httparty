@@ -72,7 +72,7 @@ EOF
 
           socket.write(response.gsub(/\r\n/n, "\n").gsub(/\n/n, "\r\n"))
           socket.close
-      }
+        }
       end
 
       @ssl_server.close
