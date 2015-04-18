@@ -231,7 +231,6 @@ module HTTParty
       else
         body.force_encoding("UTF-16LE")
       end
-
     end
 
     def _encode_body(body)

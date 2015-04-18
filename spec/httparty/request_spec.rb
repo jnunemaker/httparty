@@ -14,7 +14,6 @@ RSpec.describe HTTParty::Request do
     end
 
     context "when the query is an array" do
-
       it "doesn't include brackets" do
         query_string = normalizer[{page: 1, foo: %w(bar baz)}]
         expect(CGI.unescape(query_string)).to eq("foo=bar&foo=baz&page=1")
@@ -103,7 +102,6 @@ RSpec.describe HTTParty::Request do
         expect(request.format).to eq(:json)
       end
     end
-
   end
 
   context "options" do
@@ -239,7 +237,6 @@ RSpec.describe HTTParty::Request do
           expect(CGI.unescape(@request.uri.query)).to eq("foo[]=bar&foo[]=baz")
         end
       end
-
     end
   end
 
@@ -407,9 +404,7 @@ RSpec.describe HTTParty::Request do
         expect(resp.body.encoding).to eq(Encoding.find("UTF-16LE"))
       end
 
-
       it "should perform no encoding if the charset is not available" do
-
         response = stub_response "Content"
         response.initialize_http_header("Content-Type" => "text/plain;charset = utf-lols")
         resp = @request.perform
@@ -418,7 +413,6 @@ RSpec.describe HTTParty::Request do
       end
 
       it "should perform no encoding if the content type is specified but no charset is specified" do
-
         response = stub_response "Content"
         response.initialize_http_header("Content-Type" => "text/plain")
         resp = @request.perform

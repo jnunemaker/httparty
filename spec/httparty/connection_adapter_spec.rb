@@ -1,7 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper'))
 
 RSpec.describe HTTParty::ConnectionAdapter do
-
   describe "initialization" do
     let(:uri) { URI 'http://www.google.com' }
     it "takes a URI as input" do
@@ -93,7 +92,6 @@ RSpec.describe HTTParty::ConnectionAdapter do
           let(:uri) { URI 'https://foobar.com:123456' }
           it { is_expected.to use_ssl }
         end
-
 
         context "when ssl version is set" do
           let(:options) { {ssl_version: :TLSv1} }

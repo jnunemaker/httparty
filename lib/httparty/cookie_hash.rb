@@ -1,5 +1,4 @@
 class HTTParty::CookieHash < Hash #:nodoc:
-
   CLIENT_COOKIES = %w{path expires domain path secure httponly}
 
   def add_cookies(value)

@@ -47,7 +47,7 @@ RSpec.describe HTTParty::CookieHash do
     describe 'with other class' do
       it "should error" do
         expect {
-          @cookie_hash.add_cookies(Array.new)
+          @cookie_hash.add_cookies([])
         }.to raise_error
       end
     end

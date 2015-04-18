@@ -1,7 +1,6 @@
 require "simplecov"
 SimpleCov.start
 
-
 require "httparty"
 require "fakeweb"
 
