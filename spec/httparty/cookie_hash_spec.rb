@@ -37,7 +37,7 @@ RSpec.describe HTTParty::CookieHash do
       end
 
       it "should handle '=' within cookie value" do
-          @cookie_hash.add_cookies("first=one=1; second=two=2==")
+        @cookie_hash.add_cookies("first=one=1; second=two=2==")
           expect(@cookie_hash.keys).to include(:first, :second)
           expect(@cookie_hash[:first]).to eq('one=1')
           expect(@cookie_hash[:second]).to eq('two=2==')

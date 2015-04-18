@@ -865,7 +865,7 @@ RSpec.describe HTTParty::Request do
 
     it "should raise RedirectionTooDeep error if limit is negative" do
       expect {
-          HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', limit: -1).perform
+        HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', limit: -1).perform
       }.to raise_error(HTTParty::RedirectionTooDeep, 'HTTP redirects too deep')
     end
   end
