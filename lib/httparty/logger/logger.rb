@@ -4,7 +4,7 @@ require 'httparty/logger/curl_logger'
 module HTTParty
   module Logger
     def self.build(logger, level, formatter)
-      level  ||= :info
+      level ||= :info
       formatter ||= :apache
 
       case formatter
