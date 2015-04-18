@@ -119,7 +119,7 @@ module HTTParty
         end
       end
 
-      return http
+      http
     end
 
     private
