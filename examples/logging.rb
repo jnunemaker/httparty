@@ -14,7 +14,7 @@ my_logger.info "It can be used also on a custom class."
 
 class Google
   include HTTParty
-  logger  ::Logger.new "httparty.log"
+  logger ::Logger.new "httparty.log"
 end
 
 Google.get "http://google.com"
@@ -31,7 +31,7 @@ my_logger.info '*' * 70
 my_logger.info "These configs are also available on custom classes."
 class Google
   include HTTParty
-  logger  ::Logger.new("httparty.log"), :debug, :curl
+  logger ::Logger.new("httparty.log"), :debug, :curl
 end
 
 Google.get "http://google.com"
