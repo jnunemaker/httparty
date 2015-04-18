@@ -3,7 +3,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper'))
 RSpec.describe Net::HTTPHeader::DigestAuthenticator do
   def setup_digest(response)
     digest = Net::HTTPHeader::DigestAuthenticator.new("Mufasa",
-      "Circle Of Life", "GET", "/dir/index.html", response)
+                                                      "Circle Of Life", "GET", "/dir/index.html", response)
     allow(digest).to receive(:random).and_return("deadbeef")
     allow(Digest::MD5).to receive(:hexdigest) { |str| "md5(#{str})" }
     digest
