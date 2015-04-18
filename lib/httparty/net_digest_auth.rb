@@ -58,7 +58,7 @@ module Net
         @cookies
       end
 
-    private
+      private
 
       def parse(response_header)
         header = response_header['www-authenticate']
