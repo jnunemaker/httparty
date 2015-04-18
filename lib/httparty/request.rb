@@ -311,7 +311,7 @@ module HTTParty
 
     def capture_cookies(response)
       return unless response['Set-Cookie']
-      cookies_hash = HTTParty::CookieHash.new()
+      cookies_hash = HTTParty::CookieHash.new
       cookies_hash.add_cookies(options[:headers].to_hash['Cookie']) if options[:headers] && options[:headers].to_hash['Cookie']
       response.get_fields('Set-Cookie').each { |cookie| cookies_hash.add_cookies(cookie) }
       options[:headers] ||= {}

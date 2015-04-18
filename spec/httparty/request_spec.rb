@@ -788,7 +788,7 @@ RSpec.describe HTTParty::Request do
     context "context-encoding" do
       before do
         @request.options[:format] = :html
-        @last_response = double()
+        @last_response = double
         allow(@last_response).to receive(:body).and_return('')
       end
 
