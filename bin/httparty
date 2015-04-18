@@ -17,7 +17,7 @@ OptionParser.new do |o|
 
   o.on("-f",
        "--format [FORMAT]",
-       "Output format to use instead of pretty-print ruby: " +
+       "Output format to use instead of pretty-print ruby: " \
        "plain, csv, json or xml") do |f|
     opts[:output_format] = f.downcase.to_sym
   end
