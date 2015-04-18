@@ -29,16 +29,16 @@ class SSLTestServer
 
     @ssl_server = OpenSSL::SSL::SSLServer.new(@raw_server, @ctx)
 
-    @stopping_mutex.synchronize{
+    @stopping_mutex.synchronize {
       return if @stopping
-      @thread = Thread.new{ thread_main }
+      @thread = Thread.new { thread_main }
     }
 
     nil
   end
 
   def stop
-    @stopping_mutex.synchronize{
+    @stopping_mutex.synchronize {
       return if @stopping
       @stopping = true
     }
@@ -48,14 +48,14 @@ class SSLTestServer
   private
 
     def thread_main
-      until @stopping_mutex.synchronize{ @stopping }
+      until @stopping_mutex.synchronize { @stopping }
         (rr,_,_) = select([@ssl_server.to_io], nil, nil, 0.1)
 
         next unless rr && rr.include?(@ssl_server.to_io)
 
         socket = @ssl_server.accept
 
-        Thread.new{
+        Thread.new {
           header = []
 
           until (line = socket.readline).rstrip.empty?
