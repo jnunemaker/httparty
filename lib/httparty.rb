@@ -514,30 +514,30 @@ module HTTParty
 
     private
 
-      def perform_request(http_method, path, options, &block) #:nodoc:
-        options = ModuleInheritableAttributes.hash_deep_dup(default_options).merge(options)
-        process_headers(options)
-        process_cookies(options)
-        Request.new(http_method, path, options).perform(&block)
-      end
+    def perform_request(http_method, path, options, &block) #:nodoc:
+      options = ModuleInheritableAttributes.hash_deep_dup(default_options).merge(options)
+      process_headers(options)
+      process_cookies(options)
+      Request.new(http_method, path, options).perform(&block)
+    end
 
-      def process_headers(options)
-        if options[:headers] && headers.any?
-          options[:headers] = headers.merge(options[:headers])
-        end
+    def process_headers(options)
+      if options[:headers] && headers.any?
+        options[:headers] = headers.merge(options[:headers])
       end
+    end
 
-      def process_cookies(options) #:nodoc:
-        return unless options[:cookies] || default_cookies.any?
-        options[:headers] ||= headers.dup
-        options[:headers]["cookie"] = cookies.merge(options.delete(:cookies) || {}).to_cookie_string
-      end
+    def process_cookies(options) #:nodoc:
+      return unless options[:cookies] || default_cookies.any?
+      options[:headers] ||= headers.dup
+      options[:headers]["cookie"] = cookies.merge(options.delete(:cookies) || {}).to_cookie_string
+    end
 
-      def validate_format
-        if format && parser.respond_to?(:supports_format?) && !parser.supports_format?(format)
-          raise UnsupportedFormat, "'#{format.inspect}' Must be one of: #{parser.supported_formats.map(&:to_s).sort.join(', ')}"
-        end
+    def validate_format
+      if format && parser.respond_to?(:supports_format?) && !parser.supports_format?(format)
+        raise UnsupportedFormat, "'#{format.inspect}' Must be one of: #{parser.supported_formats.map(&:to_s).sort.join(', ')}"
       end
+    end
   end
 
   def self.normalize_base_uri(url) #:nodoc:

@@ -47,22 +47,22 @@ class SSLTestServer
 
   private
 
-    def thread_main
-      until @stopping_mutex.synchronize { @stopping }
-        (rr, _, _) = select([@ssl_server.to_io], nil, nil, 0.1)
+  def thread_main
+    until @stopping_mutex.synchronize { @stopping }
+      (rr, _, _) = select([@ssl_server.to_io], nil, nil, 0.1)
 
-        next unless rr && rr.include?(@ssl_server.to_io)
+      next unless rr && rr.include?(@ssl_server.to_io)
 
-        socket = @ssl_server.accept
+      socket = @ssl_server.accept
 
-        Thread.new {
-          header = []
+      Thread.new {
+        header = []
 
-          until (line = socket.readline).rstrip.empty?
-            header << line
-          end
+        until (line = socket.readline).rstrip.empty?
+          header << line
+        end
 
-          response = <<EOF
+        response = <<EOF
 HTTP/1.1 200 OK
 Connection: close
 Content-Type: application/json; charset=UTF-8
@@ -70,11 +70,11 @@ Content-Type: application/json; charset=UTF-8
 {"success":true}
 EOF
 
-          socket.write(response.gsub(/\r\n/n, "\n").gsub(/\n/n, "\r\n"))
-          socket.close
-        }
-      end
-
-      @ssl_server.close
+        socket.write(response.gsub(/\r\n/n, "\n").gsub(/\n/n, "\r\n"))
+        socket.close
+      }
     end
+
+    @ssl_server.close
+  end
 end
