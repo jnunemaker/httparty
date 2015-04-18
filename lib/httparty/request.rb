@@ -344,7 +344,7 @@ module HTTParty
     def set_basic_auth_from_uri
       if path.userinfo
         username, password = path.userinfo.split(':')
-        options[:basic_auth] = {:username => username, :password => password}
+        options[:basic_auth] = {username: username, password: password}
       end
     end
   end

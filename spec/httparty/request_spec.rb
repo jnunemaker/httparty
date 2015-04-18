@@ -60,15 +60,15 @@ RSpec.describe HTTParty::Request do
       context "when basic auth options wasn't set explicitly" do
         it "sets basic auth from uri" do
           request = HTTParty::Request.new(Net::HTTP::Get, 'http://user1:pass1@example.com')
-          expect(request.options[:basic_auth]).to eq({:username => 'user1', :password => 'pass1'})
+          expect(request.options[:basic_auth]).to eq({username: 'user1', password: 'pass1'})
         end
       end
 
       context "when basic auth options was set explicitly" do
         it "uses basic auth from url anyway" do
-          basic_auth = {:username => 'user2', :password => 'pass2'}
-          request = HTTParty::Request.new(Net::HTTP::Get, 'http://user1:pass1@example.com', :basic_auth => basic_auth)
-          expect(request.options[:basic_auth]).to eq({:username => 'user1', :password => 'pass1'})
+          basic_auth = {username: 'user2', password: 'pass2'}
+          request = HTTParty::Request.new(Net::HTTP::Get, 'http://user1:pass1@example.com', basic_auth: basic_auth)
+          expect(request.options[:basic_auth]).to eq({username: 'user1', password: 'pass1'})
         end
       end
     end
