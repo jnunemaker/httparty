@@ -167,7 +167,7 @@ module HTTParty
       auth_request.initialize_http_header(options[:headers].to_hash) if options[:headers].respond_to?(:to_hash)
       res = http.request(auth_request)
 
-      if res['www-authenticate'] != nil && res['www-authenticate'].length > 0
+      if !res['www-authenticate'].nil? && res['www-authenticate'].length > 0
         @raw_request.digest_auth(username, password, res)
       end
     end
