@@ -24,7 +24,7 @@ class SSLTestServer
     @raw_server = TCPServer.new(@port)
 
     if @port == 0
-      @port = Socket::getnameinfo(@raw_server.getsockname, Socket::NI_NUMERICHOST | Socket::NI_NUMERICSERV)[1].to_i
+      @port = Socket.getnameinfo(@raw_server.getsockname, Socket::NI_NUMERICHOST | Socket::NI_NUMERICSERV)[1].to_i
     end
 
     @ssl_server = OpenSSL::SSL::SSLServer.new(@raw_server, @ctx)

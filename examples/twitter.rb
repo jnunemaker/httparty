@@ -1,7 +1,7 @@
 dir = File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
 require File.join(dir, 'httparty')
 require 'pp'
-config = YAML::load(File.read(File.join(ENV['HOME'], '.twitter')))
+config = YAML.load(File.read(File.join(ENV['HOME'], '.twitter')))
 
 class Twitter
   include HTTParty

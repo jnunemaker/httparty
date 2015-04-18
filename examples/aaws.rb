@@ -4,7 +4,7 @@ require 'active_support'
 dir = File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
 require File.join(dir, 'httparty')
 require 'pp'
-config = YAML::load(File.read(File.join(ENV['HOME'], '.aaws')))
+config = YAML.load(File.read(File.join(ENV['HOME'], '.aaws')))
 
 module AAWS
   class Book
