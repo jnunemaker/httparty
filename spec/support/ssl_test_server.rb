@@ -9,7 +9,7 @@ class SSLTestServer
   attr_accessor :ctx    # SSLContext object
   attr_reader :port
 
-  def initialize(options={})
+  def initialize(options = {})
     @ctx             = OpenSSL::SSL::SSLContext.new
     @ctx.cert        = OpenSSL::X509::Certificate.new(options[:cert])
     @ctx.key         = OpenSSL::PKey::RSA.new(options[:rsa_key])

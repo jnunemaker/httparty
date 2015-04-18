@@ -29,7 +29,7 @@ module HTTParty
     attr_accessor :http_method, :options, :last_response, :redirect, :last_uri
     attr_reader :path
 
-    def initialize(http_method, path, o={})
+    def initialize(http_method, path, o = {})
       self.http_method = http_method
       self.path = path
       self.options = {

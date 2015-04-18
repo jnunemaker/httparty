@@ -16,7 +16,7 @@ module AAWS
       self.class.default_params AWSAccessKeyId: key
     end
 
-    def search(options={})
+    def search(options = {})
       raise ArgumentError, 'You must search for something' if options[:query].blank?
 
       # amazon uses nasty camelized query params

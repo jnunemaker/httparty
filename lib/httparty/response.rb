@@ -6,7 +6,7 @@ module HTTParty
 
     attr_reader :request, :response, :body, :headers
 
-    def initialize(request, response, parsed_block, options={})
+    def initialize(request, response, parsed_block, options = {})
       @request      = request
       @response     = response
       @body         = options[:body] || response.body

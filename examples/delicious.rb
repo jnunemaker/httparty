@@ -16,7 +16,7 @@ class Delicious
   #   dt (optional). Filter by this date (CCYY-MM-DDThh:mm:ssZ).
   #   url (optional). Filter by this url.
   #   ie: posts(query: {tag: 'ruby'})
-  def posts(options={})
+  def posts(options = {})
     options.merge!({basic_auth: @auth})
     self.class.get('/posts/get', options)
   end
@@ -24,7 +24,7 @@ class Delicious
   # query params that filter the posts are:
   #   tag (optional). Filter by this tag.
   #   count (optional). Number of items to retrieve (Default:15, Maximum:100).
-  def recent(options={})
+  def recent(options = {})
     options.merge!({basic_auth: @auth})
     self.class.get('/posts/recent', options)
   end

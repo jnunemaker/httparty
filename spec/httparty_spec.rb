@@ -123,7 +123,7 @@ RSpec.describe HTTParty do
   end
 
   describe "headers" do
-    def expect_headers(header={})
+    def expect_headers(header = {})
       expect(HTTParty::Request).to receive(:new) \
         .with(anything, anything, hash_including({ headers: header })) \
         .and_return(double("mock response", perform: nil))
