@@ -263,7 +263,7 @@ module HTTParty
         self.path = last_response['location']
         self.redirect = true
         if last_response.class == Net::HTTPSeeOther
-          unless options[:maintain_method_across_redirects] and options[:resend_on_redirect]
+          unless options[:maintain_method_across_redirects] && options[:resend_on_redirect]
             self.http_method = Net::HTTP::Get
           end
         else
