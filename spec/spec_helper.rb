@@ -1,15 +1,14 @@
 require "simplecov"
 SimpleCov.start
 
-
 require "httparty"
 require "fakeweb"
 
 def file_fixture(filename)
-  open(File.join(File.dirname(__FILE__), 'fixtures', "#{filename.to_s}")).read
+  open(File.join(File.dirname(__FILE__), 'fixtures', "#{filename}")).read
 end
 
-Dir[File.expand_path(File.join(File.dirname(__FILE__),'support','**','*.rb'))].each {|f| require f}
+Dir[File.expand_path(File.join(File.dirname(__FILE__), 'support', '**', '*.rb'))].each {|f| require f}
 
 RSpec.configure do |config|
   config.include HTTParty::StubResponse
@@ -50,9 +49,7 @@ RSpec.configure do |config|
 end
 
 RSpec::Matchers.define :use_ssl do
-  match do |connection|
-    connection.use_ssl?
-  end
+  match(&:use_ssl?)
 end
 
 RSpec::Matchers.define :use_cert_store do |cert_store|

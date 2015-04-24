@@ -50,7 +50,6 @@ module HTTParty
   # * :+ssl_ca_path+: see HTTParty::ClassMethods.ssl_ca_path.
   # * :+connection_adapter_options+: contains the hash you passed to HTTParty.connection_adapter when you configured your connection adapter
   class ConnectionAdapter
-
     # Private: Regex used to strip brackets from IPv6 URIs.
     StripIpv6BracketsRegex = /\A\[(.*)\]\z/
 
@@ -61,8 +60,8 @@ module HTTParty
 
     attr_reader :uri, :options
 
-    def initialize(uri, options={})
-      raise ArgumentError, "uri must be a URI, not a #{uri.class}" unless uri.kind_of? URI
+    def initialize(uri, options = {})
+      raise ArgumentError, "uri must be a URI, not a #{uri.class}" unless uri.is_a? URI
 
       @uri = uri
       @options = options
@@ -120,7 +119,7 @@ module HTTParty
         end
       end
 
-      return http
+      http
     end
 
     private

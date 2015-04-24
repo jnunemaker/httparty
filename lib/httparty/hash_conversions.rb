@@ -12,7 +12,7 @@ module HTTParty
     #   }.to_params
     #     #=> "name=Bob&address[city]=Ruby Central&address[phones][]=111-111-1111&address[phones][]=222-222-2222&address[street]=111 Ruby Ave."
     def self.to_params(hash)
-      hash.to_hash.map { |k,v| normalize_param(k,v) }.join.chop
+      hash.to_hash.map { |k, v| normalize_param(k, v) }.join.chop
     end
 
     # @param key<Object> The key for the param.
@@ -28,7 +28,7 @@ module HTTParty
       if value.respond_to?(:to_ary)
         param << value.to_ary.map { |element| normalize_param("#{key}[]", element) }.join
       elsif value.respond_to?(:to_hash)
-        stack << [key,value.to_hash]
+        stack << [key, value.to_hash]
       else
         param << "#{key}=#{ERB::Util.url_encode(value.to_s)}&"
       end

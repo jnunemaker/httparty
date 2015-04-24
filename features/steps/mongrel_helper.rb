@@ -10,14 +10,14 @@ class BasicMongrelHandler < Mongrel::HttpHandler
   end
 
   def process(request, response)
-    instance_eval &preprocessor if preprocessor
+    instance_eval(&preprocessor) if preprocessor
     reply_with(response, response_code, response_body)
   end
 
   def reply_with(response, code, response_body)
     response.start(code) do |head, body|
       head["Content-Type"] = content_type
-      custom_headers.each { |k,v| head[k] = v }
+      custom_headers.each { |k, v| head[k] = v }
       body.write(response_body)
     end
   end

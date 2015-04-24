@@ -16,7 +16,6 @@ require 'httparty/logger/logger'
 
 # @see HTTParty::ClassMethods
 module HTTParty
-
   def self.included(base)
     base.extend ClassMethods
     base.send :include, ModuleInheritableAttributes
@@ -57,14 +56,13 @@ module HTTParty
   # * :+ssl_ca_path+: see HTTParty::ClassMethods.ssl_ca_path.
 
   module ClassMethods
-
     # Turns on logging
     #
     #   class Foo
     #     include HTTParty
     #     logger Logger.new('http_logger'), :info, :apache
     #   end
-    def logger(logger, level=:info, format=:apache)
+    def logger(logger, level = :info, format = :apache)
       default_options[:logger]     = logger
       default_options[:log_level]  = level
       default_options[:log_format] = format
@@ -76,7 +74,7 @@ module HTTParty
     #     include HTTParty
     #     http_proxy 'http://foo.com', 80, 'user', 'pass'
     #   end
-    def http_proxy(addr=nil, port=nil, user=nil, pass=nil)
+    def http_proxy(addr = nil, port = nil, user = nil, pass = nil)
       default_options[:http_proxyaddr] = addr
       default_options[:http_proxyport] = port
       default_options[:http_proxyuser] = user
@@ -90,7 +88,7 @@ module HTTParty
     #     include HTTParty
     #     base_uri 'twitter.com'
     #   end
-    def base_uri(uri=nil)
+    def base_uri(uri = nil)
       return default_options[:base_uri] unless uri
       default_options[:base_uri] = HTTParty.normalize_base_uri(uri)
     end
@@ -144,7 +142,7 @@ module HTTParty
     #     include HTTParty
     #     default_params api_key: 'secret', another: 'foo'
     #   end
-    def default_params(h={})
+    def default_params(h = {})
       raise ArgumentError, 'Default params must an object which respond to #to_hash' unless h.respond_to?(:to_hash)
       default_options[:default_params] ||= {}
       default_options[:default_params].merge!(h)
@@ -201,13 +199,13 @@ module HTTParty
     #     include HTTParty
     #     headers 'Accept' => 'text/html'
     #   end
-    def headers(h={})
+    def headers(h = {})
       raise ArgumentError, 'Headers must an object which responds to #to_hash' unless h.respond_to?(:to_hash)
       default_options[:headers] ||= {}
       default_options[:headers].merge!(h.to_hash)
     end
 
-    def cookies(h={})
+    def cookies(h = {})
       raise ArgumentError, 'Cookies must an object which respond to #to_hash' unless h.respond_to?(:to_hash)
       default_cookies.add_cookies(h)
     end
@@ -304,7 +302,7 @@ module HTTParty
     #     include HTTParty
     #     pem File.read('/home/user/my.pem'), "optional password"
     #   end
-    def pem(pem_contents, password=nil)
+    def pem(pem_contents, password = nil)
       default_options[:pem] = pem_contents
       default_options[:pem_password] = password
     end
@@ -457,7 +455,7 @@ module HTTParty
     #   # Simple get with full url and query parameters
     #   # ie: http://foo.com/resource.json?limit=10
     #   Foo.get('http://foo.com/resource.json', query: {limit: 10})
-    def get(path, options={}, &block)
+    def get(path, options = {}, &block)
       perform_request Net::HTTP::Get, path, options, &block
     end
 
@@ -473,75 +471,73 @@ module HTTParty
     #   # Simple post with full url using :query option,
     #   # which gets set as form data on the request.
     #   Foo.post('http://foo.com/resources', query: {bar: 'baz'})
-    def post(path, options={}, &block)
+    def post(path, options = {}, &block)
       perform_request Net::HTTP::Post, path, options, &block
     end
 
     # Perform a PATCH request to a path
-    def patch(path, options={}, &block)
+    def patch(path, options = {}, &block)
       perform_request Net::HTTP::Patch, path, options, &block
     end
 
     # Perform a PUT request to a path
-    def put(path, options={}, &block)
+    def put(path, options = {}, &block)
       perform_request Net::HTTP::Put, path, options, &block
     end
 
     # Perform a DELETE request to a path
-    def delete(path, options={}, &block)
+    def delete(path, options = {}, &block)
       perform_request Net::HTTP::Delete, path, options, &block
     end
 
     # Perform a MOVE request to a path
-    def move(path, options={}, &block)
+    def move(path, options = {}, &block)
       perform_request Net::HTTP::Move, path, options, &block
     end
 
     # Perform a COPY request to a path
-    def copy(path, options={}, &block)
+    def copy(path, options = {}, &block)
       perform_request Net::HTTP::Copy, path, options, &block
     end
 
     # Perform a HEAD request to a path
-    def head(path, options={}, &block)
+    def head(path, options = {}, &block)
       perform_request Net::HTTP::Head, path, options, &block
     end
 
     # Perform an OPTIONS request to a path
-    def options(path, options={}, &block)
+    def options(path, options = {}, &block)
       perform_request Net::HTTP::Options, path, options, &block
     end
 
-    def default_options #:nodoc:
-      @default_options
-    end
+    attr_reader :default_options
 
     private
 
-      def perform_request(http_method, path, options, &block) #:nodoc:
-        options = ModuleInheritableAttributes.hash_deep_dup(default_options).merge(options)
-        process_headers(options)
-        process_cookies(options)
-        Request.new(http_method, path, options).perform(&block)
-      end
+    def perform_request(http_method, path, options, &block) #:nodoc:
+      options = ModuleInheritableAttributes.hash_deep_dup(default_options).merge(options)
+      process_headers(options)
+      process_cookies(options)
+      Request.new(http_method, path, options).perform(&block)
+    end
 
-      def process_headers(options)
-        if options[:headers] && headers.any?
-          options[:headers] = headers.merge(options[:headers])
-        end
+    def process_headers(options)
+      if options[:headers] && headers.any?
+        options[:headers] = headers.merge(options[:headers])
       end
+    end
 
-      def process_cookies(options) #:nodoc:
-        return unless options[:cookies] || default_cookies.any?
-        options[:headers] ||= headers.dup
-        options[:headers]["cookie"] = cookies.merge(options.delete(:cookies) || {}).to_cookie_string
-      end
+    def process_cookies(options) #:nodoc:
+      return unless options[:cookies] || default_cookies.any?
+      options[:headers] ||= headers.dup
+      options[:headers]["cookie"] = cookies.merge(options.delete(:cookies) || {}).to_cookie_string
+    end
 
-      def validate_format
-        if format && parser.respond_to?(:supports_format?) && !parser.supports_format?(format)
-          raise UnsupportedFormat, "'#{format.inspect}' Must be one of: #{parser.supported_formats.map{|f| f.to_s}.sort.join(', ')}"
-        end
+    def validate_format
+      if format && parser.respond_to?(:supports_format?) && !parser.supports_format?(format)
+        raise UnsupportedFormat, "'#{format.inspect}' Must be one of: #{parser.supported_formats.map(&:to_s).sort.join(', ')}"
       end
+    end
   end
 
   def self.normalize_base_uri(url) #:nodoc:

@@ -124,7 +124,9 @@ RSpec.describe HTTParty::Parser do
 
       it "raises a useful exception message for subclasses" do
         atom_parser = Class.new(HTTParty::Parser) do
-          def self.name; 'AtomParser'; end
+          def self.name
+            'AtomParser'
+          end
         end
         parser = atom_parser.new 'body', :atom
         expect do

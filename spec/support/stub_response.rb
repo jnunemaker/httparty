@@ -13,7 +13,7 @@ module HTTParty
       expect(HTTParty::Request).to receive(:new).and_return(http_request)
     end
 
-    def stub_chunked_http_response_with(chunks, options={format: "html"})
+    def stub_chunked_http_response_with(chunks, options = {format: "html"})
       response = Net::HTTPResponse.new("1.1", 200, nil)
       allow(response).to receive(:chunked_data).and_return(chunks)
       def response.read_body(&block)

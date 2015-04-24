@@ -14,7 +14,6 @@ RSpec.describe HTTParty::Request do
     end
 
     context "when the query is an array" do
-
       it "doesn't include brackets" do
         query_string = normalizer[{page: 1, foo: %w(bar baz)}]
         expect(CGI.unescape(query_string)).to eq("foo=bar&foo=baz&page=1")
@@ -61,15 +60,15 @@ RSpec.describe HTTParty::Request do
       context "when basic auth options wasn't set explicitly" do
         it "sets basic auth from uri" do
           request = HTTParty::Request.new(Net::HTTP::Get, 'http://user1:pass1@example.com')
-          expect(request.options[:basic_auth]).to eq({:username => 'user1', :password => 'pass1'})
+          expect(request.options[:basic_auth]).to eq({username: 'user1', password: 'pass1'})
         end
       end
 
       context "when basic auth options was set explicitly" do
         it "uses basic auth from url anyway" do
-          basic_auth = {:username => 'user2', :password => 'pass2'}
-          request = HTTParty::Request.new(Net::HTTP::Get, 'http://user1:pass1@example.com', :basic_auth => basic_auth)
-          expect(request.options[:basic_auth]).to eq({:username => 'user1', :password => 'pass1'})
+          basic_auth = {username: 'user2', password: 'pass2'}
+          request = HTTParty::Request.new(Net::HTTP::Get, 'http://user1:pass1@example.com', basic_auth: basic_auth)
+          expect(request.options[:basic_auth]).to eq({username: 'user1', password: 'pass1'})
         end
       end
     end
@@ -103,7 +102,6 @@ RSpec.describe HTTParty::Request do
         expect(request.format).to eq(:json)
       end
     end
-
   end
 
   context "options" do
@@ -115,7 +113,7 @@ RSpec.describe HTTParty::Request do
 
     it "should use digest auth when configured" do
       FakeWeb.register_uri(:get, "http://api.foo.com/v1",
-        www_authenticate: 'Digest realm="Log Viewer", qop="auth", nonce="2CA0EC6B0E126C4800E56BA0C0003D3C", opaque="5ccc069c403ebaf9f0171e9517f40e41", stale=false')
+                           www_authenticate: 'Digest realm="Log Viewer", qop="auth", nonce="2CA0EC6B0E126C4800E56BA0C0003D3C", opaque="5ccc069c403ebaf9f0171e9517f40e41", stale=false')
 
       @request.options[:digest_auth] = {username: 'foobar', password: 'secret'}
       @request.send(:setup_raw_request)
@@ -239,7 +237,6 @@ RSpec.describe HTTParty::Request do
           expect(CGI.unescape(@request.uri.query)).to eq("foo[]=bar&foo[]=baz")
         end
       end
-
     end
   end
 
@@ -332,19 +329,19 @@ RSpec.describe HTTParty::Request do
 
   describe 'parsing responses' do
     it 'should handle xml automatically' do
-      xml = %q[<books><book><id>1234</id><name>Foo Bar!</name></book></books>]
+      xml = '<books><book><id>1234</id><name>Foo Bar!</name></book></books>'
       @request.options[:format] = :xml
       expect(@request.send(:parse_response, xml)).to eq({'books' => {'book' => {'id' => '1234', 'name' => 'Foo Bar!'}}})
     end
 
     it 'should handle csv automatically' do
-      csv=[%q["id","Name"],%q["1234","Foo Bar!"]].join("\n")
+      csv = ['"id","Name"', '"1234","Foo Bar!"'].join("\n")
       @request.options[:format] = :csv
-      expect(@request.send(:parse_response, csv)).to eq([["id","Name"],["1234","Foo Bar!"]])
+      expect(@request.send(:parse_response, csv)).to eq([%w(id Name), ["1234", "Foo Bar!"]])
     end
 
     it 'should handle json automatically' do
-      json = %q[{"books": {"book": {"name": "Foo Bar!", "id": "1234"}}}]
+      json = '{"books": {"book": {"name": "Foo Bar!", "id": "1234"}}}'
       @request.options[:format] = :json
       expect(@request.send(:parse_response, json)).to eq({'books' => {'book' => {'id' => '1234', 'name' => 'Foo Bar!'}}})
     end
@@ -407,9 +404,7 @@ RSpec.describe HTTParty::Request do
         expect(resp.body.encoding).to eq(Encoding.find("UTF-16LE"))
       end
 
-
       it "should perform no encoding if the charset is not available" do
-
         response = stub_response "Content"
         response.initialize_http_header("Content-Type" => "text/plain;charset = utf-lols")
         resp = @request.perform
@@ -418,7 +413,6 @@ RSpec.describe HTTParty::Request do
       end
 
       it "should perform no encoding if the content type is specified but no charset is specified" do
-
         response = stub_response "Content"
         response.initialize_http_header("Content-Type" => "text/plain")
         resp = @request.perform
@@ -599,14 +593,14 @@ RSpec.describe HTTParty::Request do
       end
 
       it 'should update cookies with rediects' do
-        @request.options[:headers] = {'Cookie'=> 'foo=bar;'}
+        @request.options[:headers] = {'Cookie' => 'foo=bar;'}
         @redirect['Set-Cookie'] = 'foo=tar;'
         @request.perform
         expect(@request.options[:headers]['Cookie']).to match(/foo=tar/)
       end
 
       it 'should keep cookies between rediects' do
-        @request.options[:headers] = {'Cookie'=> 'keep=me'}
+        @request.options[:headers] = {'Cookie' => 'keep=me'}
         @redirect['Set-Cookie'] = 'foo=tar;'
         @request.perform
         expect(@request.options[:headers]['Cookie']).to match(/keep=me/)
@@ -719,14 +713,14 @@ RSpec.describe HTTParty::Request do
       end
 
       it 'should update cookies with rediects' do
-        @request.options[:headers] = {'Cookie'=> 'foo=bar;'}
+        @request.options[:headers] = {'Cookie' => 'foo=bar;'}
         @redirect['Set-Cookie'] = 'foo=tar;'
         @request.perform
         expect(@request.options[:headers]['Cookie']).to match(/foo=tar/)
       end
 
       it 'should keep cookies between rediects' do
-        @request.options[:headers] = {'Cookie'=> 'keep=me'}
+        @request.options[:headers] = {'Cookie' => 'keep=me'}
         @redirect['Set-Cookie'] = 'foo=tar;'
         @request.perform
         expect(@request.options[:headers]['Cookie']).to match(/keep=me/)
@@ -794,7 +788,7 @@ RSpec.describe HTTParty::Request do
     context "context-encoding" do
       before do
         @request.options[:format] = :html
-        @last_response = double()
+        @last_response = double
         allow(@last_response).to receive(:body).and_return('')
       end
 
@@ -841,19 +835,19 @@ RSpec.describe HTTParty::Request do
 
     it "should raise argument error if basic_auth is not a hash" do
       expect {
-        HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', basic_auth: ["foo", "bar"]).perform
+        HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', basic_auth: %w(foo bar)).perform
       }.to raise_error(ArgumentError, ":basic_auth must be a hash")
     end
 
     it "should raise argument error if digest_auth is not a hash" do
       expect {
-        HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', digest_auth: ["foo", "bar"]).perform
+        HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', digest_auth: %w(foo bar)).perform
       }.to raise_error(ArgumentError, ":digest_auth must be a hash")
     end
 
     it "should raise argument error if headers is not a hash" do
       expect {
-        HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', headers: ["foo", "bar"]).perform
+        HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', headers: %w(foo bar)).perform
       }.to raise_error(ArgumentError, ":headers must be a hash")
     end
 
@@ -871,7 +865,7 @@ RSpec.describe HTTParty::Request do
 
     it "should raise RedirectionTooDeep error if limit is negative" do
       expect {
-          HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', limit: -1).perform
+        HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', limit: -1).perform
       }.to raise_error(HTTParty::RedirectionTooDeep, 'HTTP redirects too deep')
     end
   end

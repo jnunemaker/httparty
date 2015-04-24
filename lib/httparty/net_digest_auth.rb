@@ -34,23 +34,23 @@ module Net
       def authorization_header
         @cnonce = md5(random)
         header = [
-          %Q(Digest username="#{@username}"),
-          %Q(realm="#{@response['realm']}"),
-          %Q(nonce="#{@response['nonce']}"),
-          %Q(uri="#{@path}"),
-          %Q(response="#{request_digest}"),
+          %(Digest username="#{@username}"),
+          %(realm="#{@response['realm']}"),
+          %(nonce="#{@response['nonce']}"),
+          %(uri="#{@path}"),
+          %(response="#{request_digest}")
         ]
 
         if qop_present?
           fields = [
-            %Q(cnonce="#{@cnonce}"),
-            %Q(qop="#{@response['qop']}"),
-            %Q(nc=00000001)
+            %(cnonce="#{@cnonce}"),
+            %(qop="#{@response['qop']}"),
+            "nc=00000001"
           ]
           fields.each { |field| header << field }
         end
 
-        header << %Q(opaque="#{@response['opaque']}") if opaque_present?
+        header << %(opaque="#{@response['opaque']}") if opaque_present?
         header
       end
 
@@ -58,11 +58,11 @@ module Net
         @cookies
       end
 
-    private
+      private
 
       def parse(response_header)
         header = response_header['www-authenticate']
-          .gsub(/qop=(auth(?:-int)?)/, %Q(qop="\\1"))
+                 .gsub(/qop=(auth(?:-int)?)/, 'qop="\\1"')
 
         header =~ /Digest (.*)/
         params = {}
@@ -84,15 +84,15 @@ module Net
       end
 
       def opaque_present?
-        @response.has_key?('opaque') and not @response['opaque'].empty?
+        @response.key?('opaque') && !@response['opaque'].empty?
       end
 
       def qop_present?
-        @response.has_key?('qop') and not @response['qop'].empty?
+        @response.key?('qop') && !@response['qop'].empty?
       end
 
       def random
-        "%x" % (Time.now.to_i + rand(65535))
+        format "%x", (Time.now.to_i + rand(65535))
       end
 
       def request_digest

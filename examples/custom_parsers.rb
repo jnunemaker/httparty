@@ -16,7 +16,6 @@ class ParseAtom
   parser Parser::Atom
 end
 
-
 class OnlyParseAtom
   include HTTParty
 
@@ -35,7 +34,6 @@ class OnlyParseAtom
   parser Parser::OnlyAtom
 end
 
-
 class SkipParsing
   include HTTParty
 
@@ -49,11 +47,10 @@ class SkipParsing
   parser Parser::Simple
 end
 
-
 class AdHocParsing
   include HTTParty
   parser(
-    Proc.new do |body, format|
+    proc do |body, format|
       case format
       when :json
         body.to_json

@@ -3,7 +3,7 @@
 require "optparse"
 require "pp"
 
-$:.unshift(File.join(File.dirname(__FILE__), "/../lib"))
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), "/../lib"))
 require "httparty"
 
 opts = {
@@ -13,11 +13,11 @@ opts = {
 }
 
 OptionParser.new do |o|
-  o.banner = "USAGE: #{$0} [options] [url]"
+  o.banner = "USAGE: #{$PROGRAM_NAME} [options] [url]"
 
   o.on("-f",
        "--format [FORMAT]",
-       "Output format to use instead of pretty-print ruby: " +
+       "Output format to use instead of pretty-print ruby: " \
        "plain, csv, json or xml") do |f|
     opts[:output_format] = f.downcase.to_sym
   end
@@ -64,16 +64,15 @@ OptionParser.new do |o|
   end
 end.parse!
 
-
 if ARGV.empty?
   STDERR.puts "You need to provide a URL"
-  STDERR.puts "USAGE: #{$0} [options] [url]"
+  STDERR.puts "USAGE: #{$PROGRAM_NAME} [options] [url]"
 end
 
 def dump_headers(response)
   resp_type = Net::HTTPResponse::CODE_TO_OBJ[response.code.to_s]
   puts "#{response.code} #{resp_type.to_s.sub(/^Net::HTTP/, '')}"
-  response.headers.each do |n,v|
+  response.headers.each do |n, v|
     puts "#{n}: #{v}"
   end
   puts
@@ -81,7 +80,7 @@ end
 
 if opts[:verbose]
   puts "#{opts[:action].to_s.upcase} #{ARGV.first}"
-  opts[:headers].each do |n,v|
+  opts[:headers].each do |n, v|
     puts "#{n}: #{v}"
   end
   puts
@@ -109,7 +108,7 @@ else
       puts
     when :csv
       require 'csv'
-      puts CSV.parse(response.body).map{|row| row.to_s }
+      puts CSV.parse(response.body).map(&:to_s)
     else
       puts response
   end

@@ -14,7 +14,7 @@ module HTTParty
 
     SupportedURISchemes  = [URI::HTTP, URI::HTTPS, URI::Generic]
 
-    NON_RAILS_QUERY_STRING_NORMALIZER = Proc.new do |query|
+    NON_RAILS_QUERY_STRING_NORMALIZER = proc do |query|
       Array(query).sort_by { |a| a[0].to_s }.map do |key, value|
         if value.nil?
           key.to_s
@@ -29,7 +29,7 @@ module HTTParty
     attr_accessor :http_method, :options, :last_response, :redirect, :last_uri
     attr_reader :path
 
-    def initialize(http_method, path, o={})
+    def initialize(http_method, path, o = {})
       self.http_method = http_method
       self.path = path
       self.options = {
@@ -167,7 +167,7 @@ module HTTParty
       auth_request.initialize_http_header(options[:headers].to_hash) if options[:headers].respond_to?(:to_hash)
       res = http.request(auth_request)
 
-      if res['www-authenticate'] != nil && res['www-authenticate'].length > 0
+      if !res['www-authenticate'].nil? && res['www-authenticate'].length > 0
         @raw_request.digest_auth(username, password, res)
       end
     end
@@ -205,12 +205,10 @@ module HTTParty
     end
 
     def encode_with_ruby_encoding(body, charset)
-      begin
-        encoding = Encoding.find(charset)
-        body.force_encoding(encoding)
-      rescue
-        body
-      end
+      encoding = Encoding.find(charset)
+      body.force_encoding(encoding)
+    rescue
+      body
     end
 
     def assume_utf16_is_big_endian
@@ -231,7 +229,6 @@ module HTTParty
       else
         body.force_encoding("UTF-16LE")
       end
-
     end
 
     def _encode_body(body)
@@ -266,7 +263,7 @@ module HTTParty
         self.path = last_response['location']
         self.redirect = true
         if last_response.class == Net::HTTPSeeOther
-          unless options[:maintain_method_across_redirects] and options[:resend_on_redirect]
+          unless options[:maintain_method_across_redirects] && options[:resend_on_redirect]
             self.http_method = Net::HTTP::Get
           end
         else
@@ -277,7 +274,7 @@ module HTTParty
         capture_cookies(last_response)
         perform(&block)
       else
-        body = body || last_response.body
+        body ||= last_response.body
         body = encode_body(body)
         Response.new(self, last_response, lambda { parse_response(body) }, body: body)
       end
@@ -314,7 +311,7 @@ module HTTParty
 
     def capture_cookies(response)
       return unless response['Set-Cookie']
-      cookies_hash = HTTParty::CookieHash.new()
+      cookies_hash = HTTParty::CookieHash.new
       cookies_hash.add_cookies(options[:headers].to_hash['Cookie']) if options[:headers] && options[:headers].to_hash['Cookie']
       response.get_fields('Set-Cookie').each { |cookie| cookies_hash.add_cookies(cookie) }
       options[:headers] ||= {}
@@ -347,7 +344,7 @@ module HTTParty
     def set_basic_auth_from_uri
       if path.userinfo
         username, password = path.userinfo.split(':')
-        options[:basic_auth] = {:username => username, :password => password}
+        options[:basic_auth] = {username: username, password: password}
       end
     end
   end

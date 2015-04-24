@@ -4,7 +4,7 @@ require 'active_support'
 dir = File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
 require File.join(dir, 'httparty')
 require 'pp'
-config = YAML::load(File.read(File.join(ENV['HOME'], '.aaws')))
+config = YAML.load(File.read(File.join(ENV['HOME'], '.aaws')))
 
 module AAWS
   class Book
@@ -16,7 +16,7 @@ module AAWS
       self.class.default_params AWSAccessKeyId: key
     end
 
-    def search(options={})
+    def search(options = {})
       raise ArgumentError, 'You must search for something' if options[:query].blank?
 
       # amazon uses nasty camelized query params
