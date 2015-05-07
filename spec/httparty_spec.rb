@@ -376,7 +376,7 @@ RSpec.describe HTTParty do
       expect(connection_adapter).to receive(:call) { |u, o|
         expect(o[:connection_adapter_options]).to eq(connection_adapter_options)
         HTTParty::ConnectionAdapter.call(u, o)
-      }.with(URI.parse(uri), kind_of(Hash))
+      }.with(Addressable::URI.parse(uri), kind_of(Hash))
       FakeWeb.register_uri(:get, uri, body: 'stuff')
       @klass.connection_adapter connection_adapter, connection_adapter_options
       expect(@klass.get(uri).parsed_response).to eq('stuff')

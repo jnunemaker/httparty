@@ -173,36 +173,36 @@ RSpec.describe HTTParty::Request do
   describe "#uri" do
     context "redirects" do
       it "returns correct path when the server sets the location header to a filename" do
-        @request.last_uri = URI.parse("http://example.com/foo/bar")
-        @request.path = URI.parse("bar?foo=bar")
+        @request.last_uri = Addressable::URI.parse("http://example.com/foo/bar")
+        @request.path = Addressable::URI.parse("bar?foo=bar")
         @request.redirect = true
 
-        expect(@request.uri).to eq(URI.parse("http://example.com/foo/bar?foo=bar"))
+        expect(@request.uri).to eq(Addressable::URI.parse("http://example.com/foo/bar?foo=bar"))
       end
 
       context "location header is an absolute path" do
         it "returns correct path when location has leading slash" do
-          @request.last_uri = URI.parse("http://example.com/foo/bar")
-          @request.path = URI.parse("/bar?foo=bar")
+          @request.last_uri = Addressable::URI.parse("http://example.com/foo/bar")
+          @request.path = Addressable::URI.parse("/bar?foo=bar")
           @request.redirect = true
 
-          expect(@request.uri).to eq(URI.parse("http://example.com/bar?foo=bar"))
+          expect(@request.uri).to eq(Addressable::URI.parse("http://example.com/bar?foo=bar"))
         end
 
         it "returns the correct path when location has no leading slash" do
-          @request.last_uri = URI.parse("http://example.com")
-          @request.path = URI.parse("bar/")
+          @request.last_uri = Addressable::URI.parse("http://example.com")
+          @request.path = Addressable::URI.parse("bar/")
           @request.redirect = true
 
-          expect(@request.uri).to eq(URI.parse("http://example.com/bar/"))
+          expect(@request.uri).to eq(Addressable::URI.parse("http://example.com/bar/"))
         end
       end
       it "returns correct path when the server sets the location header to a full uri" do
-        @request.last_uri = URI.parse("http://example.com/foo/bar")
-        @request.path = URI.parse("http://example.com/bar?foo=bar")
+        @request.last_uri = Addressable::URI.parse("http://example.com/foo/bar")
+        @request.path = Addressable::URI.parse("http://example.com/bar?foo=bar")
         @request.redirect = true
 
-        expect(@request.uri).to eq(URI.parse("http://example.com/bar?foo=bar"))
+        expect(@request.uri).to eq(Addressable::URI.parse("http://example.com/bar?foo=bar"))
       end
     end
 

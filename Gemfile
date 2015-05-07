@@ -4,6 +4,7 @@ gemspec
 gem 'rake'
 gem 'fakeweb',  '~> 1.3'
 gem 'mongrel',  '1.2.0.pre2'
+gem 'addressable'
 
 group :development do
   gem 'guard'

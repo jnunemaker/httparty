@@ -12,7 +12,7 @@ module HTTParty
       Net::HTTP::Copy
     ]
 
-    SupportedURISchemes  = [URI::HTTP, URI::HTTPS, URI::Generic]
+    SupportedURISchemes  = ['http', 'https', nil]
 
     NON_RAILS_QUERY_STRING_NORMALIZER = proc do |query|
       Array(query).sort_by { |a| a[0].to_s }.map do |key, value|
@@ -44,7 +44,7 @@ module HTTParty
     end
 
     def path=(uri)
-      @path = URI(uri)
+      @path = Addressable::URI.parse(uri)
     end
 
     def request_uri(uri)
@@ -63,14 +63,14 @@ module HTTParty
         path.path = last_uri_host + path.path
       end
 
-      new_uri = path.relative? ? URI.parse("#{base_uri}#{path}") : path.clone
+      new_uri = path.relative? ? Addressable::URI.parse("#{base_uri}#{path}") : path.clone
 
       # avoid double query string on redirects [#12]
       unless redirect
         new_uri.query = query_string(new_uri)
       end
 
-      unless SupportedURISchemes.include? new_uri.class
+      unless SupportedURISchemes.include? new_uri.scheme
         raise UnsupportedURIScheme, "'#{new_uri}' Must be HTTP, HTTPS or Generic"
       end
 
