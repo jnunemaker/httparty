@@ -1,7 +1,7 @@
 require 'pathname'
 require 'net/http'
 require 'net/https'
-require 'uri'
+require "addressable/uri"
 require 'zlib'
 require 'multi_xml'
 require 'json'
@@ -16,6 +16,7 @@ require 'httparty/logger/logger'
 
 # @see HTTParty::ClassMethods
 module HTTParty
+
   def self.included(base)
     base.extend ClassMethods
     base.send :include, ModuleInheritableAttributes

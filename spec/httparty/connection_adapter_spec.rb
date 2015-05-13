@@ -2,7 +2,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper'))
 
 RSpec.describe HTTParty::ConnectionAdapter do
   describe "initialization" do
-    let(:uri) { URI 'http://www.google.com' }
+    let(:uri) { Addressable::URI.parse 'http://www.google.com' }
     it "takes a URI as input" do
       HTTParty::ConnectionAdapter.new(uri)
     end
@@ -29,6 +29,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
       adapter = HTTParty::ConnectionAdapter.new(uri, options)
       expect(adapter.options).to be options
     end
+
   end
 
   describe ".call" do
@@ -47,7 +48,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
   end
 
   describe '#connection' do
-    let(:uri) { URI 'http://www.google.com' }
+    let(:uri) { Addressable::URI.parse 'http://www.google.com' }
     let(:options) { Hash.new }
     let(:adapter) { HTTParty::ConnectionAdapter.new(uri, options) }
 
@@ -56,12 +57,12 @@ RSpec.describe HTTParty::ConnectionAdapter do
       it { is_expected.to be_an_instance_of Net::HTTP }
 
       context "using port 80" do
-        let(:uri) { URI 'http://foobar.com' }
+        let(:uri) { Addressable::URI.parse 'http://foobar.com' }
         it { is_expected.not_to use_ssl }
       end
 
       context "when dealing with ssl" do
-        let(:uri) { URI 'https://foobar.com' }
+        let(:uri) { Addressable::URI.parse 'https://foobar.com' }
 
         context "uses the system cert_store, by default" do
           let!(:system_cert_store) do
@@ -80,7 +81,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
         end
 
         context "using port 443 for ssl" do
-          let(:uri) { URI 'https://api.foo.com/v1:443' }
+          let(:uri) { Addressable::URI.parse 'https://api.foo.com/v1:443' }
           it { is_expected.to use_ssl }
         end
 
@@ -89,7 +90,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
         end
 
         context "https scheme with non-standard port" do
-          let(:uri) { URI 'https://foobar.com:123456' }
+          let(:uri) { Addressable::URI.parse 'https://foobar.com:123456' }
           it { is_expected.to use_ssl }
         end
 
@@ -103,7 +104,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
       end
 
       context "when dealing with IPv6" do
-        let(:uri) { URI 'http://[fd00::1]' }
+        let(:uri) { Addressable::URI.parse 'http://[fd00::1]' }
 
         it "strips brackets from the address" do
           expect(subject.address).to eq('fd00::1')
@@ -326,7 +327,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
       end
 
       context 'when not providing a proxy address' do
-        let(:uri) { URI 'http://proxytest.com' }
+        let(:uri) { Addressable::URI.parse 'http://proxytest.com' }
 
         it "does not pass any proxy parameters to the connection" do
           http = Net::HTTP.new("proxytest.com")
@@ -354,7 +355,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
         let(:options) { {pem: pem, pem_password: "password"} }
 
         context "when scheme is https" do
-          let(:uri) { URI 'https://google.com' }
+          let(:uri) { Addressable::URI.parse 'https://google.com' }
           let(:cert) { double("OpenSSL::X509::Certificate") }
           let(:key) { double("OpenSSL::PKey::RSA") }
 
@@ -382,7 +383,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
         end
 
         context "when scheme is not https" do
-          let(:uri) { URI 'http://google.com' }
+          let(:uri) { Addressable::URI.parse 'http://google.com' }
           let(:http) { Net::HTTP.new(uri) }
 
           before do
@@ -405,7 +406,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
         let(:options) { {p12: p12, p12_password: "password"} }
 
         context "when scheme is https" do
-          let(:uri) { URI 'https://google.com' }
+          let(:uri) { Addressable::URI.parse 'https://google.com' }
           let(:pkcs12) { double("OpenSSL::PKCS12", certificate: cert, key: key) }
           let(:cert) { double("OpenSSL::X509::Certificate") }
           let(:key) { double("OpenSSL::PKey::RSA") }
@@ -433,7 +434,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
         end
 
         context "when scheme is not https" do
-          let(:uri) { URI 'http://google.com' }
+          let(:uri) { Addressable::URI.parse 'http://google.com' }
           let(:http) { Net::HTTP.new(uri) }
 
           before do
