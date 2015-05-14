@@ -37,6 +37,7 @@ module HTTParty
         default_params: {},
         follow_redirects: true,
         parser: Parser,
+        uri_adapter: URI,
         connection_adapter: ConnectionAdapter
       }.merge(o)
       self.path = path
@@ -90,13 +91,15 @@ module HTTParty
     end
 
     def URI uri
-      if uri.is_a?(URI)
+      uri_adapter = options[:uri_adapter]
+
+      if uri.is_a?(uri_adapter)
         uri
       elsif uri = String.try_convert(uri)
-        URI.parse uri
+        uri_adapter.parse uri
       else
         raise ArgumentError,
-          "bad argument (expected URI object or URI string)"
+          "bad argument (expected #{uri_adapter} object or URI string)"
       end
     end
 

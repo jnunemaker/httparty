@@ -61,7 +61,8 @@ module HTTParty
     attr_reader :uri, :options
 
     def initialize(uri, options = {})
-      raise ArgumentError, "uri must be a URI, not a #{uri.class}" unless uri.is_a? URI
+      uri_adapter = options[:uri_adapter] || URI
+      raise ArgumentError, "uri must be a #{uri_adapter}, not a #{uri.class}" unless uri.is_a? uri_adapter
 
       @uri = uri
       @options = options

@@ -49,6 +49,7 @@ module HTTParty
   # * :+maintain_method_across_redirects+: see HTTParty::ClassMethods.maintain_method_across_redirects.
   # * :+no_follow+: see HTTParty::ClassMethods.no_follow.
   # * :+parser+: see HTTParty::ClassMethods.parser.
+  # * :+uri_adapter+: see HTTParty::ClassMethods.uri_adapter
   # * :+connection_adapter+: see HTTParty::ClassMethods.connection_adapter.
   # * :+pem+: see HTTParty::ClassMethods.pem.
   # * :+query_string_normalizer+: see HTTParty::ClassMethods.query_string_normalizer
@@ -417,6 +418,17 @@ module HTTParty
         default_options[:parser] = custom_parser
         validate_format
       end
+    end
+
+    # Allows setting a custom URI adapter.
+    #
+    #   class Foo
+    #     include HTTParty
+    #     uri_adapter Addressable::URI
+    #   end
+    def uri_adapter(uri_adapter)
+      raise ArgumentError, 'The URI adapter should respond to #parse' unless uri_adapter.respond_to?(:parse)
+      default_options[:uri_adapter] = uri_adapter
     end
 
     # Allows setting a custom connection_adapter for the http connections
