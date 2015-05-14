@@ -69,10 +69,11 @@ module HTTParty
 
     def connection
       host = clean_host(uri.host)
+      default_port = uri.scheme == 'https' ? 443 : 80
       if options[:http_proxyaddr]
-        http = Net::HTTP.new(host, uri.port, options[:http_proxyaddr], options[:http_proxyport], options[:http_proxyuser], options[:http_proxypass])
+        http = Net::HTTP.new(host, uri.port || default_port, options[:http_proxyaddr], options[:http_proxyport], options[:http_proxyuser], options[:http_proxypass])
       else
-        http = Net::HTTP.new(host, uri.port)
+        http = Net::HTTP.new(host, uri.port || default_port)
       end
 
       http.use_ssl = ssl_implied?(uri)
@@ -133,7 +134,7 @@ module HTTParty
     end
 
     def ssl_implied?(uri)
-      uri.port == 443 || uri.instance_of?(URI::HTTPS)
+      uri.port == 443 || uri.scheme == 'https'
     end
 
     def attach_ssl_certificates(http, options)

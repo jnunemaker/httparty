@@ -12,7 +12,7 @@ module HTTParty
       Net::HTTP::Copy
     ]
 
-    SupportedURISchemes  = [URI::HTTP, URI::HTTPS, URI::Generic]
+    SupportedURISchemes  = ['http', 'https', nil]
 
     NON_RAILS_QUERY_STRING_NORMALIZER = proc do |query|
       Array(query).sort_by { |a| a[0].to_s }.map do |key, value|
@@ -31,7 +31,6 @@ module HTTParty
 
     def initialize(http_method, path, o = {})
       self.http_method = http_method
-      self.path = path
       self.options = {
         limit: o.delete(:no_follow) ? 1 : 5,
         assume_utf16_is_big_endian: true,
@@ -40,6 +39,7 @@ module HTTParty
         parser: Parser,
         connection_adapter: ConnectionAdapter
       }.merge(o)
+      self.path = path
       set_basic_auth_from_uri
     end
 
@@ -70,7 +70,7 @@ module HTTParty
         new_uri.query = query_string(new_uri)
       end
 
-      unless SupportedURISchemes.include? new_uri.class
+      unless SupportedURISchemes.include? new_uri.scheme
         raise UnsupportedURIScheme, "'#{new_uri}' Must be HTTP, HTTPS or Generic"
       end
 
@@ -87,6 +87,17 @@ module HTTParty
 
     def parser
       options[:parser]
+    end
+
+    def URI uri
+      if uri.is_a?(URI)
+        uri
+      elsif uri = String.try_convert(uri)
+        URI.parse uri
+      else
+        raise ArgumentError,
+          "bad argument (expected URI object or URI string)"
+      end
     end
 
     def connection_adapter
