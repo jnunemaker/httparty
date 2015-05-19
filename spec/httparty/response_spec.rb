@@ -226,4 +226,16 @@ RSpec.describe HTTParty::Response do
       expect(result).to eq @response
     end
   end
+
+  describe "#inspect" do
+    it "works" do
+      inspect = @response.inspect
+      expect(inspect).to include("HTTParty::Response:0x")
+      expect(inspect).to include("parsed_response={\"foo\"=>\"bar\"}")
+      expect(inspect).to include("@response=#<Net::HTTPOK 200 OK readbody=false>")
+      expect(inspect).to include("@headers={")
+      expect(inspect).to include("last-modified")
+      expect(inspect).to include("content-length")
+    end
+  end
 end
