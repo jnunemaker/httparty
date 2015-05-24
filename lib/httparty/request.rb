@@ -45,7 +45,16 @@ module HTTParty
     end
 
     def path=(uri)
-      @path = URI(uri)
+      uri_adapter = options[:uri_adapter]
+
+      @path = if uri.is_a?(uri_adapter)
+        uri
+      elsif String.try_convert(uri)
+        uri_adapter.parse uri
+      else
+        raise ArgumentError,
+          "bad argument (expected #{uri_adapter} object or URI string)"
+      end
     end
 
     def request_uri(uri)
@@ -88,19 +97,6 @@ module HTTParty
 
     def parser
       options[:parser]
-    end
-
-    def URI uri
-      uri_adapter = options[:uri_adapter]
-
-      if uri.is_a?(uri_adapter)
-        uri
-      elsif uri = String.try_convert(uri)
-        uri_adapter.parse uri
-      else
-        raise ArgumentError,
-          "bad argument (expected #{uri_adapter} object or URI string)"
-      end
     end
 
     def connection_adapter
