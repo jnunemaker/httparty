@@ -70,7 +70,7 @@ module HTTParty
 
     def connection
       host = clean_host(uri.host)
-      port = uri.port or uri.scheme == 'https' ? 443 : 80
+      port = uri.port || (uri.scheme == 'https' ? 443 : 80)
       if options[:http_proxyaddr]
         http = Net::HTTP.new(host, port, options[:http_proxyaddr], options[:http_proxyport], options[:http_proxyuser], options[:http_proxypass])
       else
