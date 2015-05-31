@@ -806,9 +806,11 @@ RSpec.describe HTTParty do
     end
 
     it "should accept webcal URIs" do
-      stub_http_response_with('google.html')
+      uri = 'http://google.com/'
+      FakeWeb.register_uri(:get, uri, body: 'stuff')
+      uri = 'webcal://google.com/'
       expect do
-        HTTParty.get('webcal://google.com')
+        HTTParty.get(uri)
       end.not_to raise_error
     end
 

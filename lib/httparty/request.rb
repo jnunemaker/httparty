@@ -12,7 +12,7 @@ module HTTParty
       Net::HTTP::Copy
     ]
 
-    SupportedURISchemes  = ['http', 'https', nil]
+    SupportedURISchemes  = ['http', 'https', 'webcal', nil]
 
     NON_RAILS_QUERY_STRING_NORMALIZER = proc do |query|
       Array(query).sort_by { |a| a[0].to_s }.map do |key, value|
