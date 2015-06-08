@@ -351,6 +351,45 @@ RSpec.describe HTTParty do
     end
   end
 
+  describe "uri_adapter" do
+
+    require 'forwardable'
+    class CustomURIAdaptor
+      extend Forwardable
+      def_delegators :@uri, :userinfo, :relative?, :query, :query=, :scheme, :path, :host, :port
+
+      def initialize uri
+        @uri = uri
+      end
+
+      def self.parse uri
+        new URI.parse uri
+      end
+    end
+
+    let(:uri_adapter) { CustomURIAdaptor }
+
+    it "should set the uri_adapter" do
+      @klass.uri_adapter uri_adapter
+      expect(@klass.default_options[:uri_adapter]).to be uri_adapter
+    end
+
+    it "should raise an ArgumentError if uri_adapter doesn't implement parse method" do
+      expect do
+        @klass.uri_adapter double()
+      end.to raise_error(ArgumentError)
+    end
+
+
+    it "should process a request with a uri instance parsed from the uri_adapter" do
+      uri = 'http://foo.com/bar'
+      FakeWeb.register_uri(:get, uri, body: 'stuff')
+      @klass.uri_adapter uri_adapter
+      expect(@klass.get(uri).parsed_response).to eq('stuff')
+    end
+
+  end
+
   describe "connection_adapter" do
     let(:uri) { 'http://google.com/api.json' }
     let(:connection_adapter) { double('CustomConnectionAdapter') }
@@ -767,9 +806,11 @@ RSpec.describe HTTParty do
     end
 
     it "should accept webcal URIs" do
-      stub_http_response_with('google.html')
+      uri = 'http://google.com/'
+      FakeWeb.register_uri(:get, uri, body: 'stuff')
+      uri = 'webcal://google.com/'
       expect do
-        HTTParty.get('webcal://google.com')
+        HTTParty.get(uri)
       end.not_to raise_error
     end
 

@@ -12,7 +12,7 @@ module HTTParty
       Net::HTTP::Copy
     ]
 
-    SupportedURISchemes  = [URI::HTTP, URI::HTTPS, URI::Generic]
+    SupportedURISchemes  = ['http', 'https', 'webcal', nil]
 
     NON_RAILS_QUERY_STRING_NORMALIZER = proc do |query|
       Array(query).sort_by { |a| a[0].to_s }.map do |key, value|
@@ -31,20 +31,30 @@ module HTTParty
 
     def initialize(http_method, path, o = {})
       self.http_method = http_method
-      self.path = path
       self.options = {
         limit: o.delete(:no_follow) ? 1 : 5,
         assume_utf16_is_big_endian: true,
         default_params: {},
         follow_redirects: true,
         parser: Parser,
+        uri_adapter: URI,
         connection_adapter: ConnectionAdapter
       }.merge(o)
+      self.path = path
       set_basic_auth_from_uri
     end
 
     def path=(uri)
-      @path = URI(uri)
+      uri_adapter = options[:uri_adapter]
+
+      @path = if uri.is_a?(uri_adapter)
+        uri
+      elsif String.try_convert(uri)
+        uri_adapter.parse uri
+      else
+        raise ArgumentError,
+          "bad argument (expected #{uri_adapter} object or URI string)"
+      end
     end
 
     def request_uri(uri)
@@ -63,14 +73,14 @@ module HTTParty
         path.path = last_uri_host + path.path
       end
 
-      new_uri = path.relative? ? URI.parse("#{base_uri}#{path}") : path.clone
+      new_uri = path.relative? ? options[:uri_adapter].parse("#{base_uri}#{path}") : path.clone
 
       # avoid double query string on redirects [#12]
       unless redirect
         new_uri.query = query_string(new_uri)
       end
 
-      unless SupportedURISchemes.include? new_uri.class
+      unless SupportedURISchemes.include? new_uri.scheme
         raise UnsupportedURIScheme, "'#{new_uri}' Must be HTTP, HTTPS or Generic"
       end
 

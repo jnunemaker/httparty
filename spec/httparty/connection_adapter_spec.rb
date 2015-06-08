@@ -449,6 +449,20 @@ RSpec.describe HTTParty::ConnectionAdapter do
           end
         end
       end
+
+      context "when uri port is not defined" do
+        context "falls back to 80 port on http" do
+          let(:uri) { URI 'http://foobar.com' }
+          before { allow(uri).to receive(:port).and_return(nil) }
+          it { expect(subject.port).to be 80 }
+        end
+
+        context "falls back to 443 port on https" do
+          let(:uri) { URI 'https://foobar.com' }
+          before { allow(uri).to receive(:port).and_return(nil) }
+          it { expect(subject.port).to be 443 }
+        end
+      end
     end
   end
 end

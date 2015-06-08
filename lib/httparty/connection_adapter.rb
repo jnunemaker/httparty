@@ -61,7 +61,8 @@ module HTTParty
     attr_reader :uri, :options
 
     def initialize(uri, options = {})
-      raise ArgumentError, "uri must be a URI, not a #{uri.class}" unless uri.is_a? URI
+      uri_adapter = options[:uri_adapter] || URI
+      raise ArgumentError, "uri must be a #{uri_adapter}, not a #{uri.class}" unless uri.is_a? uri_adapter
 
       @uri = uri
       @options = options
@@ -69,10 +70,11 @@ module HTTParty
 
     def connection
       host = clean_host(uri.host)
+      port = uri.port || (uri.scheme == 'https' ? 443 : 80)
       if options[:http_proxyaddr]
-        http = Net::HTTP.new(host, uri.port, options[:http_proxyaddr], options[:http_proxyport], options[:http_proxyuser], options[:http_proxypass])
+        http = Net::HTTP.new(host, port, options[:http_proxyaddr], options[:http_proxyport], options[:http_proxyuser], options[:http_proxypass])
       else
-        http = Net::HTTP.new(host, uri.port)
+        http = Net::HTTP.new(host, port)
       end
 
       http.use_ssl = ssl_implied?(uri)
@@ -133,7 +135,7 @@ module HTTParty
     end
 
     def ssl_implied?(uri)
-      uri.port == 443 || uri.instance_of?(URI::HTTPS)
+      uri.port == 443 || uri.scheme == 'https'
     end
 
     def attach_ssl_certificates(http, options)
