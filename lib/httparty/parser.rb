@@ -113,7 +113,7 @@ module HTTParty
     end
 
     def json
-      JSON.load(body, nil)
+      JSON.parse(body, :quirks_mode => true, :allow_nan => true)
     end
 
     def csv
