@@ -21,9 +21,7 @@ RSpec.describe HTTParty::Logger do
 
     it "builds custom style logger" do
       CustomLogger = Class.new(HTTParty::Logger::CurlLogger)
-      HTTParty::Logger.add_formatters(
-        :custom => CustomLogger
-      )
+      HTTParty::Logger.add_formatter(:custom, CustomLogger)
 
       logger_double = double
       expect(subject.build(logger_double, nil, :custom)).
