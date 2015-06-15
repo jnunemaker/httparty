@@ -1,6 +1,6 @@
 module HTTParty
   module Logger
-    class CurlLogger #:nodoc:
+    class CurlFormatter #:nodoc:
       TAG_NAME = HTTParty.name
       OUT = ">"
       IN = "<"
