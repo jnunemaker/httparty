@@ -1,6 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'spec_helper'))
 
-RSpec.describe HTTParty::Logger::ApacheLogger do
+RSpec.describe HTTParty::Logger::ApacheFormatter do
   let(:subject) { described_class.new(logger_double, :info) }
   let(:logger_double) { double('Logger') }
   let(:request_double) { double('Request', http_method: Net::HTTP::Get, path: "http://my.domain.com/my_path") }

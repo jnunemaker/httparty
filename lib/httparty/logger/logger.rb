@@ -1,12 +1,12 @@
-require 'httparty/logger/apache_logger'
-require 'httparty/logger/curl_logger'
+require 'httparty/logger/apache_formatter'
+require 'httparty/logger/curl_formatter'
 
 module HTTParty
   module Logger
     def self.formatters
       @formatters ||= {
-        :curl => Logger::CurlLogger,
-        :apache => Logger::ApacheLogger
+        :curl => Logger::CurlFormatter,
+        :apache => Logger::ApacheFormatter
       }
     end
 
@@ -19,7 +19,7 @@ module HTTParty
       level ||= :info
       formatter ||= :apache
 
-      logger_klass = formatters[formatter] || Logger::ApacheLogger
+      logger_klass = formatters[formatter] || Logger::ApacheFormatter
       logger_klass.new(logger, level)
     end
   end

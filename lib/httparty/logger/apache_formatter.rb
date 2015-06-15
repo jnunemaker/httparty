@@ -1,6 +1,6 @@
 module HTTParty
   module Logger
-    class ApacheLogger #:nodoc:
+    class ApacheFormatter #:nodoc:
       TAG_NAME = HTTParty.name
 
       attr_accessor :level, :logger, :current_time
