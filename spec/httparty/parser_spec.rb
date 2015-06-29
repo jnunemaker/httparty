@@ -147,7 +147,7 @@ RSpec.describe HTTParty::Parser do
     end
 
     it "parses json with JSON" do
-      expect(JSON).to receive(:parse).with('body', :quirks_mode => true, :allow_nan => true)
+      expect(JSON).to receive(:parse).with('body', quirks_mode: true, allow_nan: true)
       subject.send(:json)
     end
 

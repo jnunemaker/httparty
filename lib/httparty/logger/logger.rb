@@ -5,8 +5,8 @@ module HTTParty
   module Logger
     def self.formatters
       @formatters ||= {
-        :curl => Logger::CurlFormatter,
-        :apache => Logger::ApacheFormatter
+        curl: Logger::CurlFormatter,
+        apache: Logger::ApacheFormatter
       }
     end
 
