@@ -49,7 +49,7 @@ class SSLTestServer
 
   def thread_main
     until @stopping_mutex.synchronize { @stopping }
-      (rr, _, _) = select([@ssl_server.to_io], nil, nil, 0.1)
+      (rr, = select([@ssl_server.to_io], nil, nil, 0.1)
 
       next unless rr && rr.include?(@ssl_server.to_io)
 

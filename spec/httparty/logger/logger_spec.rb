@@ -24,15 +24,15 @@ RSpec.describe HTTParty::Logger do
       HTTParty::Logger.add_formatter(:custom, CustomFormatter)
 
       logger_double = double
-      expect(subject.build(logger_double, nil, :custom)).
-        to be_an_instance_of(CustomFormatter)
+      expect(subject.build(logger_double, nil, :custom))
+        .to be_an_instance_of(CustomFormatter)
     end
     it "raises error when formatter exists" do
-      CustomFormatter2= Class.new(HTTParty::Logger::CurlFormatter)
+      CustomFormatter2 = Class.new(HTTParty::Logger::CurlFormatter)
       HTTParty::Logger.add_formatter(:custom2, CustomFormatter2)
 
-      expect{ HTTParty::Logger.add_formatter(:custom2, CustomFormatter2) }.
-        to raise_error HTTParty::Error
+      expect { HTTParty::Logger.add_formatter(:custom2, CustomFormatter2) }
+        .to raise_error HTTParty::Error
     end
   end
 end

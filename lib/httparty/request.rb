@@ -48,12 +48,12 @@ module HTTParty
       uri_adapter = options[:uri_adapter]
 
       @path = if uri.is_a?(uri_adapter)
-        uri
+                uri
       elsif String.try_convert(uri)
         uri_adapter.parse uri
       else
         raise ArgumentError,
-          "bad argument (expected #{uri_adapter} object or URI string)"
+              "bad argument (expected #{uri_adapter} object or URI string)"
       end
     end
 
