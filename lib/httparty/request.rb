@@ -276,7 +276,7 @@ module HTTParty
           unless options[:maintain_method_across_redirects] && options[:resend_on_redirect]
             self.http_method = Net::HTTP::Get
           end
-        else
+        elsif last_response.code != 307 && last_response.code != 308
           unless options[:maintain_method_across_redirects]
             self.http_method = Net::HTTP::Get
           end
@@ -305,12 +305,9 @@ module HTTParty
 
     def response_redirects?
       case last_response
-      when Net::HTTPMultipleChoice, # 300
-           Net::HTTPMovedPermanently, # 301
-           Net::HTTPFound, # 302
-           Net::HTTPSeeOther, # 303
-           Net::HTTPUseProxy, # 305
-           Net::HTTPTemporaryRedirect
+      when Net::HTTPNotModified # 304
+        false
+      when Net::HTTPRedirection
         options[:follow_redirects] && last_response.key?('location')
       end
     end
