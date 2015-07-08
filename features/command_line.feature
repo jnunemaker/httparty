@@ -9,9 +9,9 @@ Feature: Command Line
     When I run `httparty --help`
     Then the output should contain "-f, --format [FORMAT]"
 
-  Scenario: Show httparty version at command line
+  Scenario: Show current version
     When I run `httparty --version`
-    Then the output should contain "The current version is:"
+    Then the output should contain "Version:"
     And the output should not contain "You need to provide a URL"
 
   Scenario: Make a get request
