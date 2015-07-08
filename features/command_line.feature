@@ -9,6 +9,11 @@ Feature: Command Line
     When I run `httparty --help`
     Then the output should contain "-f, --format [FORMAT]"
 
+  Scenario: Show httparty version at command line
+    When I run `httparty --version`
+    Then the output should contain "The current version is:"
+    And the output should not contain "You need to provide a URL"
+
   Scenario: Make a get request
     Given a remote deflate service on port '4001'
     And the response from the service has a body of 'GET request'
