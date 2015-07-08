@@ -62,6 +62,11 @@ OptionParser.new do |o|
     puts o
     exit
   end
+
+  o.on("--version", "Show HTTParty version") do |ver|
+    puts "Version: #{HTTParty::VERSION}"
+    exit
+  end
 end.parse!
 
 if ARGV.empty?
