@@ -528,122 +528,124 @@ RSpec.describe HTTParty::Request do
     expect(@request.perform.parsed_response).to eq('Content for you')
   end
 
-  describe "a request that 302 redirects" do
-    before(:each) do
-      @redirect = stub_response("", 302)
-      @redirect['location'] = '/foo'
-
-      @ok = stub_response('<hash><foo>bar</foo></hash>', 200)
-    end
-
-    describe "once" do
+  [300, 301, 302, 305].each do |code|
+    describe "a request that #{code} redirects" do
       before(:each) do
-        allow(@http).to receive(:request).and_return(@redirect, @ok)
+        @redirect = stub_response("", code)
+        @redirect['location'] = '/foo'
+
+        @ok = stub_response('<hash><foo>bar</foo></hash>', 200)
       end
 
-      it "should be handled by GET transparently" do
-        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+      describe "once" do
+        before(:each) do
+          allow(@http).to receive(:request).and_return(@redirect, @ok)
+        end
+
+        it "should be handled by GET transparently" do
+          expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+        end
+
+        it "should be handled by POST transparently" do
+          @request.http_method = Net::HTTP::Post
+          expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+        end
+
+        it "should be handled by DELETE transparently" do
+          @request.http_method = Net::HTTP::Delete
+          expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+        end
+
+        it "should be handled by MOVE transparently" do
+          @request.http_method = Net::HTTP::Move
+          expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+        end
+
+        it "should be handled by COPY transparently" do
+          @request.http_method = Net::HTTP::Copy
+          expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+        end
+
+        it "should be handled by PATCH transparently" do
+          @request.http_method = Net::HTTP::Patch
+          expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+        end
+
+        it "should be handled by PUT transparently" do
+          @request.http_method = Net::HTTP::Put
+          expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+        end
+
+        it "should be handled by HEAD transparently" do
+          @request.http_method = Net::HTTP::Head
+          expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+        end
+
+        it "should be handled by OPTIONS transparently" do
+          @request.http_method = Net::HTTP::Options
+          expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+        end
+
+        it "should keep track of cookies between redirects" do
+          @redirect['Set-Cookie'] = 'foo=bar; name=value; HTTPOnly'
+          @request.perform
+          expect(@request.options[:headers]['Cookie']).to match(/foo=bar/)
+          expect(@request.options[:headers]['Cookie']).to match(/name=value/)
+        end
+
+        it 'should update cookies with rediects' do
+          @request.options[:headers] = {'Cookie' => 'foo=bar;'}
+          @redirect['Set-Cookie'] = 'foo=tar;'
+          @request.perform
+          expect(@request.options[:headers]['Cookie']).to match(/foo=tar/)
+        end
+
+        it 'should keep cookies between rediects' do
+          @request.options[:headers] = {'Cookie' => 'keep=me'}
+          @redirect['Set-Cookie'] = 'foo=tar;'
+          @request.perform
+          expect(@request.options[:headers]['Cookie']).to match(/keep=me/)
+        end
+
+        it "should handle multiple Set-Cookie headers between redirects" do
+          @redirect.add_field 'set-cookie', 'foo=bar; name=value; HTTPOnly'
+          @redirect.add_field 'set-cookie', 'one=1; two=2; HTTPOnly'
+          @request.perform
+          expect(@request.options[:headers]['Cookie']).to match(/foo=bar/)
+          expect(@request.options[:headers]['Cookie']).to match(/name=value/)
+          expect(@request.options[:headers]['Cookie']).to match(/one=1/)
+          expect(@request.options[:headers]['Cookie']).to match(/two=2/)
+        end
+
+        it 'should make resulting request a get request if it not already' do
+          @request.http_method = Net::HTTP::Delete
+          expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+          expect(@request.http_method).to eq(Net::HTTP::Get)
+        end
+
+        it 'should not make resulting request a get request if options[:maintain_method_across_redirects] is true' do
+          @request.options[:maintain_method_across_redirects] = true
+          @request.http_method = Net::HTTP::Delete
+          expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+          expect(@request.http_method).to eq(Net::HTTP::Delete)
+        end
+
+        it 'should log the redirection' do
+          logger_double = double
+          expect(logger_double).to receive(:info).twice
+          @request.options[:logger] = logger_double
+          @request.perform
+        end
       end
 
-      it "should be handled by POST transparently" do
-        @request.http_method = Net::HTTP::Post
-        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
-      end
+      describe "infinitely" do
+        before(:each) do
+          allow(@http).to receive(:request).and_return(@redirect)
+        end
 
-      it "should be handled by DELETE transparently" do
-        @request.http_method = Net::HTTP::Delete
-        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
-      end
-
-      it "should be handled by MOVE transparently" do
-        @request.http_method = Net::HTTP::Move
-        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
-      end
-
-      it "should be handled by COPY transparently" do
-        @request.http_method = Net::HTTP::Copy
-        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
-      end
-
-      it "should be handled by PATCH transparently" do
-        @request.http_method = Net::HTTP::Patch
-        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
-      end
-
-      it "should be handled by PUT transparently" do
-        @request.http_method = Net::HTTP::Put
-        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
-      end
-
-      it "should be handled by HEAD transparently" do
-        @request.http_method = Net::HTTP::Head
-        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
-      end
-
-      it "should be handled by OPTIONS transparently" do
-        @request.http_method = Net::HTTP::Options
-        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
-      end
-
-      it "should keep track of cookies between redirects" do
-        @redirect['Set-Cookie'] = 'foo=bar; name=value; HTTPOnly'
-        @request.perform
-        expect(@request.options[:headers]['Cookie']).to match(/foo=bar/)
-        expect(@request.options[:headers]['Cookie']).to match(/name=value/)
-      end
-
-      it 'should update cookies with rediects' do
-        @request.options[:headers] = {'Cookie' => 'foo=bar;'}
-        @redirect['Set-Cookie'] = 'foo=tar;'
-        @request.perform
-        expect(@request.options[:headers]['Cookie']).to match(/foo=tar/)
-      end
-
-      it 'should keep cookies between rediects' do
-        @request.options[:headers] = {'Cookie' => 'keep=me'}
-        @redirect['Set-Cookie'] = 'foo=tar;'
-        @request.perform
-        expect(@request.options[:headers]['Cookie']).to match(/keep=me/)
-      end
-
-      it "should handle multiple Set-Cookie headers between redirects" do
-        @redirect.add_field 'set-cookie', 'foo=bar; name=value; HTTPOnly'
-        @redirect.add_field 'set-cookie', 'one=1; two=2; HTTPOnly'
-        @request.perform
-        expect(@request.options[:headers]['Cookie']).to match(/foo=bar/)
-        expect(@request.options[:headers]['Cookie']).to match(/name=value/)
-        expect(@request.options[:headers]['Cookie']).to match(/one=1/)
-        expect(@request.options[:headers]['Cookie']).to match(/two=2/)
-      end
-
-      it 'should make resulting request a get request if it not already' do
-        @request.http_method = Net::HTTP::Delete
-        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
-        expect(@request.http_method).to eq(Net::HTTP::Get)
-      end
-
-      it 'should not make resulting request a get request if options[:maintain_method_across_redirects] is true' do
-        @request.options[:maintain_method_across_redirects] = true
-        @request.http_method = Net::HTTP::Delete
-        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
-        expect(@request.http_method).to eq(Net::HTTP::Delete)
-      end
-
-      it 'should log the redirection' do
-        logger_double = double
-        expect(logger_double).to receive(:info).twice
-        @request.options[:logger] = logger_double
-        @request.perform
-      end
-    end
-
-    describe "infinitely" do
-      before(:each) do
-        allow(@http).to receive(:request).and_return(@redirect)
-      end
-
-      it "should raise an exception" do
-        expect { @request.perform }.to raise_error(HTTParty::RedirectionTooDeep)
+        it "should raise an exception" do
+          expect { @request.perform }.to raise_error(HTTParty::RedirectionTooDeep)
+        end
       end
     end
   end
@@ -780,6 +782,197 @@ RSpec.describe HTTParty::Request do
 
       it "should raise an exception" do
         expect { @request.perform }.to raise_error(HTTParty::RedirectionTooDeep)
+      end
+    end
+  end
+
+  describe "a request that returns 304" do
+    before(:each) do
+      @redirect = stub_response("", 304)
+      @redirect['location'] = '/foo'
+    end
+
+    before(:each) do
+      allow(@http).to receive(:request).and_return(@redirect)
+    end
+
+    it "should report 304 with a GET request" do
+      expect(@request.perform.code).to eq(304)
+    end
+
+    it "should report 304 with a POST request" do
+      @request.http_method = Net::HTTP::Post
+      expect(@request.perform.code).to eq(304)
+    end
+
+    it "should report 304 with a DELETE request" do
+      @request.http_method = Net::HTTP::Delete
+      expect(@request.perform.code).to eq(304)
+    end
+
+    it "should report 304 with a MOVE request" do
+      @request.http_method = Net::HTTP::Move
+      expect(@request.perform.code).to eq(304)
+    end
+
+    it "should report 304 with a COPY request" do
+      @request.http_method = Net::HTTP::Copy
+      expect(@request.perform.code).to eq(304)
+    end
+
+    it "should report 304 with a PATCH request" do
+      @request.http_method = Net::HTTP::Patch
+      expect(@request.perform.code).to eq(304)
+    end
+
+    it "should report 304 with a PUT request" do
+      @request.http_method = Net::HTTP::Put
+      expect(@request.perform.code).to eq(304)
+    end
+
+    it "should report 304 with a HEAD request" do
+      @request.http_method = Net::HTTP::Head
+      expect(@request.perform.code).to eq(304)
+    end
+
+    it "should report 304 with a OPTIONS request" do
+      @request.http_method = Net::HTTP::Options
+      expect(@request.perform.code).to eq(304)
+    end
+
+    it 'should not log the redirection' do
+      logger_double = double
+      expect(logger_double).to receive(:info).once
+      @request.options[:logger] = logger_double
+      @request.perform
+    end
+  end
+
+  [307, 308].each do |code|
+    describe "a request that #{code} redirects" do
+      before(:each) do
+        @redirect = stub_response("", code)
+        @redirect['location'] = '/foo'
+
+        @ok = stub_response('<hash><foo>bar</foo></hash>', 200)
+      end
+
+      describe "once" do
+        before(:each) do
+          allow(@http).to receive(:request).and_return(@redirect, @ok)
+        end
+
+        it "should be handled by GET transparently" do
+          expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+        end
+
+        it "should be handled by POST transparently" do
+          @request.http_method = Net::HTTP::Post
+          expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+        end
+
+        it "should be handled by DELETE transparently" do
+          @request.http_method = Net::HTTP::Delete
+          expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+        end
+
+        it "should be handled by MOVE transparently" do
+          @request.http_method = Net::HTTP::Move
+          expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+        end
+
+        it "should be handled by COPY transparently" do
+          @request.http_method = Net::HTTP::Copy
+          expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+        end
+
+        it "should be handled by PATCH transparently" do
+          @request.http_method = Net::HTTP::Patch
+          expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+        end
+
+        it "should be handled by PUT transparently" do
+          @request.http_method = Net::HTTP::Put
+          expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+        end
+
+        it "should be handled by HEAD transparently" do
+          @request.http_method = Net::HTTP::Head
+          expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+        end
+
+        it "should be handled by OPTIONS transparently" do
+          @request.http_method = Net::HTTP::Options
+          expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+        end
+
+        it "should keep track of cookies between redirects" do
+          @redirect['Set-Cookie'] = 'foo=bar; name=value; HTTPOnly'
+          @request.perform
+          expect(@request.options[:headers]['Cookie']).to match(/foo=bar/)
+          expect(@request.options[:headers]['Cookie']).to match(/name=value/)
+        end
+
+        it 'should update cookies with rediects' do
+          @request.options[:headers] = {'Cookie' => 'foo=bar;'}
+          @redirect['Set-Cookie'] = 'foo=tar;'
+          @request.perform
+          expect(@request.options[:headers]['Cookie']).to match(/foo=tar/)
+        end
+
+        it 'should keep cookies between rediects' do
+          @request.options[:headers] = {'Cookie' => 'keep=me'}
+          @redirect['Set-Cookie'] = 'foo=tar;'
+          @request.perform
+          expect(@request.options[:headers]['Cookie']).to match(/keep=me/)
+        end
+
+        it "should handle multiple Set-Cookie headers between redirects" do
+          @redirect.add_field 'set-cookie', 'foo=bar; name=value; HTTPOnly'
+          @redirect.add_field 'set-cookie', 'one=1; two=2; HTTPOnly'
+          @request.perform
+          expect(@request.options[:headers]['Cookie']).to match(/foo=bar/)
+          expect(@request.options[:headers]['Cookie']).to match(/name=value/)
+          expect(@request.options[:headers]['Cookie']).to match(/one=1/)
+          expect(@request.options[:headers]['Cookie']).to match(/two=2/)
+        end
+
+        it 'should maintain method in resulting request' do
+          @request.http_method = Net::HTTP::Delete
+          expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+          expect(@request.http_method).to eq(Net::HTTP::Delete)
+        end
+
+        it 'should maintain method in resulting request if options[:maintain_method_across_redirects] is false' do
+          @request.options[:maintain_method_across_redirects] = false
+          @request.http_method = Net::HTTP::Delete
+          expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+          expect(@request.http_method).to eq(Net::HTTP::Delete)
+        end
+
+        it 'should maintain method in resulting request if options[:maintain_method_across_redirects] is true' do
+          @request.options[:maintain_method_across_redirects] = true
+          @request.http_method = Net::HTTP::Delete
+          expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+          expect(@request.http_method).to eq(Net::HTTP::Delete)
+        end
+
+        it 'should log the redirection' do
+          logger_double = double
+          expect(logger_double).to receive(:info).twice
+          @request.options[:logger] = logger_double
+          @request.perform
+        end
+      end
+
+      describe "infinitely" do
+        before(:each) do
+          allow(@http).to receive(:request).and_return(@redirect)
+        end
+
+        it "should raise an exception" do
+          expect { @request.perform }.to raise_error(HTTParty::RedirectionTooDeep)
+        end
       end
     end
   end

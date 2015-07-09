@@ -33,7 +33,12 @@ module HTTParty
         allow(@request).to receive(:http).and_return(@http)
       end
 
-      response = Net::HTTPResponse::CODE_TO_OBJ[code.to_s].new("1.1", code, body)
+      # CODE_TO_OBJ currently missing 308
+      if code.to_s == '308'
+        response = Net::HTTPRedirection.new("1.1", code, body)
+      else
+        response = Net::HTTPResponse::CODE_TO_OBJ[code.to_s].new("1.1", code, body)
+      end
       allow(response).to receive(:body).and_return(body)
 
       allow(@http).to receive(:request).and_return(response)
