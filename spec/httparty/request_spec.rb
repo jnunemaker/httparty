@@ -483,6 +483,14 @@ RSpec.describe HTTParty::Request do
           stub_response '', 300
           expect(HTTParty::Response).to be === @request.perform
         end
+
+        it "redirects including port" do
+          FakeWeb.register_uri(:get, "http://withport.com:3000/v1", status: [301, "Moved Permanently"], location: "http://withport.com:3000/v2")
+          FakeWeb.register_uri(:get, "http://withport.com:3000/v2", status: 200)
+          request = HTTParty::Request.new(Net::HTTP::Get, 'http://withport.com:3000/v1')
+          response = request.perform
+          expect(response.request.base_uri.to_s).to eq("http://withport.com:3000")
+        end
       end
 
       it 'should return a valid object for 4xx response' do

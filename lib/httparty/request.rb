@@ -88,7 +88,13 @@ module HTTParty
     end
 
     def base_uri
-      redirect ? "#{@last_uri.scheme}://#{@last_uri.host}" : options[:base_uri]
+      if redirect
+        base_uri = "#{@last_uri.scheme}://#{@last_uri.host}"
+        base_uri += ":#{@last_uri.port}" if @last_uri.port != 80
+        base_uri
+      else
+        options[:base_uri]
+      end
     end
 
     def format
