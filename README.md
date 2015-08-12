@@ -18,7 +18,7 @@ gem install httparty
 
 ```ruby
 # Use the class methods to get down to business quickly
-response = HTTParty.get('https://api.stackexchange.com/2.2/questions?site=stackoverflow')
+response = HTTParty.get('http://api.stackexchange.com/2.2/questions?site=stackoverflow')
 
 puts response.body, response.code, response.message, response.headers.inspect
 
