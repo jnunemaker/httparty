@@ -89,11 +89,11 @@ module DigestAuthentication
 end
 
 module DigestAuthenticationUsingMD5Sess
-  
-  EXPECTED_PASSWORD = 'maninblack'
-  
+  NONCE = 'nonce'
+  REALM = 'testrealm@host.com'
+  QOP = 'auth,auth-int'
   def self.extended(base)
-    base.custom_headers["WWW-Authenticate"] = 'Digest realm="testrealm@host.com",qop="auth,auth-int",algorithm="MD5-sess",nonce="nonce",opaque="opaque"'
+    base.custom_headers["WWW-Authenticate"] = %(Digest realm="#{REALM}",qop="#{QOP}",algorithm="MD5-sess",nonce="#{NONCE}",opaque="opaque"')
   end
   
   def process(request, response)
@@ -109,14 +109,14 @@ module DigestAuthenticationUsingMD5Sess
   end
   
   def authorized?(request)
-     auth = request.params["HTTP_AUTHORIZATION"]
-     params = {}
-     auth.to_s.gsub(/(\w+)="(.*?)"/) { params[$1] = $2 }.gsub(/(\w+)=([^,]*)/) { params[$1] = $2 }
-     a1a = [params['username'],params['realm'],EXPECTED_PASSWORD].join(':')
-     a1 = [md5(a1a),params['nonce'],params['cnonce'] ].join(':')
-     a2 = "GET:#{params['uri']}"
-     expected_response = md5( [md5(a1),params['nonce'], params['nc'], params['cnonce'], params['qop'],md5(a2)].join(':') )
-     expected_response == params['response']
+    auth = request.params["HTTP_AUTHORIZATION"]
+    params = {}
+    auth.to_s.gsub(/(\w+)="(.*?)"/) { params[$1] = $2 }.gsub(/(\w+)=([^,]*)/) { params[$1] = $2 }
+    a1a = [@username,REALM,@password].join(':')
+    a1 = [md5(a1a),NONCE,params['cnonce'] ].join(':')
+    a2 = [ request.params["REQUEST_METHOD"], request.params["REQUEST_URI"] ] .join(':')
+    expected_response = md5( [md5(a1), NONCE, params['nc'], params['cnonce'], QOP, md5(a2)].join(':') )
+    expected_response == params['response']
   end
 end
 
