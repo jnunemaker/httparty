@@ -41,6 +41,8 @@ module Net
           %(response="#{request_digest}")
         ]
 
+        header << %(algorithm="#{@response['algorithm']}") if algorithm_present?
+
         if qop_present?
           fields = [
             %(cnonce="#{@cnonce}"),
@@ -66,7 +68,8 @@ module Net
 
         header =~ /Digest (.*)/
         params = {}
-        $1.gsub(/(\w+)="(.*?)"/) { params[$1] = $2 }
+        non_quoted = $1.gsub(/(\w+)="(.*?)"/) { params[$1] = $2 }
+        non_quoted.gsub(/(\w+)=([^,]*)/) { params[$1] = $2 }
         params
       end
 
@@ -105,8 +108,21 @@ module Net
         Digest::MD5.hexdigest(str)
       end
 
+      def algorithm_present?
+        @response.key?('algorithm') && !@response['algorithm'].empty?
+      end
+      
+      def use_md5_sess?
+        algorithm_present? && @response['algorithm'] == 'MD5-sess'
+      end
+      
       def a1
-        [@username, @response['realm'], @password].join(":")
+        a1_user_realm_pwd =  [@username, @response['realm'], @password].join(':')
+        if use_md5_sess?
+          [ md5(a1_user_realm_pwd), @response['nonce'], @cnonce ].join(':')
+        else
+          a1_user_realm_pwd
+        end
       end
 
       def a2

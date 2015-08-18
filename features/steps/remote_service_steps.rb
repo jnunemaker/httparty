@@ -55,6 +55,10 @@ Given /that service is protected by Digest Authentication/ do
   @handler.extend DigestAuthentication
 end
 
+Given /that service is protected by MD5-sess Digest Authentication/ do
+  @handler.extend DigestAuthenticationUsingMD5Sess
+end
+
 Given /that service requires the username '(.*)' with the password '(.*)'/ do |username, password|
   @handler.username = username
   @handler.password = password
