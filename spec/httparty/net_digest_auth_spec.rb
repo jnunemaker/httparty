@@ -188,4 +188,43 @@ RSpec.describe Net::HTTPHeader::DigestAuthenticator do
       expect(authorization_header).to include(%(response="#{request_digest}"))
     end
   end
+  
+  context "with algorithm specified" do
+    before do
+      @digest = setup_digest({
+                              'www-authenticate' => 'Digest realm="myhost@testrealm.com", nonce="NONCE", qop="auth", algorithm=MD5'
+                             })
+    end
+    
+    it "should recognise algorithm was specified" do
+      expect( @digest.send :algorithm_present? ).to be(true)
+    end
+    
+    it "should set the algorithm header" do
+      expect(authorization_header).to include('algorithm="MD5"')
+    end
+  end
+
+  context "with md5-sess algorithm specified" do
+    before do
+      @digest = setup_digest({
+                              'www-authenticate' => 'Digest realm="myhost@testrealm.com", nonce="NONCE", qop="auth", algorithm=MD5-sess'
+                             })
+    end
+    
+    it "should recognise algorithm was specified" do
+      expect( @digest.send :algorithm_present? ).to be(true)
+    end
+    
+    it "should set the algorithm header" do
+      expect(authorization_header).to include('algorithm="MD5-sess"')
+    end
+    
+    it "should set response using md5-sess algorithm" do
+      request_digest = "md5(md5(md5(Mufasa:myhost@testrealm.com:Circle Of Life):NONCE:md5(deadbeef)):NONCE:00000001:md5(deadbeef):auth:md5(GET:/dir/index.html))"
+      expect(authorization_header).to include(%(response="#{request_digest}"))
+    end
+    
+  end
+  
 end

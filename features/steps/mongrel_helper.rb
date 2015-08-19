@@ -88,6 +88,39 @@ module DigestAuthentication
   end
 end
 
+module DigestAuthenticationUsingMD5Sess
+  NONCE = 'nonce'
+  REALM = 'testrealm@host.com'
+  QOP = 'auth,auth-int'
+  def self.extended(base)
+    base.custom_headers["WWW-Authenticate"] = %(Digest realm="#{REALM}",qop="#{QOP}",algorithm="MD5-sess",nonce="#{NONCE}",opaque="opaque"')
+  end
+  
+  def process(request, response)
+    if authorized?(request)
+      super
+    else
+      reply_with(response, 401, "Incorrect.  You have 20 seconds to comply.")
+    end
+  end
+  
+  def md5(str)
+    Digest::MD5.hexdigest(str)
+  end
+  
+  def authorized?(request)
+    auth = request.params["HTTP_AUTHORIZATION"]
+    params = {}
+    auth.to_s.gsub(/(\w+)="(.*?)"/) { params[$1] = $2 }.gsub(/(\w+)=([^,]*)/) { params[$1] = $2 }
+    a1a = [@username,REALM,@password].join(':')
+    a1 = [md5(a1a),NONCE,params['cnonce'] ].join(':')
+    a2 = [ request.params["REQUEST_METHOD"], request.params["REQUEST_URI"] ] .join(':')
+    expected_response = md5( [md5(a1), NONCE, params['nc'], params['cnonce'], QOP, md5(a2)].join(':') )
+    expected_response == params['response']
+  end
+end
+
+
 def new_mongrel_redirector(target_url, relative_path = false)
   target_url = "http://#{@host_and_port}#{target_url}" unless relative_path
   Mongrel::RedirectHandler.new(target_url)

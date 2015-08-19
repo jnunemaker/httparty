@@ -18,3 +18,13 @@ Feature:  Digest Authentication
        | username | password   |
        | jcash    | maninblack |
     Then the return value should match 'Digest Authenticated Page'
+
+  Scenario: Passing proper credentials to a page requiring Digest Authentication using md5-sess algorithm
+    Given a remote service that returns 'Digest Authenticated Page Using MD5-sess'
+    And that service is accessed at the path '/digest_auth.html'
+    And that service is protected by MD5-sess Digest Authentication
+    And that service requires the username 'jcash' with the password 'maninblack'
+    When I call HTTParty#get with '/digest_auth.html' and a digest_auth hash:
+       | username | password   |
+       | jcash    | maninblack |
+    Then the return value should match 'Digest Authenticated Page Using MD5-sess'
