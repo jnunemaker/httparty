@@ -588,6 +588,24 @@ RSpec.describe HTTParty do
     end
   end
 
+  describe "head requests should follow redirects requesting HEAD only" do
+    before do
+      @request = HTTParty::Request.new(Net::HTTP::Head, 'http://api.foo.com/v1')
+      @redirect = stub_response 'first redirect', 302
+      @redirect['location'] = 'http://foo.com/bar'
+      allow(HTTParty::Request).to receive_messages(new: @request)
+    end
+
+    it "should set maintain_method_across_redirects option if unspecified" do
+      # This is what I'm trying to do:
+      # expect(@klass.head('/foo').body).to be_nil
+
+      # This is what I get instead:
+      # HTTParty::RedirectionTooDeep: HTTP redirects too deep
+      # from /Users/Lehman/Desktop/Code/httparty/lib/httparty/request.rb:344:in `validate'
+    end
+  end
+
   describe "with multiple class definitions" do
     before(:each) do
       @klass.instance_eval do
