@@ -590,19 +590,28 @@ RSpec.describe HTTParty do
 
   describe "head requests should follow redirects requesting HEAD only" do
     before do
-      @request = HTTParty::Request.new(Net::HTTP::Head, 'http://api.foo.com/v1')
-      @redirect = stub_response 'first redirect', 302
-      @redirect['location'] = 'http://foo.com/bar'
-      allow(HTTParty::Request).to receive_messages(new: @request)
+      allow(HTTParty::Request).to receive(:new).
+        and_return(double("mock response", perform: nil))
     end
 
-    it "should set maintain_method_across_redirects option if unspecified" do
-      # This is what I'm trying to do:
-      # expect(@klass.head('/foo').body).to be_nil
+    it "should remain HEAD request across redirects, unless specified otherwise" do
+      expect(@klass).to receive(:ensure_method_maintained_across_redirects).with({})
+      @klass.head('/foo')
+    end
 
-      # This is what I get instead:
-      # HTTParty::RedirectionTooDeep: HTTP redirects too deep
-      # from /Users/Lehman/Desktop/Code/httparty/lib/httparty/request.rb:344:in `validate'
+  end
+
+  describe "#ensure_method_maintained_across_redirects" do
+    it "should set maintain_method_across_redirects option if unspecified" do
+      options = {}
+      @klass.send(:ensure_method_maintained_across_redirects, options)
+      expect(options[:maintain_method_across_redirects]).to be_truthy
+    end
+
+    it "should not set maintain_method_across_redirects option if value is present" do
+      options = { maintain_method_across_redirects: false }
+      @klass.send(:ensure_method_maintained_across_redirects, options)
+      expect(options[:maintain_method_across_redirects]).to be_falsey
     end
   end
 
