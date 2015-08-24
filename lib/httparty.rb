@@ -519,9 +519,7 @@ module HTTParty
 
     # Perform a HEAD request to a path
     def head(path, options = {}, &block)
-      unless options.has_key?(:maintain_method_across_redirects)
-        options[:maintain_method_across_redirects] = true
-      end
+      ensure_method_maintained_across_redirects options
       perform_request Net::HTTP::Head, path, options, &block
     end
 
@@ -533,6 +531,12 @@ module HTTParty
     attr_reader :default_options
 
     private
+
+    def ensure_method_maintained_across_redirects(options)
+      unless options.has_key? :maintain_method_across_redirects
+        options[:maintain_method_across_redirects] = true
+      end
+    end
 
     def perform_request(http_method, path, options, &block) #:nodoc:
       options = ModuleInheritableAttributes.hash_deep_dup(default_options).merge(options)
