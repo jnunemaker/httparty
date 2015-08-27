@@ -268,7 +268,9 @@ module HTTParty
     end
 
     # Declare that you wish to maintain the chosen HTTP method across redirects.
-    # The default behavior is to follow redirects via the GET method.
+    # The default behavior is to follow redirects via the GET method, except
+    # if you are making a HEAD request, in which case the default is to
+    # follow all redirects with HEAD requests.
     # If you wish to maintain the original method, you can set this option to true.
     #
     # @example
@@ -517,6 +519,7 @@ module HTTParty
 
     # Perform a HEAD request to a path
     def head(path, options = {}, &block)
+      ensure_method_maintained_across_redirects options
       perform_request Net::HTTP::Head, path, options, &block
     end
 
@@ -528,6 +531,12 @@ module HTTParty
     attr_reader :default_options
 
     private
+
+    def ensure_method_maintained_across_redirects(options)
+      unless options.has_key? :maintain_method_across_redirects
+        options[:maintain_method_across_redirects] = true
+      end
+    end
 
     def perform_request(http_method, path, options, &block) #:nodoc:
       options = ModuleInheritableAttributes.hash_deep_dup(default_options).merge(options)

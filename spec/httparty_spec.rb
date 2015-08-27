@@ -588,6 +588,33 @@ RSpec.describe HTTParty do
     end
   end
 
+  describe "head requests should follow redirects requesting HEAD only" do
+    before do
+      allow(HTTParty::Request).to receive(:new).
+        and_return(double("mock response", perform: nil))
+    end
+
+    it "should remain HEAD request across redirects, unless specified otherwise" do
+      expect(@klass).to receive(:ensure_method_maintained_across_redirects).with({})
+      @klass.head('/foo')
+    end
+
+  end
+
+  describe "#ensure_method_maintained_across_redirects" do
+    it "should set maintain_method_across_redirects option if unspecified" do
+      options = {}
+      @klass.send(:ensure_method_maintained_across_redirects, options)
+      expect(options[:maintain_method_across_redirects]).to be_truthy
+    end
+
+    it "should not set maintain_method_across_redirects option if value is present" do
+      options = { maintain_method_across_redirects: false }
+      @klass.send(:ensure_method_maintained_across_redirects, options)
+      expect(options[:maintain_method_across_redirects]).to be_falsey
+    end
+  end
+
   describe "with multiple class definitions" do
     before(:each) do
       @klass.instance_eval do
