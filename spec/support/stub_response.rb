@@ -26,7 +26,8 @@ module HTTParty
       expect(HTTParty::Request).to receive(:new).and_return(http_request)
     end
 
-    def stub_response(body, code = 200)
+    def stub_response(body, code = '200')
+      code = code.to_s
       @request.options[:base_uri] ||= 'http://localhost'
       unless defined?(@http) && @http
         @http = Net::HTTP.new('localhost', 80)
@@ -34,10 +35,10 @@ module HTTParty
       end
 
       # CODE_TO_OBJ currently missing 308
-      if code.to_s == '308'
+      if code == '308'
         response = Net::HTTPRedirection.new("1.1", code, body)
       else
-        response = Net::HTTPResponse::CODE_TO_OBJ[code.to_s].new("1.1", code, body)
+        response = Net::HTTPResponse::CODE_TO_OBJ[code].new("1.1", code, body)
       end
       allow(response).to receive(:body).and_return(body)
 
