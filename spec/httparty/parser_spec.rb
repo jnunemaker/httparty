@@ -97,6 +97,12 @@ RSpec.describe HTTParty::Parser do
       allow(@parser).to receive_messages(body: "   ")
       expect(@parser.parse).to be_nil
     end
+
+    it "does not raise exceptions for bodies with invalid encodings" do
+      allow(@parser).to receive_messages(body: "\x80")
+      allow(@parser).to receive_messages(supports_format?: false)
+      expect(@parser.parse).to_not be_nil
+    end
   end
 
   describe "#supports_format?" do
