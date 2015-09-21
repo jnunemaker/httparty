@@ -1,3 +1,20 @@
+== 0.13.6
+* avoid calling String#strip on invalid Strings
+* preserve request method on 307 and 308 redirects
+* output version with --version for command line bin
+* maintain head request method across redirects by default
+* add support for RFC2617 MD5-sess algorithm type
+* add party popper emoji to post install message
+
+== 0.13.5
+* allow setting a custom URI adapter
+
+== 0.13.4
+* correct redirect url for redirect paths without leading slash
+* remove core_extensions.rb as backwards compat for ruby 1.8 not needed
+* replace URI.encode with ERB::Util.url_encode
+* allow the response to be tapped
+
 == 0.13.3
 * minor improvement
   * added option to allow for streaming large files without loading them into memory (672cdae)
