@@ -1,3 +1,6 @@
+== 0.13.7 aka "party not as hard"
+* remove post install emoji as it caused installation issues for some people
+
 == 0.13.6
 * avoid calling String#strip on invalid Strings
 * preserve request method on 307 and 308 redirects
