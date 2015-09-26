@@ -1016,6 +1016,20 @@ RSpec.describe HTTParty::Request do
         expect(@request.last_response).to receive(:delete).with('content-encoding')
         @request.send(:handle_deflation)
       end
+
+      it "should not inflate a redirected response with content-encoding: gzip" do
+        allow(@last_response).to receive(:[]).with("content-encoding").and_return("gzip")
+        allow(@request).to receive(:last_response).and_return(@last_response)
+        allow(@request).to receive(:response_redirects?).and_return(true)
+        @request.send(:handle_deflation)
+      end
+
+      it "should not inflate a redirected response with content-encoding: deflate" do
+        allow(@last_response).to receive(:[]).with("content-encoding").and_return("deflate")
+        allow(@request).to receive(:last_response).and_return(@last_response)
+        allow(@request).to receive(:response_redirects?).and_return(true)
+        @request.send(:handle_deflation)
+      end
     end
   end
 

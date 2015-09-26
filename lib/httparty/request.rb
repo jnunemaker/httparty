@@ -298,6 +298,8 @@ module HTTParty
 
     # Inspired by Ruby 1.9
     def handle_deflation
+      return if response_redirects?
+
       case last_response["content-encoding"]
       when "gzip", "x-gzip"
         body_io = StringIO.new(last_response.body)
