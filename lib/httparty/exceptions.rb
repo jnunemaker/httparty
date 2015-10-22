@@ -2,7 +2,7 @@ module HTTParty
   # @abstact Exceptions raised by HTTParty inherit from Error
   class Error < StandardError; end
 
-  # Exception raised when you attempt to set a non-existant format
+  # Exception raised when you attempt to set a non-existent format
   class UnsupportedFormat < Error; end
 
   # Exception raised when using a URI scheme other than HTTP or HTTPS
