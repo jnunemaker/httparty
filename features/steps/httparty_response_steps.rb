@@ -11,8 +11,8 @@ def constantize(camel_cased_word)
   constant
 end
 
-Then /it should return an? (\w+)$/ do |class_string|
-  expect(@response_from_httparty).to be_a(class_string.class)
+Then /it should return an? ([\w\:]+)$/ do |class_string|
+  expect(@response_from_httparty.parsed_response).to be_a(Object.const_get(class_string))
 end
 
 Then /the return value should match '(.*)'/ do |expected_text|
@@ -20,7 +20,7 @@ Then /the return value should match '(.*)'/ do |expected_text|
 end
 
 Then /it should return a Hash equaling:/ do |hash_table|
-  expect(@response_from_httparty).to be_a(Hash)
+  expect(@response_from_httparty.parsed_response).to be_a(Hash)
   expect(@response_from_httparty.keys.length).to eq(hash_table.rows.length)
   hash_table.hashes.each do |pair|
     key, value = pair["key"], pair["value"]
@@ -30,7 +30,7 @@ Then /it should return a Hash equaling:/ do |hash_table|
 end
 
 Then /it should return an Array equaling:/ do |array|
-  expect(@response_from_httparty).to be_a(Array)
+  expect(@response_from_httparty.parsed_response).to be_a(Array)
   expect(@response_from_httparty.parsed_response).to eq(array.raw)
 end
 
