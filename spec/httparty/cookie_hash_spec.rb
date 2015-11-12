@@ -48,7 +48,7 @@ RSpec.describe HTTParty::CookieHash do
       it "should error" do
         expect {
           @cookie_hash.add_cookies([])
-        }.to raise_error
+        }.to raise_error(RuntimeError)
       end
     end
   end

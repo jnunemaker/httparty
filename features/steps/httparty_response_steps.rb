@@ -50,3 +50,7 @@ Then /it should raise (?:an|a) ([\w:]+) exception/ do |exception|
   expect(@exception_from_httparty).to_not be_nil
   expect(@exception_from_httparty).to be_a constantize(exception)
 end
+
+Then /it should not raise (?:an|a) ([\w:]+) exception/ do |exception|
+  expect(@exception_from_httparty).to be_nil
+end
