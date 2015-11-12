@@ -46,43 +46,35 @@ RSpec.describe HTTParty::Response do
   end
 
   it "returns response headers" do
-    response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
-    expect(response.headers).to eq({'last-modified' => [@last_modified], 'content-length' => [@content_length]})
+    expect(@response.headers).to eq({'last-modified' => [@last_modified], 'content-length' => [@content_length]})
   end
 
   it "should send missing methods to delegate" do
-    response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
-    expect(response['foo']).to eq('bar')
+    expect(@response['foo']).to eq('bar')
   end
 
   it "response to request" do
-    response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
-    expect(response.respond_to?(:request)).to be_truthy
+    expect(@response.respond_to?(:request)).to be_truthy
   end
 
   it "responds to response" do
-    response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
-    expect(response.respond_to?(:response)).to be_truthy
+    expect(@response.respond_to?(:response)).to be_truthy
   end
 
   it "responds to body" do
-    response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
-    expect(response.respond_to?(:body)).to be_truthy
+    expect(@response.respond_to?(:body)).to be_truthy
   end
 
   it "responds to headers" do
-    response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
-    expect(response.respond_to?(:headers)).to be_truthy
+    expect(@response.respond_to?(:headers)).to be_truthy
   end
 
   it "responds to parsed_response" do
-    response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
-    expect(response.respond_to?(:parsed_response)).to be_truthy
+    expect(@response.respond_to?(:parsed_response)).to be_truthy
   end
 
   it "responds to anything parsed_response responds to" do
-    response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
-    expect(response.respond_to?(:[])).to be_truthy
+    expect(@response.respond_to?(:[])).to be_truthy
   end
 
   it "should be able to iterate if it is array" do
@@ -94,8 +86,7 @@ RSpec.describe HTTParty::Response do
   end
 
   it "allows headers to be accessed by mixed-case names in hash notation" do
-    response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
-    expect(response.headers['Content-LENGTH']).to eq(@content_length)
+    expect(@response.headers['Content-LENGTH']).to eq(@content_length)
   end
 
   it "returns a comma-delimited value when multiple values exist" do
@@ -107,10 +98,38 @@ RSpec.describe HTTParty::Response do
 
   # Backwards-compatibility - previously, #headers returned a Hash
   it "responds to hash methods" do
-    response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
-    hash_methods = {}.methods - response.headers.methods
+    hash_methods = {}.methods - @response.headers.methods
     hash_methods.each do |method_name|
-      expect(response.headers.respond_to?(method_name)).to be_truthy
+      expect(@response.headers.respond_to?(method_name)).to be_truthy
+    end
+  end
+
+  describe "#tap" do
+    it "is possible to tap into a response" do
+      result = @response.tap(&:code)
+
+      expect(result).to eq @response
+    end
+  end
+
+  describe "#inspect" do
+
+    it "works" do
+      inspect = @response.inspect
+      expect(inspect).to include("HTTParty::Response:0x")
+      expect(inspect).to include("parsed_response={\"foo\"=>\"bar\"}")
+      expect(inspect).to include("@response=#<Net::HTTPOK 200 OK readbody=false>")
+      expect(inspect).to include("@headers={")
+      expect(inspect).to include("last-modified")
+      expect(inspect).to include("content-length")
+    end
+  end
+
+  describe '#is_a?' do
+    # it response.ancestors.inspect do
+    it 'returns true when the obj is a HTTParty::Response object' do
+      # puts "\n\n\n\n\n\n", response.ancestors, "\n\n\n\n\n\n"
+      expect(@response.is_a?(@response.class)).to be true
     end
   end
 
@@ -216,26 +235,6 @@ RSpec.describe HTTParty::Response do
     it "can initialize without headers" do
       headers = HTTParty::Response::Headers.new
       expect(headers).to eq({})
-    end
-  end
-
-  describe "#tap" do
-    it "is possible to tap into a response" do
-      result = @response.tap(&:code)
-
-      expect(result).to eq @response
-    end
-  end
-
-  describe "#inspect" do
-    it "works" do
-      inspect = @response.inspect
-      expect(inspect).to include("HTTParty::Response:0x")
-      expect(inspect).to include("parsed_response={\"foo\"=>\"bar\"}")
-      expect(inspect).to include("@response=#<Net::HTTPOK 200 OK readbody=false>")
-      expect(inspect).to include("@headers={")
-      expect(inspect).to include("last-modified")
-      expect(inspect).to include("content-length")
     end
   end
 end

@@ -60,6 +60,10 @@ module HTTParty
       parsed_response.respond_to?(name, include_all) || response.respond_to?(name, include_all)
     end
 
+    def is_a?(class_constant)
+      self.class.ancestors.include?(class_constant)
+    end
+
     protected
 
     def method_missing(name, *args, &block)
