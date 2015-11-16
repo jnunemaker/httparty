@@ -17,9 +17,11 @@ Given /that service is accessed at the path '(.*)'/ do |path|
   @server.register(path, @handler)
 end
 
-Given /^that service takes (\d+) seconds to generate a response$/ do |time|
-  @server_response_time = time.to_i
-  @handler.preprocessor = proc { sleep time.to_i }
+Given /^that service takes (\d+) (.*) to generate a response$/ do |time, unit|
+  time = time.to_i
+  time *= 60 if unit =~ /minute/
+  @server_response_time = time
+  @handler.preprocessor = proc { sleep time }
 end
 
 Given /^a remote deflate service$/ do
@@ -66,7 +68,7 @@ end
 
 # customize aruba cucumber step
 Then /^the output should contain '(.*)'$/ do |expected|
-  assert_partial_output(expected, all_output)
+  expect(all_commands.map(&:output).join("\n")).to match_output_string(expected)
 end
 
 Given /a restricted page at '(.*)'/ do |url|
