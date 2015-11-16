@@ -53,6 +53,11 @@ module HTTParty
     # Private: Regex used to strip brackets from IPv6 URIs.
     StripIpv6BracketsRegex = /\A\[(.*)\]\z/
 
+    OPTION_DEFAULTS = {
+      verify: true,
+      verify_peer: true
+    }
+
     # Public
     def self.call(uri, options)
       new(uri, options).connection
@@ -65,7 +70,7 @@ module HTTParty
       raise ArgumentError, "uri must be a #{uri_adapter}, not a #{uri.class}" unless uri.is_a? uri_adapter
 
       @uri = uri
-      @options = options
+      @options = OPTION_DEFAULTS.merge(options)
     end
 
     def connection
@@ -138,6 +143,10 @@ module HTTParty
       uri.port == 443 || uri.scheme == 'https'
     end
 
+    def verify_ssl_certificate?
+      !(options[:verify] == false || options[:verify_peer] == false)
+    end
+
     def attach_ssl_certificates(http, options)
       if http.use_ssl?
         if options.fetch(:verify, true)
@@ -158,7 +167,7 @@ module HTTParty
         if options[:pem]
           http.cert = OpenSSL::X509::Certificate.new(options[:pem])
           http.key = OpenSSL::PKey::RSA.new(options[:pem], options[:pem_password])
-          http.verify_mode = options[:verify] == false ? OpenSSL::SSL::VERIFY_NONE : OpenSSL::SSL::VERIFY_PEER
+          http.verify_mode = verify_ssl_certificate? ? OpenSSL::SSL::VERIFY_PEER : OpenSSL::SSL::VERIFY_NONE
         end
 
         # PKCS12 client certificate authentication
@@ -166,7 +175,7 @@ module HTTParty
           p12 = OpenSSL::PKCS12.new(options[:p12], options[:p12_password])
           http.cert = p12.certificate
           http.key = p12.key
-          http.verify_mode = options[:verify] == false ? OpenSSL::SSL::VERIFY_NONE : OpenSSL::SSL::VERIFY_PEER
+          http.verify_mode = verify_ssl_certificate? ? OpenSSL::SSL::VERIFY_PEER : OpenSSL::SSL::VERIFY_NONE
         end
 
         # SSL certificate authority file and/or directory
