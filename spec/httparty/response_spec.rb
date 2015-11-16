@@ -114,6 +114,24 @@ RSpec.describe HTTParty::Response do
     end
   end
 
+  describe "#is_a?" do
+    subject { HTTParty::Response.new(@request_object, @response_object, @parsed_response) }
+
+    it { is_expected.to respond_to(:is_a?).with(1).arguments }
+    it { expect(subject.is_a?(HTTParty::Response)).to be_truthy }
+    it { expect(subject.is_a?(BasicObject)).to be_truthy }
+    it { expect(subject.is_a?(Object)).to be_falsey }
+  end
+
+  describe "#kind_of?" do
+    subject { HTTParty::Response.new(@request_object, @response_object, @parsed_response) }
+
+    it { is_expected.to respond_to(:kind_of?).with(1).arguments }
+    it { expect(subject.kind_of?(HTTParty::Response)).to be_truthy }
+    it { expect(subject.kind_of?(BasicObject)).to be_truthy }
+    it { expect(subject.kind_of?(Object)).to be_falsey }
+  end
+
   describe "semantic methods for response codes" do
     def response_mock(klass)
       response = klass.new('', '', '')

@@ -27,6 +27,12 @@ module HTTParty
       Response
     end
 
+    def is_a?(klass)
+      self.class == klass || self.class < klass
+    end
+
+    alias_method :kind_of?, :is_a?
+
     def code
       response.code.to_i
     end
