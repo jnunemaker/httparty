@@ -68,8 +68,10 @@ module Net
 
         header =~ /Digest (.*)/
         params = {}
-        non_quoted = $1.gsub(/(\w+)="(.*?)"/) { params[$1] = $2 }
-        non_quoted.gsub(/(\w+)=([^,]*)/) { params[$1] = $2 }
+	if $1
+          non_quoted = $1.gsub(/(\w+)="(.*?)"/) { params[$1] = $2 }
+          non_quoted.gsub(/(\w+)=([^,]*)/) { params[$1] = $2 }
+	end
         params
       end
 
