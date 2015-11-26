@@ -152,6 +152,22 @@ RSpec.describe Net::HTTPHeader::DigestAuthenticator do
     end
   end
 
+  context "with http basic auth response when net digest auth expected" do
+    it "should not fail" do
+      # fails already so it is defined here
+      begin
+        @digest = setup_digest({
+                                 'www-authenticate' => 'WWW-Authenticate: Basic realm="testrealm.com""'
+                             })
+
+        expect(authorization_header).to include("Digest")
+      rescue => e
+        fail "Should not fail on different authentification method"
+      end
+
+    end
+  end
+
   context "with multiple authenticate headers" do
     before do
       @digest = setup_digest({
