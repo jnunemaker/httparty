@@ -601,14 +601,14 @@ RSpec.describe HTTParty::Request do
           expect(@request.options[:headers]['Cookie']).to match(/name=value/)
         end
 
-        it 'should update cookies with rediects' do
+        it 'should update cookies with redirects' do
           @request.options[:headers] = {'Cookie' => 'foo=bar;'}
           @redirect['Set-Cookie'] = 'foo=tar;'
           @request.perform
           expect(@request.options[:headers]['Cookie']).to match(/foo=tar/)
         end
 
-        it 'should keep cookies between rediects' do
+        it 'should keep cookies between redirects' do
           @request.options[:headers] = {'Cookie' => 'keep=me'}
           @redirect['Set-Cookie'] = 'foo=tar;'
           @request.perform
@@ -722,14 +722,14 @@ RSpec.describe HTTParty::Request do
         expect(@request.options[:headers]['Cookie']).to match(/name=value/)
       end
 
-      it 'should update cookies with rediects' do
+      it 'should update cookies with redirects' do
         @request.options[:headers] = {'Cookie' => 'foo=bar;'}
         @redirect['Set-Cookie'] = 'foo=tar;'
         @request.perform
         expect(@request.options[:headers]['Cookie']).to match(/foo=tar/)
       end
 
-      it 'should keep cookies between rediects' do
+      it 'should keep cookies between redirects' do
         @request.options[:headers] = {'Cookie' => 'keep=me'}
         @redirect['Set-Cookie'] = 'foo=tar;'
         @request.perform
@@ -921,14 +921,14 @@ RSpec.describe HTTParty::Request do
           expect(@request.options[:headers]['Cookie']).to match(/name=value/)
         end
 
-        it 'should update cookies with rediects' do
+        it 'should update cookies with redirects' do
           @request.options[:headers] = {'Cookie' => 'foo=bar;'}
           @redirect['Set-Cookie'] = 'foo=tar;'
           @request.perform
           expect(@request.options[:headers]['Cookie']).to match(/foo=tar/)
         end
 
-        it 'should keep cookies between rediects' do
+        it 'should keep cookies between redirects' do
           @request.options[:headers] = {'Cookie' => 'keep=me'}
           @redirect['Set-Cookie'] = 'foo=tar;'
           @request.perform
