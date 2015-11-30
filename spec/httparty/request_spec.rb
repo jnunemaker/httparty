@@ -1033,6 +1033,50 @@ RSpec.describe HTTParty::Request do
     end
   end
 
+  describe "#send_authorization_header?" do
+    context "basic_auth" do
+      before do
+        @credentials = { username: "username", password: "password" }
+        @authorization = "Basic dXNlcm5hbWU6cGFzc3dvcmQ="
+        @request.options[:basic_auth] = @credentials
+        @redirect = stub_response("", 302)
+        @ok = stub_response('<hash><foo>bar</foo></hash>', 200)
+      end
+
+      before(:each) do
+        allow(@http).to receive(:request).and_return(@redirect, @ok)
+      end
+
+      it "should not send Authorization header when redirecting to a different host" do
+        @redirect['location'] = 'http://example.com/'
+        @request.perform
+        @request.send(:setup_raw_request)
+        expect(@request.instance_variable_get(:@raw_request)['authorization']).to be_nil
+      end
+
+      it "should send Authorization header when redirecting to a relative path" do
+        @redirect['location'] = '/v3'
+        @request.perform
+        @request.send(:setup_raw_request)
+        expect(@request.instance_variable_get(:@raw_request)['authorization']).to eq(@authorization)
+      end
+
+      it "should send Authorization header when redirecting to the same host" do
+        @redirect['location'] = 'http://api.foo.com/v2'
+        @request.perform
+        @request.send(:setup_raw_request)
+        expect(@request.instance_variable_get(:@raw_request)['authorization']).to eq(@authorization)
+      end
+
+      it "should send Authorization header when redirecting to a different port on the same host" do
+        @redirect['location'] = 'http://api.foo.com:3000/v3'
+        @request.perform
+        @request.send(:setup_raw_request)
+        expect(@request.instance_variable_get(:@raw_request)['authorization']).to eq(@authorization)
+      end
+    end
+  end
+
   context "with POST http method" do
     it "should raise argument error if query is not a hash" do
       expect {
