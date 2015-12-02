@@ -128,6 +128,7 @@ module HTTParty
       end
 
       handle_deflation unless http_method == Net::HTTP::Head
+      handle_host_redirection if response_redirects?
       handle_response(chunked_body, &block)
     end
 
@@ -174,7 +175,7 @@ module HTTParty
       @raw_request.body = body if body
       @raw_request.body_stream = options[:body_stream] if options[:body_stream]
       @raw_request.initialize_http_header(options[:headers].to_hash) if options[:headers].respond_to?(:to_hash)
-      @raw_request.basic_auth(username, password) if options[:basic_auth]
+      @raw_request.basic_auth(username, password) if options[:basic_auth] && send_authorization_header?
       setup_digest_auth if options[:digest_auth]
     end
 
@@ -310,6 +311,16 @@ module HTTParty
         last_response.body.replace Zlib::Inflate.inflate(last_response.body)
         last_response.delete('content-encoding')
       end
+    end
+
+    def handle_host_redirection
+      redirect_path = options[:uri_adapter].parse last_response['location']
+      return if redirect_path.relative? || path.host == redirect_path.host
+      @changed_hosts = true
+    end
+
+    def send_authorization_header?
+      !defined?(@changed_hosts)
     end
 
     def response_redirects?
