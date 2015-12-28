@@ -525,6 +525,22 @@ RSpec.describe HTTParty do
     end
   end
 
+  describe ".raise_on" do
+    context 'when parameters is an array' do
+      it 'sets raise_on option' do
+        @klass.raise_on [500, 404]
+        expect(@klass.default_options[:raise_on]).to contain_exactly(404, 500)
+      end
+    end
+
+    context 'when parameters is a fixnum' do
+      it 'sets raise_on option' do
+        @klass.raise_on 404
+        expect(@klass.default_options[:raise_on]).to contain_exactly(404)
+      end
+    end
+  end
+
   describe "with explicit override of automatic redirect handling" do
     before do
       @request = HTTParty::Request.new(Net::HTTP::Get, 'http://api.foo.com/v1', format: :xml, no_follow: true)

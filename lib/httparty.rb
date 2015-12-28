@@ -72,6 +72,16 @@ module HTTParty
       default_options[:log_format] = format
     end
 
+    # Raises HTTParty::ResponseError if response's code matches this statuses
+    #
+    #   class Foo
+    #     include HTTParty
+    #     raise_on [404, 500]
+    #   end
+    def raise_on(codes = [])
+      default_options[:raise_on] = *codes
+    end
+
     # Allows setting http proxy information to be used
     #
     #   class Foo
