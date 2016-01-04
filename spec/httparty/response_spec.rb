@@ -43,6 +43,33 @@ RSpec.describe HTTParty::Response do
     it "should set code as a Fixnum" do
       expect(@response.code).to be_an_instance_of(Fixnum)
     end
+
+    context 'when raise_on is supplied' do
+      let(:request) { HTTParty::Request.new(Net::HTTP::Get, '/', raise_on: [404]) }
+
+      context "and response's status code is in range" do
+        let(:body)     { 'Not Found' }
+        let(:response) { Net::HTTPNotFound.new('1.1', 404, body) }
+
+        before do
+          allow(response).to receive(:body).and_return(body)
+        end
+
+        subject { described_class.new(request, response, @parsed_response) }
+
+        it 'throws exception' do
+          expect{ subject }.to raise_error(HTTParty::ResponseError, "Code 404 - #{body}")
+        end
+      end
+
+      context "and response's status code is not in range" do
+        subject { described_class.new(request, @response_object, @parsed_response) }
+
+        it 'does not throw exception' do
+          expect{ subject }.not_to raise_error(HTTParty::ResponseError)
+        end
+      end
+    end
   end
 
   it "returns response headers" do

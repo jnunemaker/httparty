@@ -17,6 +17,8 @@ module HTTParty
         logger = ::HTTParty::Logger.build(request.options[:logger], request.options[:log_level], request.options[:log_format])
         logger.format(request, self)
       end
+
+      throw_exception
     end
 
     def parsed_response
@@ -75,6 +77,12 @@ module HTTParty
         response.send(name, *args, &block)
       else
         super
+      end
+    end
+
+    def throw_exception
+      if @request.options[:raise_on] && @request.options[:raise_on].include?(code)
+        ::Kernel.raise ::HTTParty::ResponseError.new(@response), "Code #{code} - #{body}"
       end
     end
   end
