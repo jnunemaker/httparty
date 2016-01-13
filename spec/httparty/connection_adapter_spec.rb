@@ -325,6 +325,19 @@ RSpec.describe HTTParty::ConnectionAdapter do
         end
       end
 
+      context 'when providing nil as proxy address' do
+        let(:uri) { URI 'http://noproxytest.com' }
+        let(:options) { {http_proxyaddr: nil} }
+
+        it { is_expected.not_to be_a_proxy }
+
+        it "does pass nil proxy parameters to the connection, this forces to not use a proxy" do
+          http = Net::HTTP.new("noproxytest.com")
+          expect(Net::HTTP).to receive(:new).once.with("noproxytest.com", 80, nil, nil, nil, nil).and_return(http)
+          adapter.connection
+        end
+      end
+
       context 'when not providing a proxy address' do
         let(:uri) { URI 'http://proxytest.com' }
 
