@@ -543,7 +543,7 @@ module HTTParty
     private
 
     def ensure_method_maintained_across_redirects(options)
-      unless options.has_key? :maintain_method_across_redirects
+      unless options.key?(:maintain_method_across_redirects)
         options[:maintain_method_across_redirects] = true
       end
     end
