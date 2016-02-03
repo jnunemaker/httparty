@@ -79,5 +79,22 @@ RSpec.describe HTTParty::CookieHash do
       @s = @cookie_hash.to_cookie_string
       expect(@s).not_to match(/Path=\//)
     end
+
+    it "should not mutate the hash" do
+      original_hash = {
+        "session" => "91e25e8b-6e32-418d-c72f-2d18adf041cd",
+        "Max-Age" => "15552000",
+        "cart" => "91e25e8b-6e32-418d-c72f-2d18adf041cd",
+        "httponly" => nil,
+        "Path" => "/",
+        "secure" => nil,
+      }
+
+      cookie_hash = HTTParty::CookieHash[original_hash]
+
+      cookie_hash.to_cookie_string
+
+      expect(cookie_hash).to eq(original_hash)
+    end
   end
 end
