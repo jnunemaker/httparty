@@ -12,8 +12,8 @@ group :development do
 end
 
 group :test do
-  gem 'rspec',    '~> 3.1'
+  gem 'rspec',    '~> 3.4'
   gem 'simplecov', require: false
   gem 'aruba'
-  gem 'cucumber', '~> 1.3.17'
+  gem 'cucumber', '~> 2.3'
 end
