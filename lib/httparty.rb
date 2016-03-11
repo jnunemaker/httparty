@@ -538,6 +538,11 @@ module HTTParty
       perform_request Net::HTTP::Options, path, options, &block
     end
 
+    # Perform a MKCOL request to a path
+    def mkcol(path, options = {}, &block)
+      perform_request Net::HTTP::Mkcol, path, options, &block
+    end
+
     attr_reader :default_options
 
     private
