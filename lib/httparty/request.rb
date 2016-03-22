@@ -10,7 +10,7 @@ module HTTParty
       Net::HTTP::Options,
       Net::HTTP::Move,
       Net::HTTP::Copy,
-      Net::HTTP::Mkcol
+      Net::HTTP::Mkcol,
     ]
 
     SupportedURISchemes  = ['http', 'https', 'webcal', nil]
