@@ -602,6 +602,12 @@ RSpec.describe HTTParty do
         @klass.options('/foo', no_follow: true)
       end.to raise_error(HTTParty::RedirectionTooDeep) {|e| expect(e.response.body).to eq('first redirect')}
     end
+
+    it "should fail with redirected MKCOL" do
+      expect do
+        @klass.mkcol('/foo', no_follow: true)
+      end.to raise_error(HTTParty::RedirectionTooDeep) {|e| expect(e.response.body).to eq('first redirect')}
+    end
   end
 
   describe "head requests should follow redirects requesting HEAD only" do
