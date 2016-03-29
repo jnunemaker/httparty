@@ -168,6 +168,14 @@ RSpec.describe HTTParty::Request do
       request.send(:setup_raw_request)
       expect(request.instance_variable_get(:@raw_request).body_stream).to eq(stream)
     end
+
+    it 'should normalize base uri when specified as request option' do
+      FakeWeb.register_uri(:get, 'http://foo.com/resource', :body => 'Bar')
+      response = HTTParty.get('/resource', {
+        base_uri: 'foo.com'
+      })
+      expect(response.code).to eq(200)
+    end
   end
 
   describe "#uri" do
