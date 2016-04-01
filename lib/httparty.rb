@@ -157,7 +157,7 @@ module HTTParty
     #     default_params api_key: 'secret', another: 'foo'
     #   end
     def default_params(h = {})
-      raise ArgumentError, 'Default params must an object which respond to #to_hash' unless h.respond_to?(:to_hash)
+      raise ArgumentError, 'Default params must be an object which responds to #to_hash' unless h.respond_to?(:to_hash)
       default_options[:default_params] ||= {}
       default_options[:default_params].merge!(h)
     end
@@ -214,13 +214,13 @@ module HTTParty
     #     headers 'Accept' => 'text/html'
     #   end
     def headers(h = {})
-      raise ArgumentError, 'Headers must an object which responds to #to_hash' unless h.respond_to?(:to_hash)
+      raise ArgumentError, 'Headers must be an object which responds to #to_hash' unless h.respond_to?(:to_hash)
       default_options[:headers] ||= {}
       default_options[:headers].merge!(h.to_hash)
     end
 
     def cookies(h = {})
-      raise ArgumentError, 'Cookies must an object which respond to #to_hash' unless h.respond_to?(:to_hash)
+      raise ArgumentError, 'Cookies must be an object which responds to #to_hash' unless h.respond_to?(:to_hash)
       default_cookies.add_cookies(h)
     end
 
