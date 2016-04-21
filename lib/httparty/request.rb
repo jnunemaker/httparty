@@ -94,7 +94,7 @@ module HTTParty
         base_uri += ":#{@last_uri.port}" if @last_uri.port != 80
         base_uri
       else
-        options[:base_uri]
+        options[:base_uri] && HTTParty.normalize_base_uri(options[:base_uri])
       end
     end
 
