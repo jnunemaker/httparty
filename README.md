@@ -17,6 +17,8 @@ gem install httparty
 ## Examples
 
 ```ruby
+# Require the HTTPary Module
+require 'HTTParty'
 # Use the class methods to get down to business quickly
 response = HTTParty.get('http://api.stackexchange.com/2.2/questions?site=stackoverflow')
 
