@@ -496,7 +496,7 @@ module HTTParty
     #   Foo.post('http://foo.com/resources', body: {bar: 'baz'})
     #
     #   # Simple post with full url using :query option,
-    #   # which gets set as form data on the request.
+    #   # which appends the parameters to the URI.
     #   Foo.post('http://foo.com/resources', query: {bar: 'baz'})
     def post(path, options = {}, &block)
       perform_request Net::HTTP::Post, path, options, &block
