@@ -56,6 +56,24 @@ RSpec.describe HTTParty::Request do
       expect(request.connection_adapter).to eq(my_adapter)
     end
 
+    context "when using a query string" do
+      context "and it has an empty array" do
+        it "sets correct query string" do
+          request = HTTParty::Request.new(Net::HTTP::Get, 'http://google.com', query: { fake_array: [] })
+
+          expect(request.uri).to eq(URI.parse("http://google.com/?fake_array[]="))
+        end
+      end
+
+      context "when sending an array with only one element" do
+        it "sets correct query" do
+          request = HTTParty::Request.new(Net::HTTP::Get, 'http://google.com', query: { fake_array: [1] })
+
+          expect(request.uri).to eq(URI.parse("http://google.com/?fake_array[]=1"))
+        end
+      end
+    end
+
     context "when basic authentication credentials provided in uri" do
       context "when basic auth options wasn't set explicitly" do
         it "sets basic auth from uri" do
@@ -221,10 +239,10 @@ RSpec.describe HTTParty::Request do
       end
 
       it "respects the query string normalization proc" do
-        empty_proc = lambda {|qs| ""}
+        empty_proc = lambda {|qs| "I"}
         @request.options[:query_string_normalizer] = empty_proc
         @request.options[:query] = {foo: :bar}
-        expect(CGI.unescape(@request.uri.query)).to eq("")
+        expect(CGI.unescape(@request.uri.query)).to eq("I")
       end
 
       it "does not append an ampersand when queries are embedded in paths" do

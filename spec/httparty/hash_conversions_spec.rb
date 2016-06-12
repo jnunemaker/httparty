@@ -22,6 +22,14 @@ RSpec.describe HTTParty::HashConversions do
       end
     end
 
+    context "value is an empty array" do
+      it "creates a params string" do
+        expect(
+          HTTParty::HashConversions.normalize_param(:people, [])
+        ).to eq("people[]=&")
+      end
+    end
+
     context "value is hash" do
       it "creates a params string" do
         expect(
