@@ -26,4 +26,7 @@ module HTTParty
   # Exception that is raised when request has redirected too many times.
   # Calling {#response} returns the Net:HTTP response object.
   class RedirectionTooDeep < ResponseError; end
+
+  # Exception that is raised when request redirects and location header is present more than once
+  class DuplicateLocationHeader < ResponseError; end
 end
