@@ -49,11 +49,17 @@ module HTTParty
       %(#<#{self.class}:0x#{inspect_id} parsed_response=#{parsed_response.inspect}, @response=#{response.inspect}, @headers=#{headers.inspect}>)
     end
 
+    RESPOND_TO_METHODS = [:request, :response, :parsed_response, :body, :headers]
+
     CODES_TO_OBJ = ::Net::HTTPResponse::CODE_CLASS_TO_OBJ.merge ::Net::HTTPResponse::CODE_TO_OBJ
 
     CODES_TO_OBJ.each do |response_code, klass|
       name = klass.name.sub("Net::HTTP", '')
-      define_method("#{underscore(name)}?") do
+      name = "#{underscore(name)}?".to_sym
+
+      RESPOND_TO_METHODS << name
+
+      define_method(name) do
         klass === response
       end
     end
@@ -64,7 +70,7 @@ module HTTParty
     end
 
     def respond_to?(name, include_all = false)
-      return true if [:request, :response, :parsed_response, :body, :headers].include?(name)
+      return true if RESPOND_TO_METHODS.include?(name)
       parsed_response.respond_to?(name, include_all) || response.respond_to?(name, include_all)
     end
 
