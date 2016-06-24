@@ -505,6 +505,12 @@ RSpec.describe HTTParty::Request do
           expect(response.parsed_response).to eq({"hash" => {"foo" => "bar"}})
         end
 
+        it "raises an error if redirect has duplicate location header" do
+          @request = HTTParty::Request.new(Net::HTTP::Get, 'http://test.com/redirect', format: :xml)
+          FakeWeb.register_uri(:get, "http://test.com/redirect", status: [300, "REDIRECT"], location: ["http://api.foo.com/v2","http://api.foo.com/v2"])
+          expect {@request.perform}.to raise_error(HTTParty::DuplicateLocationHeader)
+        end
+
         it "returns the HTTParty::Response when the 300 does not contain a location header" do
           stub_response '', 300
           expect(HTTParty::Response).to be === @request.perform

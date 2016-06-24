@@ -315,9 +315,17 @@ module HTTParty
     end
 
     def handle_host_redirection
+      check_duplicate_location_header
       redirect_path = options[:uri_adapter].parse last_response['location']
       return if redirect_path.relative? || path.host == redirect_path.host
       @changed_hosts = true
+    end
+
+    def check_duplicate_location_header
+      location = last_response.get_fields('location')
+      if location.is_a?(Array) && location.count > 1
+        raise DuplicateLocationHeader.new(last_response)
+      end
     end
 
     def send_authorization_header?

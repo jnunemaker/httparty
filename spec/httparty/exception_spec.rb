@@ -35,4 +35,11 @@ RSpec.describe HTTParty::Error do
       it { is_expected.to include(HTTParty::ResponseError) }
     end
   end
+
+  describe HTTParty::DuplicateLocationHeader do
+    describe '#ancestors' do
+      subject { super().ancestors }
+      it { is_expected.to include(HTTParty::ResponseError) }
+    end
+  end
 end
