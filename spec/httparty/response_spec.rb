@@ -107,6 +107,11 @@ RSpec.describe HTTParty::Response do
     expect(response.respond_to?(:parsed_response)).to be_truthy
   end
 
+  it "responds to predicates" do
+    response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
+    expect(response.respond_to?(:success?)).to be_truthy
+  end
+
   it "responds to anything parsed_response responds to" do
     response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
     expect(response.respond_to?(:[])).to be_truthy
