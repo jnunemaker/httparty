@@ -1,3 +1,3 @@
 module HTTParty
-  VERSION = "0.13.7"
+  VERSION = "1.0.0"
 end
