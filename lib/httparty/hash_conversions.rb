@@ -1,3 +1,4 @@
+require 'erb'
 module HTTParty
   module HashConversions
     # @return <String> This hash as a query string
@@ -34,7 +35,7 @@ module HTTParty
       elsif value.respond_to?(:to_hash)
         stack << [key, value.to_hash]
       else
-        param << "#{key}=#{ERB::Util.url_encode(value.to_s)}&"
+        param << "#{key}=#{ERB::Util.url_encode(value.to_s)}&"  # must require 'erb' for this to work
       end
 
       stack.each do |parent, hash|
