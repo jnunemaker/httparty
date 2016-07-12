@@ -65,3 +65,9 @@
 
 * [Rescue Json Error](rescue_json.rb)
   * Rescue errors due to parsing response
+
+* [Download file using stream mode](stream_download.rb)
+  * Httparty included into poro class
+  * Uses `get` requests
+  * Uses `stream_body` mode
+  * Download file without using the memory
