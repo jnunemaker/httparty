@@ -1,3 +1,5 @@
+require 'erb'
+
 module HTTParty
   module HashConversions
     # @return <String> This hash as a query string
