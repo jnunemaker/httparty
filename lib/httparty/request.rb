@@ -1,3 +1,5 @@
+require 'erb'
+
 module HTTParty
   class Request #:nodoc:
     SupportedHTTPMethods = [

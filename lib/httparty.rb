@@ -6,7 +6,6 @@ require 'zlib'
 require 'multi_xml'
 require 'json'
 require 'csv'
-require 'erb'
 
 require 'httparty/module_inheritable_attributes'
 require 'httparty/cookie_hash'
