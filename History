@@ -1,3 +1,7 @@
+== master
+
+* [Require Ruby >= 2.0.0]
+
 == 0.14.0
 * [added status predicate methods to Response#respond_to?](https://github.com/jnunemaker/httparty/pull/482)
 * [allow empty array to be used as param](https://github.com/jnunemaker/httparty/pull/477)

@@ -10,7 +10,7 @@ gem install httparty
 
 ## Requirements
 
-* Ruby 1.9.3 or higher
+* Ruby 2.0.0 or higher
 * multi_xml
 * You like to party!
 
