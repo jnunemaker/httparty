@@ -1,8 +1,8 @@
-== master
+## master
 
 * Require Ruby >= 2.0.0
 
-== 0.14.0
+## 0.14.0
 * [added status predicate methods to Response#respond_to?](https://github.com/jnunemaker/httparty/pull/482)
 * [allow empty array to be used as param](https://github.com/jnunemaker/httparty/pull/477)
 * [add support for MKCOL method](https://github.com/jnunemaker/httparty/pull/465)
@@ -10,10 +10,10 @@
 * [stop mutating cookie hash](https://github.com/jnunemaker/httparty/pull/460)
 * [optional raising exception on certain status codes](https://github.com/jnunemaker/httparty/pull/455)
 
-== 0.13.7 aka "party not as hard"
+## 0.13.7 aka "party not as hard"
 * remove post install emoji as it caused installation issues for some people
 
-== 0.13.6
+## 0.13.6
 * avoid calling String#strip on invalid Strings
 * preserve request method on 307 and 308 redirects
 * output version with --version for command line bin
@@ -21,25 +21,25 @@
 * add support for RFC2617 MD5-sess algorithm type
 * add party popper emoji to post install message
 
-== 0.13.5
+## 0.13.5
 * allow setting a custom URI adapter
 
-== 0.13.4
+## 0.13.4
 * correct redirect url for redirect paths without leading slash
 * remove core_extensions.rb as backwards compat for ruby 1.8 not needed
 * replace URI.encode with ERB::Util.url_encode
 * allow the response to be tapped
 
-== 0.13.3
+## 0.13.3
 * minor improvement
   * added option to allow for streaming large files without loading them into memory (672cdae)
 
-== 0.13.2
+## 0.13.2
 * minor improvement
   * [Set correct path on redirect to filename](https://github.com/jnunemaker/httparty/pull/337)
   * ensure logger works with curl format
 
-== 0.13.1 2014-04-08
+## 0.13.1 2014-04-08
 * new
   * [Added ability to specify a body_stream in HttpRequest](https://github.com/jnunemaker/httparty/pull/275)
   * [Added read_timeout and open_timeout options](https://github.com/jnunemaker/httparty/pull/278)
@@ -48,7 +48,7 @@
 * minor improvement
   * [Add stackexchange API example](https://github.com/jnunemaker/httparty/pull/280)
 
-== 0.13.0 2014-02-14
+## 0.13.0 2014-02-14
 * new
   * [Add CSV support](https://github.com/jnunemaker/httparty/pull/269)
   * [Allows PKCS12 client certificates](https://github.com/jnunemaker/httparty/pull/246)
@@ -63,7 +63,7 @@
 * minor improvement
   * [Add HTTParty::Error base class](https://github.com/jnunemaker/httparty/pull/260)
 
-== 0.12.0 2013-10-10
+## 0.12.0 2013-10-10
 * new
   * [Added initial logging support](https://github.com/jnunemaker/httparty/pull/243)
   * [Add support for local host and port binding](https://github.com/jnunemaker/httparty/pull/238)
@@ -83,7 +83,7 @@
   * [Improve documentation of ssl_ca_file, ssl_ca_path](https://github.com/jnunemaker/httparty/pull/223)
   * [Fix example URLs](https://github.com/jnunemaker/httparty/pull/232)
 
-== 0.11.0 2013-04-10
+## 0.11.0 2013-04-10
 * new
   * [Add COPY http request handling](https://github.com/jnunemaker/httparty/pull/190)
   * [Ruby 2.0 tests](https://github.com/jnunemaker/httparty/pull/194)
@@ -95,20 +95,20 @@
 * change
   * [Client-side-only cookie attributes are removed: case-insensitive](https://github.com/jnunemaker/httparty/pull/188)
 
-== 0.10.2 2013-01-26
+## 0.10.2 2013-01-26
 * bug fix
   * [hash_conversions misnamed variable](https://github.com/jnunemaker/httparty/pull/187)
 
-== 0.10.1 2013-01-26
+## 0.10.1 2013-01-26
 * new
   * [Added support for MOVE requests](https://github.com/jnunemaker/httparty/pull/183)
   * [Bump multi xml version](https://github.com/jnunemaker/httparty/pull/181)
 
-== 0.10.0 2013-01-10
+## 0.10.0 2013-01-10
 * changes
   * removed yaml support because of security risk (see rails yaml issues)
 
-== 0.9.0 2012-09-07
+## 0.9.0 2012-09-07
 * new
   * [support for connection adapters](https://github.com/jnunemaker/httparty/pull/157)
   * [allow ssl_version on ruby 1.9](https://github.com/jnunemaker/httparty/pull/159)
@@ -117,14 +117,14 @@
   * [deep clone default options](https://github.com/jnunemaker/httparty/commit/f74227d30f9389b4b23a888c9af49fb9b8248e1f)
   * a few net digest auth fixes
 
-== 0.8.3 2012-04-21
+## 0.8.3 2012-04-21
 * new
   * [lazy parsing of responses](https://github.com/jnunemaker/httparty/commit/9fd5259c8dab00e426082b66af44ede2c9068f45)
   * [add support for PATCH requests](https://github.com/jnunemaker/httparty/commit/7ab6641e37a9e31517e46f6124f38c615395d38a)
 * bug fixes
   * [subclasses no longer override superclass options](https://github.com/jnunemaker/httparty/commit/682af8fbf672e7b3009e650da776c85cdfe78d39)
 
-== 0.8.2 2012-04-12
+## 0.8.2 2012-04-12
 * new
   * add -r to make CLI return failure code if status >= 400
   * allow blank username from CLI
@@ -137,47 +137,47 @@
   * require rexml/document if xml format from CLI
   * support for fragmented responses
 
-== 0.8.1 2011-10-05
+## 0.8.1 2011-10-05
 * bug fixes
   * content-encoding header should be removed when automatically inflating the body
 
-== 0.8.0 2011-09-13
+## 0.8.0 2011-09-13
 * new
   * switch to multi json/xml for parsing by default
 * bug fixes
   * fix redirects to relative uri's
 
-== 0.7.8 2011-06-06
+## 0.7.8 2011-06-06
 * bug fix
   * Make response honor respond to
   * net http timeout can also be a float
 
-== 0.7.7 2011-04-16
+## 0.7.7 2011-04-16
 * bug fix
   * Fix NoMethodError when using the NON_RAILS_QUERY_STRING_NORMALIZER with a hash whose key is a symbol and value is nil
 
-== 0.7.5 2011-04-16
+## 0.7.5 2011-04-16
 * bug fix
   * caused issue with latest rubygems
 
-== 0.7.4 2011-02-13
+## 0.7.4 2011-02-13
 * bug fixes
   * Set VERIFY_NONE when using https. Ruby 1.9.2 no longer sets this for us. gh-67
 
-== 0.7.3 2011-01-20
+## 0.7.3 2011-01-20
 * bug fixes
   * Fix digest auth for unspecified quality of protection (bjoernalbers, mtrudel, dwo)
 
-== 0.7.2 2011-01-20
+## 0.7.2 2011-01-20
 * bug fixes
   * Fix gem dependencies
 
-== 0.7.1 2011-01-19
+## 0.7.1 2011-01-19
 * bug fixes
   * Fix uninitialized constant HTTParty::Response::Net in 1.9.2 (cap10morgan)
   * Other fixes for 1.9.2, full suite still fails (cap10morgan)
 
-== 0.7.0 2011-01-18
+## 0.7.0 2011-01-18
 * minor enhancements
   * Added query methods for HTTP status codes, i.e. response.success?
     response.created? (thanks citizenparker)
@@ -193,7 +193,7 @@
   * Fixed superclass mismatch exception while running tests
     (thanks dlitz http://github.com/dlitz/httparty/commit/48224f0615b32133afcff4718ad426df7a4b401b)
 
-== 0.6.1 2010-07-07
+## 0.6.1 2010-07-07
 * minor enhancements
   * updated to crack 0.1.8
 * bug fixes
@@ -201,7 +201,7 @@
   default_cookies (l4rk).
   * subclasses play nicely with grand parents. gh-49
 
-== 0.6.0 2010-06-13
+## 0.6.0 2010-06-13
 * major enhancements
   * Digest Auth (bartiaco, sbecker, gilles, and aaronrussell)
   * Maintain HTTP method across redirects (bartiaco and sbecker)
@@ -219,11 +219,11 @@
   * Closed #40 "Gzip response" wherein gziped and deflated responses are
     automatically inflated. (carsonmcdonald)
 
-== 0.5.2 2010-01-31
+## 0.5.2 2010-01-31
 * minor enhancements
   * Update crack requirement to version 0.1.6
 
-== 0.5.1 2010-01-30
+## 0.5.1 2010-01-30
 * bug fixes
   * Handle 304 response correctly by returning the HTTParty::Response object instead of redirecting (seth and hellvinz)
   * Only redirect 300 responses if the header contains a Location
@@ -240,7 +240,7 @@
   * HTTParty::VERSION now available
   * Update crack requirement to version 0.1.5
 
-== 0.5.0 2009-12-07
+## 0.5.0 2009-12-07
 * bug fixes
   * inheritable attributes no longer mutable by subclasses (yyyc514)
   * namespace BasicObject within HTTParty to avoid class name collisions (eric)
@@ -258,7 +258,7 @@
   * Support HEAD and OPTION verbs (grempe)
   * Verify SSL certificates when providing a PEM file (collectiveidea/danielmorrison)
 
-== 0.4.5 2009-09-12
+## 0.4.5 2009-09-12
 * bug fixes
   * Fixed class-level headers overwritten by cookie management code. Closes #19
   * Fixed "superclass mismatch for class BlankSlate" error. Closes #20
@@ -269,55 +269,55 @@
     HTTParty.get "http://github.com", timeout: 1
   * Building gem with Jeweler
 
-== 0.4.4 2009-07-19
+## 0.4.4 2009-07-19
 * 2 minor update
   * :query no longer sets form data. Use body and set content type to application/x-www-form-urlencoded if you need it. :query was wrong for that.
   * Fixed a bug in the cookies class method that caused cookies to be forgotten after the first request.
   * Also, some general cleanup of tests and such.
 
-== 0.4.3 2009-04-23
+## 0.4.3 2009-04-23
 * 1 minor update
   * added message to the response object
 
-== 0.4.2 2009-03-30
+## 0.4.2 2009-03-30
 * 2 minor changes
   * response code now returns an integer instead of a string (jqr)
   * rubyforge project setup for crack so i'm now depending on that instead of jnunemaker-crack
 
-== 0.4.1 2009-03-29
+## 0.4.1 2009-03-29
 * 1 minor fix
   * gem 'jnunemaker-crack' instead of gem 'crack'
 
-== 0.4.0 2009-03-29
+## 0.4.0 2009-03-29
 * 1 minor change
   * Switched xml and json parsing to crack (same code as before just moved to gem for easier reuse in other projects)
 
-== 0.3.1 2009-02-10
+## 0.3.1 2009-02-10
 * 1 minor fix, 1 minor enhancement
   * Fixed unescaping umlauts (siebertm)
   * Added yaml response parsing (Miha Filej)
 
-== 0.3.0 2009-01-31
+## 0.3.0 2009-01-31
 * 1 major enhancement, 1 bug fix
   * JSON gem no longer a requirement. It was conflicting with rails json stuff so I just stole ActiveSupport's json decoding and bundled it with HTTParty.
   * Fixed bug where query strings were being duplicated on redirects
   * Added a bunch of specs and moved some code around.
 
-== 0.2.10 2009-01-29
+## 0.2.10 2009-01-29
 * 1 minor enhancement
   * Made encoding on query parameters treat everything except URI::PATTERN::UNRESERVED as UNSAFE to force encoding of '+' character (Julian Russell)
 
-== 0.2.9 2009-01-29
+## 0.2.9 2009-01-29
 * 3 minor enhancements
   * Added a 'headers' accessor to the response with a hash of any HTTP headers. (Don Peterson)
   * Add support for a ":cookies" option to be used at the class level, or as an option on any individual call.  It should be passed a hash, which will be converted to the proper format and added to the request headers when the call is made. (Don Peterson)
   * Refactored several specs and added a full suite of cucumber features (Don Peterson)
 
-== 0.2.8 2009-01-28
+## 0.2.8 2009-01-28
 * 1 major fix
   * fixed major bug with response where it wouldn't iterate or really work at all with parsed responses
 
-== 0.2.7 2009-01-28
+## 0.2.7 2009-01-28
 * 2 minor fixes, 2 minor enhancements, 2 major enhancements
   * fixed undefined method add_node for nil class error that occasionally happened (juliocesar)
   * Handle nil or unexpected values better when typecasting. (Brian Landau)
@@ -326,77 +326,77 @@
   * Added first class response object that includes original body and status code (Alex Vollmer)
   * Now parsing all response types as some non-200 responses provide important information, this means no more exception raising (Alex Vollmer)
 
-== 0.2.6 2009-01-05
+## 0.2.6 2009-01-05
 * 1 minor bug fix
   * added explicit require of time as Time#parse failed outside of rails (willcodeforfoo)
 
-== 0.2.5 2009-01-05
+## 0.2.5 2009-01-05
 * 1 major enhancement
   * Add command line interface to HTTParty (Alex Vollmer)
 
-== 0.2.4 2008-12-23
+## 0.2.4 2008-12-23
 * 1 bug fix
   * Fixed that mimetype detection was failing if no mimetype was returned from service (skippy)
-== 0.2.3 2008-12-23
+## 0.2.3 2008-12-23
 * 1 bug fix
   * Fixed typecasting class variable naming issue
 
-== 0.2.2 2008-12-08
+## 0.2.2 2008-12-08
 * 1 bug fix
   * Added the missing core extension hash method to_xml_attributes
 
-== 0.2.1 2008-12-08
+## 0.2.1 2008-12-08
 * 1 bug fix
   * Fixed that HTTParty was borking ActiveSupport and as such Rails (thanks to Rob Sanheim)
 
-== 0.2.0 2008-12-07
+## 0.2.0 2008-12-07
 * 1 major enhancement
   * Removed ActiveSupport as a dependency. Now requires json gem for json deserialization and uses an included class to do the xml parsing.
 
-== 0.1.8 2008-11-30
+## 0.1.8 2008-11-30
 * 3 major enhancements
   * Moved base_uri normalization into request class and out of httparty module, fixing
     the problem where base_uri was not always being normalized.
   * Stupid simple support for HTTParty.get/post/put/delete. (jqr)
   * Switched gem management to Echoe from newgem.
 
-== 0.1.7 2008-11-30
+## 0.1.7 2008-11-30
 * 1 major enhancement
   * fixed multiple class definitions overriding each others options
 
-== 0.1.6 2008-11-26
+## 0.1.6 2008-11-26
 * 1 major enhancement
   * now passing :query to set_form_data if post request to avoid content length errors
 
-== 0.1.5 2008-11-14
+## 0.1.5 2008-11-14
 * 2 major enhancements
   * Refactored send request method out into its own object.
   * Added :html format if you just want to do that.
 
-== 0.1.4 2008-11-08
+## 0.1.4 2008-11-08
 * 3 major enhancements:
   * Removed some cruft
   * Added ability to follow redirects automatically and turn that off (Alex Vollmer)
 
-== 0.1.3 2008-08-22
+## 0.1.3 2008-08-22
 
 * 3 major enhancements:
   * Added http_proxy key for setting proxy server and port (francxk@gmail.com)
   * Now raises exception when http error occurs (francxk@gmail.com)
   * Changed auto format detection from file extension to response content type (Jay Pignata)
 
-== 0.1.2 2008-08-09
+## 0.1.2 2008-08-09
 
 * 1 major enhancement:
   * default_params were not being appended to query string if option[:query] was blank
 
-== 0.1.1 2008-07-30
+## 0.1.1 2008-07-30
 
 * 2 major enhancement:
   * Added :basic_auth key for options when making a request
   * :query and :body both now work with query string or hash
 
-== 0.1.0 2008-07-27
+## 0.1.0 2008-07-27
 
 * 1 major enhancement:
   * Initial release
