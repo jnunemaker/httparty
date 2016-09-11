@@ -127,7 +127,7 @@ module HTTParty
     end
 
     # Do not send rails style query strings.
-    # Specically, don't use bracket notation when sending an array
+    # Specifically, don't use bracket notation when sending an array
     #
     # For a query:
     #   get '/', query: {selected_ids: [1,2,3]}
