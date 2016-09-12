@@ -230,6 +230,14 @@ RSpec.describe HTTParty::Request do
 
         expect(@request.uri).to eq(URI.parse("http://example.com/bar?foo=bar"))
       end
+
+      it "returns correct path when the server sets the location header to a network-path reference" do
+        @request.last_uri = URI.parse("https://example.com")
+        @request.path = URI.parse("//www.example.com")
+        @request.redirect = true
+
+        expect(@request.uri).to eq(URI.parse("https://www.example.com"))
+      end
     end
 
     context "query strings" do
