@@ -62,7 +62,7 @@ httparty "https://api.stackexchange.com/2.2/questions?site=stackoverflow"
 
 ## Help and Docs
 
-* [Docs](docs/)
+* [Docs](https://github.com/jnunemaker/httparty/tree/master/docs)
 * https://groups.google.com/forum/#!forum/httparty-gem
 * http://rdoc.info/projects/jnunemaker/httparty
 * http://stackoverflow.com/questions/tagged/httparty
