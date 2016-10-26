@@ -98,3 +98,13 @@ class Client
 	end
 end
 ```
+
+### Using with `gitlab` gem
+
+Add this to `~/.bashrc`, `_path` preffix avaiable for `p12` and `pem` only. If you need home path, use `ENV['HOME']` instead of `~`.
+
+```
+
+export GITLAB_API_HTTPARTY_OPTIONS="{verify: true, p12_path: '/path/to/key', p12_password_path: '/path/to/password' }"
+
+```

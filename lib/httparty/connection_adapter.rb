@@ -161,6 +161,8 @@ module HTTParty
         else
           http.verify_mode = OpenSSL::SSL::VERIFY_NONE
         end
+        
+        normalize_key_files options
 
         # Client certificate authentication
         # Note: options[:pem] must contain the content of a PEM file having the private key appended
@@ -193,6 +195,12 @@ module HTTParty
         if options[:ssl_version] && http.respond_to?(:ssl_version=)
           http.ssl_version = options[:ssl_version]
         end
+      end
+    end
+
+    def normalize_key_files options
+      %i[pem p12 pem_password p12_password].each do |o|
+        options[o] ||= File.read(options["#{o}_path".to_sym]).chomp if options["#{o}_path".to_sym]
       end
     end
   end
