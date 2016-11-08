@@ -28,7 +28,7 @@ class StackExchange
   base_uri 'api.stackexchange.com'
 
   def initialize(service, page)
-    @options = { query: {site: service, page: page} }
+    @options = { query: { site: service, page: page } }
   end
 
   def questions

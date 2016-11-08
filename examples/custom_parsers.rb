@@ -21,7 +21,7 @@ class OnlyParseAtom
 
   # Only support Atom
   class Parser::OnlyAtom < HTTParty::Parser
-    SupportedFormats = {"application/atom+xml" => :atom}
+    SupportedFormats = { "application/atom+xml" => :atom }
 
     protected
 
