@@ -47,14 +47,6 @@ puts stack_exchange.users
 
 See the [examples directory](http://github.com/jnunemaker/httparty/tree/master/examples) for even more goodies.
 
-## JSON Parsing
-If the response Content Type is `application/json`, HTTParty will parse the response and return Ruby objects such as a hash or array. The default behavior for parsing JSON will return keys as strings. This can be supressed with the `format` option. To get hash keys as symbols:
-
-```
-response = HTTParty.get('http://example.com', format: :plain)
-JSON.parse response, symbolize_names: true
-```
-
 ## Command Line Interface
 
 httparty also includes the executable `httparty` which can be
