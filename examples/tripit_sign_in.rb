@@ -24,7 +24,7 @@ class TripIt
   end
 
   def account_settings
-    self.class.get('/account/edit', headers: {'Cookie' => @cookie.to_cookie_string})
+    self.class.get('/account/edit', headers: { 'Cookie' => @cookie.to_cookie_string })
   end
 
   def logged_in?
