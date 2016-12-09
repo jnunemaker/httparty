@@ -3,12 +3,22 @@
 * Require Ruby >= 2.0.0
 
 ## 0.14.0
+
+Breaking Changes
+
+* None
+
+Added
+
 * [added status predicate methods to Response#respond_to?](https://github.com/jnunemaker/httparty/pull/482)
-* [allow empty array to be used as param](https://github.com/jnunemaker/httparty/pull/477)
-* [add support for MKCOL method](https://github.com/jnunemaker/httparty/pull/465)
-* [remove json gem from gemspec](https://github.com/jnunemaker/httparty/pull/464)
-* [stop mutating cookie hash](https://github.com/jnunemaker/httparty/pull/460)
+* [support for MKCOL method](https://github.com/jnunemaker/httparty/pull/465)
+* one fewer dependency: [remove json gem from gemspec](https://github.com/jnunemaker/httparty/pull/464)
 * [optional raising exception on certain status codes](https://github.com/jnunemaker/httparty/pull/455)
+
+Fixed
+
+* [allow empty array to be used as param](https://github.com/jnunemaker/httparty/pull/477)
+* [stop mutating cookie hash](https://github.com/jnunemaker/httparty/pull/460)
 
 ## 0.13.7 aka "party not as hard"
 * remove post install emoji as it caused installation issues for some people
