@@ -33,6 +33,9 @@ module HTTParty
     attr_reader :path
 
     def initialize(http_method, path, o = {})
+      @changed_hosts = false
+      @credentials_sent = false
+
       self.http_method = http_method
       self.options = {
         limit: o.delete(:no_follow) ? 1 : 5,
@@ -44,8 +47,7 @@ module HTTParty
         connection_adapter: ConnectionAdapter
       }.merge(o)
       self.path = path
-      set_basic_auth_from_uri
-      @changed_hosts = false
+      set_basic_auth_from_uri      
     end
 
     def path=(uri)
@@ -136,9 +138,19 @@ module HTTParty
           chunked_body = chunks.join
         end
       end
-
+      
+      
       handle_host_redirection if response_redirects?
-      handle_response(chunked_body, &block)
+      result = handle_unauthorized
+      result ||= handle_response(chunked_body, &block)
+      result      
+    end
+
+    def handle_unauthorized(&block)
+      return unless digest_auth? && response_unauthorized? && response_has_digest_auth_challenge?
+      return if @credentials_sent
+      @credentials_sent = true      
+      perform(&block)
     end
 
     def raw_body
@@ -185,6 +197,7 @@ module HTTParty
       @raw_request.body_stream = options[:body_stream] if options[:body_stream]
       if options[:headers].respond_to?(:to_hash)
         headers_hash = options[:headers].to_hash
+        
         @raw_request.initialize_http_header(headers_hash)
         # If the caller specified a header of 'Accept-Encoding', assume they want to 
         # deal with encoding of content. Disable the internal logic in Net:HTTP
@@ -194,18 +207,27 @@ module HTTParty
           @raw_request['accept-encoding'] = @raw_request['accept-encoding']
         end
       end
-      @raw_request.basic_auth(username, password) if options[:basic_auth] && send_authorization_header?
-      setup_digest_auth if options[:digest_auth]
+      if options[:basic_auth] && send_authorization_header?        
+        @raw_request.basic_auth(username, password)
+        @credentials_sent = true
+      end 
+      setup_digest_auth if digest_auth? && response_unauthorized? && response_has_digest_auth_challenge?
+    end
+
+    def digest_auth?
+      !!options[:digest_auth]
+    end
+
+    def response_unauthorized?
+      !!last_response && last_response.code == '401'
+    end
+
+    def response_has_digest_auth_challenge?
+      !last_response['www-authenticate'].nil? && last_response['www-authenticate'].length > 0
     end
 
     def setup_digest_auth
-      auth_request = http_method.new(uri.request_uri)
-      auth_request.initialize_http_header(options[:headers].to_hash) if options[:headers].respond_to?(:to_hash)
-      res = http.request(auth_request)
-
-      if !res['www-authenticate'].nil? && res['www-authenticate'].length > 0
-        @raw_request.digest_auth(username, password, res)
-      end
+      @raw_request.digest_auth(username, password, last_response)      
     end
 
     def query_string(uri)
@@ -353,6 +375,7 @@ module HTTParty
       cookies_hash = HTTParty::CookieHash.new
       cookies_hash.add_cookies(options[:headers].to_hash['Cookie']) if options[:headers] && options[:headers].to_hash['Cookie']
       response.get_fields('Set-Cookie').each { |cookie| cookies_hash.add_cookies(cookie) }
+      
       options[:headers] ||= {}
       options[:headers]['Cookie'] = cookies_hash.to_cookie_string
     end
@@ -384,6 +407,7 @@ module HTTParty
       if path.userinfo
         username, password = path.userinfo.split(':')
         options[:basic_auth] = {username: username, password: password}
+        @credentials_sent = true
       end
     end
   end

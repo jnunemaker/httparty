@@ -129,55 +129,84 @@ RSpec.describe HTTParty::Request do
       expect(@request.instance_variable_get(:@raw_request)['authorization']).not_to be_nil
     end
 
-    it "should use digest auth when configured" do
-      FakeWeb.register_uri(:get, "http://api.foo.com/v1",
-                           www_authenticate: 'Digest realm="Log Viewer", qop="auth", nonce="2CA0EC6B0E126C4800E56BA0C0003D3C", opaque="5ccc069c403ebaf9f0171e9517f40e41", stale=false')
+    context 'digest_auth' do 
+      before do 
+        response_sequence = [
+          {status: ['401', 'Unauthorized' ], 
+            www_authenticate: 'Digest realm="Log Viewer", qop="auth", nonce="2CA0EC6B0E126C4800E56BA0C0003D3C", opaque="5ccc069c403ebaf9f0171e9517f40e41", stale=false',
+            set_cookie: 'custom-cookie=1234567', 
+          },
+          {status: ['200', 'OK']}
+        ]      
+        FakeWeb.register_uri(:get, "http://api.foo.com/v1",
+                            response_sequence)
+      end 
 
-      @request.options[:digest_auth] = {username: 'foobar', password: 'secret'}
-      @request.send(:setup_raw_request)
+      it 'should not send credentials more than once' do
+        response_sequence = [
+          {status: ['401', 'Unauthorized' ], 
+            www_authenticate: 'Digest realm="Log Viewer", qop="auth", nonce="2CA0EC6B0E126C4800E56BA0C0003D3C", opaque="5ccc069c403ebaf9f0171e9517f40e41", stale=false',
+            set_cookie: 'custom-cookie=1234567', 
+          },
+          {status: ['401', 'Unauthorized' ], 
+            www_authenticate: 'Digest realm="Log Viewer", qop="auth", nonce="2CA0EC6B0E126C4800E56BA0C0003D3C", opaque="5ccc069c403ebaf9f0171e9517f40e41", stale=false',
+            set_cookie: 'custom-cookie=1234567', 
+          },      
+          {status: ['404', 'Not found']}
+        ]      
+        FakeWeb.register_uri(:get, "http://api.foo.com/v1",
+                            response_sequence)
 
-      raw_request = @request.instance_variable_get(:@raw_request)
-      expect(raw_request['Authorization']).not_to be_nil
-    end
+        @request.options[:digest_auth] = {username: 'foobar', password: 'secret'}        
+        response = @request.perform { |v| }
+        expect(response.code).to eq(401)
 
-    it "should use the right http method for digest authentication" do
-      @post_request = HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', format: :xml)
-      FakeWeb.register_uri(:post, "http://api.foo.com/v1", {})
+        raw_request = @request.instance_variable_get(:@raw_request)
+        expect(raw_request['Authorization']).not_to be_nil                    
+      end 
 
-      http = @post_request.send(:http)
-      expect(@post_request).to receive(:http).and_return(http)
-      expect(http).not_to receive(:head).with({'www-authenticate' => nil})
-      @post_request.options[:digest_auth] = {username: 'foobar', password: 'secret'}
-      @post_request.send(:setup_raw_request)
-    end
+      it 'should not be used when configured and the response is 200' do
+        FakeWeb.register_uri(:get, "http://api.foo.com/v1",
+          status: 200)
+        @request.options[:digest_auth] = {username: 'foobar', password: 'secret'}        
+        response = @request.perform { |v| }
+        expect(response.code).to eq(200)
 
-    it 'should maintain cookies returned from setup_digest_auth' do
-      FakeWeb.register_uri(
-        :get, "http://api.foo.com/v1",
-        set_cookie: 'custom-cookie=1234567',
-        www_authenticate: 'Digest realm="Log Viewer", qop="auth", nonce="2CA0EC6B0E126C4800E56BA0C0003D3C", opaque="5ccc069c403ebaf9f0171e9517f40e41", stale=false'
-      )
 
-      @request.options[:digest_auth] = {username: 'foobar', password: 'secret'}
-      @request.send(:setup_raw_request)
+        raw_request = @request.instance_variable_get(:@raw_request)
+        expect(raw_request['Authorization']).to be_nil
+      end
 
-      raw_request = @request.instance_variable_get(:@raw_request)
-      expect(raw_request.get_fields('cookie')).to eql ["custom-cookie=1234567"]
-    end
+      it "should be used when configured and the response is 401" do
+        @request.options[:digest_auth] = {username: 'foobar', password: 'secret'}        
+        response = @request.perform { |v| }
+        expect(response.code).to eq(200)
 
-    it 'should merge cookies from setup_digest_auth and request' do
-      FakeWeb.register_uri(
-        :get, "http://api.foo.com/v1",
-        set_cookie: 'custom-cookie=1234567',
-        www_authenticate: 'Digest realm="Log Viewer", qop="auth", nonce="2CA0EC6B0E126C4800E56BA0C0003D3C", opaque="5ccc069c403ebaf9f0171e9517f40e41", stale=false'
-      )
+        raw_request = @request.instance_variable_get(:@raw_request)
+        expect(raw_request['Authorization']).not_to be_nil
+      end
 
-      @request.options[:digest_auth] = {username: 'foobar', password: 'secret'}
-      @request.options[:headers] = {'cookie' => 'request-cookie=test'}
-      @request.send(:setup_raw_request)
+      it 'should maintain cookies returned from a 401 response' do
+        require 'pry'
 
-      raw_request = @request.instance_variable_get(:@raw_request)
-      expect(raw_request.get_fields('cookie')).to eql ['request-cookie=test', 'custom-cookie=1234567']
+        @request.options[:digest_auth] = {username: 'foobar', password: 'secret'}        
+        response = @request.perform {|v|}
+        expect(response.code).to eq(200)
+        
+        raw_request = @request.instance_variable_get(:@raw_request)
+        expect(raw_request.get_fields('cookie')).to eql ["custom-cookie=1234567"]
+      end
+
+      it 'should merge cookies from request and a 401 response' do
+        
+        @request.options[:digest_auth] = {username: 'foobar', password: 'secret'}
+        @request.options[:headers] = {'cookie' => 'request-cookie=test'}
+        response = @request.perform {|v|}
+        expect(response.code).to eq(200)
+
+        raw_request = @request.instance_variable_get(:@raw_request)
+        expect(raw_request.get_fields('cookie')).to eql ['request-cookie=test', 'custom-cookie=1234567']
+      end
     end
 
     it 'should use body_stream when configured' do
