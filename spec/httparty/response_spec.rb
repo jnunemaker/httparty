@@ -263,9 +263,35 @@ RSpec.describe HTTParty::Response do
   end
 
   describe "headers" do
-    it "can initialize without headers" do
-      headers = HTTParty::Response::Headers.new
-      expect(headers).to eq({})
+    let (:empty_headers) { HTTParty::Response::Headers.new }
+    let (:some_headers_hash) do 
+      {'Cookie' => 'bob',
+      'Content-Encoding' => 'meow'}
+    end 
+    let (:some_headers) do 
+       HTTParty::Response::Headers.new.tap do |h|
+         some_headers_hash.each_pair do |k,v|
+           h[k] = v
+         end
+      end
+    end
+    it "can initialize without headers" do 
+      expect(empty_headers).to eq({})
+    end
+
+    it 'always equals itself' do
+      expect(empty_headers).to eq(empty_headers) 
+      expect(some_headers).to eq(some_headers)
+    end
+
+    it 'does not equal itself when not equivalent' do 
+      expect(empty_headers).to_not eq(some_headers)
+    end
+
+    it 'does equal a hash' do
+      expect(empty_headers).to eq({})
+
+      expect(some_headers).to eq(some_headers_hash)
     end
   end
 
