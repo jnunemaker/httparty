@@ -72,6 +72,18 @@ RSpec.describe HTTParty::Response do
     end
   end
 
+  it 'does raise an error about itself when using #method' do
+    expect {
+      HTTParty::Response.new(@request_object, @response_object, @parsed_response).method(:qux)
+    }.to raise_error(NameError, /HTTParty\:\:Response/)
+  end
+
+  it 'does raise an error about itself when invoking a method that does not exist' do 
+    expect {
+      HTTParty::Response.new(@request_object, @response_object, @parsed_response).qux
+    }.to raise_error(NoMethodError, /HTTParty\:\:Response/)
+  end 
+
   it "returns response headers" do
     response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
     expect(response.headers).to eq({'last-modified' => [@last_modified], 'content-length' => [@content_length]})
@@ -125,6 +137,11 @@ RSpec.describe HTTParty::Response do
     }.to_not raise_error
   end
 
+  it 'should respond to array methods if it is array' do 
+    response = HTTParty::Response.new(@request_object, @response_object, lambda { [{'foo' => 'bar'}, {'foo' => 'baz'}] })
+    expect(response).to respond_to(:bsearch, :compact, :cycle, :delete, :each, :flatten, :flatten!, :compact, :join)    
+  end  
+
   it "allows headers to be accessed by mixed-case names in hash notation" do
     response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
     expect(response.headers['Content-LENGTH']).to eq(@content_length)
@@ -151,8 +168,7 @@ RSpec.describe HTTParty::Response do
 
     it { is_expected.to respond_to(:is_a?).with(1).arguments }
     it { expect(subject.is_a?(HTTParty::Response)).to be_truthy }
-    it { expect(subject.is_a?(BasicObject)).to be_truthy }
-    it { expect(subject.is_a?(Object)).to be_falsey }
+    it { expect(subject.is_a?(Object)).to be_truthy }
   end
 
   describe "#kind_of?" do
@@ -160,8 +176,7 @@ RSpec.describe HTTParty::Response do
 
     it { is_expected.to respond_to(:kind_of?).with(1).arguments }
     it { expect(subject.kind_of?(HTTParty::Response)).to be_truthy }
-    it { expect(subject.kind_of?(BasicObject)).to be_truthy }
-    it { expect(subject.kind_of?(Object)).to be_falsey }
+    it { expect(subject.kind_of?(Object)).to be_truthy }
   end
 
   describe "semantic methods for response codes" do

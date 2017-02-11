@@ -1,5 +1,5 @@
 module HTTParty
-  class Response < BasicObject
+  class Response < Object
     def self.underscore(string)
       string.gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2').gsub(/([a-z])([A-Z])/, '\1_\2').downcase
     end
@@ -25,16 +25,6 @@ module HTTParty
       @parsed_response ||= @parsed_block.call
     end
 
-    def class
-      Response
-    end
-
-    def is_a?(klass)
-      self.class == klass || self.class < klass
-    end
-
-    alias_method :kind_of?, :is_a?
-
     def code
       response.code.to_i
     end
@@ -49,15 +39,11 @@ module HTTParty
       %(#<#{self.class}:0x#{inspect_id} parsed_response=#{parsed_response.inspect}, @response=#{response.inspect}, @headers=#{headers.inspect}>)
     end
 
-    RESPOND_TO_METHODS = [:request, :response, :parsed_response, :body, :headers]
-
     CODES_TO_OBJ = ::Net::HTTPResponse::CODE_CLASS_TO_OBJ.merge ::Net::HTTPResponse::CODE_TO_OBJ
 
     CODES_TO_OBJ.each do |response_code, klass|
       name = klass.name.sub("Net::HTTP", '')
       name = "#{underscore(name)}?".to_sym
-
-      RESPOND_TO_METHODS << name
 
       define_method(name) do
         klass === response
@@ -69,11 +55,15 @@ module HTTParty
       alias_method :multiple_choice?, :multiple_choices?
     end
 
-    def respond_to?(name, include_all = false)
-      return true if RESPOND_TO_METHODS.include?(name)
-      parsed_response.respond_to?(name, include_all) || response.respond_to?(name, include_all)
+    def nil?
+      response.nil? || response.body.nil? || response.body.empty?
     end
 
+    def respond_to_missing?(name, *args)
+      return true if super
+      parsed_response.respond_to?(name) || response.respond_to?(name)
+    end
+    
     protected
 
     def method_missing(name, *args, &block)
