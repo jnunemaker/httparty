@@ -59,6 +59,24 @@ module HTTParty
       response.nil? || response.body.nil? || response.body.empty?
     end
 
+    def to_s      
+      if !response.nil? && !response.body.nil? && response.body.respond_to?(:to_s)
+        response.body.to_s
+      else 
+        inspect
+      end
+    end
+
+    def display(port=$>)
+      if !parsed_response.nil? && parsed_response.respond_to?(:display)
+        parsed_response.display(port)
+      elsif !response.nil? && !response.body.nil? && response.body.respond_to?(:display)
+        response.body.display(port)
+      else 
+        port.write(inspect)
+      end
+    end
+
     def respond_to_missing?(name, *args)
       return true if super
       parsed_response.respond_to?(name) || response.respond_to?(name)
