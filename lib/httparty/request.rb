@@ -45,6 +45,7 @@ module HTTParty
       }.merge(o)
       self.path = path
       set_basic_auth_from_uri
+      @changed_hosts = false
     end
 
     def path=(uri)
@@ -337,7 +338,7 @@ module HTTParty
     end
 
     def send_authorization_header?
-      !defined?(@changed_hosts)
+      !@changed_hosts      
     end
 
     def response_redirects?
