@@ -1059,54 +1059,6 @@ RSpec.describe HTTParty::Request do
     end
   end
 
-  describe "#handle_deflation" do
-    context "context-encoding" do
-      before do
-        @request.options[:format] = :html
-        @last_response = double
-        allow(@last_response).to receive(:body).and_return('')
-      end
-
-      it "should inflate the gzipped body with content-encoding: gzip" do
-        allow(@last_response).to receive(:[]).with("content-encoding").and_return("gzip")
-        allow(@request).to receive(:last_response).and_return(@last_response)
-        expect(Zlib::GzipReader).to receive(:new).and_return(StringIO.new(''))
-        expect(@request.last_response).to receive(:delete).with('content-encoding')
-        @request.send(:handle_deflation)
-      end
-
-      it "should inflate the gzipped body with content-encoding: x-gzip" do
-        allow(@last_response).to receive(:[]).with("content-encoding").and_return("x-gzip")
-        allow(@request).to receive(:last_response).and_return(@last_response)
-        expect(Zlib::GzipReader).to receive(:new).and_return(StringIO.new(''))
-        expect(@request.last_response).to receive(:delete).with('content-encoding')
-        @request.send(:handle_deflation)
-      end
-
-      it "should inflate the deflated body" do
-        allow(@last_response).to receive(:[]).with("content-encoding").and_return("deflate")
-        allow(@request).to receive(:last_response).and_return(@last_response)
-        expect(Zlib::Inflate).to receive(:inflate).and_return('')
-        expect(@request.last_response).to receive(:delete).with('content-encoding')
-        @request.send(:handle_deflation)
-      end
-
-      it "should not inflate a redirected response with content-encoding: gzip" do
-        allow(@last_response).to receive(:[]).with("content-encoding").and_return("gzip")
-        allow(@request).to receive(:last_response).and_return(@last_response)
-        allow(@request).to receive(:response_redirects?).and_return(true)
-        @request.send(:handle_deflation)
-      end
-
-      it "should not inflate a redirected response with content-encoding: deflate" do
-        allow(@last_response).to receive(:[]).with("content-encoding").and_return("deflate")
-        allow(@request).to receive(:last_response).and_return(@last_response)
-        allow(@request).to receive(:response_redirects?).and_return(true)
-        @request.send(:handle_deflation)
-      end
-    end
-  end
-
   describe "#send_authorization_header?" do
     context "basic_auth" do
       before do
@@ -1200,6 +1152,20 @@ RSpec.describe HTTParty::Request do
       expect {
         HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', limit: -1).perform
       }.to raise_error(HTTParty::RedirectionTooDeep, 'HTTP redirects too deep')
+    end
+  end
+
+  context 'with Accept-Encoding header' do
+    it 'should disable content decoding if present' do 
+      request = HTTParty::Request.new(Net::HTTP::Get, 'http://api.foo.com/v1', headers:{'Accept-Encoding' => 'custom'})
+      request.send(:setup_raw_request)
+      expect(request.instance_variable_get(:@raw_request).decode_content).to eq(false)
+    end
+
+    it 'should disable content decoding if present' do 
+      request = HTTParty::Request.new(Net::HTTP::Get, 'http://api.foo.com/v1')
+      request.send(:setup_raw_request)
+      expect(request.instance_variable_get(:@raw_request).decode_content).to eq(true)
     end
   end
 end

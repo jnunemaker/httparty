@@ -137,7 +137,6 @@ module HTTParty
         end
       end
 
-      handle_deflation unless http_method == Net::HTTP::Head
       handle_host_redirection if response_redirects?
       handle_response(chunked_body, &block)
     end
@@ -184,7 +183,17 @@ module HTTParty
       @raw_request = http_method.new(request_uri(uri))
       @raw_request.body = body if body
       @raw_request.body_stream = options[:body_stream] if options[:body_stream]
-      @raw_request.initialize_http_header(options[:headers].to_hash) if options[:headers].respond_to?(:to_hash)
+      if options[:headers].respond_to?(:to_hash)
+        headers_hash = options[:headers].to_hash
+        @raw_request.initialize_http_header(headers_hash)
+        # If the caller specified a header of 'Accept-Encoding', assume they want to 
+        # deal with encoding of content. Disable the internal logic in Net:HTTP
+        # that handles encoding, if the platform supports it.
+        if @raw_request.respond_to?(:decode_content) && (headers_hash.key?('Accept-Encoding') || headers_hash.key?('accept-encoding'))
+          # Using the '[]=' sets decode_content to false
+          @raw_request['accept-encoding'] = @raw_request['accept-encoding']
+        end
+      end
       @raw_request.basic_auth(username, password) if options[:basic_auth] && send_authorization_header?
       setup_digest_auth if options[:digest_auth]
     end
@@ -305,22 +314,6 @@ module HTTParty
         body ||= last_response.body
         body = encode_body(body)
         Response.new(self, last_response, lambda { parse_response(body) }, body: body)
-      end
-    end
-
-    # Inspired by Ruby 1.9
-    def handle_deflation
-      return if response_redirects?
-      return if last_response.body.nil?
-
-      case last_response["content-encoding"]
-      when "gzip", "x-gzip"
-        body_io = StringIO.new(last_response.body)
-        last_response.body.replace Zlib::GzipReader.new(body_io).read
-        last_response.delete('content-encoding')
-      when "deflate"
-        last_response.body.replace Zlib::Inflate.inflate(last_response.body)
-        last_response.delete('content-encoding')
       end
     end
 
