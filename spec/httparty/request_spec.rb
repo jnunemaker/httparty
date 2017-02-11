@@ -1162,6 +1162,12 @@ RSpec.describe HTTParty::Request do
       expect(request.instance_variable_get(:@raw_request).decode_content).to eq(false)
     end
 
+    it 'should disable content decoding if present and lowercase' do 
+      request = HTTParty::Request.new(Net::HTTP::Get, 'http://api.foo.com/v1', headers:{'accept-encoding' => 'custom'})
+      request.send(:setup_raw_request)
+      expect(request.instance_variable_get(:@raw_request).decode_content).to eq(false)
+    end
+
     it 'should disable content decoding if present' do 
       request = HTTParty::Request.new(Net::HTTP::Get, 'http://api.foo.com/v1')
       request.send(:setup_raw_request)
