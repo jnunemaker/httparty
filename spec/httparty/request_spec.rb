@@ -137,7 +137,7 @@ RSpec.describe HTTParty::Request do
       @request.send(:setup_raw_request)
 
       raw_request = @request.instance_variable_get(:@raw_request)
-      expect(raw_request.instance_variable_get(:@header)['Authorization']).not_to be_nil
+      expect(raw_request['Authorization']).not_to be_nil
     end
 
     it "should use the right http method for digest authentication" do
@@ -162,7 +162,7 @@ RSpec.describe HTTParty::Request do
       @request.send(:setup_raw_request)
 
       raw_request = @request.instance_variable_get(:@raw_request)
-      expect(raw_request.instance_variable_get(:@header)['cookie']).to eql ["custom-cookie=1234567"]
+      expect(raw_request.get_fields('cookie')).to eql ["custom-cookie=1234567"]
     end
 
     it 'should merge cookies from setup_digest_auth and request' do
@@ -177,7 +177,7 @@ RSpec.describe HTTParty::Request do
       @request.send(:setup_raw_request)
 
       raw_request = @request.instance_variable_get(:@raw_request)
-      expect(raw_request.instance_variable_get(:@header)['cookie']).to eql ['request-cookie=test', 'custom-cookie=1234567']
+      expect(raw_request.get_fields('cookie')).to eql ['request-cookie=test', 'custom-cookie=1234567']
     end
 
     it 'should use body_stream when configured' do
