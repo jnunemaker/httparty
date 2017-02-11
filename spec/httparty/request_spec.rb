@@ -187,8 +187,6 @@ RSpec.describe HTTParty::Request do
       end
 
       it 'should maintain cookies returned from a 401 response' do
-        require 'pry'
-
         @request.options[:digest_auth] = {username: 'foobar', password: 'secret'}        
         response = @request.perform {|v|}
         expect(response.code).to eq(200)
