@@ -390,10 +390,15 @@ RSpec.describe HTTParty::Request do
 
     if "".respond_to?(:encoding)
 
+      let(:response_charset) {
+        @request.send(:get_charset)
+      }
+
       it "should process charset in content type properly" do
         response = stub_response "Content"
         response.initialize_http_header("Content-Type" => "text/plain;charset = utf-8")
         resp = @request.perform
+        expect(response_charset).to_not be_empty
         expect(resp.body.encoding).to eq(Encoding.find("UTF-8"))
       end
 
@@ -401,6 +406,7 @@ RSpec.describe HTTParty::Request do
         response = stub_response "Content"
         response.initialize_http_header("Content-Type" => "text/plain;CHARSET = utf-8")
         resp = @request.perform
+        expect(response_charset).to_not be_empty
         expect(resp.body.encoding).to eq(Encoding.find("UTF-8"))
       end
 
@@ -408,6 +414,7 @@ RSpec.describe HTTParty::Request do
         response = stub_response "Content"
         response.initialize_http_header("Content-Type" => "text/plain;charset = \"utf-8\"")
         resp = @request.perform
+        expect(response_charset).to_not be_empty
         expect(resp.body.encoding).to eq(Encoding.find("UTF-8"))
       end
 
@@ -417,6 +424,7 @@ RSpec.describe HTTParty::Request do
         response = stub_response "\xFF\xFEC\x00o\x00n\x00t\x00e\x00n\x00t\x00"
         response.initialize_http_header("Content-Type" => "text/plain;charset = utf-16")
         resp = @request.perform
+        expect(response_charset).to_not be_empty
         expect(resp.body.encoding).to eq(Encoding.find("UTF-16LE"))
       end
 
@@ -426,6 +434,7 @@ RSpec.describe HTTParty::Request do
         response = stub_response "\xFE\xFF\x00C\x00o\x00n\x00t\x00e\x00n\x00t"
         response.initialize_http_header("Content-Type" => "text/plain;charset = utf-16")
         resp = @request.perform
+        expect(response_charset).to_not be_empty
         expect(resp.body.encoding).to eq(Encoding.find("UTF-16BE"))
       end
 
@@ -435,6 +444,7 @@ RSpec.describe HTTParty::Request do
         response = stub_response "C\x00o\x00n\x00t\x00e\x00n\x00t\x00"
         response.initialize_http_header("Content-Type" => "text/plain;charset = utf-16")
         resp = @request.perform
+        expect(response_charset).to_not be_empty
         expect(resp.body.encoding).to eq(Encoding.find("UTF-16LE"))
       end
 
@@ -442,6 +452,9 @@ RSpec.describe HTTParty::Request do
         response = stub_response "Content"
         response.initialize_http_header("Content-Type" => "text/plain;charset = utf-lols")
         resp = @request.perform
+        expect(response_charset).to_not be_empty        
+        # This encoding does not exist, thus the string should not be encodd with it
+        expect(resp.body.encoding).to_not eq(response_charset)
         expect(resp.body).to eq("Content")
         expect(resp.body.encoding).to eq("Content".encoding)
       end
@@ -450,6 +463,7 @@ RSpec.describe HTTParty::Request do
         response = stub_response "Content"
         response.initialize_http_header("Content-Type" => "text/plain")
         resp = @request.perform
+        expect(response_charset).to be_nil
         expect(resp.body).to eq("Content")
         expect(resp.body.encoding).to eq("Content".encoding)
       end

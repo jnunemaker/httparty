@@ -232,10 +232,11 @@ module HTTParty
     end
 
     def encode_with_ruby_encoding(body, charset)
-      encoding = Encoding.find(charset)
-      body.force_encoding(encoding)
-    rescue
-      body
+      if Encoding.name_list.include?(charset)
+        body.force_encoding(charset)
+      else 
+        body
+      end 
     end
 
     def assume_utf16_is_big_endian
