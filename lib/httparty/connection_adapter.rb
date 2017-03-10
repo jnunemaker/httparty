@@ -38,17 +38,31 @@ module HTTParty
   # in the #options attribute. It is up to you to interpret them within your
   # connection adapter. Take a look at the implementation of
   # HTTParty::ConnectionAdapter#connection for examples of how they are used.
-  # Some things that are probably interesting are as follows:
+  # The keys used in options are 
   # * :+timeout+: timeout in seconds
   # * :+open_timeout+: http connection open_timeout in seconds, overrides timeout if set
   # * :+read_timeout+: http connection read_timeout in seconds, overrides timeout if set
   # * :+debug_output+: see HTTParty::ClassMethods.debug_output.
-  # * :+pem+: contains pem data. see HTTParty::ClassMethods.pem.
+  # * :+cert_store+: contains certificate data. see method 'attach_ssl_certificates' 
+  # * :+pem+: contains pem client certificate data. see method 'attach_ssl_certificates'
+  # * :+p12+: contains PKCS12 client client certificate data.  see method 'attach_ssl_certificates'
   # * :+verify+: verify the server’s certificate against the ca certificate.
   # * :+verify_peer+: set to false to turn off server verification but still send client certificate
   # * :+ssl_ca_file+: see HTTParty::ClassMethods.ssl_ca_file.
   # * :+ssl_ca_path+: see HTTParty::ClassMethods.ssl_ca_path.
+  # * :+ssl_version+: SSL versions to allow. see method 'attach_ssl_certificates'
+  # * :+ciphers+: The list of SSL ciphers to support
   # * :+connection_adapter_options+: contains the hash you passed to HTTParty.connection_adapter when you configured your connection adapter
+  # * :+local_host+: The local address to bind to
+  # * :+local_port+: The local port to bind to
+  # * :+http_proxyaddr+: HTTP Proxy address
+  # * :+http_proxyport+: HTTP Proxy port
+  # * :+http_proxyuser+: HTTP Proxy user
+  # * :+http_proxypass+: HTTP Proxy password
+  #
+  # === Inherited methods
+  # * :+clean_host+: Method used to sanitize host names
+
   class ConnectionAdapter
     # Private: Regex used to strip brackets from IPv6 URIs.
     StripIpv6BracketsRegex = /\A\[(.*)\]\z/

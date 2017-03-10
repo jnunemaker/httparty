@@ -129,55 +129,82 @@ RSpec.describe HTTParty::Request do
       expect(@request.instance_variable_get(:@raw_request)['authorization']).not_to be_nil
     end
 
-    it "should use digest auth when configured" do
-      FakeWeb.register_uri(:get, "http://api.foo.com/v1",
-                           www_authenticate: 'Digest realm="Log Viewer", qop="auth", nonce="2CA0EC6B0E126C4800E56BA0C0003D3C", opaque="5ccc069c403ebaf9f0171e9517f40e41", stale=false')
+    context 'digest_auth' do 
+      before do 
+        response_sequence = [
+          {status: ['401', 'Unauthorized' ], 
+            www_authenticate: 'Digest realm="Log Viewer", qop="auth", nonce="2CA0EC6B0E126C4800E56BA0C0003D3C", opaque="5ccc069c403ebaf9f0171e9517f40e41", stale=false',
+            set_cookie: 'custom-cookie=1234567', 
+          },
+          {status: ['200', 'OK']}
+        ]      
+        FakeWeb.register_uri(:get, "http://api.foo.com/v1",
+                            response_sequence)
+      end 
 
-      @request.options[:digest_auth] = {username: 'foobar', password: 'secret'}
-      @request.send(:setup_raw_request)
+      it 'should not send credentials more than once' do
+        response_sequence = [
+          {status: ['401', 'Unauthorized' ], 
+            www_authenticate: 'Digest realm="Log Viewer", qop="auth", nonce="2CA0EC6B0E126C4800E56BA0C0003D3C", opaque="5ccc069c403ebaf9f0171e9517f40e41", stale=false',
+            set_cookie: 'custom-cookie=1234567', 
+          },
+          {status: ['401', 'Unauthorized' ], 
+            www_authenticate: 'Digest realm="Log Viewer", qop="auth", nonce="2CA0EC6B0E126C4800E56BA0C0003D3C", opaque="5ccc069c403ebaf9f0171e9517f40e41", stale=false',
+            set_cookie: 'custom-cookie=1234567', 
+          },      
+          {status: ['404', 'Not found']}
+        ]      
+        FakeWeb.register_uri(:get, "http://api.foo.com/v1",
+                            response_sequence)
 
-      raw_request = @request.instance_variable_get(:@raw_request)
-      expect(raw_request.instance_variable_get(:@header)['Authorization']).not_to be_nil
-    end
+        @request.options[:digest_auth] = {username: 'foobar', password: 'secret'}        
+        response = @request.perform { |v| }
+        expect(response.code).to eq(401)
 
-    it "should use the right http method for digest authentication" do
-      @post_request = HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', format: :xml)
-      FakeWeb.register_uri(:post, "http://api.foo.com/v1", {})
+        raw_request = @request.instance_variable_get(:@raw_request)
+        expect(raw_request['Authorization']).not_to be_nil                    
+      end 
 
-      http = @post_request.send(:http)
-      expect(@post_request).to receive(:http).and_return(http)
-      expect(http).not_to receive(:head).with({'www-authenticate' => nil})
-      @post_request.options[:digest_auth] = {username: 'foobar', password: 'secret'}
-      @post_request.send(:setup_raw_request)
-    end
+      it 'should not be used when configured and the response is 200' do
+        FakeWeb.register_uri(:get, "http://api.foo.com/v1",
+          status: 200)
+        @request.options[:digest_auth] = {username: 'foobar', password: 'secret'}        
+        response = @request.perform { |v| }
+        expect(response.code).to eq(200)
 
-    it 'should maintain cookies returned from setup_digest_auth' do
-      FakeWeb.register_uri(
-        :get, "http://api.foo.com/v1",
-        set_cookie: 'custom-cookie=1234567',
-        www_authenticate: 'Digest realm="Log Viewer", qop="auth", nonce="2CA0EC6B0E126C4800E56BA0C0003D3C", opaque="5ccc069c403ebaf9f0171e9517f40e41", stale=false'
-      )
 
-      @request.options[:digest_auth] = {username: 'foobar', password: 'secret'}
-      @request.send(:setup_raw_request)
+        raw_request = @request.instance_variable_get(:@raw_request)
+        expect(raw_request['Authorization']).to be_nil
+      end
 
-      raw_request = @request.instance_variable_get(:@raw_request)
-      expect(raw_request.instance_variable_get(:@header)['cookie']).to eql ["custom-cookie=1234567"]
-    end
+      it "should be used when configured and the response is 401" do
+        @request.options[:digest_auth] = {username: 'foobar', password: 'secret'}        
+        response = @request.perform { |v| }
+        expect(response.code).to eq(200)
 
-    it 'should merge cookies from setup_digest_auth and request' do
-      FakeWeb.register_uri(
-        :get, "http://api.foo.com/v1",
-        set_cookie: 'custom-cookie=1234567',
-        www_authenticate: 'Digest realm="Log Viewer", qop="auth", nonce="2CA0EC6B0E126C4800E56BA0C0003D3C", opaque="5ccc069c403ebaf9f0171e9517f40e41", stale=false'
-      )
+        raw_request = @request.instance_variable_get(:@raw_request)
+        expect(raw_request['Authorization']).not_to be_nil
+      end
 
-      @request.options[:digest_auth] = {username: 'foobar', password: 'secret'}
-      @request.options[:headers] = {'cookie' => 'request-cookie=test'}
-      @request.send(:setup_raw_request)
+      it 'should maintain cookies returned from a 401 response' do
+        @request.options[:digest_auth] = {username: 'foobar', password: 'secret'}        
+        response = @request.perform {|v|}
+        expect(response.code).to eq(200)
+        
+        raw_request = @request.instance_variable_get(:@raw_request)
+        expect(raw_request.get_fields('cookie')).to eql ["custom-cookie=1234567"]
+      end
 
-      raw_request = @request.instance_variable_get(:@raw_request)
-      expect(raw_request.instance_variable_get(:@header)['cookie']).to eql ['request-cookie=test', 'custom-cookie=1234567']
+      it 'should merge cookies from request and a 401 response' do
+        
+        @request.options[:digest_auth] = {username: 'foobar', password: 'secret'}
+        @request.options[:headers] = {'cookie' => 'request-cookie=test'}
+        response = @request.perform {|v|}
+        expect(response.code).to eq(200)
+
+        raw_request = @request.instance_variable_get(:@raw_request)
+        expect(raw_request.get_fields('cookie')).to eql ['request-cookie=test', 'custom-cookie=1234567']
+      end
     end
 
     it 'should use body_stream when configured' do
@@ -390,10 +417,15 @@ RSpec.describe HTTParty::Request do
 
     if "".respond_to?(:encoding)
 
+      let(:response_charset) {
+        @request.send(:get_charset)
+      }
+
       it "should process charset in content type properly" do
         response = stub_response "Content"
         response.initialize_http_header("Content-Type" => "text/plain;charset = utf-8")
         resp = @request.perform
+        expect(response_charset).to_not be_empty
         expect(resp.body.encoding).to eq(Encoding.find("UTF-8"))
       end
 
@@ -401,6 +433,7 @@ RSpec.describe HTTParty::Request do
         response = stub_response "Content"
         response.initialize_http_header("Content-Type" => "text/plain;CHARSET = utf-8")
         resp = @request.perform
+        expect(response_charset).to_not be_empty
         expect(resp.body.encoding).to eq(Encoding.find("UTF-8"))
       end
 
@@ -408,6 +441,7 @@ RSpec.describe HTTParty::Request do
         response = stub_response "Content"
         response.initialize_http_header("Content-Type" => "text/plain;charset = \"utf-8\"")
         resp = @request.perform
+        expect(response_charset).to_not be_empty
         expect(resp.body.encoding).to eq(Encoding.find("UTF-8"))
       end
 
@@ -417,6 +451,7 @@ RSpec.describe HTTParty::Request do
         response = stub_response "\xFF\xFEC\x00o\x00n\x00t\x00e\x00n\x00t\x00"
         response.initialize_http_header("Content-Type" => "text/plain;charset = utf-16")
         resp = @request.perform
+        expect(response_charset).to_not be_empty
         expect(resp.body.encoding).to eq(Encoding.find("UTF-16LE"))
       end
 
@@ -426,6 +461,7 @@ RSpec.describe HTTParty::Request do
         response = stub_response "\xFE\xFF\x00C\x00o\x00n\x00t\x00e\x00n\x00t"
         response.initialize_http_header("Content-Type" => "text/plain;charset = utf-16")
         resp = @request.perform
+        expect(response_charset).to_not be_empty
         expect(resp.body.encoding).to eq(Encoding.find("UTF-16BE"))
       end
 
@@ -435,6 +471,7 @@ RSpec.describe HTTParty::Request do
         response = stub_response "C\x00o\x00n\x00t\x00e\x00n\x00t\x00"
         response.initialize_http_header("Content-Type" => "text/plain;charset = utf-16")
         resp = @request.perform
+        expect(response_charset).to_not be_empty
         expect(resp.body.encoding).to eq(Encoding.find("UTF-16LE"))
       end
 
@@ -442,6 +479,9 @@ RSpec.describe HTTParty::Request do
         response = stub_response "Content"
         response.initialize_http_header("Content-Type" => "text/plain;charset = utf-lols")
         resp = @request.perform
+        expect(response_charset).to_not be_empty        
+        # This encoding does not exist, thus the string should not be encodd with it
+        expect(resp.body.encoding).to_not eq(response_charset)
         expect(resp.body).to eq("Content")
         expect(resp.body.encoding).to eq("Content".encoding)
       end
@@ -450,6 +490,7 @@ RSpec.describe HTTParty::Request do
         response = stub_response "Content"
         response.initialize_http_header("Content-Type" => "text/plain")
         resp = @request.perform
+        expect(response_charset).to be_nil
         expect(resp.body).to eq("Content")
         expect(resp.body.encoding).to eq("Content".encoding)
       end
@@ -1045,54 +1086,6 @@ RSpec.describe HTTParty::Request do
     end
   end
 
-  describe "#handle_deflation" do
-    context "context-encoding" do
-      before do
-        @request.options[:format] = :html
-        @last_response = double
-        allow(@last_response).to receive(:body).and_return('')
-      end
-
-      it "should inflate the gzipped body with content-encoding: gzip" do
-        allow(@last_response).to receive(:[]).with("content-encoding").and_return("gzip")
-        allow(@request).to receive(:last_response).and_return(@last_response)
-        expect(Zlib::GzipReader).to receive(:new).and_return(StringIO.new(''))
-        expect(@request.last_response).to receive(:delete).with('content-encoding')
-        @request.send(:handle_deflation)
-      end
-
-      it "should inflate the gzipped body with content-encoding: x-gzip" do
-        allow(@last_response).to receive(:[]).with("content-encoding").and_return("x-gzip")
-        allow(@request).to receive(:last_response).and_return(@last_response)
-        expect(Zlib::GzipReader).to receive(:new).and_return(StringIO.new(''))
-        expect(@request.last_response).to receive(:delete).with('content-encoding')
-        @request.send(:handle_deflation)
-      end
-
-      it "should inflate the deflated body" do
-        allow(@last_response).to receive(:[]).with("content-encoding").and_return("deflate")
-        allow(@request).to receive(:last_response).and_return(@last_response)
-        expect(Zlib::Inflate).to receive(:inflate).and_return('')
-        expect(@request.last_response).to receive(:delete).with('content-encoding')
-        @request.send(:handle_deflation)
-      end
-
-      it "should not inflate a redirected response with content-encoding: gzip" do
-        allow(@last_response).to receive(:[]).with("content-encoding").and_return("gzip")
-        allow(@request).to receive(:last_response).and_return(@last_response)
-        allow(@request).to receive(:response_redirects?).and_return(true)
-        @request.send(:handle_deflation)
-      end
-
-      it "should not inflate a redirected response with content-encoding: deflate" do
-        allow(@last_response).to receive(:[]).with("content-encoding").and_return("deflate")
-        allow(@request).to receive(:last_response).and_return(@last_response)
-        allow(@request).to receive(:response_redirects?).and_return(true)
-        @request.send(:handle_deflation)
-      end
-    end
-  end
-
   describe "#send_authorization_header?" do
     context "basic_auth" do
       before do
@@ -1186,6 +1179,26 @@ RSpec.describe HTTParty::Request do
       expect {
         HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', limit: -1).perform
       }.to raise_error(HTTParty::RedirectionTooDeep, 'HTTP redirects too deep')
+    end
+  end
+
+  context 'with Accept-Encoding header' do
+    it 'should disable content decoding if present' do 
+      request = HTTParty::Request.new(Net::HTTP::Get, 'http://api.foo.com/v1', headers:{'Accept-Encoding' => 'custom'})
+      request.send(:setup_raw_request)
+      expect(request.instance_variable_get(:@raw_request).decode_content).to eq(false)
+    end
+
+    it 'should disable content decoding if present and lowercase' do 
+      request = HTTParty::Request.new(Net::HTTP::Get, 'http://api.foo.com/v1', headers:{'accept-encoding' => 'custom'})
+      request.send(:setup_raw_request)
+      expect(request.instance_variable_get(:@raw_request).decode_content).to eq(false)
+    end
+
+    it 'should disable content decoding if present' do 
+      request = HTTParty::Request.new(Net::HTTP::Get, 'http://api.foo.com/v1')
+      request.send(:setup_raw_request)
+      expect(request.instance_variable_get(:@raw_request).decode_content).to eq(true)
     end
   end
 end

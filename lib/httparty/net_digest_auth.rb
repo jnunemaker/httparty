@@ -12,13 +12,13 @@ module Net
         response
       )
 
-      @header['Authorization'] = authenticator.authorization_header
-      @header['cookie'] = append_cookies(authenticator) if response['Set-Cookie']
-    end
+      authenticator.authorization_header.each do |v|
+        add_field('Authorization', v)
+      end 
 
-    def append_cookies(authenticator)
-      cookies = @header['cookie'] ? @header['cookie'] : []
-      cookies.concat(authenticator.cookie_header)
+      authenticator.cookie_header.each do |v|
+        add_field('Cookie', v)
+      end      
     end
 
     class DigestAuthenticator

@@ -72,6 +72,18 @@ RSpec.describe HTTParty::Response do
     end
   end
 
+  it 'does raise an error about itself when using #method' do
+    expect {
+      HTTParty::Response.new(@request_object, @response_object, @parsed_response).method(:qux)
+    }.to raise_error(NameError, /HTTParty\:\:Response/)
+  end
+
+  it 'does raise an error about itself when invoking a method that does not exist' do 
+    expect {
+      HTTParty::Response.new(@request_object, @response_object, @parsed_response).qux
+    }.to raise_error(NoMethodError, /HTTParty\:\:Response/)
+  end 
+
   it "returns response headers" do
     response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
     expect(response.headers).to eq({'last-modified' => [@last_modified], 'content-length' => [@content_length]})
@@ -117,12 +129,32 @@ RSpec.describe HTTParty::Response do
     expect(response.respond_to?(:[])).to be_truthy
   end
 
-  it "should be able to iterate if it is array" do
-    response = HTTParty::Response.new(@request_object, @response_object, lambda { [{'foo' => 'bar'}, {'foo' => 'baz'}] })
-    expect(response.size).to eq(2)
-    expect {
-      response.each { |item| }
-    }.to_not raise_error
+  context 'response is array' do
+    let(:response_value) { [{'foo' => 'bar'}, {'foo' => 'baz'}] }
+    let(:response) { HTTParty::Response.new(@request_object, @response_object, lambda { response_value }) } 
+    it "should be able to iterate" do 
+      expect(response.size).to eq(2)
+      expect {
+        response.each { |item| }
+      }.to_not raise_error
+    end
+
+    it 'should respond to array methods' do       
+      expect(response).to respond_to(:bsearch, :compact, :cycle, :delete, :each, :flatten, :flatten!, :compact, :join)    
+    end
+
+    it 'should equal the string response object body' do
+      expect(response.to_s).to eq(@response_object.body.to_s)    
+    end    
+
+    it 'should display the same as an array' do
+      a = StringIO.new
+      b = StringIO.new
+      response_value.display(b)
+      response.display(a)
+
+      expect(a.string).to eq(b.string)    
+    end
   end
 
   it "allows headers to be accessed by mixed-case names in hash notation" do
@@ -151,8 +183,7 @@ RSpec.describe HTTParty::Response do
 
     it { is_expected.to respond_to(:is_a?).with(1).arguments }
     it { expect(subject.is_a?(HTTParty::Response)).to be_truthy }
-    it { expect(subject.is_a?(BasicObject)).to be_truthy }
-    it { expect(subject.is_a?(Object)).to be_falsey }
+    it { expect(subject.is_a?(Object)).to be_truthy }
   end
 
   describe "#kind_of?" do
@@ -160,8 +191,7 @@ RSpec.describe HTTParty::Response do
 
     it { is_expected.to respond_to(:kind_of?).with(1).arguments }
     it { expect(subject.kind_of?(HTTParty::Response)).to be_truthy }
-    it { expect(subject.kind_of?(BasicObject)).to be_truthy }
-    it { expect(subject.kind_of?(Object)).to be_falsey }
+    it { expect(subject.kind_of?(Object)).to be_truthy }
   end
 
   describe "semantic methods for response codes" do
@@ -263,9 +293,35 @@ RSpec.describe HTTParty::Response do
   end
 
   describe "headers" do
-    it "can initialize without headers" do
-      headers = HTTParty::Response::Headers.new
-      expect(headers).to eq({})
+    let (:empty_headers) { HTTParty::Response::Headers.new }
+    let (:some_headers_hash) do 
+      {'Cookie' => 'bob',
+      'Content-Encoding' => 'meow'}
+    end 
+    let (:some_headers) do 
+       HTTParty::Response::Headers.new.tap do |h|
+         some_headers_hash.each_pair do |k,v|
+           h[k] = v
+         end
+      end
+    end
+    it "can initialize without headers" do 
+      expect(empty_headers).to eq({})
+    end
+
+    it 'always equals itself' do
+      expect(empty_headers).to eq(empty_headers) 
+      expect(some_headers).to eq(some_headers)
+    end
+
+    it 'does not equal itself when not equivalent' do 
+      expect(empty_headers).to_not eq(some_headers)
+    end
+
+    it 'does equal a hash' do
+      expect(empty_headers).to eq({})
+
+      expect(some_headers).to eq(some_headers_hash)
     end
   end
 

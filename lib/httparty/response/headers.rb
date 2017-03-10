@@ -1,30 +1,30 @@
 module HTTParty
   class Response #:nodoc:
-    class Headers
+    class Headers < ::SimpleDelegator
       include ::Net::HTTPHeader
 
-      def initialize(header = {})
-        @header = header
+      def initialize(header_values = nil)
+        @header = {}
+        if header_values
+          header_values.each_pair do |k,v|
+            if v.is_a?(Array)
+              v.each do |sub_v|
+                add_field(k, sub_v)
+              end
+            else
+              add_field(k, v)
+            end
+          end
+        end
+        super(@header)
       end
 
       def ==(other)
-        @header == other
-      end
-
-      def inspect
-        @header.inspect
-      end
-
-      def method_missing(name, *args, &block)
-        if @header.respond_to?(name)
-          @header.send(name, *args, &block)
-        else
-          super
+        if other.is_a?(::Net::HTTPHeader) 
+          @header == other.instance_variable_get(:@header)
+        elsif other.is_a?(Hash)
+          @header == other || @header == Headers.new(other).instance_variable_get(:@header)           
         end
-      end
-
-      def respond_to?(method, include_all = false)
-        super || @header.respond_to?(method, include_all)
       end
     end
   end

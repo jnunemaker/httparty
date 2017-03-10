@@ -17,6 +17,34 @@ RSpec.describe Net::HTTPHeader::DigestAuthenticator do
     @digest.cookie_header
   end
 
+  context 'Net::HTTPHeader#digest_auth' do
+    let(:headers) {
+      (Class.new do 
+        include Net::HTTPHeader
+        def initialize
+          @header = {}
+        end
+      end).new
+    } 
+
+    let(:response){
+      (Class.new do 
+        include Net::HTTPHeader
+        def initialize
+          @header = {}
+          self['WWW-Authenticate'] = 
+          'Digest realm="testrealm@host.com", qop="auth,auth-int", nonce="dcd98b7102dd2f0e8b11d0f600bfb0c093", opaque="5ccc069c403ebaf9f0171e9517f40e41"'
+        end
+      end).new
+    }
+
+    it 'should set the authorization header' do 
+      expect(headers['authorization']).to be_nil
+      headers.digest_auth('user','pass', response)
+      expect(headers['authorization']).to_not be_empty
+    end 
+  end 
+
   context "with a cookie value in the response header" do
     before do
       @digest = setup_digest({
