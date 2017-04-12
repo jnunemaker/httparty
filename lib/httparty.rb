@@ -212,10 +212,14 @@ module HTTParty
     #     include HTTParty
     #     headers 'Accept' => 'text/html'
     #   end
-    def headers(h = {})
-      raise ArgumentError, 'Headers must be an object which responds to #to_hash' unless h.respond_to?(:to_hash)
-      default_options[:headers] ||= {}
-      default_options[:headers].merge!(h.to_hash)
+    def headers(h = nil)
+      if h
+        raise ArgumentError, 'Headers must be an object which responds to #to_hash' unless h.respond_to?(:to_hash)
+        default_options[:headers] ||= {}
+        default_options[:headers].merge!(h.to_hash)
+      else
+        default_options[:headers] || {}
+      end
     end
 
     def cookies(h = {})
