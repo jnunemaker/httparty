@@ -103,6 +103,11 @@ RSpec.describe HTTParty::Parser do
       allow(@parser).to receive_messages(supports_format?: false)
       expect(@parser.parse).to_not be_nil
     end
+
+    it "ignores utf-8 bom" do
+      allow(@parser).to receive_messages(body: "\xEF\xBB\xBF\{\"hi\":\"yo\"\}")
+      expect(@parser.parse).to eq({"hi"=>"yo"})
+    end
   end
 
   describe "#supports_format?" do
