@@ -29,6 +29,19 @@ module HTTParty
       end.flatten.join('&')
     end
 
+    JSON_API_QUERY_STRING_NORMALIZER = proc do |query|
+      Array(query).sort_by { |a| a[0].to_s }.map do |key, value|
+        if value.nil?
+          key.to_s
+        elsif value.respond_to?(:to_ary)
+          values = value.to_ary.map{|v| ERB::Util.url_encode(v.to_s)}
+          "#{key}=#{values.join(',')}"
+        else
+          HashConversions.to_params(key => value)
+        end
+      end.flatten.join('&')
+    end
+
     attr_accessor :http_method, :options, :last_response, :redirect, :last_uri
     attr_reader :path
 
