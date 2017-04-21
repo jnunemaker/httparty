@@ -129,6 +129,11 @@ RSpec.describe HTTParty do
         .and_return(double("mock response", perform: nil))
     end
 
+    it "does not modify default_options when no arguments are passed" do
+      @klass.headers
+      expect(@klass.default_options[:headers]).to eq(nil)
+    end
+
     it "should default to empty hash" do
       expect(@klass.headers).to eq({})
     end
@@ -171,11 +176,11 @@ RSpec.describe HTTParty do
         @klass.get('', cookies: {type: 'snickerdoodle'})
       end
 
-      it 'doesnt modify default_options' do
+      it 'doesnt modify default headers' do
         expect(@klass.headers).to eq({})
         expect_headers('cookie' => 'type=snickerdoodle')
         @klass.get('', cookies: {type: 'snickerdoodle'})
-        expect(@klass.default_options[:headers]).to eq({})
+        expect(@klass.headers).to eq({})
       end
 
       it 'adds optional cookies to the optional headers' do
