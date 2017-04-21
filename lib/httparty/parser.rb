@@ -114,8 +114,10 @@ module HTTParty
       MultiXml.parse(body)
     end
 
+    UTF8_BOM = "\xEF\xBB\xBF".freeze
+
     def json
-      JSON.parse(body, :quirks_mode => true, :allow_nan => true)
+      JSON.parse(body.gsub(/^#{UTF8_BOM}/, ''), :quirks_mode => true, :allow_nan => true)
     end
 
     def csv

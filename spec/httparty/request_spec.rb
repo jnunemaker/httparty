@@ -395,6 +395,12 @@ RSpec.describe HTTParty::Request do
       expect(@request.send(:parse_response, xml)).to eq({'books' => {'book' => {'id' => '1234', 'name' => 'Foo Bar!'}}})
     end
 
+    it 'should handle utf-8 bom in xml' do
+      xml = "\xEF\xBB\xBF<books><book><id>1234</id><name>Foo Bar!</name></book></books>"
+      @request.options[:format] = :xml
+      expect(@request.send(:parse_response, xml)).to eq({'books' => {'book' => {'id' => '1234', 'name' => 'Foo Bar!'}}})
+    end
+
     it 'should handle csv automatically' do
       csv = ['"id","Name"', '"1234","Foo Bar!"'].join("\n")
       @request.options[:format] = :csv
@@ -403,6 +409,12 @@ RSpec.describe HTTParty::Request do
 
     it 'should handle json automatically' do
       json = '{"books": {"book": {"name": "Foo Bar!", "id": "1234"}}}'
+      @request.options[:format] = :json
+      expect(@request.send(:parse_response, json)).to eq({'books' => {'book' => {'id' => '1234', 'name' => 'Foo Bar!'}}})
+    end
+
+    it 'should handle utf-8 bom in json' do
+      json = "\xEF\xBB\xBF{\"books\": {\"book\": {\"name\": \"Foo Bar!\", \"id\": \"1234\"}}}"
       @request.options[:format] = :json
       expect(@request.send(:parse_response, json)).to eq({'books' => {'book' => {'id' => '1234', 'name' => 'Foo Bar!'}}})
     end
