@@ -33,6 +33,34 @@ RSpec.describe HTTParty::Request do
     end
   end
 
+  describe "::JSON_API_QUERY_STRING_NORMALIZER" do
+    let(:normalizer) { HTTParty::Request::JSON_API_QUERY_STRING_NORMALIZER }
+
+    it "doesn't modify strings" do
+      query_string = normalizer["foo=bar&foo=baz"]
+      expect(CGI.unescape(query_string)).to eq("foo=bar&foo=baz")
+    end
+
+    context "when the query is an array" do
+      it "doesn't include brackets" do
+        query_string = normalizer[{page: 1, foo: %w(bar baz)}]
+        expect(CGI.unescape(query_string)).to eq("foo=bar,baz&page=1")
+      end
+
+      it "URI encodes array values" do
+        query_string = normalizer[{people: ["Otis Redding", "Bob Marley", "Tim & Jon"], page: 1, xyzzy: 3}]
+        expect(query_string).to eq("page=1&people=Otis%20Redding,Bob%20Marley,Tim%20%26%20Jon&xyzzy=3")
+      end
+    end
+
+    context "when the query is a hash" do
+      it "correctly handles nil values" do
+        query_string = normalizer[{page: 1, per_page: nil}]
+        expect(query_string).to eq('page=1&per_page')
+      end
+    end
+  end
+
   describe "initialization" do
     it "sets parser to HTTParty::Parser" do
       request = HTTParty::Request.new(Net::HTTP::Get, 'http://google.com')
