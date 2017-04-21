@@ -117,7 +117,7 @@ module HTTParty
     UTF8_BOM = "\xEF\xBB\xBF".freeze
 
     def json
-      JSON.parse(body.gsub(/^#{UTF8_BOM}/, ''), :quirks_mode => true, :allow_nan => true)
+      JSON.parse(body.gsub(/\A#{UTF8_BOM}/, ''), :quirks_mode => true, :allow_nan => true)
     end
 
     def csv
