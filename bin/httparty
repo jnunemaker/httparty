@@ -103,9 +103,11 @@ else
     when :json
       begin
         require 'json'
-        puts JSON.pretty_generate(response)
+        puts JSON.pretty_generate(response.parsed_response)
       rescue LoadError
         puts YAML.dump(response)
+      rescue JSON::JSONError
+        puts response.inspect
       end
     when :xml
       require 'rexml/document'
