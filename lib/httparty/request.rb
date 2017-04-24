@@ -152,7 +152,7 @@ module HTTParty
     end
 
     def body
-      options[:body].respond_to?(:to_hash) ? normalize_query(options[:body]) : options[:body]
+      options[:body]
     end
 
     def credentials
@@ -181,7 +181,7 @@ module HTTParty
 
     def setup_raw_request
       @raw_request = http_method.new(request_uri(uri))
-      @raw_request.body = body if body
+      @raw_request.body = normalize_query(body) if body
       @raw_request.body_stream = options[:body_stream] if options[:body_stream]
       @raw_request.initialize_http_header(options[:headers].to_hash) if options[:headers].respond_to?(:to_hash)
       @raw_request.basic_auth(username, password) if options[:basic_auth] && send_authorization_header?
