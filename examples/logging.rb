@@ -22,7 +22,7 @@ Google.get "http://google.com"
 my_logger.info '*' * 70
 
 my_logger.info "The default formatter is :apache. The :curl formatter can also be used."
-my_logger.info "You can tell wich method to call on the logger too. It is info by default."
+my_logger.info "You can tell which method to call on the logger too. It is info by default."
 HTTParty.get "http://google.com", logger: my_logger, log_level: :debug, log_format: :curl
 
 my_logger.info '*' * 70
