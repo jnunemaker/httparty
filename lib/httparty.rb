@@ -488,6 +488,11 @@ module HTTParty
     def get(path, options = {}, &block)
       perform_request Net::HTTP::Get, path, options, &block
     end
+    
+    # Perform a PATCH request to a path
+    def patch(path, options={})
+      perform_request Net::HTTP::Post, path, options
+    end
 
     # Allows making a post request to a url.
     #
