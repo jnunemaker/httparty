@@ -1,6 +1,14 @@
-## master
+## 0.15.0
 
-* Require Ruby >= 2.0.0
+Breaking Changes
+
+* require Ruby >= 2.0.0
+
+Fixed
+
+* [fix numerous bugs](https://github.com/jnunemaker/httparty/pull/513)
+* [handle utf-8 bom for json parsing](https://github.com/jnunemaker/httparty/pull/520)
+* [do not overwrite default headers unless specified](https://github.com/jnunemaker/httparty/pull/518)
 
 ## 0.14.0
 
