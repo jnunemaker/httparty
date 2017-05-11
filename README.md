@@ -12,7 +12,6 @@ gem install httparty
 
 * Ruby 2.0.0 or higher
 * multi_xml
-* You like to party!
 
 ## Examples
 
