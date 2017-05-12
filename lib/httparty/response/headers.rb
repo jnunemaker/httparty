@@ -1,3 +1,5 @@
+require 'delegate'
+
 module HTTParty
   class Response #:nodoc:
     class Headers < ::SimpleDelegator
