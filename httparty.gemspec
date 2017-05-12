@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
   # If this line is removed, all hard partying will cease.
   s.post_install_message = "When you HTTParty, you must party hard!"
 
-  s.files         = `git ls-files`.split("\n")
+  s.files         = `git ls-files | grep -v ^spec`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.executables   = `git ls-files -- bin/*`.split("\n").map { |f| File.basename(f) }
   s.require_paths = ["lib"]
