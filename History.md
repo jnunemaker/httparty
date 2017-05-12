@@ -1,3 +1,9 @@
+## 0.15.1
+
+Fixed
+
+* Stop including test files in gem. Fixes installation issues on windows due to symlink in spec dir.
+
 ## 0.15.0
 
 Breaking Changes
