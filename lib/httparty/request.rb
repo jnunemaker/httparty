@@ -276,7 +276,7 @@ module HTTParty
     end
 
     def encode_with_ruby_encoding(body, charset)
-      if Encoding.name_list.include?(charset)
+      if !body.nil? && Encoding.name_list.include?(charset)
         body.force_encoding(charset)
       else 
         body
