@@ -1,3 +1,9 @@
+## 0.15.2
+
+Fixed
+
+* Remove symlink from specs. It was reportedly still getting bundled with gem.
+
 ## 0.15.1
 
 Fixed
