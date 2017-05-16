@@ -347,7 +347,7 @@ module HTTParty
         perform(&block)
       else
         body ||= last_response.body
-        body = encode_body(body)
+        body = body.nil? ? body : encode_body(body)
         Response.new(self, last_response, lambda { parse_response(body) }, body: body)
       end
     end
