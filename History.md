@@ -1,3 +1,10 @@
+## 0.15.3
+
+Fixed
+
+* [Fix processing nil body for HEAD requests](https://github.com/jnunemaker/httparty/pull/530).
+* Add missing require to headers.rb (33439a8).
+
 ## 0.15.2
 
 Fixed
