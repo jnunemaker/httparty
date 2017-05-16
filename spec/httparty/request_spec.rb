@@ -534,6 +534,13 @@ RSpec.describe HTTParty::Request do
         expect(resp.body).to eq("Content")
         expect(resp.body.encoding).to eq("Content".encoding)
       end
+
+      it "should not attempt encoding if the body is empty" do
+        response = stub_response nil
+        response.initialize_http_header("Content-Type" => "text/plain;charset = UTF-8")
+        resp = @request.perform
+        expect(resp.body).to be_nil
+      end
     end
 
     describe 'with non-200 responses' do
