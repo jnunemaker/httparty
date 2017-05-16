@@ -485,6 +485,13 @@ RSpec.describe HTTParty::Request do
         expect(resp.body.encoding).to eq(Encoding.find("UTF-8"))
       end
 
+      it "should process response with a nil body" do
+        response = stub_response nil
+        response.initialize_http_header("Content-Type" => "text/html;charset=UTF-8")
+        resp = @request.perform
+        expect(resp.body).to be_nil
+      end
+
       it "should process utf-16 charset with little endian bom correctly" do
         @request.options[:assume_utf16_is_big_endian] = true
 
