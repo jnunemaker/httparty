@@ -1,3 +1,10 @@
+## 0.15.4
+
+Fixed
+
+* Prevent gsub errors with different encodings.
+* Prevent passing nil to encode_body.
+
 ## 0.15.3
 
 Fixed
