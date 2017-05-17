@@ -60,7 +60,7 @@ module HTTParty
         connection_adapter: ConnectionAdapter
       }.merge(o)
       self.path = path
-      set_basic_auth_from_uri      
+      set_basic_auth_from_uri
     end
 
     def path=(uri)
@@ -151,18 +151,18 @@ module HTTParty
           chunked_body = chunks.join
         end
       end
-      
-      
+
+
       handle_host_redirection if response_redirects?
       result = handle_unauthorized
       result ||= handle_response(chunked_body, &block)
-      result      
+      result
     end
 
     def handle_unauthorized(&block)
       return unless digest_auth? && response_unauthorized? && response_has_digest_auth_challenge?
       return if @credentials_sent
-      @credentials_sent = true      
+      @credentials_sent = true
       perform(&block)
     end
 
@@ -210,9 +210,9 @@ module HTTParty
       @raw_request.body_stream = options[:body_stream] if options[:body_stream]
       if options[:headers].respond_to?(:to_hash)
         headers_hash = options[:headers].to_hash
-        
+
         @raw_request.initialize_http_header(headers_hash)
-        # If the caller specified a header of 'Accept-Encoding', assume they want to 
+        # If the caller specified a header of 'Accept-Encoding', assume they want to
         # deal with encoding of content. Disable the internal logic in Net:HTTP
         # that handles encoding, if the platform supports it.
         if @raw_request.respond_to?(:decode_content) && (headers_hash.key?('Accept-Encoding') || headers_hash.key?('accept-encoding'))
@@ -220,10 +220,10 @@ module HTTParty
           @raw_request['accept-encoding'] = @raw_request['accept-encoding']
         end
       end
-      if options[:basic_auth] && send_authorization_header?        
+      if options[:basic_auth] && send_authorization_header?
         @raw_request.basic_auth(username, password)
         @credentials_sent = true
-      end 
+      end
       setup_digest_auth if digest_auth? && response_unauthorized? && response_has_digest_auth_challenge?
     end
 
@@ -240,7 +240,7 @@ module HTTParty
     end
 
     def setup_digest_auth
-      @raw_request.digest_auth(username, password, last_response)      
+      @raw_request.digest_auth(username, password, last_response)
     end
 
     def query_string(uri)
@@ -278,9 +278,9 @@ module HTTParty
     def encode_with_ruby_encoding(body, charset)
       if !body.nil? && Encoding.name_list.include?(charset)
         body.force_encoding(charset)
-      else 
+      else
         body
-      end 
+      end
     end
 
     def assume_utf16_is_big_endian
@@ -347,7 +347,7 @@ module HTTParty
         perform(&block)
       else
         body ||= last_response.body
-        body = encode_body(body)
+        body = body.nil? ? body : encode_body(body)
         Response.new(self, last_response, lambda { parse_response(body) }, body: body)
       end
     end
@@ -367,7 +367,7 @@ module HTTParty
     end
 
     def send_authorization_header?
-      !@changed_hosts      
+      !@changed_hosts
     end
 
     def response_redirects?
@@ -388,7 +388,7 @@ module HTTParty
       cookies_hash = HTTParty::CookieHash.new
       cookies_hash.add_cookies(options[:headers].to_hash['Cookie']) if options[:headers] && options[:headers].to_hash['Cookie']
       response.get_fields('Set-Cookie').each { |cookie| cookies_hash.add_cookies(cookie) }
-      
+
       options[:headers] ||= {}
       options[:headers]['Cookie'] = cookies_hash.to_cookie_string
     end
