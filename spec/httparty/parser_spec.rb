@@ -108,6 +108,13 @@ RSpec.describe HTTParty::Parser do
       allow(@parser).to receive_messages(body: "\xEF\xBB\xBF\{\"hi\":\"yo\"\}")
       expect(@parser.parse).to eq({"hi"=>"yo"})
     end
+
+    it "parses ascii 8bit encoding" do
+      allow(@parser).to receive_messages(
+        body: "{\"currency\":\"\xE2\x82\xAC\"}".force_encoding('ASCII-8BIT')
+      )
+      expect(@parser.parse).to eq({"currency" => "€"})
+    end
   end
 
   describe "#supports_format?" do

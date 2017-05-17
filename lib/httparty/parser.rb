@@ -101,6 +101,9 @@ module HTTParty
       return nil if body.nil?
       return nil if body == "null"
       return nil if body.valid_encoding? && body.strip.empty?
+      if body.valid_encoding? && body.encoding == Encoding::UTF_8
+        body.gsub!(/\A#{UTF8_BOM}/, '')
+      end
       if supports_format?
         parse_supported_format
       else
@@ -117,7 +120,7 @@ module HTTParty
     UTF8_BOM = "\xEF\xBB\xBF".freeze
 
     def json
-      JSON.parse(body.gsub(/\A#{UTF8_BOM}/, ''), :quirks_mode => true, :allow_nan => true)
+      JSON.parse(body, :quirks_mode => true, :allow_nan => true)
     end
 
     def csv
