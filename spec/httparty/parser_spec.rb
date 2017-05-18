@@ -63,57 +63,62 @@ RSpec.describe HTTParty::Parser do
   end
 
   describe "#parse" do
-    before do
-      @parser = HTTParty::Parser.new('body', :json)
-    end
-
     it "attempts to parse supported formats" do
-      allow(@parser).to receive_messages(supports_format?: true)
-      expect(@parser).to receive(:parse_supported_format)
-      @parser.parse
+      parser = HTTParty::Parser.new('body', :json)
+      allow(parser).to receive_messages(supports_format?: true)
+
+      expect(parser).to receive(:parse_supported_format)
+      parser.parse
     end
 
     it "returns the unparsed body when the format is unsupported" do
-      allow(@parser).to receive_messages(supports_format?: false)
-      expect(@parser.parse).to eq(@parser.body)
+      parser = HTTParty::Parser.new('body', :json)
+      allow(parser).to receive_messages(supports_format?: false)
+
+      expect(parser.parse).to eq(parser.body)
     end
 
     it "returns nil for an empty body" do
-      allow(@parser).to receive_messages(body: '')
-      expect(@parser.parse).to be_nil
+      parser = HTTParty::Parser.new('', :json)
+      expect(parser.parse).to be_nil
     end
 
     it "returns nil for a nil body" do
-      allow(@parser).to receive_messages(body: nil)
-      expect(@parser.parse).to be_nil
+      parser = HTTParty::Parser.new(nil, :json)
+      expect(parser.parse).to be_nil
     end
 
     it "returns nil for a 'null' body" do
-      allow(@parser).to receive_messages(body: "null")
-      expect(@parser.parse).to be_nil
+      parser = HTTParty::Parser.new("null", :json)
+      expect(parser.parse).to be_nil
     end
 
     it "returns nil for a body with spaces only" do
-      allow(@parser).to receive_messages(body: "   ")
-      expect(@parser.parse).to be_nil
+      parser = HTTParty::Parser.new("   ", :json)
+      expect(parser.parse).to be_nil
     end
 
     it "does not raise exceptions for bodies with invalid encodings" do
-      allow(@parser).to receive_messages(body: "\x80")
-      allow(@parser).to receive_messages(supports_format?: false)
-      expect(@parser.parse).to_not be_nil
+      parser = HTTParty::Parser.new("\x80", :invalid_format)
+      expect(parser.parse).to_not be_nil
     end
 
     it "ignores utf-8 bom" do
-      allow(@parser).to receive_messages(body: "\xEF\xBB\xBF\{\"hi\":\"yo\"\}")
-      expect(@parser.parse).to eq({"hi"=>"yo"})
+      parser = HTTParty::Parser.new("\xEF\xBB\xBF\{\"hi\":\"yo\"\}", :json)
+      expect(parser.parse).to eq({"hi"=>"yo"})
     end
 
     it "parses ascii 8bit encoding" do
-      allow(@parser).to receive_messages(
-        body: "{\"currency\":\"\xE2\x82\xAC\"}".force_encoding('ASCII-8BIT')
+      parser = HTTParty::Parser.new(
+        "{\"currency\":\"\xE2\x82\xAC\"}".force_encoding('ASCII-8BIT'),
+        :json
       )
-      expect(@parser.parse).to eq({"currency" => "€"})
+      expect(parser.parse).to eq({"currency" => "€"})
+    end
+
+    it "parses frozen strings" do
+      parser = HTTParty::Parser.new('{"a":1}'.freeze, :json)
+      expect(parser.parse).to eq("a" => 1)
     end
   end
 

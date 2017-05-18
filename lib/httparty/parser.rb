@@ -102,7 +102,7 @@ module HTTParty
       return nil if body == "null"
       return nil if body.valid_encoding? && body.strip.empty?
       if body.valid_encoding? && body.encoding == Encoding::UTF_8
-        body.gsub!(/\A#{UTF8_BOM}/, '')
+        @body = body.gsub(/\A#{UTF8_BOM}/, '')
       end
       if supports_format?
         parse_supported_format
