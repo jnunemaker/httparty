@@ -1,3 +1,9 @@
+## 0.15.5
+
+Fixed
+
+* [Use non-destructive gsub](https://github.com/jnunemaker/httparty/pull/540)
+
 ## 0.15.4
 
 Fixed
