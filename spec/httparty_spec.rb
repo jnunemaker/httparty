@@ -105,6 +105,11 @@ RSpec.describe HTTParty do
       expect(uri).to eq('https://api.foo.com/v1:443')
     end
 
+    it "should not add https for non ssl requests" do
+      uri = HTTParty.normalize_base_uri('http://api.foo.com/v1:443')
+      uri.should == 'http://api.foo.com/v1:443'
+    end
+
     it "should not remove https for ssl requests" do
       uri = HTTParty.normalize_base_uri('https://api.foo.com/v1:443')
       expect(uri).to eq('https://api.foo.com/v1:443')
