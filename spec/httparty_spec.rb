@@ -123,9 +123,10 @@ RSpec.describe HTTParty do
   end
 
   describe "headers" do
-    def expect_headers(header = {})
+    def expect_headers(header=nil)
+      options = header ? hash_including({ headers: header }) : anything
       expect(HTTParty::Request).to receive(:new) \
-        .with(anything, anything, hash_including({ headers: header })) \
+        .with(anything, anything, options) \
         .and_return(double("mock response", perform: nil))
     end
 
@@ -160,6 +161,20 @@ RSpec.describe HTTParty do
       expect_headers(baz: 'spax', foo: 'baz')
       @klass.headers(foo: 'bar')
       @klass.get('', headers: {baz: 'spax', foo: 'baz'})
+    end
+
+    it "resets the default options with no custom headers after each request" do
+      expect_headers
+      @klass.get("")
+      expect(@klass.default_options.has_key?(:headers)).to eq(false)
+
+      expect_headers(foo: "bar")
+      @klass.get("", headers: { foo: "bar" })
+      expect(@klass.default_options.has_key?(:headers)).to eq(true)
+
+      expect_headers
+      @klass.get("")
+      expect(@klass.default_options.has_key?(:headers)).to eq(false)
     end
 
     context "with cookies" do

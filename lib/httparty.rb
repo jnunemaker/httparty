@@ -557,10 +557,16 @@ module HTTParty
     end
 
     def perform_request(http_method, path, options, &block) #:nodoc:
+      reset_default_headers
+
       options = ModuleInheritableAttributes.hash_deep_dup(default_options).merge(options)
       process_headers(options)
       process_cookies(options)
       Request.new(http_method, path, options).perform(&block)
+    end
+
+    def reset_default_headers
+      default_options.delete(:headers) if default_options[:headers] == {}
     end
 
     def process_headers(options)
