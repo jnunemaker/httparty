@@ -9,3 +9,4 @@ pkg/
 /.bundle
 .rvmrc
 coverage
+*.gem
