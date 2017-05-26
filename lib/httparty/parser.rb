@@ -105,7 +105,12 @@ module HTTParty
         @body = body.gsub(/\A#{UTF8_BOM}/, '')
       end
       if supports_format?
-        parse_supported_format
+        begin
+          parse_supported_format
+        rescue => ex
+          $stderr.puts(ex)
+          body
+        end
       else
         body
       end
