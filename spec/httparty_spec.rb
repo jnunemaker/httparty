@@ -357,17 +357,16 @@ RSpec.describe HTTParty do
   end
 
   describe "uri_adapter" do
-
     require 'forwardable'
     class CustomURIAdaptor
       extend Forwardable
       def_delegators :@uri, :userinfo, :relative?, :query, :query=, :scheme, :path, :host, :port
 
-      def initialize uri
+      def initialize(uri)
         @uri = uri
       end
 
-      def self.parse uri
+      def self.parse(uri)
         new URI.parse uri
       end
     end
@@ -381,10 +380,9 @@ RSpec.describe HTTParty do
 
     it "should raise an ArgumentError if uri_adapter doesn't implement parse method" do
       expect do
-        @klass.uri_adapter double()
+        @klass.uri_adapter double
       end.to raise_error(ArgumentError)
     end
-
 
     it "should process a request with a uri instance parsed from the uri_adapter" do
       uri = 'http://foo.com/bar'
@@ -392,7 +390,6 @@ RSpec.describe HTTParty do
       @klass.uri_adapter uri_adapter
       expect(@klass.get(uri).parsed_response).to eq('stuff')
     end
-
   end
 
   describe "connection_adapter" do

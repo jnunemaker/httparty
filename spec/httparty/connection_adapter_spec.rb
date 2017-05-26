@@ -122,7 +122,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
         it "doesn't set the timeout" do
           http = double(
             "http",
-            :null_object => true,
+            null_object: true,
             :use_ssl= => false,
             :use_ssl? => false
           )
@@ -155,7 +155,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
           it "doesn't set the timeout" do
             http = double(
               "http",
-              :null_object => true,
+              null_object: true,
               :use_ssl= => false,
               :use_ssl? => false
             )
@@ -179,7 +179,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
         it "should not set the open_timeout" do
           http = double(
             "http",
-            :null_object => true,
+            null_object: true,
             :use_ssl= => false,
             :use_ssl? => false,
             :read_timeout= => 0
@@ -206,7 +206,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
         it "should override the timeout option" do
           http = double(
             "http",
-            :null_object => true,
+            null_object: true,
             :use_ssl= => false,
             :use_ssl? => false,
             :read_timeout= => 0,
@@ -230,7 +230,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
         it "should not set the read_timeout" do
           http = double(
             "http",
-            :null_object => true,
+            null_object: true,
             :use_ssl= => false,
             :use_ssl? => false,
             :open_timeout= => 0
@@ -257,7 +257,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
         it "should override the timeout option" do
           http = double(
             "http",
-            :null_object => true,
+            null_object: true,
             :use_ssl= => false,
             :use_ssl? => false,
             :read_timeout= => 0,

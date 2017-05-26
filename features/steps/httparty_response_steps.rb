@@ -23,7 +23,8 @@ Then /it should return a Hash equaling:/ do |hash_table|
   expect(@response_from_httparty.parsed_response).to be_a(Hash)
   expect(@response_from_httparty.keys.length).to eq(hash_table.rows.length)
   hash_table.hashes.each do |pair|
-    key, value = pair["key"], pair["value"]
+    key = pair["key"]
+    value = pair["value"]
     expect(@response_from_httparty.keys).to include(key)
     expect(@response_from_httparty[key]).to eq(value)
   end
