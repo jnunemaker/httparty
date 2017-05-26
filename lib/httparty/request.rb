@@ -177,7 +177,11 @@ module HTTParty
     end
 
     def body
-      options[:body].respond_to?(:to_hash) ? normalize_query(options[:body]) : options[:body]
+      if http_method_with_body?
+        normalize_query(options[:default_params].merge(options[:body].to_hash)) if options[:body].respond_to?(:to_hash)
+      else
+        options[:body].respond_to?(:to_hash) ? normalize_query(options[:body]) : options[:body]
+      end
     end
 
     def credentials
@@ -248,7 +252,7 @@ module HTTParty
       query_string_parts << uri.query unless uri.query.nil?
 
       if options[:query].respond_to?(:to_hash)
-        query_string_parts << normalize_query(options[:default_params].merge(options[:query].to_hash))
+        query_string_parts << normalize_query(options[:default_params].merge(options[:query].to_hash)) unless http_method_with_body?
       else
         query_string_parts << normalize_query(options[:default_params]) unless options[:default_params].empty?
         query_string_parts << options[:query] unless options[:query].nil?
@@ -414,6 +418,10 @@ module HTTParty
 
     def post?
       Net::HTTP::Post == http_method
+    end
+
+    def http_method_with_body?
+      [Net::HTTP::Post, Net::HTTP::Patch, Net::HTTP::Put].include? http_method
     end
 
     def set_basic_auth_from_uri
