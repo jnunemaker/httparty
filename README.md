@@ -45,6 +45,18 @@ puts stack_exchange.questions
 puts stack_exchange.users
 ```
 
+### Cookies
+
+If you need to set a cookie as part of your request you can do it using the :cookies option.
+
+```ruby
+HTTParty.get "http://www.purrprogramming.com", cookies: {dogs: 'drool'}
+```
+
+You can include use this via a include but you need to be mindful how you set the cookies so that they don't get over-written at the class level.  See [this post](http://www.polyglotprogramminginc.com/httparty-cookies-and-devise/) for a longer explanation. 
+
+### More Examples
+
 See the [examples directory](http://github.com/jnunemaker/httparty/tree/master/examples) for even more goodies.
 
 ## Command Line Interface
