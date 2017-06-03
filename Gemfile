@@ -2,7 +2,6 @@ source 'https://rubygems.org'
 gemspec
 
 gem 'rake'
-gem 'fakeweb',  '~> 1.3'
 gem 'mongrel',  '1.2.0.pre2'
 
 group :development do
@@ -16,4 +15,5 @@ group :test do
   gem 'simplecov', require: false
   gem 'aruba'
   gem 'cucumber', '~> 2.3'
+  gem 'webmock'
 end

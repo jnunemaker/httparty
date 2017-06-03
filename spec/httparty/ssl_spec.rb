@@ -3,11 +3,11 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper'))
 RSpec.describe HTTParty::Request do
   context "SSL certificate verification" do
     before do
-      FakeWeb.allow_net_connect = true
+      WebMock.allow_net_connect!
     end
 
     after do
-      FakeWeb.allow_net_connect = false
+      WebMock.disable_net_connect!
     end
 
     it "should fail when no trusted CA list is specified, by default" do

@@ -2,7 +2,7 @@ require "simplecov"
 SimpleCov.start
 
 require "httparty"
-require "fakeweb"
+require 'webmock/rspec'
 
 def file_fixture(filename)
   open(File.join(File.dirname(__FILE__), 'fixtures', "#{filename}")).read
@@ -13,14 +13,6 @@ Dir[File.expand_path(File.join(File.dirname(__FILE__), 'support', '**', '*.rb'))
 RSpec.configure do |config|
   config.include HTTParty::StubResponse
   config.include HTTParty::SSLTestHelper
-
-  config.before(:suite) do
-    FakeWeb.allow_net_connect = false
-  end
-
-  config.after(:suite) do
-    FakeWeb.allow_net_connect = true
-  end
 
   config.expect_with :rspec do |expectations|
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true

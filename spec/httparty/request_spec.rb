@@ -157,46 +157,47 @@ RSpec.describe HTTParty::Request do
       expect(@request.instance_variable_get(:@raw_request)['authorization']).not_to be_nil
     end
 
-    context 'digest_auth' do 
-      before do 
+    context 'digest_auth' do
+      before do
         response_sequence = [
-          {status: ['401', 'Unauthorized' ], 
+          {status: ['401', 'Unauthorized' ], headers: {
             www_authenticate: 'Digest realm="Log Viewer", qop="auth", nonce="2CA0EC6B0E126C4800E56BA0C0003D3C", opaque="5ccc069c403ebaf9f0171e9517f40e41", stale=false',
-            set_cookie: 'custom-cookie=1234567', 
+            set_cookie: 'custom-cookie=1234567',
+            }
           },
           {status: ['200', 'OK']}
-        ]      
-        FakeWeb.register_uri(:get, "http://api.foo.com/v1",
-                            response_sequence)
-      end 
+        ]
+        stub_request(:get, "http://api.foo.com/v1").and_return(response_sequence)
+      end
 
       it 'should not send credentials more than once' do
         response_sequence = [
-          {status: ['401', 'Unauthorized' ], 
+          {status: ['401', 'Unauthorized' ], headers: {
             www_authenticate: 'Digest realm="Log Viewer", qop="auth", nonce="2CA0EC6B0E126C4800E56BA0C0003D3C", opaque="5ccc069c403ebaf9f0171e9517f40e41", stale=false',
-            set_cookie: 'custom-cookie=1234567', 
+            set_cookie: 'custom-cookie=1234567'
+            }
           },
-          {status: ['401', 'Unauthorized' ], 
+          {status: ['401', 'Unauthorized' ], headers: {
             www_authenticate: 'Digest realm="Log Viewer", qop="auth", nonce="2CA0EC6B0E126C4800E56BA0C0003D3C", opaque="5ccc069c403ebaf9f0171e9517f40e41", stale=false',
-            set_cookie: 'custom-cookie=1234567', 
-          },      
+            set_cookie: 'custom-cookie=1234567'
+            }
+          },
           {status: ['404', 'Not found']}
-        ]      
-        FakeWeb.register_uri(:get, "http://api.foo.com/v1",
+        ]
+        stub_request(:get, "http://api.foo.com/v1").and_return(
                             response_sequence)
 
-        @request.options[:digest_auth] = {username: 'foobar', password: 'secret'}        
+        @request.options[:digest_auth] = {username: 'foobar', password: 'secret'}
         response = @request.perform { |v| }
         expect(response.code).to eq(401)
 
         raw_request = @request.instance_variable_get(:@raw_request)
-        expect(raw_request['Authorization']).not_to be_nil                    
-      end 
+        expect(raw_request['Authorization']).not_to be_nil
+      end
 
       it 'should not be used when configured and the response is 200' do
-        FakeWeb.register_uri(:get, "http://api.foo.com/v1",
-          status: 200)
-        @request.options[:digest_auth] = {username: 'foobar', password: 'secret'}        
+        stub_request(:get, "http://api.foo.com/v1").and_return(status: 200)
+        @request.options[:digest_auth] = {username: 'foobar', password: 'secret'}
         response = @request.perform { |v| }
         expect(response.code).to eq(200)
 
@@ -206,7 +207,7 @@ RSpec.describe HTTParty::Request do
       end
 
       it "should be used when configured and the response is 401" do
-        @request.options[:digest_auth] = {username: 'foobar', password: 'secret'}        
+        @request.options[:digest_auth] = {username: 'foobar', password: 'secret'}
         response = @request.perform { |v| }
         expect(response.code).to eq(200)
 
@@ -215,16 +216,16 @@ RSpec.describe HTTParty::Request do
       end
 
       it 'should maintain cookies returned from a 401 response' do
-        @request.options[:digest_auth] = {username: 'foobar', password: 'secret'}        
+        @request.options[:digest_auth] = {username: 'foobar', password: 'secret'}
         response = @request.perform {|v|}
         expect(response.code).to eq(200)
-        
+
         raw_request = @request.instance_variable_get(:@raw_request)
         expect(raw_request.get_fields('cookie')).to eql ["custom-cookie=1234567"]
       end
 
       it 'should merge cookies from request and a 401 response' do
-        
+
         @request.options[:digest_auth] = {username: 'foobar', password: 'secret'}
         @request.options[:headers] = {'cookie' => 'request-cookie=test'}
         response = @request.perform {|v|}
@@ -243,7 +244,7 @@ RSpec.describe HTTParty::Request do
     end
 
     it 'should normalize base uri when specified as request option' do
-      FakeWeb.register_uri(:get, 'http://foo.com/resource', :body => 'Bar')
+      stub_request(:get, 'http://foo.com/resource').to_return(:body => 'Bar')
       response = HTTParty.get('/resource', {
         base_uri: 'foo.com'
       })
@@ -526,7 +527,7 @@ RSpec.describe HTTParty::Request do
         response = stub_response "Content"
         response.initialize_http_header("Content-Type" => "text/plain;charset = utf-lols")
         resp = @request.perform
-        expect(response_charset).to_not be_empty        
+        expect(response_charset).to_not be_empty
         # This encoding does not exist, thus the string should not be encodd with it
         expect(resp.body.encoding).to_not eq(response_charset)
         expect(resp.body).to eq("Content")
@@ -568,8 +569,8 @@ RSpec.describe HTTParty::Request do
 
         it "calls block given to perform with each redirect" do
           @request = HTTParty::Request.new(Net::HTTP::Get, 'http://test.com/redirect', format: :xml)
-          FakeWeb.register_uri(:get, "http://test.com/redirect", status: [300, "REDIRECT"], location: "http://api.foo.com/v2")
-          FakeWeb.register_uri(:get, "http://api.foo.com/v2", body: "<hash><foo>bar</foo></hash>")
+          stub_request(:get, "http://test.com/redirect").and_return(status: [300, "REDIRECT"], headers: { location: "http://api.foo.com/v2" })
+          stub_request(:get, "http://api.foo.com/v2").and_return(body: "<hash><foo>bar</foo></hash>")
           body = ""
           response = @request.perform { |chunk| body += chunk }
           expect(body.length).to eq(27)
@@ -590,9 +591,9 @@ RSpec.describe HTTParty::Request do
 
         it "handles multiple redirects and relative location headers on different hosts" do
           @request = HTTParty::Request.new(Net::HTTP::Get, 'http://test.com/redirect', format: :xml)
-          FakeWeb.register_uri(:get, "http://test.com/redirect", status: [300, "REDIRECT"], location: "http://api.foo.com/v2")
-          FakeWeb.register_uri(:get, "http://api.foo.com/v2", status: [300, "REDIRECT"], location: "/v3")
-          FakeWeb.register_uri(:get, "http://api.foo.com/v3", body: "<hash><foo>bar</foo></hash>")
+          stub_request(:get, "http://test.com/redirect").and_return(status: [300, "REDIRECT"], headers: { location: "http://api.foo.com/v2" })
+          stub_request(:get, "http://api.foo.com/v2").and_return(status: [300, "REDIRECT"], headers: { location: "/v3" })
+          stub_request(:get, "http://api.foo.com/v3").and_return(body: "<hash><foo>bar</foo></hash>")
           response = @request.perform
           expect(response.request.base_uri.to_s).to eq("http://api.foo.com")
           expect(response.request.path.to_s).to eq("/v3")
@@ -603,7 +604,7 @@ RSpec.describe HTTParty::Request do
 
         it "raises an error if redirect has duplicate location header" do
           @request = HTTParty::Request.new(Net::HTTP::Get, 'http://test.com/redirect', format: :xml)
-          FakeWeb.register_uri(:get, "http://test.com/redirect", status: [300, "REDIRECT"], location: ["http://api.foo.com/v2","http://api.foo.com/v2"])
+          stub_request(:get, "http://test.com/redirect").and_return(status: [300, "REDIRECT"], headers: { location: ["http://api.foo.com/v2","http://api.foo.com/v2"] })
           expect {@request.perform}.to raise_error(HTTParty::DuplicateLocationHeader)
         end
 
@@ -613,8 +614,8 @@ RSpec.describe HTTParty::Request do
         end
 
         it "redirects including port" do
-          FakeWeb.register_uri(:get, "http://withport.com:3000/v1", status: [301, "Moved Permanently"], location: "http://withport.com:3000/v2")
-          FakeWeb.register_uri(:get, "http://withport.com:3000/v2", status: 200)
+          stub_request(:get, "http://withport.com:3000/v1").and_return(status: [301, "Moved Permanently"], headers: { location: "http://withport.com:3000/v2" })
+          stub_request(:get, "http://withport.com:3000/v2").and_return(status: 200)
           request = HTTParty::Request.new(Net::HTTP::Get, 'http://withport.com:3000/v1')
           response = request.perform
           expect(response.request.base_uri.to_s).to eq("http://withport.com:3000")
@@ -1230,19 +1231,19 @@ RSpec.describe HTTParty::Request do
   end
 
   context 'with Accept-Encoding header' do
-    it 'should disable content decoding if present' do 
+    it 'should disable content decoding if present' do
       request = HTTParty::Request.new(Net::HTTP::Get, 'http://api.foo.com/v1', headers:{'Accept-Encoding' => 'custom'})
       request.send(:setup_raw_request)
       expect(request.instance_variable_get(:@raw_request).decode_content).to eq(false)
     end
 
-    it 'should disable content decoding if present and lowercase' do 
+    it 'should disable content decoding if present and lowercase' do
       request = HTTParty::Request.new(Net::HTTP::Get, 'http://api.foo.com/v1', headers:{'accept-encoding' => 'custom'})
       request.send(:setup_raw_request)
       expect(request.instance_variable_get(:@raw_request).decode_content).to eq(false)
     end
 
-    it 'should disable content decoding if present' do 
+    it 'should disable content decoding if present' do
       request = HTTParty::Request.new(Net::HTTP::Get, 'http://api.foo.com/v1')
       request.send(:setup_raw_request)
       expect(request.instance_variable_get(:@raw_request).decode_content).to eq(true)
