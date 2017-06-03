@@ -333,7 +333,8 @@ RSpec.describe HTTParty do
 
     it "should be able parse response with custom parser" do
       @klass.parser parser
-      stub_request(:get, 'http://twitter.com/statuses/public_timeline.xml').and_return(body: 'tweets')
+      stub_request(:get, 'http://twitter.com/statuses/public_timeline.xml')
+        .and_return(body: 'tweets')
       custom_parsed_response = @klass.get('http://twitter.com/statuses/public_timeline.xml')
       expect(custom_parsed_response[:sexy]).to eq(true)
     end
