@@ -168,7 +168,7 @@ RSpec.describe HTTParty::Request do
           },
           { status: ['200', 'OK'] }
         ]
-        stub_request(:get, 'http://api.foo.com/v1').and_return(response_sequence)
+        stub_request(:get, 'http://api.foo.com/v1').to_return(response_sequence)
       end
 
       it 'should not send credentials more than once' do
@@ -187,7 +187,7 @@ RSpec.describe HTTParty::Request do
           },
           { status: ['404', 'Not found'] }
         ]
-        stub_request(:get, 'http://api.foo.com/v1').and_return(response_sequence)
+        stub_request(:get, 'http://api.foo.com/v1').to_return(response_sequence)
 
         @request.options[:digest_auth] = {username: 'foobar', password: 'secret'}
         response = @request.perform { |v| }
@@ -198,7 +198,7 @@ RSpec.describe HTTParty::Request do
       end
 
       it 'should not be used when configured and the response is 200' do
-        stub_request(:get, 'http://api.foo.com/v1').and_return(status: 200)
+        stub_request(:get, 'http://api.foo.com/v1').to_return(status: 200)
         @request.options[:digest_auth] = {username: 'foobar', password: 'secret'}
         response = @request.perform { |v| }
         expect(response.code).to eq(200)
@@ -572,12 +572,12 @@ RSpec.describe HTTParty::Request do
         it "calls block given to perform with each redirect" do
           @request = HTTParty::Request.new(Net::HTTP::Get, 'http://test.com/redirect', format: :xml)
           stub_request(:get, 'http://test.com/redirect')
-            .and_return(
+            .to_return(
               status: [300, 'REDIRECT'],
               headers: { location: 'http://api.foo.com/v2' }
             )
           stub_request(:get, 'http://api.foo.com/v2')
-            .and_return(body: '<hash><foo>bar</foo></hash>')
+            .to_return(body: '<hash><foo>bar</foo></hash>')
           body = ""
           response = @request.perform { |chunk| body += chunk }
           expect(body.length).to eq(27)
@@ -599,17 +599,17 @@ RSpec.describe HTTParty::Request do
         it "handles multiple redirects and relative location headers on different hosts" do
           @request = HTTParty::Request.new(Net::HTTP::Get, 'http://test.com/redirect', format: :xml)
           stub_request(:get, 'http://test.com/redirect')
-            .and_return(
+            .to_return(
               status: [300, 'REDIRECT'],
               headers: { location: "http://api.foo.com/v2" }
             )
           stub_request(:get, 'http://api.foo.com/v2')
-            .and_return(
+            .to_return(
               status: [300, 'REDIRECT'],
               headers: { location: '/v3' }
             )
           stub_request(:get, 'http://api.foo.com/v3')
-            .and_return(body: '<hash><foo>bar</foo></hash>')
+            .to_return(body: '<hash><foo>bar</foo></hash>')
           response = @request.perform
           expect(response.request.base_uri.to_s).to eq("http://api.foo.com")
           expect(response.request.path.to_s).to eq("/v3")
@@ -621,7 +621,7 @@ RSpec.describe HTTParty::Request do
         it "raises an error if redirect has duplicate location header" do
           @request = HTTParty::Request.new(Net::HTTP::Get, 'http://test.com/redirect', format: :xml)
           stub_request(:get, 'http://test.com/redirect')
-            .and_return(
+            .to_return(
               status: [300, 'REDIRECT'],
               headers: {
                 location: ['http://api.foo.com/v2', 'http://api.foo.com/v2']
@@ -637,12 +637,12 @@ RSpec.describe HTTParty::Request do
 
         it "redirects including port" do
           stub_request(:get, 'http://withport.com:3000/v1')
-            .and_return(
+            .to_return(
               status: [301, 'Moved Permanently'],
               headers: { location: 'http://withport.com:3000/v2' }
             )
           stub_request(:get, 'http://withport.com:3000/v2')
-            .and_return(status: 200)
+            .to_return(status: 200)
           request = HTTParty::Request.new(Net::HTTP::Get, 'http://withport.com:3000/v1')
           response = request.perform
           expect(response.request.base_uri.to_s).to eq("http://withport.com:3000")
