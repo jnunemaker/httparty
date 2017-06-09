@@ -465,7 +465,7 @@ RSpec.describe HTTParty::Request do
       }
 
       it "should process charset in content type properly" do
-        response = stub_response "Content"
+        response = stub_response "Content".force_encoding('ascii-8bit')
         response.initialize_http_header("Content-Type" => "text/plain;charset = utf-8")
         resp = @request.perform
         expect(response_charset).to_not be_empty
@@ -473,7 +473,7 @@ RSpec.describe HTTParty::Request do
       end
 
       it "should process charset in content type properly if it has a different case" do
-        response = stub_response "Content"
+        response = stub_response "Content".force_encoding('ascii-8bit')
         response.initialize_http_header("Content-Type" => "text/plain;CHARSET = utf-8")
         resp = @request.perform
         expect(response_charset).to_not be_empty
@@ -481,7 +481,7 @@ RSpec.describe HTTParty::Request do
       end
 
       it "should process quoted charset in content type properly" do
-        response = stub_response "Content"
+        response = stub_response "Content".force_encoding('ascii-8bit')
         response.initialize_http_header("Content-Type" => "text/plain;charset = \"utf-8\"")
         resp = @request.perform
         expect(response_charset).to_not be_empty
