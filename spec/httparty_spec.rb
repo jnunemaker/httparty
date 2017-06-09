@@ -333,7 +333,8 @@ RSpec.describe HTTParty do
 
     it "should be able parse response with custom parser" do
       @klass.parser parser
-      FakeWeb.register_uri(:get, 'http://twitter.com/statuses/public_timeline.xml', body: 'tweets')
+      stub_request(:get, 'http://twitter.com/statuses/public_timeline.xml')
+        .to_return(body: 'tweets')
       custom_parsed_response = @klass.get('http://twitter.com/statuses/public_timeline.xml')
       expect(custom_parsed_response[:sexy]).to eq(true)
     end
@@ -388,7 +389,7 @@ RSpec.describe HTTParty do
 
     it "should process a request with a uri instance parsed from the uri_adapter" do
       uri = 'http://foo.com/bar'
-      FakeWeb.register_uri(:get, uri, body: 'stuff')
+      stub_request(:get, uri).to_return(body: 'stuff')
       @klass.uri_adapter uri_adapter
       expect(@klass.get(uri).parsed_response).to eq('stuff')
     end
@@ -421,7 +422,7 @@ RSpec.describe HTTParty do
         expect(o[:connection_adapter_options]).to eq(connection_adapter_options)
         HTTParty::ConnectionAdapter.call(u, o)
       }.with(URI.parse(uri), kind_of(Hash))
-      FakeWeb.register_uri(:get, uri, body: 'stuff')
+      stub_request(:get, uri).to_return(body: 'stuff')
       @klass.connection_adapter connection_adapter, connection_adapter_options
       expect(@klass.get(uri).parsed_response).to eq('stuff')
     end
@@ -861,7 +862,7 @@ RSpec.describe HTTParty do
 
     it "should accept webcal URIs" do
       uri = 'http://google.com/'
-      FakeWeb.register_uri(:get, uri, body: 'stuff')
+      stub_request(:get, uri).to_return(body: 'stuff')
       uri = 'webcal://google.com/'
       expect do
         HTTParty.get(uri)
