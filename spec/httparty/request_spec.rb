@@ -226,6 +226,14 @@ RSpec.describe HTTParty::Request do
         expect(raw_request.get_fields('cookie')).to eql ["custom-cookie=1234567"]
       end
 
+      it 'should capture cookies returned from a 401 response' do
+        @request.options[:digest_auth] = {username: 'foobar', password: 'secret'}
+        response = @request.perform {|v|}
+        expect(response.code).to eq(200)
+
+        expect(@request.options[:headers]['Cookie']).to match(/custom-cookie=1234567/)
+      end
+
       it 'should merge cookies from request and a 401 response' do
 
         @request.options[:digest_auth] = {username: 'foobar', password: 'secret'}
