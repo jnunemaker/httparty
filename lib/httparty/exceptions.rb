@@ -20,6 +20,7 @@ module HTTParty
     # @param [Net::HTTPResponse]
     def initialize(response)
       @response = response
+      super(response)
     end
   end
 
