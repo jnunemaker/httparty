@@ -1,3 +1,11 @@
+## 0.15.7
+
+Change
+
+* [Deprecated method delegation to response](https://github.com/jnunemaker/httparty/pull/550)
+
+## 0.15.6
+
 ## 0.15.5
 
 Fixed
