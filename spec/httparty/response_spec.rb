@@ -78,11 +78,11 @@ RSpec.describe HTTParty::Response do
     }.to raise_error(NameError, /HTTParty\:\:Response/)
   end
 
-  it 'does raise an error about itself when invoking a method that does not exist' do 
+  it 'does raise an error about itself when invoking a method that does not exist' do
     expect {
       HTTParty::Response.new(@request_object, @response_object, @parsed_response).qux
     }.to raise_error(NoMethodError, /HTTParty\:\:Response/)
-  end 
+  end
 
   it "returns response headers" do
     response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
@@ -124,28 +124,23 @@ RSpec.describe HTTParty::Response do
     expect(response.respond_to?(:success?)).to be_truthy
   end
 
-  it "responds to anything parsed_response responds to" do
-    response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
-    expect(response.respond_to?(:[])).to be_truthy
-  end
-
   context 'response is array' do
     let(:response_value) { [{'foo' => 'bar'}, {'foo' => 'baz'}] }
-    let(:response) { HTTParty::Response.new(@request_object, @response_object, lambda { response_value }) } 
-    it "should be able to iterate" do 
+    let(:response) { HTTParty::Response.new(@request_object, @response_object, lambda { response_value }) }
+    it "should be able to iterate" do
       expect(response.size).to eq(2)
       expect {
         response.each { |item| }
       }.to_not raise_error
     end
 
-    it 'should respond to array methods' do       
-      expect(response).to respond_to(:bsearch, :compact, :cycle, :delete, :each, :flatten, :flatten!, :compact, :join)    
+    it 'should respond to array methods' do
+      expect(response).to respond_to(:bsearch, :compact, :cycle, :delete, :each, :flatten, :flatten!, :compact, :join)
     end
 
     it 'should equal the string response object body' do
-      expect(response.to_s).to eq(@response_object.body.to_s)    
-    end    
+      expect(response.to_s).to eq(@response_object.body.to_s)
+    end
 
     it 'should display the same as an array' do
       a = StringIO.new
@@ -153,7 +148,7 @@ RSpec.describe HTTParty::Response do
       response_value.display(b)
       response.display(a)
 
-      expect(a.string).to eq(b.string)    
+      expect(a.string).to eq(b.string)
     end
   end
 
@@ -192,6 +187,73 @@ RSpec.describe HTTParty::Response do
     it { is_expected.to respond_to(:kind_of?).with(1).arguments }
     it { expect(subject.kind_of?(HTTParty::Response)).to be_truthy }
     it { expect(subject.kind_of?(Object)).to be_truthy }
+  end
+
+  describe '.disable_method_delegation!' do
+    subject(:response) { described_class.new(@request_object, @response_object, @parsed_response) }
+
+    let(:delegatable_methods) do
+      (response.response.methods + response.parsed_response.methods) - (response.methods)
+    end
+
+    after { described_class.enable_method_delegation! }
+
+    it 'disables all delegatable methods' do
+      delegatable_methods.each do |method_name|
+        expect(response).to respond_to(method_name)
+      end
+
+      described_class.disable_method_delegation!
+
+      delegatable_methods.each do |method_name|
+        expect(response).not_to respond_to(method_name)
+      end
+    end
+  end
+
+  describe '.enable_method_delegation!' do
+    subject(:response) { described_class.new(@request_object, @response_object, @parsed_response) }
+
+    let(:delegatable_methods) do
+      (response.response.methods + response.parsed_response.methods) - (response.methods)
+    end
+
+    before { described_class.disable_method_delegation! }
+
+    after { described_class.enable_method_delegation! }
+
+    it 're-enables all delegatable methods' do
+      delegatable_methods.each do |method_name|
+        expect(response).not_to respond_to(method_name)
+      end
+
+      described_class.enable_method_delegation!
+
+      delegatable_methods.each do |method_name|
+        expect(response).to respond_to(method_name)
+      end
+    end
+  end
+
+  describe 'deprecation warnings when delegating methods' do
+    subject(:response) { described_class.new(@request_object, @response_object, @parsed_response) }
+
+    context 'with default behaviour' do
+      it 'warns of deprecation' do
+        expect { response.send(:[], 'data') }.to output(/\[Deprecated\]/).to_stderr
+      end
+    end
+
+    context 'when re-enabled' do
+      before do
+        described_class.disable_method_delegation!
+        described_class.enable_method_delegation!
+      end
+
+      it 'warns of deprecation' do
+        expect { response.send(:[], 'data') }.to output(/\[Deprecated\]/).to_stderr
+      end
+    end
   end
 
   describe "semantic methods for response codes" do
@@ -294,27 +356,27 @@ RSpec.describe HTTParty::Response do
 
   describe "headers" do
     let (:empty_headers) { HTTParty::Response::Headers.new }
-    let (:some_headers_hash) do 
+    let (:some_headers_hash) do
       {'Cookie' => 'bob',
       'Content-Encoding' => 'meow'}
-    end 
-    let (:some_headers) do 
+    end
+    let (:some_headers) do
        HTTParty::Response::Headers.new.tap do |h|
          some_headers_hash.each_pair do |k,v|
            h[k] = v
          end
       end
     end
-    it "can initialize without headers" do 
+    it "can initialize without headers" do
       expect(empty_headers).to eq({})
     end
 
     it 'always equals itself' do
-      expect(empty_headers).to eq(empty_headers) 
+      expect(empty_headers).to eq(empty_headers)
       expect(some_headers).to eq(some_headers)
     end
 
-    it 'does not equal itself when not equivalent' do 
+    it 'does not equal itself when not equivalent' do
       expect(empty_headers).to_not eq(some_headers)
     end
 
