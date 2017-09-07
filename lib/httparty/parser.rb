@@ -38,16 +38,17 @@ module HTTParty
   # @abstract Read the Custom Parsers section for more information.
   class Parser
     SupportedFormats = {
-      'text/xml'               => :xml,
-      'application/xml'        => :xml,
-      'application/json'       => :json,
-      'text/json'              => :json,
-      'application/javascript' => :plain,
-      'text/javascript'        => :plain,
-      'text/html'              => :html,
-      'text/plain'             => :plain,
-      'text/csv'               => :csv,
-      'application/csv'        => :csv,
+      'text/xml'                    => :xml,
+      'application/xml'             => :xml,
+      'application/json'            => :json,
+      'application/vnd.api+json'    => :json,
+      'text/json'                   => :json,
+      'application/javascript'      => :plain,
+      'text/javascript'             => :plain,
+      'text/html'                   => :html,
+      'text/plain'                  => :plain,
+      'text/csv'                    => :csv,
+      'application/csv'             => :csv,
       'text/comma-separated-values' => :csv
     }
 
