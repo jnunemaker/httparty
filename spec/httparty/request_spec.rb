@@ -373,6 +373,12 @@ RSpec.describe HTTParty::Request do
       end
     end
 
+    it 'should handle application/vnd.api+json' do
+      ["application/vnd.api+json", "application/vnd.api+json; charset=iso8859-1"].each do |ct|
+        expect(@request.send(:format_from_mimetype, ct)).to eq(:json)
+      end
+    end
+
     it 'should handle application/json' do
       ["application/json", "application/json; charset=iso8859-1"].each do |ct|
         expect(@request.send(:format_from_mimetype, ct)).to eq(:json)
