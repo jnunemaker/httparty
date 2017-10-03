@@ -276,8 +276,10 @@ module HTTParty
     end
 
     def encode_with_ruby_encoding(body, charset)
+      # NOTE: This will raise an argument error if the
+      # charset does not exist
       encoding = Encoding.find(charset)
-      body.force_encoding(charset)
+      body.force_encoding(encoding.to_s)
     rescue ArgumentError
       body
     end
