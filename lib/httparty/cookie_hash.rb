@@ -16,6 +16,6 @@ class HTTParty::CookieHash < Hash #:nodoc:
   end
 
   def to_cookie_string
-    reject { |k, v| CLIENT_COOKIES.include?(k.to_s.downcase) }.collect { |k, v| "#{k}=#{v}" }.join("; ")
+    select { |k, v| !CLIENT_COOKIES.include?(k.to_s.downcase) }.collect { |k, v| "#{k}=#{v}" }.join("; ")
   end
 end

@@ -40,8 +40,8 @@ RSpec.describe HTTParty::Response do
       expect(@response.code).to eq(@response_object.code)
     end
 
-    it "should set code as a Fixnum" do
-      expect(@response.code).to be_an_instance_of(Fixnum)
+    it "should set code as an Integer" do
+      expect(@response.code).to be_a(Integer)
     end
 
     context 'when raise_on is supplied' do
