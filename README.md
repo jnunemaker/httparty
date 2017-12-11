@@ -1,6 +1,6 @@
 # httparty
 
-Makes http fun again!
+Makes http fun again!  Ain't no party like a httparty
 
 ## Install
 
