@@ -1,6 +1,7 @@
 require 'pathname'
 require 'net/http'
 require 'net/https'
+require 'socksify/http'
 require 'uri'
 require 'zlib'
 require 'multi_xml'
@@ -92,6 +93,17 @@ module HTTParty
       default_options[:http_proxyport] = port
       default_options[:http_proxyuser] = user
       default_options[:http_proxypass] = pass
+    end
+
+    # Allows setting SOCKS proxy information to be used
+    #
+    #   class Foo
+    #     include HTTParty
+    #     socks_proxy 'http://foo.com', 80
+    #   end
+    def socks_proxy(addr=nil, port = nil)
+      default_options[:socks_proxyaddr] = addr
+      default_options[:socks_proxyport] = port
     end
 
     # Allows setting a base uri to be used for each request.
