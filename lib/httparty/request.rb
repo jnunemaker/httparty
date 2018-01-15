@@ -1,4 +1,5 @@
 require 'erb'
+require 'httparty/request/body'
 
 module HTTParty
   class Request #:nodoc:
@@ -176,10 +177,6 @@ module HTTParty
       connection_adapter.call(uri, options)
     end
 
-    def body
-      options[:body].respond_to?(:to_hash) ? normalize_query(options[:body]) : options[:body]
-    end
-
     def credentials
       (options[:basic_auth] || options[:digest_auth]).to_hash
     end
@@ -206,8 +203,14 @@ module HTTParty
 
     def setup_raw_request
       @raw_request = http_method.new(request_uri(uri))
-      @raw_request.body = body if body
       @raw_request.body_stream = options[:body_stream] if options[:body_stream]
+      if options[:body]
+        @raw_request.body = Body.new(
+          options[:body],
+          query_string_normalizer: query_string_normalizer
+        ).call
+      end
+
       if options[:headers].respond_to?(:to_hash)
         headers_hash = options[:headers].to_hash
 
