@@ -1,3 +1,5 @@
+require 'securerandom'
+
 module HTTParty
   class Request
     class MultipartBoundary
