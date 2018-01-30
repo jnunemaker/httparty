@@ -17,9 +17,27 @@ module HTTParty
         end
       end
 
+      def boundary
+        @boundary ||= "------------------------c772861a5109d5ef"
+      end
+
       private
 
       def generate_multipart
+        normalized_params = params.flat_map { |key, value| HashConversions.normalize_keys(key, value) }
+
+        multipart = normalized_params.inject('') do |memo, (key, value)|
+          memo += "--#{boundary}\n"
+          memo += "Content-Disposition: form-data; name='#{key}'"
+          memo += "; filename='#{File.basename(value)}'" if file?(value)
+          memo += "\n"
+          memo += "Content-Type: application/octet-stream\n" if file?(value)
+          memo += "\n"
+          memo += file?(value) ? value.read : value
+          memo += "\n"
+        end
+
+        multipart += "--#{boundary}--\n"
       end
 
       def multipart?
@@ -39,7 +57,7 @@ module HTTParty
       end
 
       def file?(object)
-        object.respond_to?(:path) && object.respond_to?(:read)
+        object.respond_to?(:path) && object.respond_to?(:read) # add memoization
       end
 
       def includes_hash?(object)
@@ -52,10 +70,6 @@ module HTTParty
         else
           HashConversions.to_params(query)
         end
-      end
-
-      def boundary
-        @boundary ||= "--------------------------#{SecureRandom.urlsafe_base64(12)}"
       end
 
       attr_reader :params, :query_string_normalizer, :options
