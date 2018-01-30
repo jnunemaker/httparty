@@ -6,7 +6,6 @@ module HTTParty
       def initialize(params, query_string_normalizer: nil)
         @params = params
         @query_string_normalizer = query_string_normalizer
-        @options = {}
       end
 
       def call
@@ -22,7 +21,7 @@ module HTTParty
       end
 
       def multipart?
-        options[:multipart] || has_file?(params)
+        params.respond_to?(:to_hash) && has_file?(params.to_hash)
       end
 
       private
@@ -72,7 +71,7 @@ module HTTParty
         end
       end
 
-      attr_reader :params, :query_string_normalizer, :options
+      attr_reader :params, :query_string_normalizer
     end
   end
 end
