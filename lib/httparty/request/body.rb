@@ -30,17 +30,17 @@ module HTTParty
         normalized_params = params.flat_map { |key, value| HashConversions.normalize_keys(key, value) }
 
         multipart = normalized_params.inject('') do |memo, (key, value)|
-          memo += "--#{boundary}\n"
-          memo += "Content-Disposition: form-data; name='#{key}'"
-          memo += "; filename='#{File.basename(value)}'" if file?(value)
-          memo += "\n"
-          memo += "Content-Type: application/octet-stream\n" if file?(value)
-          memo += "\n"
+          memo += "--#{boundary}\r\n"
+          memo += %(Content-Disposition: form-data; name="#{key}")
+          memo += %(; filename="#{File.basename(value)}") if file?(value)
+          memo += "\r\n"
+          memo += "Content-Type: application/octet-stream\r\n" if file?(value)
+          memo += "\r\n"
           memo += file?(value) ? value.read : value
-          memo += "\n"
+          memo += "\r\n"
         end
 
-        multipart += "--#{boundary}--\n"
+        multipart += "--#{boundary}--\r\n"
       end
 
       def has_file?(hash)

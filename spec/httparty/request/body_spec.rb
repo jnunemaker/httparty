@@ -32,20 +32,20 @@ RSpec.describe HTTParty::Request::Body do
           }
         end
         let(:multipart_params) do
-          "--------------------------c772861a5109d5ef\n" \
-          "Content-Disposition: form-data; name='user[avatar]'; filename='tiny.gif'\n" \
-          "Content-Type: application/octet-stream\n" \
-          "\n" \
-          "GIF89a\u0001\u0000\u0001\u0000\u0000\xFF\u0000,\u0000\u0000\u0000\u0000\u0001\u0000\u0001\u0000\u0000\u0002\u0000;\n" \
-          "--------------------------c772861a5109d5ef\n" \
-          "Content-Disposition: form-data; name='user[first_name]'\n" \
-          "\n" \
-          "John\n" \
-          "--------------------------c772861a5109d5ef\n" \
-          "Content-Disposition: form-data; name='user[last_name]'\n" \
-          "\n" \
-          "Doe\n" \
-          "--------------------------c772861a5109d5ef--\n"
+          "--------------------------c772861a5109d5ef\r\n" \
+          "Content-Disposition: form-data; name=\"user[avatar]\"; filename=\"tiny.gif\"\r\n" \
+          "Content-Type: application/octet-stream\r\n" \
+          "\r\n" \
+          "GIF89a\u0001\u0000\u0001\u0000\u0000\xFF\u0000,\u0000\u0000\u0000\u0000\u0001\u0000\u0001\u0000\u0000\u0002\u0000;\r\n" \
+          "--------------------------c772861a5109d5ef\r\n" \
+          "Content-Disposition: form-data; name=\"user[first_name]\"\r\n" \
+          "\r\n" \
+          "John\r\n" \
+          "--------------------------c772861a5109d5ef\r\n" \
+          "Content-Disposition: form-data; name=\"user[last_name]\"\r\n" \
+          "\r\n" \
+          "Doe\r\n" \
+          "--------------------------c772861a5109d5ef--\r\n"
         end
 
         it { is_expected.to eq multipart_params }
