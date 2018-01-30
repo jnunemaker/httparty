@@ -1,4 +1,4 @@
-require 'pry'
+require_relative 'multipart_boundary'
 
 module HTTParty
   class Request
@@ -18,7 +18,11 @@ module HTTParty
       end
 
       def boundary
-        @boundary ||= "------------------------c772861a5109d5ef"
+        @boundary ||= MultipartBoundary.generate
+      end
+
+      def multipart?
+        options[:multipart] || has_file?(params)
       end
 
       private
@@ -38,10 +42,6 @@ module HTTParty
         end
 
         multipart += "--#{boundary}--\n"
-      end
-
-      def multipart?
-        options[:multipart] || has_file?(params)
       end
 
       def has_file?(hash)

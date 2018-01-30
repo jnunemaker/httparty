@@ -188,6 +188,23 @@ RSpec.describe HTTParty do
         @klass.get('', cookies: {type: 'snickerdoodle'}, headers: {baz: 'spax'})
       end
     end
+
+    context 'when posting file' do
+      let(:boundary) { '------------------------c772861a5109d5ef' }
+      let(:headers) do
+        { 'Content-Type'=>"multipart/form-data; boundary=#{boundary}" }
+      end
+
+      before do
+        expect(HTTParty::Request::MultipartBoundary).to receive(:generate).and_return(boundary)
+      end
+
+      it 'changes content-type headers to multipart/form-data' do
+        stub_request(:post, "http://example.com/").with(headers: headers)
+
+        @klass.post('http://example.com', body: { file: File.open('spec/fixtures/tiny.gif')})
+      end
+    end
   end
 
   describe "cookies" do

@@ -17,6 +17,11 @@ RSpec.describe HTTParty::Request::Body do
       it { is_expected.to eq converted_params }
 
       context 'when params has file' do
+        before do
+          allow(HTTParty::Request::MultipartBoundary).
+            to receive(:generate).and_return("------------------------c772861a5109d5ef")
+        end
+
         let(:params) do
           {
             user: {
