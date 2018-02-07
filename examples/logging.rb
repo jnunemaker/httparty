@@ -3,7 +3,7 @@ require File.join(dir, 'httparty')
 require 'logger'
 require 'pp'
 
-my_logger = Logger.new "httparty.log"
+my_logger = Logger.new STDOUT
 
 my_logger.info "Logging can be used on the main HTTParty class. It logs redirects too."
 HTTParty.get "http://google.com", logger: my_logger
@@ -14,7 +14,7 @@ my_logger.info "It can be used also on a custom class."
 
 class Google
   include HTTParty
-  logger ::Logger.new "httparty.log"
+  logger ::Logger.new STDOUT
 end
 
 Google.get "http://google.com"
@@ -30,7 +30,7 @@ my_logger.info '*' * 70
 my_logger.info "These configs are also available on custom classes."
 class Google
   include HTTParty
-  logger ::Logger.new("httparty.log"), :debug, :curl
+  logger ::Logger.new(STDOUT), :debug, :curl
 end
 
 Google.get "http://google.com"
