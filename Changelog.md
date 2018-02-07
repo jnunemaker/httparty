@@ -1,3 +1,16 @@
+## 0.15.7
+
+Fixed
+
+* [Add Response#pretty_print | Restore documented behavior](https://github.com/jnunemaker/httparty/pull/570)
+* [Add ability to parse response from JSONAPI ](https://github.com/jnunemaker/httparty/pull/553)
+
+## 0.15.6
+
+Fixed
+
+* [Encoding and content type stuff](https://github.com/jnunemaker/httparty/pull/543)
+
 ## 0.15.5
 
 Fixed
