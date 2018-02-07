@@ -67,6 +67,14 @@ module HTTParty
       end
     end
 
+    def pretty_print(pp)
+      if !parsed_response.nil? && parsed_response.respond_to?(:pretty_print)
+        parsed_response.pretty_print(pp)
+      else
+        super
+      end
+    end
+
     def display(port=$>)
       if !parsed_response.nil? && parsed_response.respond_to?(:display)
         parsed_response.display(port)
