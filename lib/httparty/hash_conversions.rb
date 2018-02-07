@@ -24,32 +24,43 @@ module HTTParty
     #
     # @example normalize_param(:name, "Bob Jones") #=> "name=Bob%20Jones&"
     def self.normalize_param(key, value)
-      param = ''
+      normalized_keys = normalize_keys(key, value)
+
+      normalized_keys.inject('') do |string, (k, v)|
+        string + "#{k}=#{ERB::Util.url_encode(v.to_s)}&"
+      end
+    end
+
+    def self.normalize_keys(key, value)
       stack = []
+      normalized_keys = []
 
       if value.respond_to?(:to_ary)
-        param << if value.empty?
-                   "#{key}[]=&"
-                 else
-                   value.to_ary.map { |element| normalize_param("#{key}[]", element) }.join
-                 end
+        if value.empty?
+          normalized_keys << ["#{key}[]", '']
+        else
+          normalized_keys = value.to_ary.flat_map { |element| normalize_keys("#{key}[]", element) }
+        end
       elsif value.respond_to?(:to_hash)
         stack << [key, value.to_hash]
       else
-        param << "#{key}=#{ERB::Util.url_encode(value.to_s)}&"
+        normalized_keys << [key.to_s, value]
       end
 
+
       stack.each do |parent, hash|
-        hash.each do |k, v|
-          if v.respond_to?(:to_hash)
-            stack << ["#{parent}[#{k}]", v.to_hash]
+        hash.each do |key, value|
+          if value.respond_to?(:to_hash)
+            stack << ["#{parent}[#{key}]", value.to_hash]
+          elsif value.respond_to?(:to_ary)
+            value.to_ary.each { |v| normalized_keys << normalize_keys("#{parent}[#{key}][]", v).flatten }
           else
-            param << normalize_param("#{parent}[#{k}]", v)
+            normalized_keys << normalize_keys("#{parent}[#{key}]", value).flatten
           end
         end
       end
 
-      param
+      normalized_keys
     end
   end
 end
