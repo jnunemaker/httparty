@@ -240,6 +240,7 @@ module HTTParty
     end
 
     def setup_digest_auth
+      capture_cookies(last_response)
       @raw_request.digest_auth(username, password, last_response)
     end
 
