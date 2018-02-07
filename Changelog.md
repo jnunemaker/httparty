@@ -1,3 +1,7 @@
+## 0.16.0 (master)
+
+* [Add multipart support](https://github.com/jnunemaker/httparty/pull/569)
+
 ## 0.15.7
 
 Fixed
