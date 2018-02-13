@@ -1,4 +1,4 @@
-## 0.16.0 (master)
+## 0.16.0
 
 * [Add multipart support](https://github.com/jnunemaker/httparty/pull/569)
 
