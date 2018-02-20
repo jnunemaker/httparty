@@ -54,6 +54,12 @@ module HTTParty
     if ::RUBY_VERSION >= "2.0.0" && ::RUBY_PLATFORM != "java"
       alias_method :multiple_choice?, :multiple_choices?
     end
+    
+    if ::RUBY_VERSION >= "1.9.0"
+      def tap(&block)
+        ::Object.instance_method(:tap).bind(self).call(&block)
+      end
+    end
 
     def nil?
       response.nil? || response.body.nil? || response.body.empty?
