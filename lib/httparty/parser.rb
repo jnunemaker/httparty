@@ -42,6 +42,7 @@ module HTTParty
       'application/xml'             => :xml,
       'application/json'            => :json,
       'application/vnd.api+json'    => :json,
+      'application/hal+json'        => :json,
       'text/json'                   => :json,
       'application/javascript'      => :plain,
       'text/javascript'             => :plain,
