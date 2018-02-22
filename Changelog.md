@@ -1,3 +1,7 @@
+## master 
+
+* [Parse content with application/hal+json content type as JSON](https://github.com/jnunemaker/httparty/pull/573)
+
 ## 0.16.0
 
 * [Add multipart support](https://github.com/jnunemaker/httparty/pull/569)
