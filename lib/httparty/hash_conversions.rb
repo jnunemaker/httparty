@@ -47,15 +47,14 @@ module HTTParty
         normalized_keys << [key.to_s, value]
       end
 
-
       stack.each do |parent, hash|
-        hash.each do |key, value|
-          if value.respond_to?(:to_hash)
-            stack << ["#{parent}[#{key}]", value.to_hash]
-          elsif value.respond_to?(:to_ary)
-            value.to_ary.each { |v| normalized_keys << normalize_keys("#{parent}[#{key}][]", v).flatten }
+        hash.each do |child_key, child_value|
+          if child_value.respond_to?(:to_hash)
+            stack << ["#{parent}[#{child_key}]", child_value.to_hash]
+          elsif child_value.respond_to?(:to_ary)
+            child_value.to_ary.each { |v| normalized_keys << normalize_keys("#{parent}[#{child_key}][]", v).flatten }
           else
-            normalized_keys << normalize_keys("#{parent}[#{key}]", value).flatten
+            normalized_keys << normalize_keys("#{parent}[#{child_key}]", child_value).flatten
           end
         end
       end
