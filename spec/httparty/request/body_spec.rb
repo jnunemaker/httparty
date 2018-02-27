@@ -27,7 +27,8 @@ RSpec.describe HTTParty::Request::Body do
             user: {
               avatar: File.open('spec/fixtures/tiny.gif'),
               first_name: 'John',
-              last_name: 'Doe'
+              last_name: 'Doe',
+              enabled: true
             }
           }
         end
@@ -45,6 +46,10 @@ RSpec.describe HTTParty::Request::Body do
           "Content-Disposition: form-data; name=\"user[last_name]\"\r\n" \
           "\r\n" \
           "Doe\r\n" \
+          "--------------------------c772861a5109d5ef\r\n" \
+          "Content-Disposition: form-data; name=\"user[enabled]\"\r\n" \
+          "\r\n" \
+          "true\r\n" \
           "--------------------------c772861a5109d5ef--\r\n"
         end
 
