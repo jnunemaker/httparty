@@ -1,6 +1,7 @@
 ## master 
 
 * [Parse content with application/hal+json content type as JSON](https://github.com/jnunemaker/httparty/pull/573)
+* [Convert objects to string when concatenating in multipart stuff](https://github.com/jnunemaker/httparty/pull/575)
 
 ## 0.16.0
 
