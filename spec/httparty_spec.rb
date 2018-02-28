@@ -358,11 +358,12 @@ RSpec.describe HTTParty do
 
     it "raises UnsupportedFormat when the parser cannot handle the format" do
       @klass.format :json
-      class MyParser < HTTParty::Parser
-        SupportedFormats = {}
-      end unless defined?(MyParser)
+
+      parser_class = Class.new(HTTParty::Parser)
+      parser_class::SupportedFormats = {}
+
       expect do
-        @klass.parser MyParser
+        @klass.parser parser_class
       end.to raise_error(HTTParty::UnsupportedFormat)
     end
 
