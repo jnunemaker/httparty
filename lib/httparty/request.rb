@@ -205,15 +205,6 @@ module HTTParty
       @raw_request = http_method.new(request_uri(uri))
       @raw_request.body_stream = options[:body_stream] if options[:body_stream]
 
-      if options[:body]
-        body = Body.new(options[:body], query_string_normalizer: query_string_normalizer)
-        if body.multipart?
-          content_type = "multipart/form-data; boundary=#{body.boundary}"
-          @raw_request.initialize_http_header('Content-Type' => content_type)
-        end
-        @raw_request.body = body.call
-      end
-
       if options[:headers].respond_to?(:to_hash)
         headers_hash = options[:headers].to_hash
 
@@ -225,6 +216,15 @@ module HTTParty
           # Using the '[]=' sets decode_content to false
           @raw_request['accept-encoding'] = @raw_request['accept-encoding']
         end
+      end
+
+      if options[:body]
+        body = Body.new(options[:body], query_string_normalizer: query_string_normalizer)
+        if body.multipart?
+          content_type = "multipart/form-data; boundary=#{body.boundary}"
+          @raw_request['Content-Type'] = content_type
+        end
+        @raw_request.body = body.call
       end
 
       if options[:basic_auth] && send_authorization_header?
