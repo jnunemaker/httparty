@@ -23,6 +23,8 @@ RSpec.describe Net::HTTPHeader::DigestAuthenticator do
         include Net::HTTPHeader
         def initialize
           @header = {}
+          @path = '/'
+          @method = 'GET'
         end
       end).new
     } 

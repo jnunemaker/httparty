@@ -612,7 +612,7 @@ RSpec.describe HTTParty::Request do
           stub_request(:get, 'http://api.foo.com/v2')
             .to_return(body: '<hash><foo>bar</foo></hash>')
           body = ""
-          response = @request.perform { |chunk| body += chunk }
+          @request.perform { |chunk| body += chunk }
           expect(body.length).to eq(27)
         end
 

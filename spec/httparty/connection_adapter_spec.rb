@@ -32,9 +32,12 @@ RSpec.describe HTTParty::ConnectionAdapter do
   end
 
   describe ".call" do
+    let(:uri) { URI 'http://www.google.com' }
+    let(:options) { { foo: :bar } }
+
     it "generates an HTTParty::ConnectionAdapter instance with the given uri and options" do
-      expect(HTTParty::ConnectionAdapter).to receive(:new).with(@uri, @options).and_return(double(connection: nil))
-      HTTParty::ConnectionAdapter.call(@uri, @options)
+      expect(HTTParty::ConnectionAdapter).to receive(:new).with(uri, options).and_return(double(connection: nil))
+      HTTParty::ConnectionAdapter.call(uri, options)
     end
 
     it "calls #connection on the connection adapter" do
@@ -42,7 +45,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
       connection = double('Connection')
       expect(adapter).to receive(:connection).and_return(connection)
       allow(HTTParty::ConnectionAdapter).to receive_messages(new: adapter)
-      expect(HTTParty::ConnectionAdapter.call(@uri, @options)).to be connection
+      expect(HTTParty::ConnectionAdapter.call(uri, options)).to be connection
     end
   end
 

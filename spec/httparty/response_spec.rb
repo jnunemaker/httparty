@@ -66,7 +66,7 @@ RSpec.describe HTTParty::Response do
         subject { described_class.new(request, @response_object, @parsed_response) }
 
         it 'does not throw exception' do
-          expect{ subject }.not_to raise_error(HTTParty::ResponseError)
+          expect{ subject }.not_to raise_error
         end
       end
     end
