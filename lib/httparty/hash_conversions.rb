@@ -26,7 +26,7 @@ module HTTParty
     def self.normalize_param(key, value)
       normalized_keys = normalize_keys(key, value)
 
-      normalized_keys.inject('') do |string, (k, v)|
+      normalized_keys.flatten.each_slice(2).inject('') do |string, (k, v)|
         string + "#{k}=#{ERB::Util.url_encode(v.to_s)}&"
       end
     end
