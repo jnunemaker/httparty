@@ -11,6 +11,13 @@ RSpec.describe HTTParty::HashConversions do
       }
       expect(HTTParty::HashConversions.to_params(hash)).to eq("name=bob&address[street]=111%20ruby%20ave.&address[city]=ruby%20central&address[phones][]=111-111-1111&address[phones][]=222-222-2222")
     end
+
+    context "nested params" do
+      it 'creates a params string from a hash' do
+        hash = { marketing_event: { marketed_resources: [ {type:"product", id: 57474842640 } ] } }
+        expect(HTTParty::HashConversions.to_params(hash)).to eq("marketing_event[marketed_resources][][type]=product&marketing_event[marketed_resources][][id]=57474842640")
+      end
+    end
   end
 
   describe ".normalize_param" do
