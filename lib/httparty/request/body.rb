@@ -32,7 +32,7 @@ module HTTParty
         multipart = normalized_params.inject('') do |memo, (key, value)|
           memo += "--#{boundary}\r\n"
           memo += %(Content-Disposition: form-data; name="#{key}")
-          memo += %(; filename="#{File.basename(value)}") if file?(value)
+          memo += %(; filename="#{File.basename(value.path)}") if file?(value)
           memo += "\r\n"
           memo += "Content-Type: application/octet-stream\r\n" if file?(value)
           memo += "\r\n"

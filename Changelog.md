@@ -1,3 +1,7 @@
+## Unreleased
+
+* [Support ActionDispatch::Http::UploadedFile again](https://github.com/jnunemaker/httparty/pull/585)
+
 ## 0.16.1
 
 * [Parse content with application/hal+json content type as JSON](https://github.com/jnunemaker/httparty/pull/573)
