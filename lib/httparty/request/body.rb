@@ -32,6 +32,8 @@ module HTTParty
         multipart = normalized_params.inject('') do |memo, (key, value)|
           memo += "--#{boundary}\r\n"
           memo += %(Content-Disposition: form-data; name="#{key}")
+          # value.path is used to support ActionDispatch::Http::UploadedFile
+          # https://github.com/jnunemaker/httparty/pull/585
           memo += %(; filename="#{File.basename(value.path)}") if file?(value)
           memo += "\r\n"
           memo += "Content-Type: application/octet-stream\r\n" if file?(value)
