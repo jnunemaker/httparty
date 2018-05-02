@@ -10,3 +10,4 @@ pkg/
 .rvmrc
 coverage
 *.gem
+.idea

@@ -14,6 +14,8 @@ module HTTParty
       Net::HTTP::Move,
       Net::HTTP::Copy,
       Net::HTTP::Mkcol,
+      Net::HTTP::Lock,
+      Net::HTTP::Unlock,
     ]
 
     SupportedURISchemes  = ['http', 'https', 'webcal', nil]

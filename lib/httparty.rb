@@ -546,6 +546,14 @@ module HTTParty
       perform_request Net::HTTP::Mkcol, path, options, &block
     end
 
+    def lock(path, options = {}, &block)
+      perform_request Net::HTTP::Lock, path, options, &block
+    end
+
+    def unlock(path, options = {}, &block)
+      perform_request Net::HTTP::Unlock, path, options, &block
+    end
+
     attr_reader :default_options
 
     private
