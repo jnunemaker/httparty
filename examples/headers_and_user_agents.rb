@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # To send custom user agents to identify your application to a web service (or mask as a specific browser for testing), send "User-Agent" as a hash to headers as shown below.
 
 dir = File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))

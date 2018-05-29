@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 module HTTParty
   module Logger
     class CurlFormatter #:nodoc:
       TAG_NAME = HTTParty.name
-      OUT      = '>'.freeze
-      IN       = '<'.freeze
+      OUT      = '>'
+      IN       = '<'
 
       attr_accessor :level, :logger
 

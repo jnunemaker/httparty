@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module HTTParty
   # The default parser used by HTTParty, supports xml, json, html, csv and
   # plain text.
@@ -119,7 +121,7 @@ module HTTParty
       MultiXml.parse(body)
     end
 
-    UTF8_BOM = "\xEF\xBB\xBF".freeze
+    UTF8_BOM = "\xEF\xBB\xBF"
 
     def json
       JSON.parse(body, :quirks_mode => true, :allow_nan => true)

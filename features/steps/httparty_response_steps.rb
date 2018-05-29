@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Not needed anymore in ruby 2.0, but needed to resolve constants
 # in nested namespaces. This is taken from rails :)
 def constantize(camel_cased_word)

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 When /^I set my HTTParty timeout option to (\d+)$/ do |timeout|
   @request_options[:timeout] = timeout.to_i
 end

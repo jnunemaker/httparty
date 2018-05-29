@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper'))
 
 RSpec.describe HTTParty::Response do
@@ -78,11 +80,11 @@ RSpec.describe HTTParty::Response do
     }.to raise_error(NameError, /HTTParty\:\:Response/)
   end
 
-  it 'does raise an error about itself when invoking a method that does not exist' do 
+  it 'does raise an error about itself when invoking a method that does not exist' do
     expect {
       HTTParty::Response.new(@request_object, @response_object, @parsed_response).qux
     }.to raise_error(NoMethodError, /HTTParty\:\:Response/)
-  end 
+  end
 
   it "returns response headers" do
     response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
@@ -131,21 +133,21 @@ RSpec.describe HTTParty::Response do
 
   context 'response is array' do
     let(:response_value) { [{'foo' => 'bar'}, {'foo' => 'baz'}] }
-    let(:response) { HTTParty::Response.new(@request_object, @response_object, lambda { response_value }) } 
-    it "should be able to iterate" do 
+    let(:response) { HTTParty::Response.new(@request_object, @response_object, lambda { response_value }) }
+    it "should be able to iterate" do
       expect(response.size).to eq(2)
       expect {
         response.each { |item| }
       }.to_not raise_error
     end
 
-    it 'should respond to array methods' do       
-      expect(response).to respond_to(:bsearch, :compact, :cycle, :delete, :each, :flatten, :flatten!, :compact, :join)    
+    it 'should respond to array methods' do
+      expect(response).to respond_to(:bsearch, :compact, :cycle, :delete, :each, :flatten, :flatten!, :compact, :join)
     end
 
     it 'should equal the string response object body' do
-      expect(response.to_s).to eq(@response_object.body.to_s)    
-    end    
+      expect(response.to_s).to eq(@response_object.body.to_s)
+    end
 
     it 'should display the same as an array' do
       a = StringIO.new
@@ -153,7 +155,7 @@ RSpec.describe HTTParty::Response do
       response_value.display(b)
       response.display(a)
 
-      expect(a.string).to eq(b.string)    
+      expect(a.string).to eq(b.string)
     end
   end
 
@@ -294,27 +296,27 @@ RSpec.describe HTTParty::Response do
 
   describe "headers" do
     let (:empty_headers) { HTTParty::Response::Headers.new }
-    let (:some_headers_hash) do 
+    let (:some_headers_hash) do
       {'Cookie' => 'bob',
       'Content-Encoding' => 'meow'}
-    end 
-    let (:some_headers) do 
+    end
+    let (:some_headers) do
        HTTParty::Response::Headers.new.tap do |h|
          some_headers_hash.each_pair do |k,v|
            h[k] = v
          end
       end
     end
-    it "can initialize without headers" do 
+    it "can initialize without headers" do
       expect(empty_headers).to eq({})
     end
 
     it 'always equals itself' do
-      expect(empty_headers).to eq(empty_headers) 
+      expect(empty_headers).to eq(empty_headers)
       expect(some_headers).to eq(some_headers)
     end
 
-    it 'does not equal itself when not equivalent' do 
+    it 'does not equal itself when not equivalent' do
       expect(empty_headers).to_not eq(some_headers)
     end
 

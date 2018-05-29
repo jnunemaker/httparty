@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'httparty/logger/apache_formatter'
 require 'httparty/logger/curl_formatter'
 

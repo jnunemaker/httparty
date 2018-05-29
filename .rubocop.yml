@@ -66,6 +66,11 @@ Style/RegexpLiteral:
 Style/NumericLiterals:
   MinDigits: 6
 
+# Offense count: 0
+# Cop supports --auto-correct.
+Style/FrozenStringLiteralComment:
+  EnforcedStyle: always
+
 # Offense count: 4
 # Cop supports --auto-correct.
 Lint/UnusedMethodArgument:

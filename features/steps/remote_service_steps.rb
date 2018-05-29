@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Given /a remote service that returns '(.*)'/ do |response_body|
   @handler = BasicMongrelHandler.new
   step "the response from the service has a body of '#{response_body}'"

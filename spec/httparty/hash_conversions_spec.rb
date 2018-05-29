@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe HTTParty::HashConversions do
   describe ".to_params" do
     it "creates a params string from a hash" do

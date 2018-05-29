@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module HTTParty
   module StubResponse
     def stub_http_response_with(filename)

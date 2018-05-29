@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module HTTParty
   # @abstact Exceptions raised by HTTParty inherit from Error
   class Error < StandardError; end
