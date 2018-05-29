@@ -112,7 +112,7 @@ RSpec.describe HTTParty::Parser do
 
     it "parses ascii 8bit encoding" do
       parser = HTTParty::Parser.new(
-        "{\"currency\":\"\xE2\x82\xAC\"}".force_encoding('ASCII-8BIT'),
+        "{\"currency\":\"\xE2\x82\xAC\"}".dup.force_encoding('ASCII-8BIT'),
         :json
       )
       expect(parser.parse).to eq({"currency" => "€"})
