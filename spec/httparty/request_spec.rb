@@ -788,6 +788,16 @@ RSpec.describe HTTParty::Request do
           expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
         end
 
+        it "should be handled by LOCK transparently" do
+          @request.http_method = Net::HTTP::Lock
+          expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+        end
+
+        it "should be handled by UNLOCK transparently" do
+          @request.http_method = Net::HTTP::Unlock
+          expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+        end
+
         it "should keep track of cookies between redirects" do
           @redirect['Set-Cookie'] = 'foo=bar; name=value; HTTPOnly'
           @request.perform
@@ -911,6 +921,16 @@ RSpec.describe HTTParty::Request do
 
       it "should be handled by MKCOL transparently" do
         @request.http_method = Net::HTTP::Mkcol
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+      end
+
+      it "should be handled by LOCK transparently" do
+        @request.http_method = Net::HTTP::Lock
+        expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+      end
+
+      it "should be handled by UNLOCK transparently" do
+        @request.http_method = Net::HTTP::Unlock
         expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
       end
 
@@ -1052,6 +1072,16 @@ RSpec.describe HTTParty::Request do
       expect(@request.perform.code).to eq(304)
     end
 
+    it "should be handled by LOCK transparently" do
+      @request.http_method = Net::HTTP::Lock
+      expect(@request.perform.code).to eq(304)
+    end
+
+    it "should be handled by UNLOCK transparently" do
+      @request.http_method = Net::HTTP::Unlock
+      expect(@request.perform.code).to eq(304)
+    end
+
     it 'should not log the redirection' do
       logger_double = double
       expect(logger_double).to receive(:info).once
@@ -1122,6 +1152,18 @@ RSpec.describe HTTParty::Request do
           @request.http_method = Net::HTTP::Mkcol
           expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
         end
+
+        it "should be handled by LOCK transparently" do
+          @request.http_method = Net::HTTP::Lock
+          expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+        end
+
+        it "should be handled by UNLOCK transparently" do
+          @request.http_method = Net::HTTP::Unlock
+          expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+        end
+
+
 
         it "should keep track of cookies between redirects" do
           @redirect['Set-Cookie'] = 'foo=bar; name=value; HTTPOnly'
