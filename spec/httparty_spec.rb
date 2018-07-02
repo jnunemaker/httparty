@@ -1,6 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), 'spec_helper'))
 
-RSpec.describe HTTParty do
+describe HTTParty do
   before(:each) do
     @klass = Class.new
     @klass.instance_eval { include HTTParty }

@@ -1,3 +1,7 @@
+## Unreleased
+
+* [Fix multipart uploads with ActionDispatch::Http::UploadedFile TempFile by using original_filename](https://github.com/jnunemaker/httparty/pull/598)
+
 ## 0.16.2
 
 * [Support ActionDispatch::Http::UploadedFile again](https://github.com/jnunemaker/httparty/pull/585)
