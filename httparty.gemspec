@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.licenses    = ['MIT']
   s.authors     = ["John Nunemaker", "Sandro Turriate"]
   s.email       = ["nunemaker@gmail.com"]
-  s.homepage    = "http://jnunemaker.github.com/httparty"
+  s.homepage    = "https://github.com/jnunemaker/httparty"
   s.summary     = 'Makes http fun! Also, makes consuming restful web services dead easy.'
   s.description = 'Makes http fun! Also, makes consuming restful web services dead easy.'
 
