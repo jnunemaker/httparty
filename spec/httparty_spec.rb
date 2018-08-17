@@ -145,7 +145,7 @@ RSpec.describe HTTParty do
     end
 
     it "should be able to accept block as header value" do
-      init_headers = {foo: lambda {'bar'}}
+      init_headers = {'foo' => lambda {'bar'}}
       @klass.headers init_headers
 
       stub_request(:get, "http://example.com/").with(headers: {'foo' => 'bar'})
