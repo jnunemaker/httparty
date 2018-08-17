@@ -571,10 +571,12 @@ module HTTParty
     end
 
     def process_dynamic_headers(headers)
-      headers.map do |header, value|
+      headers = headers.map do |header, value|
         value = value.respond_to?(:call) ? value.call : value
         [header, value]
-      end.to_h
+      end
+
+      Hash[headers]
     end
 
     def process_cookies(options) #:nodoc:
