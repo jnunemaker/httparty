@@ -565,8 +565,16 @@ module HTTParty
 
     def process_headers(options)
       if options[:headers] && headers.any?
+        options[:headers] = process_dynamic_headers(options[:headers])
         options[:headers] = headers.merge(options[:headers])
       end
+    end
+
+    def process_dynamic_headers(headers)
+      headers.map do |header, value|
+        value = value.respond_to?(:call) ? value.call : value
+        [header, value]
+      end.to_h
     end
 
     def process_cookies(options) #:nodoc:
