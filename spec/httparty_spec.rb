@@ -148,7 +148,7 @@ RSpec.describe HTTParty do
       init_headers = {foo: lambda {'bar'}}
       @klass.headers init_headers
 
-      stub_request(:get, "http://example.com/").with(headers: {foo: 'bar'})
+      stub_request(:get, "http://example.com/").with(headers: {'foo' => 'bar'})
 
       @klass.get('http://example.com/')
       expect(@klass.headers).to eq(init_headers)
