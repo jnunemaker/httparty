@@ -150,7 +150,7 @@ RSpec.describe HTTParty do
 
       stub_request(:get, "http://example.com/").with(headers: {'foo' => 'bar', 'baz' => 'spax'})
 
-      @klass.get('http://example.com/', headers: {baz: -> {'spax'}})
+      @klass.get('http://example.com/', headers: {'baz' => -> {'spax'}})
       expect(@klass.headers).to eq(init_headers)
     end
 
