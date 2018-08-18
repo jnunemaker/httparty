@@ -565,8 +565,8 @@ module HTTParty
 
     def process_headers(options)
       if options[:headers] && headers.any?
-        options[:headers] = process_dynamic_headers(options[:headers])
         options[:headers] = headers.merge(options[:headers])
+        options[:headers] = process_dynamic_headers(options[:headers])
       end
     end
 
