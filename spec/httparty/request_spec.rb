@@ -352,14 +352,23 @@ RSpec.describe HTTParty::Request do
         expect(headers['content-type']).to match(%r{^multipart/form-data; boundary=---})
       end
 
-      context "and header Content-Type is provided" do
-        it "overwrites the header to: multipart/form-data; boundary=" do
+      context "and header is provided" do
+        it "complete the header with content type as: multipart/form-data; boundary=" do
+          @request.options[:body] = {file: File.open(File::NULL, 'r')}
+          @request.options[:headers] = {"User-Agent" => "HTTParty"}
+          @request.send(:setup_raw_request)
+          headers = @request.instance_variable_get(:@raw_request).each_header.to_a
+          headers = Hash[*headers.flatten]  # Ruby 2.0 doesn't have Array#to_h
+          expect(headers['content-type']).to match(%r{^multipart/form-data; boundary=---})
+        end
+
+        it "does not overwrites provided Content Type" do
           @request.options[:body] = {file: File.open(File::NULL, 'r')}
           @request.options[:headers] = {'Content-Type' => 'application/x-www-form-urlencoded'}
           @request.send(:setup_raw_request)
           headers = @request.instance_variable_get(:@raw_request).each_header.to_a
           headers = Hash[*headers.flatten]  # Ruby 2.0 doesn't have Array#to_h
-          expect(headers['content-type']).to match(%r{^multipart/form-data; boundary=---})
+          expect(headers['content-type']).to match('application/x-www-form-urlencoded')
         end
       end
     end
