@@ -1,6 +1,7 @@
 ## master
 
 * [Process dynamic headers before making actual request](https://github.com/jnunemaker/httparty/pull/606)
+* [Fix multipart uploads with ActionDispatch::Http::UploadedFile TempFile by using original_filename](https://github.com/jnunemaker/httparty/pull/598)
 
 ## 0.16.2
 
