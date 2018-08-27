@@ -1,4 +1,5 @@
-require_relative '../../spec_helper'
+require 'spec_helper'
+require 'tempfile'
 
 RSpec.describe HTTParty::Request::Body do
   describe '#call' do
@@ -18,26 +19,30 @@ RSpec.describe HTTParty::Request::Body do
 
       context 'when params has file' do
         before do
-          allow(HTTParty::Request::MultipartBoundary).
-            to receive(:generate).and_return("------------------------c772861a5109d5ef")
+          allow(HTTParty::Request::MultipartBoundary)
+            .to receive(:generate).and_return("------------------------c772861a5109d5ef")
         end
 
+        let(:file) { File.open('spec/fixtures/tiny.gif') }
         let(:params) do
           {
             user: {
-              avatar: File.open('spec/fixtures/tiny.gif'),
+              avatar: file,
               first_name: 'John',
               last_name: 'Doe',
               enabled: true
             }
           }
         end
+        let(:expected_file_name) { 'tiny.gif' }
+        let(:expected_file_contents) { "GIF89a\u0001\u0000\u0001\u0000\u0000\xFF\u0000,\u0000\u0000\u0000\u0000\u0001\u0000\u0001\u0000\u0000\u0002\u0000;" }
+        let(:expected_content_type) { 'application/octet-stream' }
         let(:multipart_params) do
           "--------------------------c772861a5109d5ef\r\n" \
-          "Content-Disposition: form-data; name=\"user[avatar]\"; filename=\"tiny.gif\"\r\n" \
-          "Content-Type: application/octet-stream\r\n" \
+          "Content-Disposition: form-data; name=\"user[avatar]\"; filename=\"#{expected_file_name}\"\r\n" \
+          "Content-Type: #{expected_content_type}\r\n" \
           "\r\n" \
-          "GIF89a\u0001\u0000\u0001\u0000\u0000\xFF\u0000,\u0000\u0000\u0000\u0000\u0001\u0000\u0001\u0000\u0000\u0002\u0000;\r\n" \
+          "#{expected_file_contents}\r\n" \
           "--------------------------c772861a5109d5ef\r\n" \
           "Content-Disposition: form-data; name=\"user[first_name]\"\r\n" \
           "\r\n" \
@@ -54,6 +59,17 @@ RSpec.describe HTTParty::Request::Body do
         end
 
         it { is_expected.to eq multipart_params }
+
+        context 'file object responds to original_filename' do
+          let(:some_temp_file) { Tempfile.new('some_temp_file.gif') }
+          let(:expected_file_name) { "some_temp_file.gif" }
+          let(:expected_file_contents) { "Hello" }
+          let(:file) { double(:mocked_action_dispatch, path: some_temp_file.path, original_filename: 'some_temp_file.gif', read: expected_file_contents) }
+
+          before { some_temp_file.write('Hello') }
+
+          it { is_expected.to eq multipart_params }
+        end
       end
     end
   end
