@@ -566,6 +566,14 @@ module HTTParty
     def process_headers(options)
       if options[:headers] && headers.any?
         options[:headers] = headers.merge(options[:headers])
+        options[:headers] = process_dynamic_headers(options[:headers])
+      end
+    end
+
+    def process_dynamic_headers(headers)
+      headers.each_with_object({}) do |header, processed_headers|
+        key, value = header
+        processed_headers[key] = value.respond_to?(:call) ? value.call : value
       end
     end
 
