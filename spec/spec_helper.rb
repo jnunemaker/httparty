@@ -38,8 +38,6 @@ RSpec.configure do |config|
   config.order = :random
 
   Kernel.srand config.seed
-
-  config.expose_dsl_globally = true
 end
 
 RSpec::Matchers.define :use_ssl do

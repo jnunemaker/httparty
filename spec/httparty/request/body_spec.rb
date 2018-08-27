@@ -1,6 +1,7 @@
+require 'spec_helper'
 require 'tempfile'
 
-describe HTTParty::Request::Body do
+RSpec.describe HTTParty::Request::Body do
   describe '#call' do
     subject { described_class.new(params).call }
 
