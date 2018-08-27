@@ -1,3 +1,7 @@
+## master
+
+* [Process dynamic headers before making actual request](https://github.com/jnunemaker/httparty/pull/606)
+
 ## 0.16.2
 
 * [Support ActionDispatch::Http::UploadedFile again](https://github.com/jnunemaker/httparty/pull/585)
