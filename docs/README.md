@@ -5,7 +5,6 @@ Makes http fun again!
 ## Table of contents
 - [Parsing JSON](#parsing-json)
 - [Working with SSL](#working-with-ssl)
-- [Multipart Post](#multipart-post)
 
 ## Parsing JSON
 If the response Content Type is `application/json`, HTTParty will parse the response and return Ruby objects such as a hash or array. The default behavior for parsing JSON will return keys as strings. This can be supressed with the `format` option. To get hash keys as symbols:
@@ -104,21 +103,4 @@ class Client
     # get("resources", verify_peer: false)
   end
 end
-```
-
-## Multipart Post
-
-Sending a `multipart/form-data` post request with HTTParty is easy, for example to request a bearer token from Microsoft's Graph API:
-
-```ruby
-HTTParty.post(
-  "https://login.microsoftonline.com/tenant_id/oauth2/v2.0/token",
-  body: {
-    multipart: true,
-    client_id: 'id',
-    client_secret: 'secret',
-    scope: 'https://graph.microsoft.com/.default',
-    grant_type: 'client_credentials'
-  }
-)
 ```
