@@ -185,8 +185,8 @@ RSpec.describe Net::HTTPHeader::DigestAuthenticator do
   context "with http basic auth response when net digest auth expected" do
     it "should not fail" do
       @digest = setup_digest({
-                               'www-authenticate' => 'WWW-Authenticate: Basic realm="testrealm.com""'
-                           })
+        'www-authenticate' => 'WWW-Authenticate: Basic realm="testrealm.com""'
+      })
 
       expect(authorization_header).to include("Digest")
     end
@@ -232,8 +232,8 @@ RSpec.describe Net::HTTPHeader::DigestAuthenticator do
   context "with algorithm specified" do
     before do
       @digest = setup_digest({
-                              'www-authenticate' => 'Digest realm="myhost@testrealm.com", nonce="NONCE", qop="auth", algorithm=MD5'
-                             })
+        'www-authenticate' => 'Digest realm="myhost@testrealm.com", nonce="NONCE", qop="auth", algorithm=MD5'
+      })
     end
 
     it "should recognise algorithm was specified" do
@@ -248,8 +248,8 @@ RSpec.describe Net::HTTPHeader::DigestAuthenticator do
   context "with md5-sess algorithm specified" do
     before do
       @digest = setup_digest({
-                              'www-authenticate' => 'Digest realm="myhost@testrealm.com", nonce="NONCE", qop="auth", algorithm=MD5-sess'
-                             })
+        'www-authenticate' => 'Digest realm="myhost@testrealm.com", nonce="NONCE", qop="auth", algorithm=MD5-sess'
+      })
     end
 
     it "should recognise algorithm was specified" do

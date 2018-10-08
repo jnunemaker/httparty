@@ -299,10 +299,10 @@ RSpec.describe HTTParty::Response do
       'Content-Encoding' => 'meow'}
     end
     let (:some_headers) do
-       HTTParty::Response::Headers.new.tap do |h|
-         some_headers_hash.each_pair do |k,v|
-           h[k] = v
-         end
+      HTTParty::Response::Headers.new.tap do |h|
+        some_headers_hash.each_pair do |k,v|
+          h[k] = v
+        end
       end
     end
     it "can initialize without headers" do

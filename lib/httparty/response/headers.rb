@@ -22,10 +22,10 @@ module HTTParty
       end
 
       def ==(other)
-        if other.is_a?(::Net::HTTPHeader) 
+        if other.is_a?(::Net::HTTPHeader)
           @header == other.instance_variable_get(:@header)
         elsif other.is_a?(Hash)
-          @header == other || @header == Headers.new(other).instance_variable_get(:@header)           
+          @header == other || @header == Headers.new(other).instance_variable_get(:@header)
         end
       end
     end
