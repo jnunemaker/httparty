@@ -7,7 +7,6 @@ RSpec.describe HTTParty::Logger::ApacheFormatter do
   let(:request_time) { Time.new.strftime("%Y-%m-%d %H:%M:%S %z") }
 
   before do
-    subject.current_time = request_time
     expect(logger_double).to receive(:info).with(log_message)
   end
 

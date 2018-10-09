@@ -20,7 +20,7 @@ module HTTParty
         log_request
         log_response
 
-        logger.send level, messages.join("\n")
+        logger.public_send level, messages.join("\n")
       end
 
       private
@@ -80,11 +80,11 @@ module HTTParty
       end
 
       def log(direction, line = '')
-        messages << "[#{TAG_NAME}] [#{time}] #{direction} #{line}"
+        messages << "[#{TAG_NAME}] [#{current_time}] #{direction} #{line}"
       end
 
-      def time
-        @time ||= Time.now.strftime("%Y-%m-%d %H:%M:%S %z")
+      def current_time
+        Time.now.strftime("%Y-%m-%d %H:%M:%S %z")
       end
     end
   end
