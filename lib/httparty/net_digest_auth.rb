@@ -14,11 +14,11 @@ module Net
 
       authenticator.authorization_header.each do |v|
         add_field('Authorization', v)
-      end 
+      end
 
       authenticator.cookie_header.each do |v|
         add_field('Cookie', v)
-      end      
+      end
     end
 
     class DigestAuthenticator
@@ -64,7 +64,8 @@ module Net
 
       def parse(response_header)
         header = response_header['www-authenticate']
-                 .gsub(/qop=(auth(?:-int)?)/, 'qop="\\1"')
+
+        header = header.gsub(/qop=(auth(?:-int)?)/, 'qop="\\1"')
 
         header =~ /Digest (.*)/
         params = {}
@@ -113,11 +114,11 @@ module Net
       def algorithm_present?
         @response.key?('algorithm') && !@response['algorithm'].empty?
       end
-      
+
       def use_md5_sess?
         algorithm_present? && @response['algorithm'] == 'MD5-sess'
       end
-      
+
       def a1
         a1_user_realm_pwd =  [@username, @response['realm'], @password].join(':')
         if use_md5_sess?

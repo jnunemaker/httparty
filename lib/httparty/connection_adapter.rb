@@ -38,12 +38,12 @@ module HTTParty
   # in the #options attribute. It is up to you to interpret them within your
   # connection adapter. Take a look at the implementation of
   # HTTParty::ConnectionAdapter#connection for examples of how they are used.
-  # The keys used in options are 
+  # The keys used in options are
   # * :+timeout+: timeout in seconds
   # * :+open_timeout+: http connection open_timeout in seconds, overrides timeout if set
   # * :+read_timeout+: http connection read_timeout in seconds, overrides timeout if set
   # * :+debug_output+: see HTTParty::ClassMethods.debug_output.
-  # * :+cert_store+: contains certificate data. see method 'attach_ssl_certificates' 
+  # * :+cert_store+: contains certificate data. see method 'attach_ssl_certificates'
   # * :+pem+: contains pem client certificate data. see method 'attach_ssl_certificates'
   # * :+p12+: contains PKCS12 client client certificate data.  see method 'attach_ssl_certificates'
   # * :+verify+: verify the server’s certificate against the ca certificate.
@@ -91,7 +91,14 @@ module HTTParty
       host = clean_host(uri.host)
       port = uri.port || (uri.scheme == 'https' ? 443 : 80)
       if options.key?(:http_proxyaddr)
-        http = Net::HTTP.new(host, port, options[:http_proxyaddr], options[:http_proxyport], options[:http_proxyuser], options[:http_proxypass])
+        http = Net::HTTP.new(
+          host,
+          port,
+          options[:http_proxyaddr],
+          options[:http_proxyport],
+          options[:http_proxyuser],
+          options[:http_proxypass]
+        )
       else
         http = Net::HTTP.new(host, port)
       end

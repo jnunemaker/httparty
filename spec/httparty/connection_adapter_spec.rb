@@ -312,8 +312,12 @@ RSpec.describe HTTParty::ConnectionAdapter do
 
         context 'as well as proxy user and password' do
           let(:options) do
-            {http_proxyaddr: '1.2.3.4', http_proxyport: 8080,
-             http_proxyuser: 'user', http_proxypass: 'pass'}
+            {
+              http_proxyaddr: '1.2.3.4',
+              http_proxyport: 8080,
+              http_proxyuser: 'user',
+              http_proxypass: 'pass'
+            }
           end
 
           describe '#proxy_user' do

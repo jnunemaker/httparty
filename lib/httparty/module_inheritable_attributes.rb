@@ -9,12 +9,12 @@ module HTTParty
       duplicate = hash.dup
 
       duplicate.each_pair do |key, value|
-        duplicate[key] = if value.is_a?(Hash)
-                           hash_deep_dup(value)
+        if value.is_a?(Hash)
+          duplicate[key] = hash_deep_dup(value)
         elsif value.is_a?(Proc)
           duplicate[key] = value.dup
         else
-          value
+          duplicate[key] = value
         end
       end
 

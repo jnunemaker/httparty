@@ -14,7 +14,11 @@ module HTTParty
       @headers      = Headers.new(response.to_hash)
 
       if request.options[:logger]
-        logger = ::HTTParty::Logger.build(request.options[:logger], request.options[:log_level], request.options[:log_format])
+        logger = ::HTTParty::Logger.build(
+          request.options[:logger],
+          request.options[:log_level],
+          request.options[:log_format]
+        )
         logger.format(request, self)
       end
 
@@ -59,10 +63,10 @@ module HTTParty
       response.nil? || response.body.nil? || response.body.empty?
     end
 
-    def to_s      
+    def to_s
       if !response.nil? && !response.body.nil? && response.body.respond_to?(:to_s)
         response.body.to_s
-      else 
+      else
         inspect
       end
     end
@@ -80,7 +84,7 @@ module HTTParty
         parsed_response.display(port)
       elsif !response.nil? && !response.body.nil? && response.body.respond_to?(:display)
         response.body.display(port)
-      else 
+      else
         port.write(inspect)
       end
     end
@@ -89,7 +93,7 @@ module HTTParty
       return true if super
       parsed_response.respond_to?(name) || response.respond_to?(name)
     end
-    
+
     protected
 
     def method_missing(name, *args, &block)
