@@ -1,12 +1,14 @@
 require 'httparty/logger/apache_formatter'
 require 'httparty/logger/curl_formatter'
+require 'httparty/logger/logstash_formatter'
 
 module HTTParty
   module Logger
     def self.formatters
       @formatters ||= {
         :curl => Logger::CurlFormatter,
-        :apache => Logger::ApacheFormatter
+        :apache => Logger::ApacheFormatter,
+        :logstash => Logger::LogstashFormatter,
       }
     end
 
