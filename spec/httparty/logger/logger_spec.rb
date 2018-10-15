@@ -19,6 +19,11 @@ RSpec.describe HTTParty::Logger do
       expect(subject.build(logger_double, nil, :curl)).to be_an_instance_of(HTTParty::Logger::CurlFormatter)
     end
 
+    it "builds :logstash style logger" do
+      logger_double = double
+      expect(subject.build(logger_double, nil, :logstash)).to be_an_instance_of(HTTParty::Logger::LogstashFormatter)
+    end
+
     it "builds :custom style logger" do
       CustomFormatter = Class.new(HTTParty::Logger::CurlFormatter)
       HTTParty::Logger.add_formatter(:custom, CustomFormatter)
