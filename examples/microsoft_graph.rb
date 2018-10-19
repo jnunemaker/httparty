@@ -28,16 +28,16 @@ class MicrosoftGraph
 
   # A post to the Microsoft Graph to get a bearer token for the specified tenant.  In this example
   # our Rails application has already been given permission to request these tokens by the admin of
-  # the specified tenant_id.  
-  # 
+  # the specified tenant_id.
+  #
   # See here for more information https://developer.microsoft.com/en-us/graph/docs/concepts/auth_v2_service
   #
   # This request also makes use of the multipart/form-data post body.
   def bearer_token
     response = HTTParty.post(
       "#{MS_BASE_URL}/#{@tenant_id}/#{TOKEN_REQUEST_PATH}",
+      multipart: true,
       body: {
-        multipart: true,
         client_id: Rails.application.credentials[Rails.env.to_sym][:microsoft_client_id],
         client_secret: Rails.application.credentials[Rails.env.to_sym][:microsoft_client_secret],
         scope: 'https://graph.microsoft.com/.default',
