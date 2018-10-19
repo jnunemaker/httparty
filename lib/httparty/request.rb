@@ -221,7 +221,12 @@ module HTTParty
       end
 
       if options[:body]
-        body = Body.new(options[:body], query_string_normalizer: query_string_normalizer, multipart: options[:multipart])
+        body = Body.new(
+          options[:body],
+          query_string_normalizer: query_string_normalizer,
+          force_multipart: options[:multipart]
+        )
+
         if body.multipart?
           content_type = "multipart/form-data; boundary=#{body.boundary}"
           @raw_request['Content-Type'] = content_type

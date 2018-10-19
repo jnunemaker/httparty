@@ -63,7 +63,7 @@ RSpec.describe HTTParty::Request::Body do
         it { is_expected.to eq multipart_params }
 
         context 'when passing multipart as an option' do
-          let(:options) { { multipart: true } }
+          let(:options) { { force_multipart: true } }
           let(:params) do
             {
               user: {
