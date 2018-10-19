@@ -343,22 +343,35 @@ RSpec.describe HTTParty::Request do
       end
     end
 
-    context "when body is multipart" do
-      it "sets header Content-Type: multipart/form-data; boundary=" do
-        @request.options[:body] = {file: File.open(File::NULL, 'r')}
+    context "when mulipart" do
+      subject(:headers) do
         @request.send(:setup_raw_request)
         headers = @request.instance_variable_get(:@raw_request).each_header.to_a
-        headers = Hash[*headers.flatten]  # Ruby 2.0 doesn't have Array#to_h
-        expect(headers['content-type']).to match(%r{^multipart/form-data; boundary=---})
+        Hash[*headers.flatten]  # Ruby 2.0 doesn't have Array#to_h
       end
 
-      context "and header Content-Type is provided" do
-        it "overwrites the header to: multipart/form-data; boundary=" do
+      context "when body contains file" do
+        it "sets header Content-Type: multipart/form-data; boundary=" do
           @request.options[:body] = {file: File.open(File::NULL, 'r')}
-          @request.options[:headers] = {'Content-Type' => 'application/x-www-form-urlencoded'}
-          @request.send(:setup_raw_request)
-          headers = @request.instance_variable_get(:@raw_request).each_header.to_a
-          headers = Hash[*headers.flatten]  # Ruby 2.0 doesn't have Array#to_h
+
+          expect(headers['content-type']).to match(%r{^multipart/form-data; boundary=---})
+        end
+
+        context "and header Content-Type is provided" do
+          it "overwrites the header to: multipart/form-data; boundary=" do
+            @request.options[:body] = {file: File.open(File::NULL, 'r')}
+            @request.options[:headers] = {'Content-Type' => 'application/x-www-form-urlencoded'}
+
+            expect(headers['content-type']).to match(%r{^multipart/form-data; boundary=---})
+          end
+        end
+      end
+
+      context 'when mulipart option is provided' do
+        it "sets header Content-Type: multipart/form-data; boundary=" do
+          @request.options[:body] = { text: 'something' }
+          @request.options[:multipart] = true
+
           expect(headers['content-type']).to match(%r{^multipart/form-data; boundary=---})
         end
       end

@@ -3,7 +3,9 @@ require 'tempfile'
 
 RSpec.describe HTTParty::Request::Body do
   describe '#call' do
-    subject { described_class.new(params).call }
+    let(:options) { {} }
+
+    subject { described_class.new(params, options).call }
 
     context 'when params is string' do
       let(:params) { 'name=Bob%20Jones' }
@@ -59,6 +61,37 @@ RSpec.describe HTTParty::Request::Body do
         end
 
         it { is_expected.to eq multipart_params }
+
+        context 'when passing multipart as an option' do
+          let(:options) { { multipart: true } }
+          let(:params) do
+            {
+              user: {
+                first_name: 'John',
+                last_name: 'Doe',
+                enabled: true
+              }
+            }
+          end
+          let(:multipart_params) do
+            "--------------------------c772861a5109d5ef\r\n" \
+            "Content-Disposition: form-data; name=\"user[first_name]\"\r\n" \
+            "\r\n" \
+            "John\r\n" \
+            "--------------------------c772861a5109d5ef\r\n" \
+            "Content-Disposition: form-data; name=\"user[last_name]\"\r\n" \
+            "\r\n" \
+            "Doe\r\n" \
+            "--------------------------c772861a5109d5ef\r\n" \
+            "Content-Disposition: form-data; name=\"user[enabled]\"\r\n" \
+            "\r\n" \
+            "true\r\n" \
+            "--------------------------c772861a5109d5ef--\r\n"
+          end
+
+          it { is_expected.to eq multipart_params }
+
+        end
 
         context 'file object responds to original_filename' do
           let(:some_temp_file) { Tempfile.new('some_temp_file.gif') }
