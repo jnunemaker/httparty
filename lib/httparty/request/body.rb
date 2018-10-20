@@ -3,9 +3,10 @@ require_relative 'multipart_boundary'
 module HTTParty
   class Request
     class Body
-      def initialize(params, query_string_normalizer: nil)
+      def initialize(params, query_string_normalizer: nil, force_multipart: false)
         @params = params
         @query_string_normalizer = query_string_normalizer
+        @force_multipart = force_multipart
       end
 
       def call
@@ -21,7 +22,7 @@ module HTTParty
       end
 
       def multipart?
-        params.respond_to?(:to_hash) && has_file?(params.to_hash)
+        params.respond_to?(:to_hash) && (force_multipart || has_file?(params.to_hash))
       end
 
       private
@@ -77,7 +78,7 @@ module HTTParty
         object.respond_to?(:original_filename) ? object.original_filename : File.basename(object.path)
       end
 
-      attr_reader :params, :query_string_normalizer
+      attr_reader :params, :query_string_normalizer, :force_multipart
     end
   end
 end
