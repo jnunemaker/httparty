@@ -35,9 +35,9 @@ module HTTParty
           memo += %(Content-Disposition: form-data; name="#{key}")
           # value.path is used to support ActionDispatch::Http::UploadedFile
           # https://github.com/jnunemaker/httparty/pull/585
-          memo += %(; filename="#{determine_file_name(value)}") if file?(value)
+          memo += %(; filename="#{file_name(value)}") if file?(value)
           memo += "\r\n"
-          memo += "Content-Type: application/octet-stream\r\n" if file?(value)
+          memo += "Content-Type: #{content_type(value)}\r\n" if file?(value)
           memo += "\r\n"
           memo += file?(value) ? value.read : value.to_s
           memo += "\r\n"
@@ -74,7 +74,13 @@ module HTTParty
         end
       end
 
-      def determine_file_name(object)
+      def content_type(object)
+        return object.content_type if object.respond_to?(:content_type)
+        mime = MIME::Types.type_for(file_name(object))
+        mime.empty? ? 'application/octet-stream' : mime[0].content_type
+      end
+
+      def file_name(object)
         object.respond_to?(:original_filename) ? object.original_filename : File.basename(object.path)
       end
 

@@ -38,7 +38,7 @@ RSpec.describe HTTParty::Request::Body do
         end
         let(:expected_file_name) { 'tiny.gif' }
         let(:expected_file_contents) { "GIF89a\u0001\u0000\u0001\u0000\u0000\xFF\u0000,\u0000\u0000\u0000\u0000\u0001\u0000\u0001\u0000\u0000\u0002\u0000;" }
-        let(:expected_content_type) { 'application/octet-stream' }
+        let(:expected_content_type) { 'image/gif' }
         let(:multipart_params) do
           "--------------------------c772861a5109d5ef\r\n" \
           "Content-Disposition: form-data; name=\"user[avatar]\"; filename=\"#{expected_file_name}\"\r\n" \
