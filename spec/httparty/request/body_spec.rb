@@ -94,7 +94,7 @@ RSpec.describe HTTParty::Request::Body do
         end
 
         context 'file object responds to original_filename' do
-          let(:some_temp_file) { Tempfile.new('some_temp_file.gif') }
+          let(:some_temp_file) { Tempfile.new(['some_temp_file','.gif']) }
           let(:expected_file_name) { "some_temp_file.gif" }
           let(:expected_file_contents) { "Hello" }
           let(:file) { double(:mocked_action_dispatch, path: some_temp_file.path, original_filename: 'some_temp_file.gif', read: expected_file_contents) }

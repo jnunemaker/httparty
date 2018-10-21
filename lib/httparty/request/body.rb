@@ -76,7 +76,7 @@ module HTTParty
 
       def content_type(object)
         return object.content_type if object.respond_to?(:content_type)
-        mime = MIME::Types.type_for(file_name(object))
+        mime = MIME::Types.type_for(object.path)
         mime.empty? ? 'application/octet-stream' : mime[0].content_type
       end
 
