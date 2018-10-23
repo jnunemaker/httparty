@@ -4,7 +4,7 @@ module HTTParty
   # == Custom Connection Factories
   #
   # If you like to implement your own connection adapter, subclassing
-  # HTTPParty::ConnectionAdapter will make it easier. Just override
+  # HTTParty::ConnectionAdapter will make it easier. Just override
   # the #connection method. The uri and options attributes will have
   # all the info you need to construct your http connection. Whatever
   # you return from your connection method needs to adhere to the

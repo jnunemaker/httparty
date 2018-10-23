@@ -73,7 +73,7 @@ RSpec.describe HTTParty::Request do
       expect(request.parser).to eq(my_parser)
     end
 
-    it "sets connection_adapter to HTTPParty::ConnectionAdapter" do
+    it "sets connection_adapter to HTTParty::ConnectionAdapter" do
       request = HTTParty::Request.new(Net::HTTP::Get, 'http://google.com')
       expect(request.connection_adapter).to eq(HTTParty::ConnectionAdapter)
     end
