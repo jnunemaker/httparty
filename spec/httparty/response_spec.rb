@@ -344,4 +344,16 @@ RSpec.describe HTTParty::Response do
       expect(inspect).to include("content-length")
     end
   end
+
+  describe 'marshalling' do
+    before { RSpec::Mocks.space.proxy_for(@response_object).remove_stub(:body) }
+
+    specify do
+      marshalled = Marshal.load(Marshal.dump(@response))
+
+      expect(marshalled.headers).to eq @response.headers
+      expect(marshalled.body).to eq @response.body
+      expect(marshalled.code).to eq @response.code
+    end
+  end
 end
