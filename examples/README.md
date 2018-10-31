@@ -70,3 +70,14 @@
   * Uses `get` requests
   * Uses `stream_body` mode
   * Download file without using the memory
+
+* [Microsoft graph](microsoft_graph.rb)
+  * Basic Auth
+  * Uses `post` requests
+  * Uses multipart
+
+* [Multipart](multipart.rb)
+  * Multipart data upload _(with and without file)_
+
+* [Uploading File](body_stream.rb)
+  * Uses `body_stream` to upload file
