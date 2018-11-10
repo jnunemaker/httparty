@@ -4,6 +4,12 @@ module HTTParty
       string.gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2').gsub(/([a-z])([A-Z])/, '\1_\2').downcase
     end
 
+    def self._load(data)
+      req, resp, parsed_resp, resp_body = Marshal.load(data)
+
+      new(req, resp, -> { parsed_resp }, body: resp_body)
+    end
+
     attr_reader :request, :response, :body, :headers
 
     def initialize(request, response, parsed_block, options = {})
@@ -92,6 +98,10 @@ module HTTParty
     def respond_to_missing?(name, *args)
       return true if super
       parsed_response.respond_to?(name) || response.respond_to?(name)
+    end
+
+    def _dump(_level)
+      Marshal.dump([request, response, parsed_response, body])
     end
 
     protected
