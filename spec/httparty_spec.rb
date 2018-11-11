@@ -214,18 +214,16 @@ RSpec.describe HTTParty do
       end
     end
 
-    if RUBY_VERSION >= '2.2.0'
-      context 'when headers passed as symbols' do
-        let(:headers) { { 'Content-Type' => 'application/json', 'Custom-Header' => 'example' } }
+    context 'when headers passed as symbols' do
+      let(:headers) { { 'foo' => 'application/json', 'bar' => 'example' } }
 
-        it 'converts them to string' do
-          expect(HTTParty::Request).to receive(:new)
-            .with(anything, anything, hash_including({ headers: headers }))
-            .and_return(double("mock response", perform: nil))
+      it 'converts them to string' do
+        expect(HTTParty::Request).to receive(:new)
+          .with(anything, anything, hash_including({ headers: headers }))
+          .and_return(double("mock response", perform: nil))
 
-          @klass.headers('Content-Type': 'application/json')
-          @klass.post('http://example.com', headers: { 'Custom-Header': 'example' })
-        end
+        @klass.headers(foo: 'application/json')
+        @klass.post('http://example.com', headers: { bar: 'example' })
       end
     end
   end
