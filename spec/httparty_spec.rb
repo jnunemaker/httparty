@@ -218,7 +218,7 @@ RSpec.describe HTTParty do
       context 'when headers passed as symbols' do
         let(:headers) { { 'Content-Type' => 'application/json', 'Custom-Header' => 'example' } }
 
-        it 'convers them to string' do
+        it 'converts them to string' do
           expect(HTTParty::Request).to receive(:new)
             .with(anything, anything, hash_including({ headers: headers }))
             .and_return(double("mock response", perform: nil))
