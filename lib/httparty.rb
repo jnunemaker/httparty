@@ -576,7 +576,7 @@ module HTTParty
     def process_headers(options)
       if options[:headers] && headers.any?
         options[:headers] = headers.merge(options[:headers])
-        options[:headers] = process_dynamic_headers(options[:headers])
+        options[:headers] = Utils.stringify_keys(process_dynamic_headers(options[:headers]))
       end
     end
 
@@ -654,6 +654,7 @@ module HTTParty
 end
 
 require 'httparty/hash_conversions'
+require 'httparty/utils'
 require 'httparty/exceptions'
 require 'httparty/parser'
 require 'httparty/request'

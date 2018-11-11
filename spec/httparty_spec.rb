@@ -153,33 +153,33 @@ RSpec.describe HTTParty do
     end
 
     it "uses the class headers when sending a request" do
-      expect_headers(foo: 'bar')
+      expect_headers('foo' => 'bar')
       @klass.headers(foo: 'bar')
       @klass.get('')
     end
 
     it "merges class headers with request headers" do
-      expect_headers(baz: 'spax', foo: 'bar')
+      expect_headers('baz' => 'spax', 'foo' => 'bar')
       @klass.headers(foo: 'bar')
       @klass.get('', headers: {baz: 'spax'})
     end
 
     it 'overrides class headers with request headers' do
-      expect_headers(baz: 'spax', foo: 'baz')
+      expect_headers('baz' => 'spax', 'foo' => 'baz')
       @klass.headers(foo: 'bar')
       @klass.get('', headers: {baz: 'spax', foo: 'baz'})
     end
 
     context "with cookies" do
       it 'utilizes the class-level cookies' do
-        expect_headers(foo: 'bar', 'cookie' => 'type=snickerdoodle')
+        expect_headers('foo' => 'bar', 'cookie' => 'type=snickerdoodle')
         @klass.headers(foo: 'bar')
         @klass.cookies(type: 'snickerdoodle')
         @klass.get('')
       end
 
       it 'adds cookies to the headers' do
-        expect_headers(foo: 'bar', 'cookie' => 'type=snickerdoodle')
+        expect_headers('foo' => 'bar', 'cookie' => 'type=snickerdoodle')
         @klass.headers(foo: 'bar')
         @klass.get('', cookies: {type: 'snickerdoodle'})
       end
@@ -211,6 +211,19 @@ RSpec.describe HTTParty do
         stub_request(:post, "http://example.com/").with(headers: headers)
 
         @klass.post('http://example.com', body: { file: File.open('spec/fixtures/tiny.gif')})
+      end
+    end
+
+    context 'when headers passed as symbols' do
+      let(:headers) { { 'foo' => 'application/json', 'bar' => 'example' } }
+
+      it 'converts them to string' do
+        expect(HTTParty::Request).to receive(:new)
+          .with(anything, anything, hash_including({ headers: headers }))
+          .and_return(double("mock response", perform: nil))
+
+        @klass.headers(foo: 'application/json')
+        @klass.post('http://example.com', headers: { bar: 'example' })
       end
     end
   end
