@@ -1,8 +1,13 @@
-## master
 
+## 0.16.3
+* [Add Logstash-compatible formatter](https://github.com/jnunemaker/httparty/pull/612)
+* [Add support for headers specified with symbols](https://github.com/jnunemaker/httparty/pull/622)
+* [Fix response object marshalling](https://github.com/jnunemaker/httparty/pull/618)
+* [Add ability to send multipart, without passing file](https://github.com/jnunemaker/httparty/pull/615)
+* [Fix detection of content_type for multipart payload](https://github.com/jnunemaker/httparty/pull/616)
 * [Process dynamic headers before making actual request](https://github.com/jnunemaker/httparty/pull/606)
 * [Fix multipart uploads with ActionDispatch::Http::UploadedFile TempFile by using original_filename](https://github.com/jnunemaker/httparty/pull/598)
-* Added support for lock and unlock http requests (https://github.com/jnunemaker/httparty/pull/596).
+* [Added support for lock and unlock http requests](https://github.com/jnunemaker/httparty/pull/596)
 
 ## 0.16.2
 
