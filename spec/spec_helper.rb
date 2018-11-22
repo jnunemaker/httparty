@@ -37,6 +37,11 @@ RSpec.configure do |config|
 
   config.order = :random
 
+  config.before(:each) do
+    # Reset default_cert_store cache
+    HTTParty::ConnectionAdapter.instance_variable_set(:@default_cert_store, nil)
+  end
+
   Kernel.srand config.seed
 end
 
