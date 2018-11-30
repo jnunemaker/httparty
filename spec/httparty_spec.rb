@@ -804,8 +804,8 @@ RSpec.describe HTTParty do
 
   describe "#get" do
     it "should be able to get html" do
-      stub_http_response_with('google.html')
-      expect(HTTParty.get('http://www.google.com').parsed_response).to eq(file_fixture('google.html'))
+      stub_http_response_with('example.html')
+      expect(HTTParty.get('http://www.example.com').parsed_response).to eq(file_fixture('example.html'))
     end
 
     it "should be able to get chunked html" do
@@ -886,16 +886,16 @@ RSpec.describe HTTParty do
     end
 
     it "should accept http URIs" do
-      stub_http_response_with('google.html')
+      stub_http_response_with('example.html')
       expect do
-        HTTParty.get('http://google.com')
+        HTTParty.get('http://example.com')
       end.not_to raise_error
     end
 
     it "should accept https URIs" do
-      stub_http_response_with('google.html')
+      stub_http_response_with('example.html')
       expect do
-        HTTParty.get('https://google.com')
+        HTTParty.get('https://example.com')
       end.not_to raise_error
     end
 
