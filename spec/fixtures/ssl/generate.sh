@@ -12,7 +12,7 @@ mkdir generated
 openssl req -batch -subj '/CN=INSECURE Test Certificate Authority' -newkey rsa:1024 -new -x509 -days 999999 -keyout generated/ca.key -nodes -out generated/ca.crt
 
 # Create symlinks for ssl_ca_path
-c_rehash generated
+openssl generated
 
 # Generate the server private key and self-signed certificate
 openssl req -batch -subj '/CN=localhost' -newkey rsa:1024 -new -x509 -days 999999 -keyout generated/server.key -nodes -out generated/selfsigned.crt
