@@ -110,7 +110,7 @@ RSpec.describe HTTParty::Logger::CurlFormatter do
 
       subject = described_class.new(logger_double, :info)
 
-      stub_http_response_with("google.html")
+      stub_http_response_with("example.html")
 
       response = HTTParty::Request.new.perform
       subject.format(response.request, response)
