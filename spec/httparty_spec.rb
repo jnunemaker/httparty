@@ -1,3 +1,5 @@
+require_relative 'spec_helper'
+
 RSpec.describe HTTParty do
   before(:each) do
     @klass = Class.new
@@ -192,7 +194,7 @@ RSpec.describe HTTParty do
       end
 
       it 'adds optional cookies to the optional headers' do
-        expect_headers(baz: 'spax', 'cookie' => 'type=snickerdoodle')
+        expect_headers('baz' => 'spax', 'cookie' => 'type=snickerdoodle')
         @klass.get('', cookies: {type: 'snickerdoodle'}, headers: {baz: 'spax'})
       end
     end
@@ -215,12 +217,14 @@ RSpec.describe HTTParty do
     end
 
     context 'when headers passed as symbols' do
-      let(:headers) { { 'foo' => 'application/json', 'bar' => 'example' } }
-
       it 'converts them to string' do
-        expect(HTTParty::Request).to receive(:new)
-          .with(anything, anything, hash_including({ headers: headers }))
-          .and_return(double("mock response", perform: nil))
+        expect_headers('foo' => 'application/json', 'bar' => 'example')
+        headers = { foo: 'application/json', bar: 'example' }
+        @klass.post('http://example.com', headers: headers)
+      end
+
+      it 'converts default headers to string' do
+        expect_headers('foo' => 'application/json', 'bar' => 'example')
 
         @klass.headers(foo: 'application/json')
         @klass.post('http://example.com', headers: { bar: 'example' })
