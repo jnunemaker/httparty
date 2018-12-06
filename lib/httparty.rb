@@ -574,8 +574,11 @@ module HTTParty
     end
 
     def process_headers(options)
-      if options[:headers] && headers.any?
-        options[:headers] = headers.merge(options[:headers])
+      if options[:headers]
+        if headers.any?
+          options[:headers] = headers.merge(options[:headers])
+        end
+
         options[:headers] = Utils.stringify_keys(process_dynamic_headers(options[:headers]))
       end
     end
