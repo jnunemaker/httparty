@@ -6,7 +6,7 @@ RSpec.describe HTTParty::FragmentWithResponse do
     expect(fragment).to eq("chunk")
   end
   it "has access to delegators" do
-    response = double(code: 200)
+    response = double(code: '200')
     fragment = HTTParty::FragmentWithResponse.new("chunk", response)
     expect(fragment.code).to eq(200)
     expect(fragment.http_response).to eq response

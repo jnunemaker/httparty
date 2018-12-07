@@ -9,8 +9,14 @@ url = "https://cdn.kernel.org/pub/linux/kernel/v4.x/#{filename}"
 
 File.open(filename, "w") do |file|
   response = HTTParty.get(url, stream_body: true) do |fragment|
-    print "."
-    file.write(fragment)
+    if [301, 302].include?(fragment.code)
+      print "skip writing for redirect"
+    elsif fragment.code == 200
+      print "."
+      file.write(fragment)
+    else
+      raise StandardError, "Non-success status code while streaming #{fragment.code}"
+    end
   end
 end
 puts
