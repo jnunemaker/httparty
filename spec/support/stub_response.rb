@@ -9,6 +9,7 @@ module HTTParty
 
       http_request = HTTParty::Request.new(Net::HTTP::Get, 'http://localhost', format: format)
       allow(http_request).to receive_message_chain(:http, :request).and_return(response)
+      allow(http_request).to receive_message_chain(:http, :peer_cert).and_return(nil)
 
       expect(HTTParty::Request).to receive(:new).and_return(http_request)
     end
@@ -22,6 +23,7 @@ module HTTParty
 
       http_request = HTTParty::Request.new(Net::HTTP::Get, 'http://localhost', options)
       allow(http_request).to receive_message_chain(:http, :request).and_yield(response).and_return(response)
+      allow(http_request).to receive_message_chain(:http, :peer_cert).and_return(nil)
 
       expect(HTTParty::Request).to receive(:new).and_return(http_request)
     end

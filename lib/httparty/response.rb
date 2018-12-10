@@ -10,7 +10,7 @@ module HTTParty
       new(req, resp, -> { parsed_resp }, body: resp_body)
     end
 
-    attr_reader :request, :response, :body, :headers
+    attr_reader :request, :response, :body, :headers, :peer_cert
 
     def initialize(request, response, parsed_block, options = {})
       @request      = request
@@ -18,6 +18,7 @@ module HTTParty
       @body         = options[:body] || response.body
       @parsed_block = parsed_block
       @headers      = Headers.new(response.to_hash)
+      @peer_cert    = options[:peer_cert]
 
       if request.options[:logger]
         logger = ::HTTParty::Logger.build(

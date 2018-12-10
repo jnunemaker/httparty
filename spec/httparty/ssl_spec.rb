@@ -3,11 +3,11 @@ require 'spec_helper'
 RSpec.describe HTTParty::Request do
   context "SSL certificate verification" do
     before do
-      WebMock.allow_net_connect!
+      WebMock.disable!
     end
 
     after do
-      WebMock.disable_net_connect!
+      WebMock.enable!
     end
 
     it "should fail when no trusted CA list is specified, by default" do
@@ -69,6 +69,10 @@ RSpec.describe HTTParty::Request do
       expect do
         ssl_verify_test(:ssl_ca_path, ".", "bogushost.crt")
       end.to raise_error(OpenSSL::SSL::SSLError)
+    end
+
+    it "should provide the certificate used by the server via peer_cert" do
+      expect(ssl_verify_test(:ssl_ca_file, "ca.crt", "server.crt").peer_cert).to be_a OpenSSL::X509::Certificate
     end
   end
 end

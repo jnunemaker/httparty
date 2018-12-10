@@ -141,8 +141,12 @@ module HTTParty
       validate
       setup_raw_request
       chunked_body = nil
+      peer_cert = nil
+      current_http = http
 
-      self.last_response = http.request(@raw_request) do |http_response|
+      self.last_response = current_http.request(@raw_request) do |http_response|
+        peer_cert ||= current_http.peer_cert
+
         if block
           chunks = []
 
@@ -155,10 +159,9 @@ module HTTParty
         end
       end
 
-
       handle_host_redirection if response_redirects?
       result = handle_unauthorized
-      result ||= handle_response(chunked_body, &block)
+      result ||= handle_response(chunked_body, peer_cert, &block)
       result
     end
 
@@ -340,7 +343,7 @@ module HTTParty
       end
     end
 
-    def handle_response(body, &block)
+    def handle_response(body, peer_cert, &block)
       if response_redirects?
         options[:limit] -= 1
         if options[:logger]
@@ -363,7 +366,7 @@ module HTTParty
       else
         body ||= last_response.body
         body = body.nil? ? body : encode_body(body)
-        Response.new(self, last_response, lambda { parse_response(body) }, body: body)
+        Response.new(self, last_response, lambda { parse_response(body) }, body: body, peer_cert: peer_cert)
       end
     end
 
