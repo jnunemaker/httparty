@@ -386,11 +386,12 @@ module HTTParty
     end
 
     def response_redirects?(response = nil)
-      case response || last_response
+      _response = response || last_response
+      case _response
       when Net::HTTPNotModified # 304
         false
       when Net::HTTPRedirection
-        options[:follow_redirects] && last_response.key?('location')
+        options[:follow_redirects] && _response.key?('location')
       end
     end
 
