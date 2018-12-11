@@ -143,7 +143,7 @@ module HTTParty
       chunked_body = nil
 
       self.last_response = http.request(@raw_request) do |http_response|
-        if block
+        if block && !(options[:ignore_redirect_body] && response_redirects?(http_response))
           chunks = []
 
           http_response.read_body do |fragment|
@@ -385,8 +385,8 @@ module HTTParty
       !@changed_hosts
     end
 
-    def response_redirects?
-      case last_response
+    def response_redirects?(response = nil)
+      case response || last_response
       when Net::HTTPNotModified # 304
         false
       when Net::HTTPRedirection
