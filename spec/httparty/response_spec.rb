@@ -282,6 +282,15 @@ RSpec.describe HTTParty::Response do
         SPECIFIC_CODES[:multiple_choices?] = Net::HTTPMultipleChoices
       end
 
+      # Ruby 2.6, those status codes have been updated.
+      if RUBY_VERSION >= "2.6.0" && ::RUBY_PLATFORM != "java"
+        SPECIFIC_CODES[:gateway_timeout?]       = Net::HTTPGatewayTimeout
+        SPECIFIC_CODES[:payload_too_large?]     = Net::HTTPPayloadTooLarge
+        SPECIFIC_CODES[:request_timeout?]       = Net::HTTPRequestTimeout
+        SPECIFIC_CODES[:uri_too_long?]          = Net::HTTPURITooLong
+        SPECIFIC_CODES[:range_not_satisfiable?] = Net::HTTPRangeNotSatisfiable
+      end
+
       SPECIFIC_CODES.each do |method, klass|
         it "responds to #{method}" do
           net_response = response_mock(klass)
