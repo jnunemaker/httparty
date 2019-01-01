@@ -1293,6 +1293,55 @@ RSpec.describe HTTParty::Request do
     end
   end
 
+  describe "sensitive headers" do
+    before do
+      @authorization = "Basic dXNlcm5hbWU6cGFzc3dvcmQ="
+      @cookie = "key=value"
+      @request.options[:headers] = {
+        "Authorization" => @authorization,
+        "Cookie" => @cookie
+      }
+      @redirect = stub_response("", 302)
+      @ok = stub_response('<hash><foo>bar</foo></hash>', 200)
+    end
+
+    before(:each) do
+      allow(@http).to receive(:request).and_return(@redirect, @ok)
+    end
+
+    it "should not be sent sensitive header when redirecting to a different host" do
+      @redirect['location'] = 'http://example.com/'
+      @request.perform
+      @request.send(:setup_raw_request)
+      expect(@request.instance_variable_get(:@raw_request)['Authorization']).to be_nil
+      expect(@request.instance_variable_get(:@raw_request)['Cookie']).to be_nil
+    end
+
+    it "should be sent sensitive header when redirecting to a relative path" do
+      @redirect['location'] = '/v3'
+      @request.perform
+      @request.send(:setup_raw_request)
+      expect(@request.instance_variable_get(:@raw_request)['Authorization']).to eq(@authorization)
+      expect(@request.instance_variable_get(:@raw_request)['Cookie']).to eq(@cookie)
+    end
+
+    it "should be sent Authorization header when redirecting to the same host" do
+      @redirect['location'] = 'http://api.foo.com/v2'
+      @request.perform
+      @request.send(:setup_raw_request)
+      expect(@request.instance_variable_get(:@raw_request)['Authorization']).to eq(@authorization)
+      expect(@request.instance_variable_get(:@raw_request)['Cookie']).to eq(@cookie)
+    end
+
+    it "should be sent Authorization header when redirecting to a different port on the same host" do
+      @redirect['location'] = 'http://api.foo.com:3000/v3'
+      @request.perform
+      @request.send(:setup_raw_request)
+      expect(@request.instance_variable_get(:@raw_request)['Authorization']).to eq(@authorization)
+      expect(@request.instance_variable_get(:@raw_request)['Cookie']).to eq(@cookie)
+    end
+  end
+
   context "with POST http method" do
     it "should raise argument error if query is not a hash" do
       expect {

@@ -20,6 +20,8 @@ module HTTParty
 
     SupportedURISchemes  = ['http', 'https', 'webcal', nil]
 
+    SensitiveHeaders = ['Authorization', 'Cookie']
+
     NON_RAILS_QUERY_STRING_NORMALIZER = proc do |query|
       Array(query).sort_by { |a| a[0].to_s }.map do |key, value|
         if value.nil?
@@ -359,6 +361,13 @@ module HTTParty
           end
         end
         capture_cookies(last_response)
+
+        if !self.options[:headers].nil? && !send_authorization_header?
+          SensitiveHeaders.each do |ah|
+            self.options[:headers].delete_if {|h| h.casecmp(ah)}
+          end
+        end
+
         perform(&block)
       else
         body ||= last_response.body
