@@ -77,6 +77,12 @@ module HTTParty
       new(uri, options).connection
     end
 
+    def self.default_cert_store
+      @default_cert_store ||= OpenSSL::X509::Store.new.tap do |cert_store|
+        cert_store.set_default_paths
+      end
+    end
+
     attr_reader :uri, :options
 
     def initialize(uri, options = {})
@@ -176,8 +182,7 @@ module HTTParty
             http.cert_store = options[:cert_store]
           else
             # Use the default cert store by default, i.e. system ca certs
-            http.cert_store = OpenSSL::X509::Store.new
-            http.cert_store.set_default_paths
+            http.cert_store = self.class.default_cert_store
           end
         else
           http.verify_mode = OpenSSL::SSL::VERIFY_NONE
