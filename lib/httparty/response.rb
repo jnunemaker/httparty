@@ -65,6 +65,15 @@ module HTTParty
       alias_method :multiple_choice?, :multiple_choices?
     end
 
+    # Support old status codes method from pre 2.6.0 era.
+    if ::RUBY_VERSION >= "2.6.0" && ::RUBY_PLATFORM != "java"
+      alias_method :gateway_time_out?,                :gateway_timeout?
+      alias_method :request_entity_too_large?,        :payload_too_large?
+      alias_method :request_time_out?,                :request_timeout?
+      alias_method :request_uri_too_long?,            :uri_too_long?
+      alias_method :requested_range_not_satisfiable?, :range_not_satisfiable?
+    end
+
     def nil?
       response.nil? || response.body.nil? || response.body.empty?
     end
