@@ -831,6 +831,8 @@ RSpec.describe HTTParty do
       expect(
         HTTParty.get('http://www.google.com', options) do |fragment|
           expect(chunks).to include(fragment)
+          expect(fragment.code).to eql 200
+          expect(fragment.http_response).to be
         end.parsed_response
       ).to eq(nil)
     end

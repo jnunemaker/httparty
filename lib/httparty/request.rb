@@ -1,5 +1,6 @@
 require 'erb'
 require 'httparty/request/body'
+require 'httparty/fragment_with_response'
 
 module HTTParty
   class Request #:nodoc:
@@ -148,7 +149,7 @@ module HTTParty
 
           http_response.read_body do |fragment|
             chunks << fragment unless options[:stream_body]
-            block.call(fragment)
+            block.call FragmentWithResponse.new(fragment, http_response)
           end
 
           chunked_body = chunks.join
