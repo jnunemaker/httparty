@@ -103,14 +103,10 @@ module HTTParty
       return nil if body.nil?
       return nil if body == "null"
       return nil if body.valid_encoding? && body.strip.empty?
-      if body.valid_encoding? && body.encoding == Encoding::UTF_8
-        @body = body.gsub(/\A#{UTF8_BOM}/, '')
-      end
-      if supports_format?
-        parse_supported_format
-      else
-        body
-      end
+      return body unless supports_format?
+
+      @body = remove_bom_characters(body) if body.valid_encoding?
+      parse_supported_format
     end
 
     protected
@@ -118,8 +114,6 @@ module HTTParty
     def xml
       MultiXml.parse(body)
     end
-
-    UTF8_BOM = "\xEF\xBB\xBF".freeze
 
     def json
       JSON.parse(body, :quirks_mode => true, :allow_nan => true)
@@ -145,6 +139,11 @@ module HTTParty
       send(format)
     rescue NoMethodError => e
       raise NotImplementedError, "#{self.class.name} has not implemented a parsing method for the #{format.inspect} format.", e.backtrace
+    end
+
+    def remove_bom_characters(body)
+      regex = Regexp.new("\\A\xEF\xBB\xBF".force_encoding(body.encoding).freeze).freeze
+      body.sub(regex, '')
     end
   end
 end
