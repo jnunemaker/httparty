@@ -22,7 +22,7 @@ module HTTParty
       end
 
       def multipart?
-        params.respond_to?(:to_hash) && (force_multipart || has_file?(params.to_hash))
+        params.respond_to?(:to_hash) && (force_multipart || has_file?(params))
       end
 
       private
@@ -46,24 +46,18 @@ module HTTParty
         multipart += "--#{boundary}--\r\n"
       end
 
-      def has_file?(hash)
-        hash.detect do |key, value|
-          if value.respond_to?(:to_hash) || includes_hash?(value)
-            has_file?(value)
-          elsif value.respond_to?(:to_ary)
-            value.any? { |e| file?(e) }
-          else
-            file?(value)
-          end
+      def has_file?(value)
+        if value.respond_to?(:to_hash)
+          value.to_hash.any? { |_, v| has_file?(v) }
+        elsif value.respond_to?(:to_ary)
+          value.to_ary.any? { |v| has_file?(v) }
+        else
+          file?(value)
         end
       end
 
       def file?(object)
-        object.respond_to?(:path) && object.respond_to?(:read) # add memoization
-      end
-
-      def includes_hash?(object)
-        object.respond_to?(:to_ary) && object.any? { |e| e.respond_to?(:hash) }
+        object.respond_to?(:path) && object.respond_to?(:read)
       end
 
       def normalize_query(query)

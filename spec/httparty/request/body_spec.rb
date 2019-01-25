@@ -106,4 +106,60 @@ RSpec.describe HTTParty::Request::Body do
       end
     end
   end
+
+  describe '#multipart?' do
+    let(:force_multipart) { false }
+    let(:file) { File.open('spec/fixtures/tiny.gif') }
+
+    subject { described_class.new(params, force_multipart: force_multipart).multipart? }
+
+    context 'when params does not respond to to_hash' do
+      let(:params) { 'name=Bob%20Jones' }
+
+      it { is_expected.to be false }
+    end
+
+    context 'when params responds to to_hash' do
+      class HashLike
+        def initialize(hash)
+          @hash = hash
+        end
+
+        def to_hash
+          @hash
+        end
+      end
+
+      class ArrayLike
+        def initialize(ary)
+          @ary = ary
+        end
+
+        def to_ary
+          @ary
+        end
+      end
+
+      context 'when force_multipart is true' do
+        let(:params) { { name: 'Bob Jones' } }
+        let(:force_multipart) { true }
+
+        it { is_expected.to be true }
+      end
+
+      context 'when it does not contain a file' do
+        let(:hash_like_param) { HashLike.new(first: 'Bob', last: ArrayLike.new(['Jones'])) }
+        let(:params) { { name: ArrayLike.new([hash_like_param]) } }
+
+        it { is_expected.to eq false }
+      end
+
+      context 'when it contains file' do
+        let(:hash_like_param) { HashLike.new(first: 'Bob', last: 'Jones', file: ArrayLike.new([file])) }
+        let(:params) { { name: ArrayLike.new([hash_like_param]) } }
+
+        it { is_expected.to be true }
+      end
+    end
+  end
 end
