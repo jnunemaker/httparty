@@ -1,4 +1,10 @@
 
+## 0.16.4
+* [Add support for Ruby 2.6](https://github.com/jnunemaker/httparty/pull/636)
+* [Fix a few multipart issues](https://github.com/jnunemaker/httparty/pull/626)
+* [Improve a memory usage for https requests](https://github.com/jnunemaker/httparty/pull/625)
+* [Add response code to streamed body](https://github.com/jnunemaker/httparty/pull/588)
+
 ## 0.16.3
 * [Add Logstash-compatible formatter](https://github.com/jnunemaker/httparty/pull/612)
 * [Add support for headers specified with symbols](https://github.com/jnunemaker/httparty/pull/622)
