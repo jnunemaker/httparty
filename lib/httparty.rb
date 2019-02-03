@@ -14,6 +14,9 @@ require 'httparty/net_digest_auth'
 require 'httparty/version'
 require 'httparty/connection_adapter'
 require 'httparty/logger/logger'
+require 'httparty/request/body'
+require 'httparty/fragment_with_response'
+require 'httparty/text_encoder'
 
 # @see HTTParty::ClassMethods
 module HTTParty

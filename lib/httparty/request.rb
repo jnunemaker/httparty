@@ -1,6 +1,4 @@
 require 'erb'
-require 'httparty/request/body'
-require 'httparty/fragment_with_response'
 
 module HTTParty
   class Request #:nodoc:
@@ -148,14 +146,14 @@ module HTTParty
           chunks = []
 
           http_response.read_body do |fragment|
-            chunks << fragment unless options[:stream_body]
-            block.call FragmentWithResponse.new(fragment, http_response)
+            encoded_fragment = encode_text(fragment, http_response['content-type'])
+            chunks << encoded_fragment if !options[:stream_body]
+            block.call FragmentWithResponse.new(encoded_fragment, http_response)
           end
 
           chunked_body = chunks.join
         end
       end
-
 
       handle_host_redirection if response_redirects?
       result = handle_unauthorized
@@ -273,72 +271,8 @@ module HTTParty
       query_string_parts.size > 0 ? query_string_parts.join('&') : nil
     end
 
-    def get_charset
-      content_type = last_response["content-type"]
-      if content_type.nil?
-        return nil
-      end
-
-      if content_type =~ /;\s*charset\s*=\s*([^=,;"\s]+)/i
-        return $1
-      end
-
-      if content_type =~ /;\s*charset\s*=\s*"((\\.|[^\\"])+)"/i
-        return $1.gsub(/\\(.)/, '\1')
-      end
-
-      nil
-    end
-
-    def encode_with_ruby_encoding(body, charset)
-      # NOTE: This will raise an argument error if the
-      # charset does not exist
-      encoding = Encoding.find(charset)
-      body.force_encoding(encoding.to_s)
-    rescue ArgumentError
-      body
-    end
-
     def assume_utf16_is_big_endian
       options[:assume_utf16_is_big_endian]
-    end
-
-    def encode_utf_16(body)
-      if body.bytesize >= 2
-        if body.getbyte(0) == 0xFF && body.getbyte(1) == 0xFE
-          return body.force_encoding("UTF-16LE")
-        elsif body.getbyte(0) == 0xFE && body.getbyte(1) == 0xFF
-          return body.force_encoding("UTF-16BE")
-        end
-      end
-
-      if assume_utf16_is_big_endian
-        body.force_encoding("UTF-16BE")
-      else
-        body.force_encoding("UTF-16LE")
-      end
-    end
-
-    def _encode_body(body)
-      charset = get_charset
-
-      if charset.nil?
-        return body
-      end
-
-      if "utf-16".casecmp(charset) == 0
-        encode_utf_16(body)
-      else
-        encode_with_ruby_encoding(body, charset)
-      end
-    end
-
-    def encode_body(body)
-      if "".respond_to?(:encoding)
-        _encode_body(body)
-      else
-        body
-      end
     end
 
     def handle_response(body, &block)
@@ -363,7 +297,7 @@ module HTTParty
         perform(&block)
       else
         body ||= last_response.body
-        body = body.nil? ? body : encode_body(body)
+        body = body.nil? ? body : encode_text(body, last_response['content-type'])
         Response.new(self, last_response, lambda { parse_response(body) }, body: body)
       end
     end
@@ -438,6 +372,14 @@ module HTTParty
         options[:basic_auth] = {username: username, password: password}
         @credentials_sent = true
       end
+    end
+
+    def encode_text(text, content_type)
+      TextEncoder.new(
+        text: text,
+        content_type: content_type,
+        assume_utf16_is_big_endian: assume_utf16_is_big_endian
+      ).call
     end
   end
 end

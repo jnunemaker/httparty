@@ -19,6 +19,7 @@ module HTTParty
       def response.read_body(&block)
         @body || chunked_data.each(&block)
       end
+      yield(response) if block_given?
 
       http_request = HTTParty::Request.new(Net::HTTP::Get, 'http://localhost', options)
       allow(http_request).to receive_message_chain(:http, :request).and_yield(response).and_return(response)
