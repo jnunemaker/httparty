@@ -4,6 +4,7 @@ gemspec
 gem 'rake'
 gem 'mongrel',  '1.2.0.pre2'
 
+
 group :development do
   gem 'guard'
   gem 'guard-rspec'
@@ -16,4 +17,8 @@ group :test do
   gem 'aruba'
   gem 'cucumber', '~> 2.3'
   gem 'webmock'
+end
+
+group :development, :test do
+  gem 'pry'
 end
