@@ -58,12 +58,12 @@ module HTTParty
     def charset
       return nil if content_type.nil?
 
-      if content_type =~ /;\s*charset\s*=\s*([^=,;"\s]+)/i
-        return $1 # FIX ME
+      if (matchdata = content_type.match(/;\s*charset\s*=\s*([^=,;"\s]+)/i))
+        return matchdata.captures.first
       end
 
-      if content_type =~ /;\s*charset\s*=\s*"((\\.|[^\\"])+)"/i
-        return $1.gsub(/\\(.)/, '\1') # PLEASE
+      if (matchdata = content_type.match(/;\s*charset\s*=\s*"((\\.|[^\\"])+)"/i))
+        return matchdata.captures.first.gsub(/\\(.)/, '\1')
       end
     end
   end
