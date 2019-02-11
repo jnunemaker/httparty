@@ -1,5 +1,6 @@
 require "simplecov"
 SimpleCov.start
+require 'pry'
 
 require "httparty"
 require 'webmock/rspec'

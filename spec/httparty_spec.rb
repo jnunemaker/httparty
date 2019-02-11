@@ -837,6 +837,22 @@ RSpec.describe HTTParty do
       ).to eq(nil)
     end
 
+    context 'when streaming body' do
+      let(:chunk) { 'Content'.force_encoding('ascii-8bit') }
+      let(:options) { { stream_body: true } }
+      before do
+        stub_chunked_http_response_with([chunk], options) do |response|
+          allow(response).to receive(:[]).with('content-type').and_return('text/plain; charset = "utf-8"')
+        end
+      end
+
+      specify do
+        HTTParty.get('http://www.google.com', options) do |fragment|
+          expect(fragment.encoding).to eq(Encoding.find("UTF-8"))
+        end
+      end
+    end
+
     it "should be able parse response type json automatically" do
       stub_http_response_with('twitter.json')
       tweets = HTTParty.get('http://twitter.com/statuses/public_timeline.json')

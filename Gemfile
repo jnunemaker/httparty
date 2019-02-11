@@ -17,3 +17,7 @@ group :test do
   gem 'cucumber', '~> 2.3'
   gem 'webmock'
 end
+
+group :development, :test do
+  gem 'pry'
+end
