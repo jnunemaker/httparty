@@ -376,7 +376,7 @@ module HTTParty
 
     def encode_text(text, content_type)
       TextEncoder.new(
-        text: text,
+        text,
         content_type: content_type,
         assume_utf16_is_big_endian: assume_utf16_is_big_endian
       ).call

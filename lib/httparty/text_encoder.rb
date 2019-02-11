@@ -2,7 +2,7 @@ module HTTParty
   class TextEncoder
     attr_reader :text, :content_type, :assume_utf16_is_big_endian
 
-    def initialize(text:, assume_utf16_is_big_endian:, content_type:)
+    def initialize(text, assume_utf16_is_big_endian: true, content_type: nil)
       @text = text
       @content_type = content_type
       @assume_utf16_is_big_endian = assume_utf16_is_big_endian
