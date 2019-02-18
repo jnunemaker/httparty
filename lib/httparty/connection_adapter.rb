@@ -42,6 +42,7 @@ module HTTParty
   # * :+timeout+: timeout in seconds
   # * :+open_timeout+: http connection open_timeout in seconds, overrides timeout if set
   # * :+read_timeout+: http connection read_timeout in seconds, overrides timeout if set
+  # * :+write_timeout+: http connection write_timeout in seconds, overrides timeout if set (Ruby >= 2.6.0 required)
   # * :+debug_output+: see HTTParty::ClassMethods.debug_output.
   # * :+cert_store+: contains certificate data. see method 'attach_ssl_certificates'
   # * :+pem+: contains pem client certificate data. see method 'attach_ssl_certificates'
@@ -116,6 +117,12 @@ module HTTParty
       if options[:timeout] && (options[:timeout].is_a?(Integer) || options[:timeout].is_a?(Float))
         http.open_timeout = options[:timeout]
         http.read_timeout = options[:timeout]
+
+        if RUBY_VERSION >= "2.6.0"
+          http.write_timeout = options[:timeout]
+        else
+          Kernel.warn("Warning: option :write_timeout requires Ruby version 2.6.0 or later")
+        end
       end
 
       if options[:read_timeout] && (options[:read_timeout].is_a?(Integer) || options[:read_timeout].is_a?(Float))
@@ -124,6 +131,14 @@ module HTTParty
 
       if options[:open_timeout] && (options[:open_timeout].is_a?(Integer) || options[:open_timeout].is_a?(Float))
         http.open_timeout = options[:open_timeout]
+      end
+
+      if options[:write_timeout] && (options[:write_timeout].is_a?(Integer) || options[:write_timeout].is_a?(Float))
+        if RUBY_VERSION >= "2.6.0"
+          http.write_timeout = options[:write_timeout]
+        else
+          Kernel.warn("Warning: option :write_timeout requires Ruby version 2.6.0 or later")
+        end
       end
 
       if options[:debug_output]

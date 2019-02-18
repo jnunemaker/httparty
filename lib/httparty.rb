@@ -200,6 +200,19 @@ module HTTParty
       default_options[:read_timeout] = t
     end
 
+    # Allows setting a default write_timeout for all HTTP calls in seconds
+    # Supported by Ruby > 2.6.0
+    #
+    #   class Foo
+    #     include HTTParty
+    #     write_timeout 10
+    #   end
+    def write_timeout(t)
+      raise ArgumentError, 'write_timeout must be an integer or float' unless t && (t.is_a?(Integer) || t.is_a?(Float))
+      default_options[:write_timeout] = t
+    end
+
+
     # Set an output stream for debugging, defaults to $stderr.
     # The output stream is passed on to Net::HTTP#set_debug_output.
     #
