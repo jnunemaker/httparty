@@ -120,8 +120,6 @@ module HTTParty
 
         if RUBY_VERSION >= "2.6.0"
           http.write_timeout = options[:timeout]
-        else
-          Kernel.warn("Warning: option :write_timeout requires Ruby version 2.6.0 or later")
         end
       end
 
