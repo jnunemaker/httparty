@@ -5,15 +5,16 @@ module HTTParty
   class FragmentWithResponse < SimpleDelegator
     extend Forwardable
 
-    attr_reader :http_response
+    attr_reader :http_response, :connection
 
     def code
       @http_response.code.to_i
     end
 
-    def initialize(fragment, http_response)
+    def initialize(fragment, http_response, connection)
       @fragment = fragment
       @http_response = http_response
+      @connection = connection
       super fragment
     end
   end

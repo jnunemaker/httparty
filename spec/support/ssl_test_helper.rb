@@ -2,7 +2,7 @@ require 'pathname'
 
 module HTTParty
   module SSLTestHelper
-    def ssl_verify_test(mode, ca_basename, server_cert_filename, options = {})
+    def ssl_verify_test(mode, ca_basename, server_cert_filename, options = {}, &block)
       options = {
         format:  :json,
         timeout: 30
@@ -24,9 +24,9 @@ module HTTParty
         if mode
           ca_path = File.expand_path("../../fixtures/ssl/generated/#{ca_basename}", __FILE__)
           raise ArgumentError.new("#{ca_path} does not exist") unless File.exist?(ca_path)
-          return HTTParty.get("https://localhost:#{test_server.port}/", options)
+          return HTTParty.get("https://localhost:#{test_server.port}/", options, &block)
         else
-          return HTTParty.get("https://localhost:#{test_server.port}/", options)
+          return HTTParty.get("https://localhost:#{test_server.port}/", options, &block)
         end
       ensure
         test_server.stop if test_server
@@ -39,7 +39,7 @@ module HTTParty
 
       test_server.start
 
-      HTTParty.get("https://localhost:#{test_server.port}/", options)
+      HTTParty.get("https://localhost:#{test_server.port}/", options, &block)
     ensure
       test_server.stop if test_server
     end
