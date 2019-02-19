@@ -329,6 +329,10 @@ RSpec.describe HTTParty do
       @klass.default_timeout 0.5
       expect(@klass.default_options[:timeout]).to eq(0.5)
     end
+
+    it "should raise an exception if unsupported type provided" do
+      expect { @klass.default_timeout "0.5" }.to raise_error ArgumentError
+    end
   end
 
   describe "debug_output" do

@@ -173,9 +173,9 @@ module HTTParty
     #     include HTTParty
     #     default_timeout 10
     #   end
-    def default_timeout(t)
-      raise ArgumentError, 'Timeout must be an integer or float' unless t && (t.is_a?(Integer) || t.is_a?(Float))
-      default_options[:timeout] = t
+    def default_timeout(value)
+      validate_timeout_argument(__method__, value)
+      default_options[:timeout] = value
     end
 
     # Allows setting a default open_timeout for all HTTP calls in seconds
@@ -184,9 +184,9 @@ module HTTParty
     #     include HTTParty
     #     open_timeout 10
     #   end
-    def open_timeout(t)
-      raise ArgumentError, 'open_timeout must be an integer or float' unless t && (t.is_a?(Integer) || t.is_a?(Float))
-      default_options[:open_timeout] = t
+    def open_timeout(value)
+      validate_timeout_argument(__method__, value)
+      default_options[:open_timeout] = value
     end
 
     # Allows setting a default read_timeout for all HTTP calls in seconds
@@ -195,9 +195,9 @@ module HTTParty
     #     include HTTParty
     #     read_timeout 10
     #   end
-    def read_timeout(t)
-      raise ArgumentError, 'read_timeout must be an integer or float' unless t && (t.is_a?(Integer) || t.is_a?(Float))
-      default_options[:read_timeout] = t
+    def read_timeout(value)
+      validate_timeout_argument(__method__, value)
+      default_options[:read_timeout] = value
     end
 
     # Allows setting a default write_timeout for all HTTP calls in seconds
@@ -207,9 +207,9 @@ module HTTParty
     #     include HTTParty
     #     write_timeout 10
     #   end
-    def write_timeout(t)
-      raise ArgumentError, 'write_timeout must be an integer or float' unless t && (t.is_a?(Integer) || t.is_a?(Float))
-      default_options[:write_timeout] = t
+    def write_timeout(value)
+      validate_timeout_argument(__method__, value)
+      default_options[:write_timeout] = value
     end
 
 
@@ -575,6 +575,10 @@ module HTTParty
     attr_reader :default_options
 
     private
+
+    def validate_timeout_argument(timeout_type, value)
+      raise ArgumentError, "#{ timeout_type } must be an integer or float" unless value && (value.is_a?(Integer) || value.is_a?(Float))
+    end
 
     def ensure_method_maintained_across_redirects(options)
       unless options.key?(:maintain_method_across_redirects)
