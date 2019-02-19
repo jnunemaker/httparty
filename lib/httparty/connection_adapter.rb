@@ -114,7 +114,7 @@ module HTTParty
 
       attach_ssl_certificates(http, options)
 
-      if options[:timeout] && (options[:timeout].is_a?(Integer) || options[:timeout].is_a?(Float))
+      if add_timeout?(options[:timeout])
         http.open_timeout = options[:timeout]
         http.read_timeout = options[:timeout]
 
@@ -125,15 +125,15 @@ module HTTParty
         end
       end
 
-      if options[:read_timeout] && (options[:read_timeout].is_a?(Integer) || options[:read_timeout].is_a?(Float))
+      if add_timeout?(options[:read_timeout])
         http.read_timeout = options[:read_timeout]
       end
 
-      if options[:open_timeout] && (options[:open_timeout].is_a?(Integer) || options[:open_timeout].is_a?(Float))
+      if add_timeout?(options[:open_timeout])
         http.open_timeout = options[:open_timeout]
       end
 
-      if options[:write_timeout] && (options[:write_timeout].is_a?(Integer) || options[:write_timeout].is_a?(Float))
+      if add_timeout?(options[:write_timeout])
         if RUBY_VERSION >= "2.6.0"
           http.write_timeout = options[:write_timeout]
         else
@@ -172,6 +172,10 @@ module HTTParty
     end
 
     private
+
+    def add_timeout?(timeout)
+      timeout && (timeout.is_a?(Integer) || timeout.is_a?(Float))
+    end
 
     def clean_host(host)
       strip_ipv6_brackets(host)
