@@ -33,16 +33,16 @@ module HTTParty
     def encode_utf_16
       if text.bytesize >= 2
         if text.getbyte(0) == 0xFF && text.getbyte(1) == 0xFE
-          return text.force_encoding("UTF-16LE")
+          return text.dup.force_encoding("UTF-16LE")
         elsif text.getbyte(0) == 0xFE && text.getbyte(1) == 0xFF
-          return text.force_encoding("UTF-16BE")
+          return text.dup.force_encoding("UTF-16BE")
         end
       end
 
       if assume_utf16_is_big_endian # option
-        text.force_encoding("UTF-16BE")
+        text.dup.force_encoding("UTF-16BE")
       else
-        text.force_encoding("UTF-16LE")
+        text.dup.force_encoding("UTF-16LE")
       end
     end
 
@@ -50,7 +50,7 @@ module HTTParty
       # NOTE: This will raise an argument error if the
       # charset does not exist
       encoding = Encoding.find(charset)
-      text.force_encoding(encoding.to_s)
+      text.dup.force_encoding(encoding.to_s)
     rescue ArgumentError
       text
     end
