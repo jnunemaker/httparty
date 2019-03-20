@@ -3,7 +3,7 @@ module HTTParty
     attr_reader :text, :content_type, :assume_utf16_is_big_endian
 
     def initialize(text, assume_utf16_is_big_endian: true, content_type: nil)
-      @text = text
+      @text = text.dup
       @content_type = content_type
       @assume_utf16_is_big_endian = assume_utf16_is_big_endian
     end
@@ -33,16 +33,16 @@ module HTTParty
     def encode_utf_16
       if text.bytesize >= 2
         if text.getbyte(0) == 0xFF && text.getbyte(1) == 0xFE
-          return text.dup.force_encoding("UTF-16LE")
+          return text.force_encoding("UTF-16LE")
         elsif text.getbyte(0) == 0xFE && text.getbyte(1) == 0xFF
-          return text.dup.force_encoding("UTF-16BE")
+          return text.force_encoding("UTF-16BE")
         end
       end
 
       if assume_utf16_is_big_endian # option
-        text.dup.force_encoding("UTF-16BE")
+        text.force_encoding("UTF-16BE")
       else
-        text.dup.force_encoding("UTF-16LE")
+        text.force_encoding("UTF-16LE")
       end
     end
 
@@ -50,7 +50,7 @@ module HTTParty
       # NOTE: This will raise an argument error if the
       # charset does not exist
       encoding = Encoding.find(charset)
-      text.dup.force_encoding(encoding.to_s)
+      text.force_encoding(encoding.to_s)
     rescue ArgumentError
       text
     end

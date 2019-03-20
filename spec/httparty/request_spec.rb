@@ -505,28 +505,42 @@ RSpec.describe HTTParty::Request do
     end
 
     if "".respond_to?(:encoding)
-      it "should process charset in content type properly" do
-        response = stub_response "Content".force_encoding('ascii-8bit')
-        response.initialize_http_header("Content-Type" => "text/plain;charset = utf-8")
-        resp = @request.perform
+      context 'when body has ascii-8bit encoding' do
+        let(:response) { stub_response "Content".force_encoding('ascii-8bit') }
 
-        expect(resp.body.encoding).to eq(Encoding.find("UTF-8"))
-      end
+        it "processes charset in content type properly" do
+          response.initialize_http_header("Content-Type" => "text/plain;charset = utf-8")
+          resp = @request.perform
 
-      it "should process charset in content type properly if it has a different case" do
-        response = stub_response "Content".force_encoding('ascii-8bit')
-        response.initialize_http_header("Content-Type" => "text/plain;CHARSET = utf-8")
-        resp = @request.perform
+          expect(resp.body.encoding).to eq(Encoding.find("UTF-8"))
+        end
 
-        expect(resp.body.encoding).to eq(Encoding.find("UTF-8"))
-      end
+        it "processes charset in content type properly if it has a different case" do
+          response.initialize_http_header("Content-Type" => "text/plain;CHARSET = utf-8")
+          resp = @request.perform
 
-      it "should process quoted charset in content type properly" do
-        response = stub_response "Content".force_encoding('ascii-8bit')
-        response.initialize_http_header("Content-Type" => "text/plain;charset = \"utf-8\"")
-        resp = @request.perform
+          expect(resp.body.encoding).to eq(Encoding.find("UTF-8"))
+        end
 
-        expect(resp.body.encoding).to eq(Encoding.find("UTF-8"))
+        it "processes quoted charset in content type properly" do
+          response.initialize_http_header("Content-Type" => "text/plain;charset = \"utf-8\"")
+          resp = @request.perform
+
+          expect(resp.body.encoding).to eq(Encoding.find("UTF-8"))
+        end
+
+        context 'when stubed body is frozen' do
+          let(:response) do
+            stub_response "Content".force_encoding('ascii-8bit').freeze
+          end
+
+          it 'processes frozen body correctly' do
+            response.initialize_http_header("Content-Type" => "text/plain;charset = utf-8")
+            resp = @request.perform
+
+            expect(resp.body.encoding).to eq(Encoding.find("UTF-8"))
+          end
+        end
       end
 
       it "should process response with a nil body" do
@@ -537,14 +551,26 @@ RSpec.describe HTTParty::Request do
         expect(resp.body).to be_nil
       end
 
-      it "should process utf-16 charset with little endian bom correctly" do
-        @request.options[:assume_utf16_is_big_endian] = true
+      context 'when assume_utf16_is_big_endian is true' do
+        before { @request.options[:assume_utf16_is_big_endian] = true }
 
-        response = stub_response "\xFF\xFEC\x00o\x00n\x00t\x00e\x00n\x00t\x00"
-        response.initialize_http_header("Content-Type" => "text/plain;charset = utf-16")
-        resp = @request.perform
+        it "should process utf-16 charset with little endian bom correctly" do
+          response = stub_response "\xFF\xFEC\x00o\x00n\x00t\x00e\x00n\x00t\x00"
 
-        expect(resp.body.encoding).to eq(Encoding.find("UTF-16LE"))
+          response.initialize_http_header("Content-Type" => "text/plain;charset = utf-16")
+          resp = @request.perform
+
+          expect(resp.body.encoding).to eq(Encoding.find("UTF-16LE"))
+        end
+
+        it 'processes stubbed frozen body correctly' do
+          response = stub_response "\xFF\xFEC\x00o\x00n\x00t\x00e\x00n\x00t\x00".freeze
+
+          response.initialize_http_header("Content-Type" => "text/plain;charset = utf-16")
+          resp = @request.perform
+
+          expect(resp.body.encoding).to eq(Encoding.find("UTF-16LE"))
+        end
       end
 
       it "should process utf-16 charset with big endian bom correctly" do
