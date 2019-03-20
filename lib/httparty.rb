@@ -15,7 +15,7 @@ require 'httparty/version'
 require 'httparty/connection_adapter'
 require 'httparty/logger/logger'
 require 'httparty/request/body'
-require 'httparty/fragment_with_response'
+require 'httparty/response_fragment'
 require 'httparty/text_encoder'
 
 # @see HTTParty::ClassMethods

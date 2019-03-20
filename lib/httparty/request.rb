@@ -149,7 +149,7 @@ module HTTParty
           http_response.read_body do |fragment|
             encoded_fragment = encode_text(fragment, http_response['content-type'])
             chunks << encoded_fragment if !options[:stream_body]
-            block.call FragmentWithResponse.new(encoded_fragment, http_response, current_http)
+            block.call ResponseFragment.new(encoded_fragment, http_response, current_http)
           end
 
           chunked_body = chunks.join

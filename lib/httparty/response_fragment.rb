@@ -2,9 +2,7 @@ require 'delegate'
 
 module HTTParty
   # Allow access to http_response and code by delegation on fragment
-  class FragmentWithResponse < SimpleDelegator
-    extend Forwardable
-
+  class ResponseFragment < SimpleDelegator
     attr_reader :http_response, :connection
 
     def code
