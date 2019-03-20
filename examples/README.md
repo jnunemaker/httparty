@@ -81,3 +81,6 @@
 
 * [Uploading File](body_stream.rb)
   * Uses `body_stream` to upload file
+
+* [Accessing x509 Peer Certificate](peer_cert.rb)
+  * Provides access to the server's TLS certificate
