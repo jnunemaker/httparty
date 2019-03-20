@@ -131,6 +131,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
           )
           expect(http).not_to receive(:open_timeout=)
           expect(http).not_to receive(:read_timeout=)
+          expect(http).not_to receive(:write_timeout=)
           allow(Net::HTTP).to receive_messages(new: http)
 
           adapter.connection
@@ -150,6 +151,13 @@ RSpec.describe HTTParty::ConnectionAdapter do
             subject { super().read_timeout }
             it { is_expected.to eq(5) }
           end
+
+          if RUBY_VERSION >= '2.6.0'
+            describe '#write_timeout' do
+              subject { super().write_timeout }
+              it { is_expected.to eq(5) }
+            end
+          end
         end
 
         context "and timeout is a string" do
@@ -164,6 +172,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
             )
             expect(http).not_to receive(:open_timeout=)
             expect(http).not_to receive(:read_timeout=)
+            expect(http).not_to receive(:write_timeout=)
             allow(Net::HTTP).to receive_messages(new: http)
 
             adapter.connection
@@ -191,6 +200,19 @@ RSpec.describe HTTParty::ConnectionAdapter do
           allow(Net::HTTP).to receive_messages(new: http)
           adapter.connection
         end
+
+        it "should not set the write_timeout" do
+          http = double(
+            "http",
+            :null_object => true,
+            :use_ssl= => false,
+            :use_ssl? => false,
+            :read_timeout= => 0
+          )
+          expect(http).not_to receive(:write_timeout=)
+          allow(Net::HTTP).to receive_messages(new: http)
+          adapter.connection
+        end
       end
 
       context "when timeout is set and read_timeout is set to 6 seconds" do
@@ -199,6 +221,13 @@ RSpec.describe HTTParty::ConnectionAdapter do
         describe '#open_timeout' do
           subject { super().open_timeout }
           it { is_expected.to eq(5) }
+        end
+
+        if RUBY_VERSION >= '2.6.0'
+          describe '#write_timeout' do
+            subject { super().write_timeout }
+            it { is_expected.to eq(5) }
+          end
         end
 
         describe '#read_timeout' do
@@ -213,10 +242,14 @@ RSpec.describe HTTParty::ConnectionAdapter do
             :use_ssl= => false,
             :use_ssl? => false,
             :read_timeout= => 0,
-            :open_timeout= => 0
+            :open_timeout= => 0,
+            :write_timeout= => 0,
           )
           expect(http).to receive(:open_timeout=)
           expect(http).to receive(:read_timeout=).twice
+          if RUBY_VERSION >= '2.6.0'
+            expect(http).to receive(:write_timeout=)
+          end
           allow(Net::HTTP).to receive_messages(new: http)
           adapter.connection
         end
@@ -242,6 +275,19 @@ RSpec.describe HTTParty::ConnectionAdapter do
           allow(Net::HTTP).to receive_messages(new: http)
           adapter.connection
         end
+
+        it "should not set the write_timeout" do
+          http = double(
+            "http",
+            :null_object => true,
+            :use_ssl= => false,
+            :use_ssl? => false,
+            :open_timeout= => 0
+          )
+          expect(http).not_to receive(:write_timeout=)
+          allow(Net::HTTP).to receive_messages(new: http)
+          adapter.connection
+        end
       end
 
       context "when timeout is set and open_timeout is set to 7 seconds" do
@@ -250,6 +296,13 @@ RSpec.describe HTTParty::ConnectionAdapter do
         describe '#open_timeout' do
           subject { super().open_timeout }
           it { is_expected.to eq(7) }
+        end
+
+        if RUBY_VERSION >= '2.6.0'
+          describe '#write_timeout' do
+            subject { super().write_timeout }
+            it { is_expected.to eq(5) }
+          end
         end
 
         describe '#read_timeout' do
@@ -264,12 +317,85 @@ RSpec.describe HTTParty::ConnectionAdapter do
             :use_ssl= => false,
             :use_ssl? => false,
             :read_timeout= => 0,
-            :open_timeout= => 0
+            :open_timeout= => 0,
+            :write_timeout= => 0,
           )
           expect(http).to receive(:open_timeout=).twice
           expect(http).to receive(:read_timeout=)
+          if RUBY_VERSION >= '2.6.0'
+            expect(http).to receive(:write_timeout=)
+          end
           allow(Net::HTTP).to receive_messages(new: http)
           adapter.connection
+        end
+      end
+
+      if RUBY_VERSION >= '2.6.0'
+        context "when timeout is not set and write_timeout is set to 8 seconds" do
+          let(:options) { {write_timeout: 8} }
+
+          describe '#write_timeout' do
+            subject { super().write_timeout }
+            it { is_expected.to eq(8) }
+          end
+
+          it "should not set the open timeout" do
+            http = double(
+              "http",
+              :null_object => true,
+              :use_ssl= => false,
+              :use_ssl? => false,
+              :read_timeout= => 0,
+              :open_timeout= => 0,
+              :write_timeout= => 0,
+
+            )
+            expect(http).not_to receive(:open_timeout=)
+            allow(Net::HTTP).to receive_messages(new: http)
+            adapter.connection
+          end
+
+          it "should not set the read timeout" do
+            http = double(
+              "http",
+              :null_object => true,
+              :use_ssl= => false,
+              :use_ssl? => false,
+              :read_timeout= => 0,
+              :open_timeout= => 0,
+              :write_timeout= => 0,
+
+            )
+            expect(http).not_to receive(:read_timeout=)
+            allow(Net::HTTP).to receive_messages(new: http)
+            adapter.connection
+          end
+        end
+
+        context "when timeout is set and write_timeout is set to 8 seconds" do
+          let(:options) { {timeout: 2, write_timeout: 8} }
+
+          describe '#write_timeout' do
+            subject { super().write_timeout }
+            it { is_expected.to eq(8) }
+          end
+
+          it "should override the timeout option" do
+            http = double(
+              "http",
+              :null_object => true,
+              :use_ssl= => false,
+              :use_ssl? => false,
+              :read_timeout= => 0,
+              :open_timeout= => 0,
+              :write_timeout= => 0,
+            )
+            expect(http).to receive(:read_timeout=)
+            expect(http).to receive(:open_timeout=)
+            expect(http).to receive(:write_timeout=).twice
+            allow(Net::HTTP).to receive_messages(new: http)
+            adapter.connection
+          end
         end
       end
 

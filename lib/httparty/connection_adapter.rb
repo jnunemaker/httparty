@@ -42,6 +42,7 @@ module HTTParty
   # * :+timeout+: timeout in seconds
   # * :+open_timeout+: http connection open_timeout in seconds, overrides timeout if set
   # * :+read_timeout+: http connection read_timeout in seconds, overrides timeout if set
+  # * :+write_timeout+: http connection write_timeout in seconds, overrides timeout if set (Ruby >= 2.6.0 required)
   # * :+debug_output+: see HTTParty::ClassMethods.debug_output.
   # * :+cert_store+: contains certificate data. see method 'attach_ssl_certificates'
   # * :+pem+: contains pem client certificate data. see method 'attach_ssl_certificates'
@@ -113,17 +114,27 @@ module HTTParty
 
       attach_ssl_certificates(http, options)
 
-      if options[:timeout] && (options[:timeout].is_a?(Integer) || options[:timeout].is_a?(Float))
+      if add_timeout?(options[:timeout])
         http.open_timeout = options[:timeout]
         http.read_timeout = options[:timeout]
+
+        from_ruby_version('2.6.0', option: :write_timeout, warn: false) do
+          http.write_timeout = options[:timeout]
+        end
       end
 
-      if options[:read_timeout] && (options[:read_timeout].is_a?(Integer) || options[:read_timeout].is_a?(Float))
+      if add_timeout?(options[:read_timeout])
         http.read_timeout = options[:read_timeout]
       end
 
-      if options[:open_timeout] && (options[:open_timeout].is_a?(Integer) || options[:open_timeout].is_a?(Float))
+      if add_timeout?(options[:open_timeout])
         http.open_timeout = options[:open_timeout]
+      end
+
+      if add_timeout?(options[:write_timeout])
+        from_ruby_version('2.6.0', option: :write_timeout) do
+          http.write_timeout = options[:write_timeout]
+        end
       end
 
       if options[:debug_output]
@@ -138,18 +149,14 @@ module HTTParty
       #
       # @see https://bugs.ruby-lang.org/issues/6617
       if options[:local_host]
-        if RUBY_VERSION >= "2.0.0"
+        from_ruby_version('2.0.0', option: :local_host) do
           http.local_host = options[:local_host]
-        else
-          Kernel.warn("Warning: option :local_host requires Ruby version 2.0 or later")
         end
       end
 
       if options[:local_port]
-        if RUBY_VERSION >= "2.0.0"
+        from_ruby_version('2.0.0', option: :local_port) do
           http.local_port = options[:local_port]
-        else
-          Kernel.warn("Warning: option :local_port requires Ruby version 2.0 or later")
         end
       end
 
@@ -157,6 +164,18 @@ module HTTParty
     end
 
     private
+
+    def from_ruby_version(ruby_version, option: nil, warn: true)
+      if RUBY_VERSION >= ruby_version
+        yield
+      elsif warn
+        Kernel.warn("Warning: option #{ option } requires Ruby version #{ ruby_version } or later")
+      end
+    end
+
+    def add_timeout?(timeout)
+      timeout && (timeout.is_a?(Integer) || timeout.is_a?(Float))
+    end
 
     def clean_host(host)
       strip_ipv6_brackets(host)
