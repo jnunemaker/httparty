@@ -78,6 +78,10 @@ module HTTParty
       response.nil? || response.body.nil? || response.body.empty?
     end
 
+    def blank?
+      nil?
+    end
+
     def to_s
       if !response.nil? && !response.body.nil? && response.body.respond_to?(:to_s)
         response.body.to_s
