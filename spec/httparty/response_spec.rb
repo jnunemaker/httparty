@@ -194,6 +194,28 @@ RSpec.describe HTTParty::Response do
     it { expect(subject.kind_of?(Object)).to be_truthy }
   end
 
+  describe "blank?" do
+    it "is blank due to empty body" do
+      allow(@response_object).to receive_messages(body: "")
+      @parsed_response = lambda { "" }
+      @response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
+
+      expect(@response.blank?).to be_truthy
+    end
+
+    it "is not blank" do
+      expect(@response.blank?).to be_falsey
+    end
+
+    it "is nil and thus is also considered blank" do
+      allow(@response_object).to receive_messages(body: nil)
+      @parsed_response = lambda { nil }
+      @response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
+
+      expect(@response.blank?).to be_truthy
+    end
+  end
+
   describe "semantic methods for response codes" do
     def response_mock(klass)
       response = klass.new('', '', '')
