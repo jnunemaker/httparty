@@ -39,6 +39,10 @@ module HTTParty
       response.code.to_i
     end
 
+    def http_version
+      response.http_version
+    end
+
     def tap
       yield self
       self

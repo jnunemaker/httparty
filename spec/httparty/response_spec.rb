@@ -39,9 +39,15 @@ RSpec.describe HTTParty::Response do
     it "should set code" do
       expect(@response.code).to eq(@response_object.code)
     end
-
+        
     it "should set code as an Integer" do
       expect(@response.code).to be_a(Integer)
+    end
+    
+    it "should set http_version" do
+      unparseable_body = lambda { raise "Unparseable" }
+      unparseable_response = HTTParty::Response.new(@request_object, @response_object, unparseable_body)
+      expect(unparseable_response.http_version).to eq(@response_object.http_version)
     end
 
     context 'when raise_on is supplied' do
