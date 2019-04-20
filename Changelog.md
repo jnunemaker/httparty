@@ -1,3 +1,9 @@
+## 0.17.0
+
+* [Fix encoding of streamed chunk](https://github.com/jnunemaker/httparty/pull/644)
+* [Avoid modifying frozen strings](https://github.com/jnunemaker/httparty/pull/649)
+* [Expose .connection on fragment block param](https://github.com/jnunemaker/httparty/pull/648)
+* [Add support for `Net::HTTP#write_timeout` method (Ruby 2.6.0)](https://github.com/jnunemaker/httparty/pull/647)
 
 ## 0.16.4
 * [Add support for Ruby 2.6](https://github.com/jnunemaker/httparty/pull/636)
