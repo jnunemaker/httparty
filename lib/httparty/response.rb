@@ -50,7 +50,15 @@ module HTTParty
 
     def inspect
       inspect_id = ::Kernel::format "%x", (object_id * 2)
-      %(#<#{self.class}:0x#{inspect_id} parsed_response=#{parsed_response.inspect}, @response=#{response.inspect}, @headers=#{headers.inspect}>)
+
+      parsed_response_or_body =
+        begin
+          "parsed_response=#{parsed_response.inspect}"
+        rescue JSON::ParserError
+          "parsed_response=<invalid>, body=#{body.inspect}"
+        end
+
+      %(#<#{self.class}:0x#{inspect_id} #{parsed_response_or_body}, @response=#{response.inspect}, @headers=#{headers.inspect}>)
     end
 
     CODES_TO_OBJ = ::Net::HTTPResponse::CODE_CLASS_TO_OBJ.merge ::Net::HTTPResponse::CODE_TO_OBJ

@@ -358,6 +358,16 @@ RSpec.describe HTTParty::Response do
       expect(inspect).to include("last-modified")
       expect(inspect).to include("content-length")
     end
+
+    it "works when the parsed_response is not valid JSON (e.g. a non-JSON error response to a JSON request)" do
+      allow(@response_object).to receive_messages(body: "boom")
+      parsed_response = lambda { raise(JSON::ParserError) }
+      response = HTTParty::Response.new(@request_object, @response_object, parsed_response)
+      inspect = response.inspect
+
+      expect(inspect).to include("parsed_response=<invalid>")
+      expect(inspect).to include("body=\"boom\"")
+    end
   end
 
   describe 'marshalling' do
