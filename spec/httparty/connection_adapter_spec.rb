@@ -399,6 +399,58 @@ RSpec.describe HTTParty::ConnectionAdapter do
         end
       end
 
+      context "when max_retries is not set" do
+        it "doesn't set the max_retries" do
+          http = double(
+            "http",
+            :null_object => true,
+            :use_ssl= => false,
+            :use_ssl? => false
+          )
+          expect(http).not_to receive(:max_retries=)
+          allow(Net::HTTP).to receive_messages(new: http)
+
+          adapter.connection
+        end
+      end
+
+      context "when setting max_retries" do
+        if RUBY_VERSION >= '2.5.0'
+          context "to 5 times" do
+            let(:options) { {max_retries: 5} }
+            describe '#max_retries' do
+              subject { super().max_retries }
+              it { is_expected.to eq(5) }
+            end
+          end
+
+          context "to 0 times" do
+            let(:options) { {max_retries: 0} }
+            describe '#max_retries' do
+              subject { super().max_retries }
+              it { is_expected.to eq(0) }
+            end
+          end
+        end
+
+        context "and max_retries is a string" do
+          let(:options) { {max_retries: "five times"} }
+
+          it "doesn't set the max_retries" do
+            http = double(
+              "http",
+              :null_object => true,
+              :use_ssl= => false,
+              :use_ssl? => false
+            )
+            expect(http).not_to receive(:max_retries=)
+            allow(Net::HTTP).to receive_messages(new: http)
+
+            adapter.connection
+          end
+        end
+      end
+
       context "when debug_output" do
         let(:http) { Net::HTTP.new(uri) }
         before do
