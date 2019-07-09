@@ -154,6 +154,16 @@ RSpec.describe HTTParty do
       expect(@klass.headers).to eq(init_headers)
     end
 
+    it "should pass options as argument to header block value" do
+      init_headers = { 'foo' => lambda { |options| options[:body] } }
+      @klass.headers init_headers
+
+      stub_request(:get, "http://example.com/").with(body: 'bar',  headers: { 'foo' => 'bar', 'baz' => 'rab' })
+
+      @klass.get('http://example.com/', body: 'bar',headers: { 'baz' => -> (options){ options[:body].reverse } })
+      expect(@klass.headers).to eq(init_headers)
+    end
+
     it "uses the class headers when sending a request" do
       expect_headers('foo' => 'bar')
       @klass.headers(foo: 'bar')
