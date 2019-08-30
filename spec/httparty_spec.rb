@@ -414,7 +414,9 @@ RSpec.describe HTTParty do
         uri = 'http://xn--i-7iqv272g.ws/'
         stub_request(:get, uri).to_return(body: 'stuff')
 
-        expect(@klass.get('http://i❤️.ws').parsed_response).to eq('stuff')
+        response = @klass.get('http://i❤️.ws')
+        expect(response.parsed_response).to eq('stuff')
+        expect(response.request.uri.to_s).to eq(uri)
       end
     end
 
@@ -422,14 +424,18 @@ RSpec.describe HTTParty do
       require 'forwardable'
       class CustomURIAdaptor
         extend Forwardable
-        def_delegators :@uri, :userinfo, :relative?, :query, :query=, :scheme, :path, :host, :port, :normalize
+        def_delegators :@uri, :userinfo, :relative?, :query, :query=, :scheme, :path, :host, :port
 
-        def initialize uri
+        def initialize(uri)
           @uri = uri
         end
 
-        def self.parse uri
-          new URI.parse uri
+        def self.parse(uri)
+          new(URI.parse(uri))
+        end
+
+        def normalize
+          self
         end
       end
 

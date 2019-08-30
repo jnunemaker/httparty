@@ -71,7 +71,7 @@ module HTTParty
       @path = if uri.is_a?(uri_adapter)
         uri
       elsif String.try_convert(uri)
-        uri_adapter.parse uri
+        uri_adapter.parse(uri).normalize
       else
         raise ArgumentError,
           "bad argument (expected #{uri_adapter} object or URI string)"
