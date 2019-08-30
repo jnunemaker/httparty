@@ -17,6 +17,7 @@ require 'httparty/logger/logger'
 require 'httparty/request/body'
 require 'httparty/response_fragment'
 require 'httparty/text_encoder'
+require 'httparty/headers_processor'
 
 # @see HTTParty::ClassMethods
 module HTTParty
@@ -588,26 +589,9 @@ module HTTParty
 
     def perform_request(http_method, path, options, &block) #:nodoc:
       options = ModuleInheritableAttributes.hash_deep_dup(default_options).merge(options)
-      process_headers(options)
+      HeadersProcessor.new(headers, options).call
       process_cookies(options)
       Request.new(http_method, path, options).perform(&block)
-    end
-
-    def process_headers(options)
-      if options[:headers]
-        if headers.any?
-          options[:headers] = headers.merge(options[:headers])
-        end
-
-        options[:headers] = Utils.stringify_keys(process_dynamic_headers(options[:headers]))
-      end
-    end
-
-    def process_dynamic_headers(headers)
-      headers.each_with_object({}) do |header, processed_headers|
-        key, value = header
-        processed_headers[key] = value.respond_to?(:call) ? value.call : value
-      end
     end
 
     def process_cookies(options) #:nodoc:
