@@ -16,6 +16,7 @@ group :test do
   gem 'aruba'
   gem 'cucumber', '~> 2.3'
   gem 'webmock'
+  gem 'addressable'
 end
 
 group :development, :test do
