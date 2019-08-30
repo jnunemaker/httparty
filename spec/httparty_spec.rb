@@ -405,42 +405,61 @@ RSpec.describe HTTParty do
   end
 
   describe "uri_adapter" do
-
-    require 'forwardable'
-    class CustomURIAdaptor
-      extend Forwardable
-      def_delegators :@uri, :userinfo, :relative?, :query, :query=, :scheme, :path, :host, :port
-
-      def initialize uri
-        @uri = uri
+    context 'with Addressable::URI' do
+      before do
+        @klass.uri_adapter(Addressable::URI)
       end
 
-      def self.parse uri
-        new URI.parse uri
+      it 'handles international domains' do
+        uri = 'http://xn--i-7iqv272g.ws/'
+        stub_request(:get, uri).to_return(body: 'stuff')
+
+        response = @klass.get('http://i❤️.ws')
+        expect(response.parsed_response).to eq('stuff')
+        expect(response.request.uri.to_s).to eq(uri)
       end
     end
 
-    let(:uri_adapter) { CustomURIAdaptor }
+    context 'with custom URI Adaptor' do
+      require 'forwardable'
+      class CustomURIAdaptor
+        extend Forwardable
+        def_delegators :@uri, :userinfo, :relative?, :query, :query=, :scheme, :path, :host, :port
 
-    it "should set the uri_adapter" do
-      @klass.uri_adapter uri_adapter
-      expect(@klass.default_options[:uri_adapter]).to be uri_adapter
+        def initialize(uri)
+          @uri = uri
+        end
+
+        def self.parse(uri)
+          new(URI.parse(uri))
+        end
+
+        def normalize
+          self
+        end
+      end
+
+      let(:uri_adapter) { CustomURIAdaptor }
+
+      it "should set the uri_adapter" do
+        @klass.uri_adapter uri_adapter
+        expect(@klass.default_options[:uri_adapter]).to be uri_adapter
+      end
+
+      it "should raise an ArgumentError if uri_adapter doesn't implement parse method" do
+        expect do
+          @klass.uri_adapter double()
+        end.to raise_error(ArgumentError)
+      end
+
+
+      it "should process a request with a uri instance parsed from the uri_adapter" do
+        uri = 'http://foo.com/bar'
+        stub_request(:get, uri).to_return(body: 'stuff')
+        @klass.uri_adapter uri_adapter
+        expect(@klass.get(uri).parsed_response).to eq('stuff')
+      end
     end
-
-    it "should raise an ArgumentError if uri_adapter doesn't implement parse method" do
-      expect do
-        @klass.uri_adapter double()
-      end.to raise_error(ArgumentError)
-    end
-
-
-    it "should process a request with a uri instance parsed from the uri_adapter" do
-      uri = 'http://foo.com/bar'
-      stub_request(:get, uri).to_return(body: 'stuff')
-      @klass.uri_adapter uri_adapter
-      expect(@klass.get(uri).parsed_response).to eq('stuff')
-    end
-
   end
 
   describe "connection_adapter" do

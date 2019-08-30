@@ -71,7 +71,7 @@ module HTTParty
       @path = if uri.is_a?(uri_adapter)
         uri
       elsif String.try_convert(uri)
-        uri_adapter.parse uri
+        uri_adapter.parse(uri).normalize
       else
         raise ArgumentError,
           "bad argument (expected #{uri_adapter} object or URI string)"
@@ -95,9 +95,9 @@ module HTTParty
       end
 
       if path.relative? && path.host
-        new_uri = options[:uri_adapter].parse("#{@last_uri.scheme}:#{path}")
+        new_uri = options[:uri_adapter].parse("#{@last_uri.scheme}:#{path}").normalize
       elsif path.relative?
-        new_uri = options[:uri_adapter].parse("#{base_uri}#{path}")
+        new_uri = options[:uri_adapter].parse("#{base_uri}#{path}").normalize
       else
         new_uri = path.clone
       end
@@ -305,7 +305,7 @@ module HTTParty
 
     def handle_host_redirection
       check_duplicate_location_header
-      redirect_path = options[:uri_adapter].parse last_response['location']
+      redirect_path = options[:uri_adapter].parse(last_response['location']).normalize
       return if redirect_path.relative? || path.host == redirect_path.host
       @changed_hosts = true
     end
