@@ -137,6 +137,12 @@ module HTTParty
         end
       end
 
+      if add_max_retries?(options[:max_retries])
+        from_ruby_version('2.5.0', option: :max_retries) do
+          http.max_retries = options[:max_retries]
+        end
+      end
+
       if options[:debug_output]
         http.set_debug_output(options[:debug_output])
       end
@@ -175,6 +181,10 @@ module HTTParty
 
     def add_timeout?(timeout)
       timeout && (timeout.is_a?(Integer) || timeout.is_a?(Float))
+    end
+
+    def add_max_retries?(max_retries)
+      max_retries && max_retries.is_a?(Integer) && max_retries >= 0
     end
 
     def clean_host(host)
