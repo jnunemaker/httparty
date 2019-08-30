@@ -1,3 +1,11 @@
+## 0.17.1
+
+* [Pass options to dynamic block headers](https://github.com/jnunemaker/httparty/pull/661)
+* [Normalize urls with URI adapter to allow International Domain Names support](https://github.com/jnunemaker/httparty/pull/668)
+* [Add max_retries support](https://github.com/jnunemaker/httparty/pull/648)
+* [Add support for `Net::HTTP#write_timeout` method (Ruby 2.6.0)](https://github.com/jnunemaker/httparty/pull/660)
+* [Minize gem size by removing test files](https://github.com/jnunemaker/httparty/pull/658)
+
 ## 0.17.0
 
 * [Fix encoding of streamed chunk](https://github.com/jnunemaker/httparty/pull/644)
