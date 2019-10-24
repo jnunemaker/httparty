@@ -79,7 +79,8 @@ module HTTParty
     end
 
     def nil?
-      response.nil? || response.body.nil? || response.body.empty?
+      response.nil? || response.body.nil? || response.body.empty? ||
+      parsed_response.nil? || parsed_response.empty?
     end
 
     def to_s

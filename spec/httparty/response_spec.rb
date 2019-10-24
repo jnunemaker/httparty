@@ -39,11 +39,11 @@ RSpec.describe HTTParty::Response do
     it "should set code" do
       expect(@response.code).to eq(@response_object.code)
     end
-        
+
     it "should set code as an Integer" do
       expect(@response.code).to be_a(Integer)
     end
-    
+
     it "should set http_version" do
       unparseable_body = lambda { raise "Unparseable" }
       unparseable_response = HTTParty::Response.new(@request_object, @response_object, unparseable_body)
@@ -357,6 +357,63 @@ RSpec.describe HTTParty::Response do
       expect(inspect).to include("@headers={")
       expect(inspect).to include("last-modified")
       expect(inspect).to include("content-length")
+    end
+  end
+
+  describe "#nil?" do
+    it "returns false if the response is exists" do
+      response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
+
+      expect(response).to_not be_nil
+    end
+
+    it "returns true if the response is nil" do
+      net_response = Net::HTTPRedirection.new('', '', '')
+      allow(net_response).to receive(:body)
+
+      response = HTTParty::Response.new(@request_object, net_response, '')
+
+      expect(response).to be_nil
+    end
+
+    it "returns true if the response body is nil" do
+      response_object = Net::HTTPOK.new('1.1', 200, 'OK')
+      allow(response_object).to receive_messages(body: nil)
+      parsed_response = lambda { nil }
+
+      response = HTTParty::Response.new(@request_object, response_object, parsed_response)
+
+      expect(response).to be_nil
+    end
+
+    it "returns true if the response body is empty" do
+      response_object = Net::HTTPOK.new('1.1', 200, 'OK')
+      allow(response_object).to receive_messages(body: '')
+      parsed_response = lambda { '' }
+
+      response = HTTParty::Response.new(@request_object, response_object, parsed_response)
+
+      expect(response).to be_nil
+    end
+
+    it "returns true if the parsed response is nil" do
+      response_object = Net::HTTPOK.new('1.1', 200, 'OK')
+      allow(response_object).to receive_messages(body: 'null')
+      parsed_response = lambda { nil }
+
+      response = HTTParty::Response.new(@request_object, response_object, parsed_response)
+
+      expect(response).to be_nil
+    end
+
+    it "returns true if the parsed response is empty" do
+      response_object = Net::HTTPOK.new('1.1', 200, 'OK')
+      allow(response_object).to receive_messages(body: 'foo')
+      parsed_response = lambda { '' }
+
+      response = HTTParty::Response.new(@request_object, response_object, parsed_response)
+
+      expect(response).to be_nil
     end
   end
 

@@ -1,3 +1,7 @@
+## Unreleased
+
+* [`Response.nil?` now considers the parsed response]()
+
 ## 0.17.1
 
 * [Pass options to dynamic block headers](https://github.com/jnunemaker/httparty/pull/661)
