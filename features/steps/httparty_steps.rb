@@ -10,6 +10,11 @@ When /^I set my HTTParty read_timeout option to (\d+)$/ do |timeout|
   @request_options[:read_timeout] = timeout.to_i
 end
 
+When /^I set my HTTParty header '(.*)' to value '(.*)'$/ do |name, value|
+  @request_options[:headers] ||= {}
+  @request_options[:headers][name] = value
+end
+
 When /I call HTTParty#get with '(.*)'$/ do |url|
   begin
     @response_from_httparty = HTTParty.get("http://#{@host_and_port}#{url}", @request_options)
