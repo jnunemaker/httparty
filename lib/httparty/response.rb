@@ -79,6 +79,7 @@ module HTTParty
     end
 
     def nil?
+      warn_about_nil_deprecation
       response.nil? || response.body.nil? || response.body.empty?
     end
 
@@ -133,6 +134,19 @@ module HTTParty
       if @request.options[:raise_on] && @request.options[:raise_on].include?(code)
         ::Kernel.raise ::HTTParty::ResponseError.new(@response), "Code #{code} - #{body}"
       end
+    end
+
+    private
+
+    def warn_about_nil_deprecation
+      trace_line = caller.reject { |line| line.include?('httparty') }.first
+      warning = "[DEPRECATION] HTTParty will no longer override `response#nil?`. " \
+        "This functionality will be removed in future versions. " \
+        "Please, add explicit check `response.body.nil? || response.body.empty?`. " \
+        "For more info refer to: https://github.com/jnunemaker/httparty/issues/568\n" \
+        "#{trace_line}"
+
+      warn(warning)
     end
   end
 end
