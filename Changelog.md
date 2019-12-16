@@ -1,3 +1,7 @@
+## 0.17.2
+
+* [Add Response#nil? deprecetion warning](https://github.com/jnunemaker/httparty/pull/680)
+
 ## 0.17.1
 
 * [Pass options to dynamic block headers](https://github.com/jnunemaker/httparty/pull/661)
