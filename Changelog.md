@@ -1,3 +1,7 @@
+## 0.17.3
+
+0.17.2 is broken https://github.com/jnunemaker/httparty/issues/681
+
 ## 0.17.2
 
 * [Add Response#nil? deprecetion warning](https://github.com/jnunemaker/httparty/pull/680)
