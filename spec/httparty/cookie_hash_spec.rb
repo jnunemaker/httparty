@@ -42,6 +42,11 @@ RSpec.describe HTTParty::CookieHash do
         expect(@cookie_hash[:first]).to eq('one=1')
         expect(@cookie_hash[:second]).to eq('two=2==')
       end
+
+      it "should handle an empty cookie parameter" do
+        @cookie_hash.add_cookies("first=one; domain=mydomain.com; path=/; ; SameSite; Secure")
+        expect(@cookie_hash.keys).to include(:first, :domain, :path, :SameSite, :Secure)
+      end
     end
 
     describe 'with other class' do
