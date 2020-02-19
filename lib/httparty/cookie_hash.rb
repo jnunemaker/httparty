@@ -8,7 +8,7 @@ class HTTParty::CookieHash < Hash #:nodoc:
     when String
       value.split('; ').each do |cookie|
         array = cookie.split('=', 2)
-        self[array[0].to_sym] = array[1]
+        self[array[0].to_sym] = array[1] if array[0]
       end
     else
       raise "add_cookies only takes a Hash or a String"
