@@ -25,18 +25,28 @@ end
 
 class DeflateHandler < BasicMongrelHandler
   def process(request, response)
-    response.start do |head, body|
-      head['Content-Encoding'] = 'deflate'
-      body.write Zlib::Deflate.deflate(response_body)
+    accept_encoding = request.params["HTTP_ACCEPT_ENCODING"]
+    if accept_encoding.nil? || !accept_encoding.include?('deflate')
+      reply_with(response, 406, 'No deflate accept encoding found in request')
+    else
+      response.start do |head, body|
+        head['Content-Encoding'] = 'deflate'
+        body.write Zlib::Deflate.deflate(response_body)
+      end
     end
   end
 end
 
 class GzipHandler < BasicMongrelHandler
   def process(request, response)
-    response.start do |head, body|
-      head['Content-Encoding'] = 'gzip'
-      body.write gzip(response_body)
+    accept_encoding = request.params["HTTP_ACCEPT_ENCODING"]
+    if accept_encoding.nil? || !accept_encoding.include?('gzip')
+      reply_with(response, 406, 'No gzip accept encoding found in request')
+    else
+      response.start do |head, body|
+        head['Content-Encoding'] = 'gzip'
+        body.write gzip(response_body)
+      end
     end
   end
 
