@@ -1,3 +1,8 @@
+## 0.18.0
+
+* [Support gzip/deflate transfer encoding when explicit headers are set](https://github.com/jnunemaker/httparty/pull/678).
+* [Support edge case cookie format with a blank attribute](https://github.com/jnunemaker/httparty/pull/685).
+
 ## 0.17.3
 
 0.17.2 is broken https://github.com/jnunemaker/httparty/issues/681
