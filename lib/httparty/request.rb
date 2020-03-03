@@ -92,6 +92,11 @@ module HTTParty
 
         path.path = "/#{path.path}" if last_uri_host[-1] != "/"
         path.path = last_uri_host + path.path
+
+        # use absolute path [#582]
+        if path.path.include?('/../')
+          path.path = File.expand_path(path.path)
+        end
       end
 
       if path.relative? && path.host

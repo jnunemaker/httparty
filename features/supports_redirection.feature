@@ -14,6 +14,11 @@ Feature: Supports Redirection
 
   # TODO: Look in to why this actually fails...
   Scenario: A service that redirects to a relative URL
+    Given a remote service that returns 'Service Response'
+    And that service is accessed at the path '/landing_service.html'
+    And the url '/landing/service.html' redirects to the relative path '../landing_service.html'
+    When I call HTTParty#get with '/landing/service.html'
+    Then the return value should match 'Service Response'
 
   Scenario: A service that redirects infinitely
     Given the url '/first.html' redirects to '/second.html'

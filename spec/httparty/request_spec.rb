@@ -664,6 +664,18 @@ RSpec.describe HTTParty::Request do
           expect(response.parsed_response).to eq({"hash" => {"foo" => "bar"}})
         end
 
+        it "redirects to an absolute path if a 300 contains a relative path in the location header" do
+          redirect = stub_response '', 300
+          redirect['location'] = '../bar/baz'
+          ok = stub_response('<hash><bar>baz</bar></hash>', 200)
+          allow(@http).to receive(:request).and_return(redirect, ok)
+          response = @request.perform
+          expect(response.request.base_uri.to_s).to eq("http://api.foo.com")
+          expect(response.request.uri.request_uri).to eq("/bar/baz")
+          expect(response.request.uri.to_s).to eq("http://api.foo.com/bar/baz")
+          expect(response.parsed_response).to eq({"hash" => {"bar" => "baz"}})
+        end
+
         it "handles multiple redirects and relative location headers on different hosts" do
           @request = HTTParty::Request.new(Net::HTTP::Get, 'http://test.com/redirect', format: :xml)
           stub_request(:get, 'http://test.com/redirect')

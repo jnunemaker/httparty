@@ -49,6 +49,10 @@ Given /the url '(.*)' redirects to '(.*)'/ do |redirection_url, target_url|
   @server.register redirection_url, new_mongrel_redirector(target_url)
 end
 
+Given /the url '(.*)' redirects to the relative path '(.*)'/ do |redirection_url, target_url|
+  @server.register redirection_url, new_mongrel_redirector(target_url, true)
+end
+
 Given /that service is protected by Basic Authentication/ do
   @handler.extend BasicAuthentication
 end
