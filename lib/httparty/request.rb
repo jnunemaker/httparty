@@ -88,15 +88,19 @@ module HTTParty
 
     def uri
       if redirect && path.relative? && path.path[0] != "/"
-        last_uri_host = @last_uri.path.gsub(/[^\/]+$/, "")
+        if path.path.start_with?('./')
+          last_uri_host = @last_uri.path
+        else
+          last_uri_host = @last_uri.path.gsub(/[^\/]+$/, "")
+        end
 
         path.path = "/#{path.path}" if last_uri_host[-1] != "/"
         path.path = last_uri_host + path.path
 
-        # use absolute path [#582]
-        if path.path.include?('/../')
+        if path.path.include?('/../') || path.path.include?('/./')
           path.path = File.expand_path(path.path)
         end
+
       end
 
       if path.relative? && path.host

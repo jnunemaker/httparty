@@ -12,7 +12,6 @@ Feature: Supports Redirection
     When I call HTTParty#get with '/redirector.html'
     Then the return value should match 'Service Response'
 
-  # TODO: Look in to why this actually fails...
   Scenario: A service that redirects to a relative URL
     Given a remote service that returns 'Service Response'
     And that service is accessed at the path '/landing_service.html'
