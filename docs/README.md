@@ -79,7 +79,7 @@ class Client
   base_uri "https://example.com"
 
   def self.fetch
-    get("/resources", pem: (File.read("#{File.expand_path('.')}/path/to/certs/cert.pem"), "123456")
+    get("/resources", pem: File.read("#{File.expand_path('.')}/path/to/certs/cert.pem"), pem_password: "123456")
   end
 end
 ```
