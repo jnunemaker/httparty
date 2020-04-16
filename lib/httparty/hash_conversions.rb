@@ -27,7 +27,7 @@ module HTTParty
       normalized_keys = normalize_keys(key, value)
 
       normalized_keys.flatten.each_slice(2).inject('') do |string, (k, v)|
-        string + "#{k}=#{ERB::Util.url_encode(v.to_s)}&"
+        string + "#{ERB::Util.url_encode(k)}=#{ERB::Util.url_encode(v.to_s)}&"
       end
     end
 

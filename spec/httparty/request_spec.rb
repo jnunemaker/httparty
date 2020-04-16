@@ -89,7 +89,7 @@ RSpec.describe HTTParty::Request do
         it "sets correct query string" do
           request = HTTParty::Request.new(Net::HTTP::Get, 'http://google.com', query: { fake_array: [] })
 
-          expect(request.uri).to eq(URI.parse("http://google.com/?fake_array[]="))
+          expect(request.uri).to eq(URI.parse("http://google.com/?fake_array%5B%5D="))
         end
       end
 
@@ -97,7 +97,7 @@ RSpec.describe HTTParty::Request do
         it "sets correct query" do
           request = HTTParty::Request.new(Net::HTTP::Get, 'http://google.com', query: { fake_array: [1] })
 
-          expect(request.uri).to eq(URI.parse("http://google.com/?fake_array[]=1"))
+          expect(request.uri).to eq(URI.parse("http://google.com/?fake_array%5B%5D=1"))
         end
       end
     end
@@ -327,6 +327,7 @@ RSpec.describe HTTParty::Request do
         it "returns a Rails style query string" do
           @request.options[:query] = {foo: %w(bar baz)}
           expect(CGI.unescape(@request.uri.query)).to eq("foo[]=bar&foo[]=baz")
+          expect(@request.uri.query).to eq("foo%5B%5D=bar&foo%5B%5D=baz")
         end
       end
     end
