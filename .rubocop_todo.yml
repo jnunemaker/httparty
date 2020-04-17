@@ -15,7 +15,7 @@ Lint/EndAlignment:
   Enabled: false
 
 # Offense count: 1
-Lint/HandleExceptions:
+Lint/SuppressedException:
   Enabled: false
 
 # Offense count: 5
