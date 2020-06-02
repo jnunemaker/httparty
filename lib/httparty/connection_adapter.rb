@@ -209,9 +209,11 @@ module HTTParty
           http.verify_mode = OpenSSL::SSL::VERIFY_PEER
           if options[:cert_store]
             http.cert_store = options[:cert_store]
-          else
-            # Use the default cert store by default, i.e. system ca certs
-            http.cert_store = self.class.default_cert_store
+          else 
+            unless options[:ssl_ca_file] or options[:ssl_ca_path]
+              # Use the default cert store by default, i.e. system ca certs unless ssl_ca_file or ssl_ca_path is used
+              http.cert_store = self.class.default_cert_store
+            end
           end
         else
           http.verify_mode = OpenSSL::SSL::VERIFY_NONE
