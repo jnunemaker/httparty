@@ -1,3 +1,11 @@
+## 0.18.1
+
+* [Rename cop Lint/HandleExceptions to Lint/SuppressedException](https://github.com/jnunemaker/httparty/pull/699).
+* [Encode keys in query params](https://github.com/jnunemaker/httparty/pull/698).
+* [Fixed SSL doc example](https://github.com/jnunemaker/httparty/pull/692).
+* [Add a build status badge](https://github.com/jnunemaker/httparty/pull/701).
+
+
 ## 0.18.0
 
 * [Support gzip/deflate transfer encoding when explicit headers are set](https://github.com/jnunemaker/httparty/pull/678).
