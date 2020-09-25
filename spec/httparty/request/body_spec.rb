@@ -62,6 +62,8 @@ RSpec.describe HTTParty::Request::Body do
 
         it { is_expected.to eq multipart_params }
 
+        it { expect { subject }.not_to change { file.pos } }
+
         context 'when passing multipart as an option' do
           let(:options) { { force_multipart: true } }
           let(:params) do
