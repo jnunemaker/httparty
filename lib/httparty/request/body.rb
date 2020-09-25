@@ -39,7 +39,7 @@ module HTTParty
           memo += "\r\n"
           memo += "Content-Type: #{content_type(value)}\r\n" if file?(value)
           memo += "\r\n"
-          memo += file?(value) ? value.read : value.to_s
+          memo += content_body(value)
           memo += "\r\n"
         end
 
@@ -66,6 +66,15 @@ module HTTParty
         else
           HashConversions.to_params(query)
         end
+      end
+
+      def content_body(object)
+        if file?(object)
+          object = (file = object).read
+          file.rewind if file.respond_to?(:rewind)
+        end
+
+        object.to_s
       end
 
       def content_type(object)
