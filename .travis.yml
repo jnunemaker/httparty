@@ -9,4 +9,4 @@ rvm:
   - 2.6.5
   - 2.7.1
 bundler_args: --without development
-before_install: gem install bundler -v '< 2.2.0'
+before_install: gem install bundler -v '< 2.2'
