@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module HTTParty
   # The default parser used by HTTParty, supports xml, json, html, csv and
   # plain text.

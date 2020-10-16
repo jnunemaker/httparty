@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module HTTParty
   module ModuleInheritableAttributes #:nodoc:
     def self.included(base)

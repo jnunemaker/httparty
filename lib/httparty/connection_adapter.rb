@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module HTTParty
   # Default connection adapter that returns a new Net::HTTP each time
   #

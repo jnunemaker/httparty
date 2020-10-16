@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class HTTParty::CookieHash < Hash #:nodoc:
   CLIENT_COOKIES = %w(path expires domain path secure httponly samesite)
 

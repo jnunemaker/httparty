@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module HTTParty
   class TextEncoder
     attr_reader :text, :content_type, :assume_utf16_is_big_endian

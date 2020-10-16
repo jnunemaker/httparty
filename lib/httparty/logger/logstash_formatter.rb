@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module HTTParty
   module Logger
     class LogstashFormatter #:nodoc:
