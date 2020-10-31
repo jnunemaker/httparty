@@ -44,6 +44,11 @@ module HTTParty
       end.flatten.join('&')
     end
 
+    def self._load(data)
+      http_method, path, options = Marshal.load(data)
+      new(http_method, path, options)
+    end
+
     attr_accessor :http_method, :options, :last_response, :redirect, :last_uri
     attr_reader :path
 
@@ -171,6 +176,13 @@ module HTTParty
 
     def raw_body
       @raw_request.body
+    end
+
+    def _dump(_level)
+      opts = options.dup
+      opts.delete(:logger)
+      opts.delete(:parser) if opts[:parser] && opts[:parser].is_a?(Proc)
+      Marshal.dump([http_method, path, opts])
     end
 
     private
