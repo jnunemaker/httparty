@@ -35,16 +35,16 @@ module HTTParty
     def encode_utf_16
       if text.bytesize >= 2
         if text.getbyte(0) == 0xFF && text.getbyte(1) == 0xFE
-          return text.force_encoding("UTF-16LE")
+          return text.force_encoding('UTF-16LE')
         elsif text.getbyte(0) == 0xFE && text.getbyte(1) == 0xFF
-          return text.force_encoding("UTF-16BE")
+          return text.force_encoding('UTF-16BE')
         end
       end
 
       if assume_utf16_is_big_endian # option
-        text.force_encoding("UTF-16BE")
+        text.force_encoding('UTF-16BE')
       else
-        text.force_encoding("UTF-16LE")
+        text.force_encoding('UTF-16LE')
       end
     end
 

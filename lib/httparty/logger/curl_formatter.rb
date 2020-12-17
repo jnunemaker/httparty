@@ -4,8 +4,8 @@ module HTTParty
   module Logger
     class CurlFormatter #:nodoc:
       TAG_NAME = HTTParty.name
-      OUT      = '>'.freeze
-      IN       = '<'.freeze
+      OUT      = '>'
+      IN       = '<'
 
       attr_accessor :level, :logger
 
@@ -22,7 +22,7 @@ module HTTParty
         log_request
         log_response
 
-        logger.public_send level, messages.join("\n")
+        logger.public_send level, messages.join('\n')
       end
 
       private
@@ -46,7 +46,7 @@ module HTTParty
       end
 
       def log_url
-        http_method = request.http_method.name.split("::").last.upcase
+        http_method = request.http_method.name.split('::').last.upcase
         uri = if request.options[:base_uri]
                 request.options[:base_uri] + request.path.path
               else

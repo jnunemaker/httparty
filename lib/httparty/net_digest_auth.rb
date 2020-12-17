@@ -46,12 +46,9 @@ module Net
         header << %(algorithm="#{@response['algorithm']}") if algorithm_present?
 
         if qop_present?
-          fields = [
-            %(cnonce="#{@cnonce}"),
-            %(qop="#{@response['qop']}"),
-            "nc=00000001"
-          ]
-          fields.each { |field| header << field }
+          header << %(cnonce="#{@cnonce}")
+          header << %(qop="#{@response['qop']}")
+          header << 'nc=00000001'
         end
 
         header << %(opaque="#{@response['opaque']}") if opaque_present?
@@ -100,13 +97,13 @@ module Net
       end
 
       def random
-        format "%x", (Time.now.to_i + rand(65535))
+        format '%x', (Time.now.to_i + rand(65535))
       end
 
       def request_digest
         a = [md5(a1), @response['nonce'], md5(a2)]
-        a.insert(2, "00000001", @cnonce, @response['qop']) if qop_present?
-        md5(a.join(":"))
+        a.insert(2, '00000001', @cnonce, @response['qop']) if qop_present?
+        md5(a.join(':'))
       end
 
       def md5(str)
@@ -131,7 +128,7 @@ module Net
       end
 
       def a2
-        [@method, @path].join(":")
+        [@method, @path].join(':')
       end
     end
   end
