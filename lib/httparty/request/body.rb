@@ -1,8 +1,13 @@
+# frozen_string_literal: true
+
 require_relative 'multipart_boundary'
 
 module HTTParty
   class Request
     class Body
+      NEWLINE = "\r\n"
+      private_constant :NEWLINE
+
       def initialize(params, query_string_normalizer: nil, force_multipart: false)
         @params = params
         @query_string_normalizer = query_string_normalizer
@@ -30,20 +35,20 @@ module HTTParty
       def generate_multipart
         normalized_params = params.flat_map { |key, value| HashConversions.normalize_keys(key, value) }
 
-        multipart = normalized_params.inject('') do |memo, (key, value)|
-          memo += "--#{boundary}\r\n"
-          memo += %(Content-Disposition: form-data; name="#{key}")
+        multipart = normalized_params.inject(+'') do |memo, (key, value)|
+          memo << "--#{boundary}#{NEWLINE}"
+          memo << %(Content-Disposition: form-data; name="#{key}")
           # value.path is used to support ActionDispatch::Http::UploadedFile
           # https://github.com/jnunemaker/httparty/pull/585
-          memo += %(; filename="#{file_name(value)}") if file?(value)
-          memo += "\r\n"
-          memo += "Content-Type: #{content_type(value)}\r\n" if file?(value)
-          memo += "\r\n"
-          memo += content_body(value)
-          memo += "\r\n"
+          memo << %(; filename="#{file_name(value)}") if file?(value)
+          memo << NEWLINE
+          memo << "Content-Type: #{content_type(value)}#{NEWLINE}" if file?(value)
+          memo << NEWLINE
+          memo << content_body(value)
+          memo << NEWLINE
         end
 
-        multipart += "--#{boundary}--\r\n"
+        multipart << "--#{boundary}--#{NEWLINE}"
       end
 
       def has_file?(value)

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module HTTParty
   # The default parser used by HTTParty, supports xml, json, html, csv and
   # plain text.
@@ -101,7 +103,7 @@ module HTTParty
     # @return [nil] when the response body is nil, an empty string, spaces only or "null"
     def parse
       return nil if body.nil?
-      return nil if body == "null"
+      return nil if body == 'null'
       return nil if body.valid_encoding? && body.strip.empty?
       if body.valid_encoding? && body.encoding == Encoding::UTF_8
         @body = body.gsub(/\A#{UTF8_BOM}/, '')
@@ -119,7 +121,7 @@ module HTTParty
       MultiXml.parse(body)
     end
 
-    UTF8_BOM = "\xEF\xBB\xBF".freeze
+    UTF8_BOM = "\xEF\xBB\xBF"
 
     def json
       JSON.parse(body, :quirks_mode => true, :allow_nan => true)
