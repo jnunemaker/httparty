@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'erb'
 
 module HTTParty
@@ -87,11 +89,11 @@ module HTTParty
     end
 
     def uri
-      if redirect && path.relative? && path.path[0] != "/"
-        last_uri_host = @last_uri.path.gsub(/[^\/]+$/, "")
+      if redirect && path.relative? && path.path[0] != '/'
+        last_uri_host = @last_uri.path.gsub(/[^\/]+$/, '')
 
-        path.path = "/#{path.path}" if last_uri_host[-1] != "/"
-        path.path = last_uri_host + path.path
+        path.path = "/#{path.path}" if last_uri_host[-1] != '/'
+        path.path = "#{last_uri_host}#{path.path}"
       end
 
       if path.relative? && path.host
@@ -117,7 +119,7 @@ module HTTParty
     def base_uri
       if redirect
         base_uri = "#{@last_uri.scheme}://#{@last_uri.host}"
-        base_uri += ":#{@last_uri.port}" if @last_uri.port != 80
+        base_uri = "#{base_uri}:#{@last_uri.port}" if @last_uri.port != 80
         base_uri
       else
         options[:base_uri] && HTTParty.normalize_base_uri(options[:base_uri])
@@ -261,7 +263,7 @@ module HTTParty
         query_string_parts << options[:query] unless options[:query].nil?
       end
 
-      query_string_parts.reject!(&:empty?) unless query_string_parts == [""]
+      query_string_parts.reject!(&:empty?) unless query_string_parts == ['']
       query_string_parts.size > 0 ? query_string_parts.join('&') : nil
     end
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'erb'
 
 module HTTParty
@@ -26,8 +28,8 @@ module HTTParty
     def self.normalize_param(key, value)
       normalized_keys = normalize_keys(key, value)
 
-      normalized_keys.flatten.each_slice(2).inject('') do |string, (k, v)|
-        string + "#{k}=#{ERB::Util.url_encode(v.to_s)}&"
+      normalized_keys.flatten.each_slice(2).inject(+'') do |string, (k, v)|
+        string << "#{ERB::Util.url_encode(k)}=#{ERB::Util.url_encode(v.to_s)}&"
       end
     end
 
