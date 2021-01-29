@@ -558,7 +558,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
 
           before do
             expect(OpenSSL::X509::Certificate).to receive(:new).with(pem).and_return(cert)
-            expect(OpenSSL::PKey::RSA).to receive(:new).with(pem, "password").and_return(key)
+            expect(OpenSSL::PKey).to receive(:read).with(pem, "password").and_return(key)
           end
 
           it "uses the provided PEM certificate" do
