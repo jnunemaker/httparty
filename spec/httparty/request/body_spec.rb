@@ -5,7 +5,7 @@ RSpec.describe HTTParty::Request::Body do
   describe '#call' do
     let(:options) { {} }
 
-    subject { described_class.new(params, options).call }
+    subject { described_class.new(params, **options).call }
 
     context 'when params is string' do
       let(:params) { 'name=Bob%20Jones' }
