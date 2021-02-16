@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module HTTParty
-  # @abstact Exceptions raised by HTTParty inherit from Error
+  # @abstract Exceptions raised by HTTParty inherit from Error
   class Error < StandardError; end
 
   # Exception raised when you attempt to set a non-existent format
