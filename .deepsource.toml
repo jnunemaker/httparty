@@ -1,0 +1,13 @@
+version = 1
+
+test_patterns = ["spec/**/*_spec.rb"]
+
+exclude_patterns = [
+    "bin/**",
+    "docs/**",
+    "script/**"
+]
+
+[[analyzers]]
+name = "ruby"
+enabled = true
