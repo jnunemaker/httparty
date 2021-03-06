@@ -51,7 +51,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
 
   describe '#connection' do
     let(:uri) { URI 'http://www.google.com' }
-    let(:options) { Hash.new }
+    let(:options) { {} }
     let(:adapter) { HTTParty::ConnectionAdapter.new(uri, options) }
 
     describe "the resulting connection" do
