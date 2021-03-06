@@ -99,8 +99,8 @@ module HTTParty
     def connection
       host = clean_host(uri.host)
       port = uri.port || (uri.scheme == 'https' ? 443 : 80)
-      if options.key?(:http_proxyaddr)
-        http = Net::HTTP.new(
+      http = if options.key?(:http_proxyaddr)
+        Net::HTTP.new(
           host,
           port,
           options[:http_proxyaddr],
@@ -109,8 +109,8 @@ module HTTParty
           options[:http_proxypass]
         )
       else
-        http = Net::HTTP.new(host, port)
-      end
+        Net::HTTP.new(host, port)
+             end
 
       http.use_ssl = ssl_implied?(uri)
 
@@ -209,12 +209,12 @@ module HTTParty
       if http.use_ssl?
         if options.fetch(:verify, true)
           http.verify_mode = OpenSSL::SSL::VERIFY_PEER
-          if options[:cert_store]
-            http.cert_store = options[:cert_store]
+          http.cert_store = if options[:cert_store]
+            options[:cert_store]
           else
             # Use the default cert store by default, i.e. system ca certs
-            http.cert_store = self.class.default_cert_store
-          end
+            self.class.default_cert_store
+                            end
         else
           http.verify_mode = OpenSSL::SSL::VERIFY_NONE
         end

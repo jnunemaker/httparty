@@ -11,13 +11,13 @@ module HTTParty
       duplicate = hash.dup
 
       duplicate.each_pair do |key, value|
-        if value.is_a?(Hash)
-          duplicate[key] = hash_deep_dup(value)
+        duplicate[key] = if value.is_a?(Hash)
+          hash_deep_dup(value)
         elsif value.is_a?(Proc)
-          duplicate[key] = value.dup
+          value.dup
         else
-          duplicate[key] = value
-        end
+          value
+                         end
       end
 
       duplicate
