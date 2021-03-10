@@ -65,6 +65,7 @@ httparty "https://api.stackexchange.com/2.2/questions?site=stackoverflow"
 ## Help and Docs
 
 * [Docs](https://github.com/jnunemaker/httparty/tree/master/docs)
+* [RubyDoc](https://www.rubydoc.info/github/jnunemaker/httparty)
 * https://groups.google.com/forum/#!forum/httparty-gem
 * https://www.rubydoc.info/github/jnunemaker/httparty
 * http://stackoverflow.com/questions/tagged/httparty
