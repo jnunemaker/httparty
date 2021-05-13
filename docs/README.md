@@ -70,7 +70,7 @@ class Client
 end
 ```
 
-You can also include this options with the call:
+You can also include all of these options with the call:
 
 ```ruby
 class Client
@@ -86,7 +86,7 @@ end
 
 ### Avoid SSL verification
 
-In some cases you may want to skip SSL verification, because the entity that issue the certificate is not a valid one, but you still want to work with it. You can achieve this through:
+In some cases you may want to skip SSL verification, because the entity that issued the certificate is not a valid one, but you still want to work with it. You can achieve this through:
 
 ```ruby
 # Skips SSL certificate verification
