@@ -18,6 +18,7 @@ require 'httparty/connection_adapter'
 require 'httparty/logger/logger'
 require 'httparty/request/body'
 require 'httparty/response_fragment'
+require 'httparty/decompressor'
 require 'httparty/text_encoder'
 require 'httparty/headers_processor'
 
@@ -399,6 +400,22 @@ module HTTParty
     #   end
     def ssl_version(version)
       default_options[:ssl_version] = version
+    end
+
+    # Deactivate automatic decompression of the response body.
+    # This will require you to explicitly handle body decompression
+    # by inspecting the Content-Encoding response header.
+    #
+    # Refer to docs/README.md "HTTP Compression" section for
+    # further details.
+    #
+    # @example
+    #   class Foo
+    #     include HTTParty
+    #     skip_decompression
+    #   end
+    def skip_decompression(value = true)
+      default_options[:skip_decompression] = !!value
     end
 
     # Allows setting of SSL ciphers to use.  This only works in Ruby 1.9+.

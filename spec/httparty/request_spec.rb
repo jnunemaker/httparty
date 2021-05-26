@@ -505,6 +505,55 @@ RSpec.describe HTTParty::Request do
       expect(@request.perform.headers).to eq({ "key" => ["value"] })
     end
 
+    describe 'decompression' do
+      it 'should remove the Content-Encoding header if uncompressed' do
+        @request.options[:format] = :html
+        response = stub_response 'Content'
+        response.initialize_http_header('Content-Encoding' => 'none')
+
+        resp = @request.perform
+        expect(resp.body).to eq('Content')
+        expect(resp.headers).to eq({})
+        expect(resp.parsed_response).to eq('Content')
+      end
+
+      it 'should decompress the body and remove the Content-Encoding header' do
+        @request.options[:format] = :html
+        stub_const('Brotli', double('Brotli', inflate: 'foobar'))
+        response = stub_response 'Content'
+        response.initialize_http_header('Content-Encoding' => 'br')
+
+        resp = @request.perform
+        expect(resp.body).to eq('foobar')
+        expect(resp.headers).to eq({})
+        expect(resp.parsed_response).to eq('foobar')
+      end
+
+      it 'should not decompress the body if the :skip_decompression option is set' do
+        @request.options[:format] = :html
+        @request.options[:skip_decompression] = true
+        stub_const('Brotli', double('Brotli', inflate: 'foobar'))
+        response = stub_response 'Content'
+        response.initialize_http_header('Content-Encoding' => 'br')
+
+        resp = @request.perform
+        expect(resp.body).to eq('Content')
+        expect(resp.headers).to eq({ 'Content-Encoding' => 'br' })
+        expect(resp.parsed_response).to eq('foobar')
+      end
+
+      it 'should not decompress unrecognized Content-Encoding' do
+        @request.options[:format] = :html
+        response = stub_response 'Content'
+        response.initialize_http_header('Content-Encoding' => 'bad')
+
+        resp = @request.perform
+        expect(resp.body).to eq('Content')
+        expect(resp.headers).to eq({ 'Content-Encoding' => 'bad' })
+        expect(resp.parsed_response).to eq(nil)
+      end
+    end
+
     if "".respond_to?(:encoding)
       context 'when body has ascii-8bit encoding' do
         let(:response) { stub_response "Content".force_encoding('ascii-8bit') }
@@ -1199,8 +1248,6 @@ RSpec.describe HTTParty::Request do
           expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
         end
 
-
-
         it "should keep track of cookies between redirects" do
           @redirect['Set-Cookie'] = 'foo=bar; name=value; HTTPOnly'
           @request.perform
@@ -1368,23 +1415,96 @@ RSpec.describe HTTParty::Request do
     end
   end
 
-  context 'with Accept-Encoding header' do
-    it 'should disable content decoding if present' do
-      request = HTTParty::Request.new(Net::HTTP::Get, 'http://api.foo.com/v1', headers:{'Accept-Encoding' => 'custom'})
+  context 'Net::HTTP decompression' do
+
+    subject(:raw_request) do
+      request = HTTParty::Request.new(Net::HTTP::Get, 'http://api.foo.com/v1', headers.merge(options))
       request.send(:setup_raw_request)
-      expect(request.instance_variable_get(:@raw_request).decode_content).to eq(false)
+      request.instance_variable_get(:@raw_request)
     end
 
-    it 'should disable content decoding if present and lowercase' do
-      request = HTTParty::Request.new(Net::HTTP::Get, 'http://api.foo.com/v1', headers:{'accept-encoding' => 'custom'})
-      request.send(:setup_raw_request)
-      expect(request.instance_variable_get(:@raw_request).decode_content).to eq(false)
+    shared_examples 'sets custom Accept-Encoding' do
+      it { expect(subject['Accept-Encoding']).to eq('custom') }
     end
 
-    it 'should disable content decoding if present' do
-      request = HTTParty::Request.new(Net::HTTP::Get, 'http://api.foo.com/v1')
-      request.send(:setup_raw_request)
-      expect(request.instance_variable_get(:@raw_request).decode_content).to eq(true)
+    shared_examples 'sets default Accept-Encoding' do
+      it { expect(subject['Accept-Encoding']).to eq('gzip;q=1.0,deflate;q=0.6,identity;q=0.3') }
+    end
+
+    shared_examples 'enables Net::HTTP decompression' do
+      it { expect(subject.decode_content).to eq(true) }
+    end
+
+    shared_examples 'disables Net::HTTP decompression' do
+      it { expect(subject.decode_content).to eq(false) }
+    end
+
+    context 'with skip_decompression false (default)' do
+      let(:options) { {} }
+
+      context 'with Accept-Encoding specified' do
+        let(:headers) { { headers: { 'Accept-Encoding' => 'custom' } } }
+        it_behaves_like 'sets custom Accept-Encoding'
+        it_behaves_like 'enables Net::HTTP decompression'
+      end
+
+      context 'with accept-encoding (lowercase) specified' do
+        let(:headers) { { headers: { 'accept-encoding' => 'custom' } } }
+        it_behaves_like 'sets custom Accept-Encoding'
+        it_behaves_like 'enables Net::HTTP decompression'
+      end
+
+      context 'with Accept-Encoding and other headers specified' do
+        let(:headers) { { headers: { 'Accept-Encoding' => 'custom', 'Content-Type' => 'application/json' } } }
+        it_behaves_like 'sets custom Accept-Encoding'
+        it_behaves_like 'enables Net::HTTP decompression'
+      end
+
+      context 'with other headers specified' do
+        let(:headers) { { 'Content-Type' => 'application/json' } }
+        it_behaves_like 'sets default Accept-Encoding'
+        it_behaves_like 'enables Net::HTTP decompression'
+      end
+
+      context 'with no headers specified' do
+        let(:headers) { {} }
+        it_behaves_like 'sets default Accept-Encoding'
+        it_behaves_like 'enables Net::HTTP decompression'
+      end
+    end
+
+    context 'with skip_decompression true' do
+      let(:options) { { skip_decompression: true } }
+
+      context 'with Accept-Encoding specified' do
+        let(:headers) { { headers: { 'Accept-Encoding' => 'custom' } } }
+        it_behaves_like 'sets custom Accept-Encoding'
+        it_behaves_like 'disables Net::HTTP decompression'
+      end
+
+      context 'with accept-encoding (lowercase) specified' do
+        let(:headers) { { headers: { 'accept-encoding' => 'custom' } } }
+        it_behaves_like 'sets custom Accept-Encoding'
+        it_behaves_like 'disables Net::HTTP decompression'
+      end
+
+      context 'with Accept-Encoding and other headers specified' do
+        let(:headers) { { headers: { 'Accept-Encoding' => 'custom', 'Content-Type' => 'application/json' } } }
+        it_behaves_like 'sets custom Accept-Encoding'
+        it_behaves_like 'disables Net::HTTP decompression'
+      end
+
+      context 'with other headers specified' do
+        let(:headers) { { 'Content-Type' => 'application/json' } }
+        it_behaves_like 'sets default Accept-Encoding'
+        it_behaves_like 'disables Net::HTTP decompression'
+      end
+
+      context 'with no headers specified' do
+        let(:headers) { {} }
+        it_behaves_like 'sets default Accept-Encoding'
+        it_behaves_like 'disables Net::HTTP decompression'
+      end
     end
   end
 end

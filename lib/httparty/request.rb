@@ -229,6 +229,8 @@ module HTTParty
         @raw_request.body = body.call
       end
 
+      @raw_request.instance_variable_set(:@decode_content, decompress_content?)
+
       if options[:basic_auth] && send_authorization_header?
         @raw_request.basic_auth(username, password)
         @credentials_sent = true
@@ -238,6 +240,10 @@ module HTTParty
 
     def digest_auth?
       !!options[:digest_auth]
+    end
+
+    def decompress_content?
+      !options[:skip_decompression]
     end
 
     def response_unauthorized?
@@ -271,7 +277,7 @@ module HTTParty
       options[:assume_utf16_is_big_endian]
     end
 
-    def handle_response(body, &block)
+    def handle_response(raw_body, &block)
       if response_redirects?
         options[:limit] -= 1
         if options[:logger]
@@ -292,9 +298,20 @@ module HTTParty
         capture_cookies(last_response)
         perform(&block)
       else
-        body ||= last_response.body
-        body = body.nil? ? body : encode_text(body, last_response['content-type'])
-        Response.new(self, last_response, lambda { parse_response(body) }, body: body)
+        raw_body ||= last_response.body
+
+        body = decompress(raw_body, last_response['content-encoding']) unless raw_body.nil?
+
+        unless body.nil?
+          body = encode_text(body, last_response['content-type'])
+
+          if decompress_content?
+            last_response.delete('content-encoding')
+            raw_body = body
+          end
+        end
+
+        Response.new(self, last_response, lambda { parse_response(body) }, body: raw_body)
       end
     end
 
@@ -368,6 +385,10 @@ module HTTParty
         options[:basic_auth] = {username: username, password: password}
         @credentials_sent = true
       end
+    end
+
+    def decompress(body, encoding)
+      Decompressor.new(body, encoding).decompress
     end
 
     def encode_text(text, content_type)
