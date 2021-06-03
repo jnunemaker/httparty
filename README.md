@@ -48,21 +48,6 @@ puts stack_exchange.users
 ```
 
 See the [examples directory](http://github.com/jnunemaker/httparty/tree/master/examples) for even more goodies.
-### Urls with emojis and non-ASCII characters
-
-If you're making single request:
-```ruby
-HTTParty.get(url, uri_adapter: Addressable::URI)
-```
-
-In a class:
-```ruby
-class Foo
-  include HTTParty
-  uri_adapter Addressable::URI
-end
-```
-
 ## Command Line Interface
 
 httparty also includes the executable `httparty` which can be
