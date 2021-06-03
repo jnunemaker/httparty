@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module HTTParty
   class Response < Object
     def self.underscore(string)
@@ -49,14 +51,14 @@ module HTTParty
     end
 
     def inspect
-      inspect_id = ::Kernel::format "%x", (object_id * 2)
+      inspect_id = ::Kernel::format '%x', (object_id * 2)
       %(#<#{self.class}:0x#{inspect_id} parsed_response=#{parsed_response.inspect}, @response=#{response.inspect}, @headers=#{headers.inspect}>)
     end
 
     CODES_TO_OBJ = ::Net::HTTPResponse::CODE_CLASS_TO_OBJ.merge ::Net::HTTPResponse::CODE_TO_OBJ
 
     CODES_TO_OBJ.each do |response_code, klass|
-      name = klass.name.sub("Net::HTTP", '')
+      name = klass.name.sub('Net::HTTP', '')
       name = "#{underscore(name)}?".to_sym
 
       define_method(name) do
@@ -65,12 +67,12 @@ module HTTParty
     end
 
     # Support old multiple_choice? method from pre 2.0.0 era.
-    if ::RUBY_VERSION >= "2.0.0" && ::RUBY_PLATFORM != "java"
+    if ::RUBY_VERSION >= '2.0.0' && ::RUBY_PLATFORM != 'java'
       alias_method :multiple_choice?, :multiple_choices?
     end
 
     # Support old status codes method from pre 2.6.0 era.
-    if ::RUBY_VERSION >= "2.6.0" && ::RUBY_PLATFORM != "java"
+    if ::RUBY_VERSION >= '2.6.0' && ::RUBY_PLATFORM != 'java'
       alias_method :gateway_time_out?,                :gateway_timeout?
       alias_method :request_entity_too_large?,        :payload_too_large?
       alias_method :request_time_out?,                :request_timeout?
@@ -79,6 +81,7 @@ module HTTParty
     end
 
     def nil?
+      warn_about_nil_deprecation
       response.nil? || response.body.nil? || response.body.empty?
     end
 
@@ -133,6 +136,19 @@ module HTTParty
       if @request.options[:raise_on] && @request.options[:raise_on].include?(code)
         ::Kernel.raise ::HTTParty::ResponseError.new(@response), "Code #{code} - #{body}"
       end
+    end
+
+    private
+
+    def warn_about_nil_deprecation
+      trace_line = caller.reject { |line| line.include?('httparty') }.first
+      warning = "[DEPRECATION] HTTParty will no longer override `response#nil?`. " \
+        "This functionality will be removed in future versions. " \
+        "Please, add explicit check `response.body.nil? || response.body.empty?`. " \
+        "For more info refer to: https://github.com/jnunemaker/httparty/issues/568\n" \
+        "#{trace_line}"
+
+      warn(warning)
     end
   end
 end

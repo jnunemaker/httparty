@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module HTTParty
   module Logger
     class ApacheFormatter #:nodoc:
@@ -26,11 +28,11 @@ module HTTParty
       end
 
       def current_time
-        Time.now.strftime("%Y-%m-%d %H:%M:%S %z")
+        Time.now.strftime('%Y-%m-%d %H:%M:%S %z')
       end
 
       def http_method
-        request.http_method.name.split("::").last.upcase
+        request.http_method.name.split('::').last.upcase
       end
 
       def path

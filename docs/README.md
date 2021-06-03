@@ -70,7 +70,7 @@ class Client
 end
 ```
 
-You can also include this options with the call:
+You can also include all of these options with the call:
 
 ```ruby
 class Client
@@ -79,14 +79,14 @@ class Client
   base_uri "https://example.com"
 
   def self.fetch
-    get("/resources", pem: (File.read("#{File.expand_path('.')}/path/to/certs/cert.pem"), "123456")
+    get("/resources", pem: File.read("#{File.expand_path('.')}/path/to/certs/cert.pem"), pem_password: "123456")
   end
 end
 ```
 
 ### Avoid SSL verification
 
-In some cases you may want to skip SSL verification, because the entity that issue the certificate is not a valid one, but you still want to work with it. You can achieve this through:
+In some cases you may want to skip SSL verification, because the entity that issued the certificate is not a valid one, but you still want to work with it. You can achieve this through:
 
 ```ruby
 # Skips SSL certificate verification

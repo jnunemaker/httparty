@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'erb'
 
 module HTTParty
@@ -87,11 +89,11 @@ module HTTParty
     end
 
     def uri
-      if redirect && path.relative? && path.path[0] != "/"
-        last_uri_host = @last_uri.path.gsub(/[^\/]+$/, "")
+      if redirect && path.relative? && path.path[0] != '/'
+        last_uri_host = @last_uri.path.gsub(/[^\/]+$/, '')
 
-        path.path = "/#{path.path}" if last_uri_host[-1] != "/"
-        path.path = last_uri_host + path.path
+        path.path = "/#{path.path}" if last_uri_host[-1] != '/'
+        path.path = "#{last_uri_host}#{path.path}"
       end
 
       if path.relative? && path.host
@@ -117,7 +119,7 @@ module HTTParty
     def base_uri
       if redirect
         base_uri = "#{@last_uri.scheme}://#{@last_uri.host}"
-        base_uri += ":#{@last_uri.port}" if @last_uri.port != 80
+        base_uri = "#{base_uri}:#{@last_uri.port}" if @last_uri.port != 80
         base_uri
       else
         options[:base_uri] && HTTParty.normalize_base_uri(options[:base_uri])
@@ -204,21 +206,14 @@ module HTTParty
     end
 
     def setup_raw_request
-      @raw_request = http_method.new(request_uri(uri))
-      @raw_request.body_stream = options[:body_stream] if options[:body_stream]
-
       if options[:headers].respond_to?(:to_hash)
         headers_hash = options[:headers].to_hash
-
-        @raw_request.initialize_http_header(headers_hash)
-        # If the caller specified a header of 'Accept-Encoding', assume they want to
-        # deal with encoding of content. Disable the internal logic in Net:HTTP
-        # that handles encoding, if the platform supports it.
-        if @raw_request.respond_to?(:decode_content) && (headers_hash.key?('Accept-Encoding') || headers_hash.key?('accept-encoding'))
-          # Using the '[]=' sets decode_content to false
-          @raw_request['accept-encoding'] = @raw_request['accept-encoding']
-        end
+      else
+        headers_hash = nil
       end
+
+      @raw_request = http_method.new(request_uri(uri), headers_hash)
+      @raw_request.body_stream = options[:body_stream] if options[:body_stream]
 
       if options[:body]
         body = Body.new(
@@ -268,7 +263,7 @@ module HTTParty
         query_string_parts << options[:query] unless options[:query].nil?
       end
 
-      query_string_parts.reject!(&:empty?) unless query_string_parts == [""]
+      query_string_parts.reject!(&:empty?) unless query_string_parts == ['']
       query_string_parts.size > 0 ? query_string_parts.join('&') : nil
     end
 

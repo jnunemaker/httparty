@@ -5,7 +5,7 @@ RSpec.describe HTTParty::Request::Body do
   describe '#call' do
     let(:options) { {} }
 
-    subject { described_class.new(params, options).call }
+    subject { described_class.new(params, **options).call }
 
     context 'when params is string' do
       let(:params) { 'name=Bob%20Jones' }
@@ -15,7 +15,7 @@ RSpec.describe HTTParty::Request::Body do
 
     context 'when params is hash' do
       let(:params) { { people: ["Bob Jones", "Mike Smith"] } }
-      let(:converted_params) { "people[]=Bob%20Jones&people[]=Mike%20Smith"}
+      let(:converted_params) { "people%5B%5D=Bob%20Jones&people%5B%5D=Mike%20Smith"}
 
       it { is_expected.to eq converted_params }
 
@@ -61,6 +61,8 @@ RSpec.describe HTTParty::Request::Body do
         end
 
         it { is_expected.to eq multipart_params }
+
+        it { expect { subject }.not_to change { file.pos } }
 
         context 'when passing multipart as an option' do
           let(:options) { { force_multipart: true } }

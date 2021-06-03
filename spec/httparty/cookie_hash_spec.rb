@@ -42,6 +42,11 @@ RSpec.describe HTTParty::CookieHash do
         expect(@cookie_hash[:first]).to eq('one=1')
         expect(@cookie_hash[:second]).to eq('two=2==')
       end
+
+      it "should handle an empty cookie parameter" do
+        @cookie_hash.add_cookies("first=one; domain=mydomain.com; path=/; ; SameSite; Secure")
+        expect(@cookie_hash.keys).to include(:first, :domain, :path, :SameSite, :Secure)
+      end
     end
 
     describe 'with other class' do
@@ -72,6 +77,12 @@ RSpec.describe HTTParty::CookieHash do
       @cookie_hash.add_cookies(path: "/")
       @s = @cookie_hash.to_cookie_string
       expect(@s).not_to match(/path=\//)
+    end
+
+    it "should not include SameSite attribute" do
+      @cookie_hash.add_cookies(samesite: "Strict")
+      @s = @cookie_hash.to_cookie_string
+      expect(@s).not_to match(/samesite=Strict/)
     end
 
     it "should not include client side only cookies even when attributes use camal case" do

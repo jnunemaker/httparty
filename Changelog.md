@@ -1,3 +1,31 @@
+## 0.18.1
+
+* [Rename cop Lint/HandleExceptions to Lint/SuppressedException](https://github.com/jnunemaker/httparty/pull/699).
+* [Encode keys in query params](https://github.com/jnunemaker/httparty/pull/698).
+* [Fixed SSL doc example](https://github.com/jnunemaker/httparty/pull/692).
+* [Add a build status badge](https://github.com/jnunemaker/httparty/pull/701).
+
+
+## 0.18.0
+
+* [Support gzip/deflate transfer encoding when explicit headers are set](https://github.com/jnunemaker/httparty/pull/678).
+* [Support edge case cookie format with a blank attribute](https://github.com/jnunemaker/httparty/pull/685).
+
+## 0.17.3
+
+0.17.2 is broken https://github.com/jnunemaker/httparty/issues/681
+
+## 0.17.2
+
+* [Add Response#nil? deprecetion warning](https://github.com/jnunemaker/httparty/pull/680)
+
+## 0.17.1
+
+* [Pass options to dynamic block headers](https://github.com/jnunemaker/httparty/pull/661)
+* [Normalize urls with URI adapter to allow International Domain Names support](https://github.com/jnunemaker/httparty/pull/668)
+* [Add max_retries support](https://github.com/jnunemaker/httparty/pull/660)
+* [Minize gem size by removing test files](https://github.com/jnunemaker/httparty/pull/658)
+
 ## 0.17.0
 
 * [Fix encoding of streamed chunk](https://github.com/jnunemaker/httparty/pull/644)

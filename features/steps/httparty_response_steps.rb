@@ -38,12 +38,8 @@ Then /it should return a response with a (\d+) response code/ do |code|
   expect(@response_from_httparty.code).to eq(code.to_i)
 end
 
-Then /it should return a response with a (.*) content\-encoding$/ do |content_type|
-  expect(@response_from_httparty.headers['content-encoding']).to eq('gzip')
-end
-
-Then /it should return a response with a blank body$/ do
-  expect(@response_from_httparty.body).to be_nil
+Then /it should return a response without a content\-encoding$/ do
+  expect(@response_from_httparty.headers['content-encoding']).to be_nil
 end
 
 Then /it should raise (?:an|a) ([\w:]+) exception/ do |exception|

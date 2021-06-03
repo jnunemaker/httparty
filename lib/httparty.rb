@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'pathname'
 require 'net/http'
 require 'net/https'
@@ -17,6 +19,7 @@ require 'httparty/logger/logger'
 require 'httparty/request/body'
 require 'httparty/response_fragment'
 require 'httparty/text_encoder'
+require 'httparty/headers_processor'
 
 # @see HTTParty::ClassMethods
 module HTTParty
@@ -25,8 +28,8 @@ module HTTParty
     base.send :include, ModuleInheritableAttributes
     base.send(:mattr_inheritable, :default_options)
     base.send(:mattr_inheritable, :default_cookies)
-    base.instance_variable_set("@default_options", {})
-    base.instance_variable_set("@default_cookies", CookieHash.new)
+    base.instance_variable_set(:@default_options, {})
+    base.instance_variable_set(:@default_cookies, CookieHash.new)
   end
 
   # == Common Request Options
@@ -40,11 +43,11 @@ module HTTParty
   # [:+limit+:] Maximum number of redirects to follow. Takes precedences over :+no_follow+.
   # [:+query+:] Query string, or an object that responds to #to_hash representing it. Normalized according to the same rules as :+body+. If you specify this on a POST, you must use an object which responds to #to_hash. See also HTTParty::ClassMethods.default_params.
   # [:+timeout+:] Timeout for opening connection and reading data.
-  # [:+local_host:] Local address to bind to before connecting.
-  # [:+local_port:] Local port to bind to before connecting.
-  # [:+body_stream:] Allow streaming to a REST server to specify a body_stream.
-  # [:+stream_body:] Allow for streaming large files without loading them into memory.
-  # [:+multipart:] Force content-type to be multipart
+  # [:+local_host+:] Local address to bind to before connecting.
+  # [:+local_port+:] Local port to bind to before connecting.
+  # [:+body_stream+:] Allow streaming to a REST server to specify a body_stream.
+  # [:+stream_body+:] Allow for streaming large files without loading them into memory.
+  # [:+multipart+:] Force content-type to be multipart
   #
   # There are also another set of options with names corresponding to various class methods. The methods in question are those that let you set a class-wide default, and the options override the defaults on a request-by-request basis. Those options are:
   # * :+base_uri+: see HTTParty::ClassMethods.base_uri.
@@ -588,32 +591,15 @@ module HTTParty
 
     def perform_request(http_method, path, options, &block) #:nodoc:
       options = ModuleInheritableAttributes.hash_deep_dup(default_options).merge(options)
-      process_headers(options)
+      HeadersProcessor.new(headers, options).call
       process_cookies(options)
       Request.new(http_method, path, options).perform(&block)
-    end
-
-    def process_headers(options)
-      if options[:headers]
-        if headers.any?
-          options[:headers] = headers.merge(options[:headers])
-        end
-
-        options[:headers] = Utils.stringify_keys(process_dynamic_headers(options[:headers]))
-      end
-    end
-
-    def process_dynamic_headers(headers)
-      headers.each_with_object({}) do |header, processed_headers|
-        key, value = header
-        processed_headers[key] = value.respond_to?(:call) ? value.call : value
-      end
     end
 
     def process_cookies(options) #:nodoc:
       return unless options[:cookies] || default_cookies.any?
       options[:headers] ||= headers.dup
-      options[:headers]["cookie"] = cookies.merge(options.delete(:cookies) || {}).to_cookie_string
+      options[:headers]['cookie'] = cookies.merge(options.delete(:cookies) || {}).to_cookie_string
     end
 
     def validate_format
