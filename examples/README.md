@@ -84,3 +84,6 @@
 
 * [Accessing x509 Peer Certificate](peer_cert.rb)
   * Provides access to the server's TLS certificate
+
+* [Accessing IDNs](idn.rb)
+  * Uses a `get` request with an International domain names, which are Urls with emojis and non-ASCII characters such as accented letters.

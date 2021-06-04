@@ -48,7 +48,6 @@ puts stack_exchange.users
 ```
 
 See the [examples directory](http://github.com/jnunemaker/httparty/tree/master/examples) for even more goodies.
-
 ## Command Line Interface
 
 httparty also includes the executable `httparty` which can be
