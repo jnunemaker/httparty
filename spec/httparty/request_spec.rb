@@ -281,6 +281,7 @@ RSpec.describe HTTParty::Request do
           expect(@request.uri).to eq(URI.parse("http://example.com/bar/"))
         end
       end
+
       it "returns correct path when the server sets the location header to a full uri" do
         @request.last_uri = URI.parse("http://example.com/foo/bar")
         @request.path = URI.parse("http://example.com/bar?foo=bar")
@@ -1198,8 +1199,6 @@ RSpec.describe HTTParty::Request do
           @request.http_method = Net::HTTP::Unlock
           expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
         end
-
-
 
         it "should keep track of cookies between redirects" do
           @redirect['Set-Cookie'] = 'foo=bar; name=value; HTTPOnly'
