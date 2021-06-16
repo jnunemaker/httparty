@@ -40,7 +40,7 @@ RSpec.describe HTTParty::Request do
 
     it "should work when using ssl_ca_path with a certificate authority" do
       http = Net::HTTP.new('www.google.com', 443)
-      response = double(Net::HTTPResponse, :[] => '', body: '', to_hash: {})
+      response = double(Net::HTTPResponse, :[] => '', body: '', to_hash: {}, delete: nil)
       allow(http).to receive(:request).and_return(response)
       expect(Net::HTTP).to receive(:new).with('www.google.com', 443).and_return(http)
       expect(http).to receive(:ca_path=).with('/foo/bar')
