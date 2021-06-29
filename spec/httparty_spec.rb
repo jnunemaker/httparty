@@ -876,6 +876,7 @@ RSpec.describe HTTParty do
       before do
         stub_chunked_http_response_with([chunk], options) do |response|
           allow(response).to receive(:[]).with('content-type').and_return('text/plain; charset = "utf-8"')
+          allow(response).to receive(:[]).with('content-encoding').and_return(nil)
         end
       end
 

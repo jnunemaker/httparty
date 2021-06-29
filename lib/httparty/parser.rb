@@ -144,9 +144,11 @@ module HTTParty
     end
 
     def parse_supported_format
-      send(format)
-    rescue NoMethodError => e
-      raise NotImplementedError, "#{self.class.name} has not implemented a parsing method for the #{format.inspect} format.", e.backtrace
+      if respond_to?(format, true)
+        send(format)
+      else
+        raise NotImplementedError, "#{self.class.name} has not implemented a parsing method for the #{format.inspect} format."
+      end
     end
   end
 end
