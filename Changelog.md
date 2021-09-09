@@ -1,3 +1,9 @@
+## 0.19.0
+
+* [Multipart/Form-Data: rewind files after read](https://github.com/jnunemaker/httparty/pull/709)
+* [add frozen_string_literal pragma to all files](https://github.com/jnunemaker/httparty/pull/711)
+* [Better handling of Accept-Encoding / Content-Encoding decompression (fixes #562)](https://github.com/jnunemaker/httparty/pull/729)
+
 ## 0.18.1
 
 * [Rename cop Lint/HandleExceptions to Lint/SuppressedException](https://github.com/jnunemaker/httparty/pull/699).
