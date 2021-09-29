@@ -35,7 +35,7 @@ module HTTParty
       def generate_multipart
         normalized_params = params.flat_map { |key, value| HashConversions.normalize_keys(key, value) }
 
-        multipart = normalized_params.inject(+'') do |memo, (key, value)|
+        multipart = normalized_params.inject(''.dup) do |memo, (key, value)|
           memo << "--#{boundary}#{NEWLINE}"
           memo << %(Content-Disposition: form-data; name="#{key}")
           # value.path is used to support ActionDispatch::Http::UploadedFile
