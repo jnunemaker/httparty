@@ -1,3 +1,9 @@
+## 0.20.0
+
+Breaking changes
+
+* Require Ruby >= 2.3.0
+
 ## 0.19.1
 
 * [Remove use of unary + method for creating non-frozen string to increase compatibility with older versions of ruby](https://github.com/jnunemaker/httparty/commit/4416141d37fd71bdba4f37589ec265f55aa446ce)
