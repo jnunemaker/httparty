@@ -345,7 +345,7 @@ RSpec.describe HTTParty::Request do
       end
     end
 
-    context "when mulipart" do
+    context "when multipart" do
       subject(:headers) do
         @request.send(:setup_raw_request)
         headers = @request.instance_variable_get(:@raw_request).each_header.to_a
