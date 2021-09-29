@@ -6,7 +6,8 @@ Breaking changes
 
 Fixes
 
-* [Marshal.dump fails on response objects when request option :logger is set or :parser is a proc](https://github.com/jnunemaker/httparty/pull/714)
+* [`Marshal.dump` fails on response objects when request option `:logger` is set or `:parser` is a proc](https://github.com/jnunemaker/httparty/pull/714)
+* [Switch `:pem` option to to `OpenSSL::PKey.read` to support other algorithms](https://github.com/jnunemaker/httparty/pull/720)
 
 ## 0.19.1
 
