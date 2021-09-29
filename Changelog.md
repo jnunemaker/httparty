@@ -4,6 +4,10 @@ Breaking changes
 
 * Require Ruby >= 2.3.0
 
+Fixes
+
+* [Marshal.dump fails on response objects when request option :logger is set or :parser is a proc](https://github.com/jnunemaker/httparty/pull/714)
+
 ## 0.19.1
 
 * [Remove use of unary + method for creating non-frozen string to increase compatibility with older versions of ruby](https://github.com/jnunemaker/httparty/commit/4416141d37fd71bdba4f37589ec265f55aa446ce)
