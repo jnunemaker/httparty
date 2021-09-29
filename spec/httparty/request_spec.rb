@@ -1508,4 +1508,13 @@ RSpec.describe HTTParty::Request do
       end
     end
   end
+
+  describe "marshalling" do
+    it "properly marshals the request object" do
+      marshalled = Marshal.load(Marshal.dump(@request))
+      expect(marshalled.http_method).to eq @request.http_method
+      expect(marshalled.path).to eq @request.path
+      expect(marshalled.options).to eq @request.options
+    end
+  end
 end

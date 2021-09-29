@@ -15,6 +15,15 @@ When /^I set my HTTParty header '(.*)' to value '(.*)'$/ do |name, value|
   @request_options[:headers][name] = value
 end
 
+When /I set my HTTParty logger option/ do
+  # TODO: make the IO something portable
+  @request_options[:logger] = Logger.new("/dev/null")
+end
+
+When /I set my HTTParty parser option to a proc/ do
+  @request_options[:parser] = proc { |body| body }
+end
+
 When /I call HTTParty#get with '(.*)'$/ do |url|
   begin
     @response_from_httparty = HTTParty.get("http://#{@host_and_port}#{url}", @request_options)
@@ -45,4 +54,12 @@ When /I call HTTParty#get with '(.*)' and a digest_auth hash:/ do |url, auth_tab
     "http://#{@host_and_port}#{url}",
     digest_auth: { username: h["username"], password: h["password"] }
   )
+end
+
+When /I call Marshal\.dump on the response/ do
+  begin
+    Marshal.dump(@response_from_httparty)
+  rescue TypeError => e
+    @exception_from_httparty = e
+  end
 end
