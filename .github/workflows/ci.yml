@@ -12,6 +12,7 @@ jobs:
           - 2.6
           - 2.7
           - '3.0' # Quoted, to avoid YAML float 3.0 interplated to "3"
+          - 3.1
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
