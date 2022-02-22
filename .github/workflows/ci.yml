@@ -23,3 +23,5 @@ jobs:
           bundler-cache: true # Run "bundle install", and cache the result automatically.
       - name: Run Rake
         run: bundle exec rake
+      - name: Run ThreadSafety Check
+        run: bundle exec rubocop --only ThreadSafety
