@@ -11,7 +11,7 @@ Lint/AmbiguousRegexpLiteral:
 
 # Offense count: 1
 # Configuration parameters: AlignWith, SupportedStyles.
-Lint/EndAlignment:
+Layout/EndAlignment:
   Enabled: false
 
 # Offense count: 1
@@ -37,7 +37,7 @@ Metrics/CyclomaticComplexity:
 
 # Offense count: 332
 # Configuration parameters: AllowURI, URISchemes.
-Metrics/LineLength:
+Layout/LineLength:
   Max: 266
 
 # Offense count: 17
@@ -50,7 +50,7 @@ Metrics/PerceivedComplexity:
   Max: 20
 
 # Offense count: 1
-Style/AccessorMethodName:
+Naming/AccessorMethodName:
   Enabled: false
 
 # Offense count: 1
@@ -69,7 +69,7 @@ Style/CaseEquality:
 
 # Offense count: 3
 # Configuration parameters: IndentWhenRelativeTo, SupportedStyles, IndentOneStep.
-Style/CaseIndentation:
+Layout/CaseIndentation:
   Enabled: false
 
 # Offense count: 4
@@ -78,7 +78,7 @@ Style/ClassAndModuleChildren:
   Enabled: false
 
 # Offense count: 7
-Style/ConstantName:
+Naming/ConstantName:
   Enabled: false
 
 # Offense count: 2
@@ -87,13 +87,13 @@ Style/EachWithObject:
 
 # Offense count: 2
 # Cop supports --auto-correct.
-Style/ElseAlignment:
+Layout/ElseAlignment:
   Enabled: false
 
 # Offense count: 3
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, SupportedStyles.
-Style/FirstParameterIndentation:
+Layout/FirstParameterIndentation:
   Enabled: false
 
 # Offense count: 2

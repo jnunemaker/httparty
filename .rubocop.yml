@@ -9,18 +9,18 @@ Style/StringLiterals:
 # Offense count: 327
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, EnforcedStyleForEmptyBraces, SupportedStyles.
-Style/SpaceInsideHashLiteralBraces:
+Layout/SpaceInsideHashLiteralBraces:
   Enabled: false
 
 # Offense count: 33
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, SupportedStyles, EnforcedStyleForEmptyBraces, SpaceBeforeBlockParameters.
-Style/SpaceInsideBlockBraces:
+Layout/SpaceInsideBlockBraces:
   Enabled: false
 
 # Offense count: 1
 # Cop supports --auto-correct.
-Style/SpaceBeforeSemicolon:
+Layout/SpaceBeforeSemicolon:
   Enabled: false
 
 # Offense count: 20
@@ -43,12 +43,6 @@ Style/PerlBackrefs:
 # Cop supports --auto-correct.
 # Configuration parameters: AllowAsExpressionSeparator.
 Style/Semicolon:
-  Enabled: false
-
-# Offense count: 77
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-Style/BracesAroundHashParameters:
   Enabled: false
 
 # Offense count: 36
@@ -78,12 +72,6 @@ Lint/UnusedBlockArgument:
 
 # Offense count: 1
 Lint/Void:
-  Enabled: false
-
-# Offense count: 22
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-Style/IndentHash:
   Enabled: false
 
 # Offense count: 7
