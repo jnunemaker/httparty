@@ -39,7 +39,7 @@ RSpec.configure do |config|
 
   config.before(:each) do
     # Reset default_cert_store cache
-    HTTParty::ConnectionAdapter.instance_variable_set(:@default_cert_store, nil)
+    Thread.current[:httparty_default_cert_store] = nil
   end
 
   Kernel.srand config.seed

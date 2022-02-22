@@ -81,7 +81,7 @@ module HTTParty
     end
 
     def self.default_cert_store
-      @default_cert_store ||= OpenSSL::X509::Store.new.tap do |cert_store|
+      Thread.current[:httparty_default_cert_store] ||= OpenSSL::X509::Store.new.tap do |cert_store|
         cert_store.set_default_paths
       end
     end
