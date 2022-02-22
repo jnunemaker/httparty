@@ -21,4 +21,6 @@ end
 
 group :development, :test do
   gem 'pry'
+  gem 'rubocop', require: false
+  gem 'rubocop-thread_safety', require: false
 end
