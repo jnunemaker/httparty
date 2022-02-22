@@ -7,7 +7,7 @@ require 'httparty/logger/logstash_formatter'
 module HTTParty
   module Logger
     def self.formatters
-      @formatters ||= {
+      Thread.current[:httparty_logger_formatters] ||= {
         :curl => Logger::CurlFormatter,
         :apache => Logger::ApacheFormatter,
         :logstash => Logger::LogstashFormatter,
