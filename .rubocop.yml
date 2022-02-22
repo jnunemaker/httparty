@@ -6,6 +6,8 @@ require:
 #Thread Safety
 ThreadSafety:
   Enabled: true
+  Exclude:
+    - 'spec/**/*'
 
 # Offense count: 963
 # Cop supports --auto-correct.
