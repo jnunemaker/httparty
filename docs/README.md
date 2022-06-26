@@ -123,11 +123,16 @@ If you explicitly set `Accept-Encoding`, there be dragons:
   `Net::HTTP` will automatically decompress it, and will omit `Content-Encoding`
   from your `HTTParty::Response` headers.
 
-* For encodings `br` (Brotli) or `compress` (LZW), HTTParty will automatically
-  decompress if you include the `brotli` or `ruby-lzws` gems respectively into your project.
+* For the following encodings, HTTParty will automatically decompress them if you include
+  the required gem into your project. Similar to above, if decompression succeeds,
+  `Content-Encoding` will be omitted from your `HTTParty::Response` headers.
   **Warning:** Support for these encodings is experimental and not fully battle-tested.
-  Similar to above, if decompression succeeds, `Content-Encoding` will be omitted
-  from your `HTTParty::Response` headers.
+
+  | Encoding | Required Gem |
+  | --- | --- |
+  | `br` (Brotli)      | [brotli](https://rubygems.org/gems/brotli) |
+  | `compress` (LZW)   | [ruby-lzws](https://rubygems.org/gems/ruby-lzws) |
+  | `zstd` (Zstandard) | [zstd-ruby](https://rubygems.org/gems/zstd-ruby) |
 
 * For other encodings, `HTTParty::Response#body` will return the raw uncompressed byte string,
   and you'll need to inspect the `Content-Encoding` response header and decompress it yourself.
@@ -147,7 +152,8 @@ JSON.parse(res.body) # safe
 
 require 'brotli'
 require 'lzws'
-res = HTTParty.get('https://example.com/test.json', headers: { 'Accept-Encoding' => 'br,compress' })
+require 'zstd-ruby'
+res = HTTParty.get('https://example.com/test.json', headers: { 'Accept-Encoding' => 'br,compress,zstd' })
 JSON.parse(res.body)
 
 

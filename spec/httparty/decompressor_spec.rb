@@ -131,5 +131,33 @@ RSpec.describe HTTParty::Decompressor do
         end
       end
     end
+
+    context 'when encoding is "zstd"' do
+      let(:encoding) { 'zstd' }
+
+      context 'when zstd-ruby gem not included' do
+        it_behaves_like 'returns nil'
+      end
+
+      context 'when zstd-ruby included' do
+        before do
+          dbl = double('Zstd')
+          expect(dbl).to receive(:decompress).with('body').and_return('foobar')
+          stub_const('Zstd', dbl)
+        end
+
+        it { expect(subject).to eq 'foobar' }
+      end
+
+      context 'when zstd raises error' do
+        before do
+          dbl = double('Zstd')
+          expect(dbl).to receive(:decompress).with('body') { raise RuntimeError.new('zstd error') }
+          stub_const('Zstd', dbl)
+        end
+
+        it { expect(subject).to eq nil }
+      end
+    end
   end
 end
