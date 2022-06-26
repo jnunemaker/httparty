@@ -128,7 +128,7 @@ If you explicitly set `Accept-Encoding`, there be dragons:
   `Content-Encoding` will be omitted from your `HTTParty::Response` headers.
   **Warning:** Support for these encodings is experimental and not fully battle-tested.
 
-  | Encoding | Required Gem |
+  | Content-Encoding | Required Gem |
   | --- | --- |
   | `br` (Brotli)      | [brotli](https://rubygems.org/gems/brotli) |
   | `compress` (LZW)   | [ruby-lzws](https://rubygems.org/gems/ruby-lzws) |
