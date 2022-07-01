@@ -73,47 +73,47 @@ httparty "https://api.stackexchange.com/2.2/questions?site=stackoverflow"
 
 ### Options
 
-HTTParty provides lot's of options for customization
+HTTParty provides lots of options for customization.
 
 ##### Request Options
 
-- :body - Body of the request. If passed an object that responds to #to_hash, will try to normalize it first, by default passing it to ActiveSupport::to_params. Any other kind of object will get used as-is.
-- :http_proxyaddr - Address of proxy server to use.
-- :http_proxyport -  Port of proxy server to use.
-- :http_proxyuser - User for proxy server authentication.
-- :http_proxypass - Password for proxy server authentication.
-- :limit - Maximum number of redirects to follow. Takes precedences over :no_follow.
-- :query - Query string, or an object that responds to #to_hash representing it. Normalized according to the same rules as :+body+. If you specify this on a POST, you must use an object which responds to #to_hash. See also HTTParty::ClassMethods.default_params.
-- :default_timeout - Timeout for opening connection and reading data.
-- :open_timeout - Timeout for opening connection.
-- :read_timeout - Timeout for reading data.
-- :write_timeout - Timeout for writtin data.
-- :local_host - Local address to bind to before connecting.
-- :local_port - Local port to bind to before connecting.
-- :max_retries - Allows to specify number of retries on unsuccessful request.
-- :body_stream - Allow streaming to a REST server to specify a body_stream.
-- :stream_body - Allow for streaming large files without loading them into memory.
-- :multipart - Force content-type to be multipart
-- :raise_on - Raises HTTParty::ResponseError if response's code matches this statuses
+- `:body` - Body of the request. If passed an object that responds to `#to_hash`, will try to normalize it first, by default passing it to `HTTParty::HashConversions.to_params`. Any other kind of object will get used as-is.
+- `:http_proxyaddr` - Address of proxy server to use.
+- `:http_proxyport` -  Port of proxy server to use.
+- `:http_proxyuser` - User for proxy server authentication.
+- `:http_proxypass` - Password for proxy server authentication.
+- `:limit` - Maximum number of redirects to follow. Takes precedences over `:no_follow`.
+- `:query` - Query string, or an object that responds to `#to_hash` representing it. Normalized according to the same rules as `:body`. If you specify this on a POST, you must use an object which responds to `#to_hash`. See also `HTTParty::ClassMethods.default_params`.
+- `:default_timeout` - Timeout for opening connection and reading data.
+- `:open_timeout` - Timeout for opening connection.
+- `:read_timeout` - Timeout for reading data.
+- `:write_timeout` - Timeout for writing data.
+- `:local_host` - Local address to bind to before connecting.
+- `:local_port` - Local port to bind to before connecting.
+- `:max_retries` - Allows to specify number of retries on unsuccessful request.
+- `:body_stream` - Allow streaming to a REST server to specify a body_stream.
+- `:stream_body` - Allow for streaming large files without loading them into memory.
+- `:multipart` - Force content-type to be multipart.
+- `:raise_on` - Raises `HTTParty::ResponseError` if response's code matches this statuses.
 
 #### Request and Class Options
 There are also another set of options with names corresponding to various class methods. The methods in question are those that let you set a class-wide default, and the options override the defaults on a request-by-request basis. Those options are:
 
-- :base_uri -- Allows setting a base uri to be used for each request. Will normalize uri to include http, etc.
-- :basic_auth -- see HTTParty::ClassMethods.basic_auth. Only one of :+basic_auth+ and :+digest_auth+ can be used at a time; if you try using both, you'll get an ArgumentError.
-- :digest_auth -- see HTTParty::ClassMethods.digest_auth. Only one of `:basic_auth` and `:digest_auth` can be used at a time; if you try using both, you'll get an ArgumentError.
-- :debug_output -- see HTTParty::ClassMethods.debug_output.
-- :format -- see HTTParty::ClassMethods.format.
-- :headers -- see HTTParty::ClassMethods.headers. Must be a an object which responds to `#to_hash`.
-- :maintain_method_across_redirects -- see HTTParty::ClassMethods.maintain_method_across_redirects.
-- :no_follow -- see HTTParty::ClassMethods.no_follow.
-- :parser -- see HTTParty::ClassMethods.parser.
-- :uri_adapter -- see HTTParty::ClassMethods.uri_adapter
-- :connection_adapter -- see HTTParty::ClassMethods.connection_adapter.
-- :pem -- see HTTParty::ClassMethods.pem.
-- :query_string_normalizer -- see HTTParty::ClassMethods.query_string_normalizer
-- :ssl_ca_file -- see HTTParty::ClassMethods.ssl_ca_file.
-- :ssl_ca_path -- see HTTParty::ClassMethods.ssl_ca_path.
+- `:base_uri` -- Allows setting a base uri to be used for each request. Will normalize uri to include http, etc.
+- `:basic_auth` -- See `HTTParty::ClassMethods.basic_auth`. Only one of `:basic_auth` and `:digest_auth` can be used at a time; if you try using both, you'll get an `ArgumentError`.
+- `:digest_auth` -- See `HTTParty::ClassMethods.digest_auth`. Only one of `:basic_auth` and `:digest_auth` can be used at a time; if you try using both, you'll get an `ArgumentError`.
+- `:debug_output` -- See `HTTParty::ClassMethods.debug_output`.
+- `:format` -- See `HTTParty::ClassMethods.format`.
+- `:headers` -- See `HTTParty::ClassMethods.headers`. Must be a an object which responds to `#to_hash`.
+- `:maintain_method_across_redirects` -- See `HTTParty::ClassMethods.maintain_method_across_redirects`.
+- `:no_follow` -- See `HTTParty::ClassMethods.no_follow`.
+- `:parser` -- See `HTTParty::ClassMethods.parser`.
+- `:uri_adapter` -- See `HTTParty::ClassMethods.uri_adapter`
+- `:connection_adapter` -- See `HTTParty::ClassMethods.connection_adapter`.
+- `:pem` -- See `HTTParty::ClassMethods.pem`.
+- `:query_string_normalizer` -- See `HTTParty::ClassMethods.query_string_normalizer`.
+- `:ssl_ca_file` -- See `HTTParty::ClassMethods.ssl_ca_file`.
+- `:ssl_ca_path` -- See `HTTParty::ClassMethods.ssl_ca_path`.
 
 
 ### Parsing JSON
