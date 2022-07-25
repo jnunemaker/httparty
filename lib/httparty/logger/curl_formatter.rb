@@ -22,7 +22,7 @@ module HTTParty
         log_request
         log_response
 
-        logger.public_send level, messages.join('\n')
+        logger.public_send level, messages.join("\n")
       end
 
       private
