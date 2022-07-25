@@ -17,7 +17,8 @@ module HTTParty
       'none'     => :none,
       'identity' => :none,
       'br'       => :brotli,
-      'compress' => :lzw
+      'compress' => :lzw,
+      'zstd'     => :zstd
     }.freeze
 
     # The response body of the request
@@ -84,6 +85,15 @@ module HTTParty
         elsif defined?(::LZW::Simple)
           ::LZW::Simple.new.decompress(body)
         end
+      rescue StandardError
+        nil
+      end
+    end
+
+    def zstd
+      return nil unless defined?(::Zstd)
+      begin
+        ::Zstd.decompress(body)
       rescue StandardError
         nil
       end
