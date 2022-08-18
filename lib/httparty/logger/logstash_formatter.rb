@@ -24,6 +24,7 @@ module HTTParty
       attr_reader :request, :response
 
       def logstash_message
+        require 'json'
         {
           '@timestamp' => current_time,
           '@version' => 1,

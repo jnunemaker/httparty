@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'multi_xml'
 
 RSpec.describe HTTParty::Parser do
   describe ".SupportedFormats" do
@@ -183,6 +184,7 @@ RSpec.describe HTTParty::Parser do
     end
 
     it "parses csv with CSV" do
+      require 'csv'
       expect(CSV).to receive(:parse).with('body')
       subject.send(:csv)
     end

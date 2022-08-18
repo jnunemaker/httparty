@@ -1,3 +1,4 @@
+require 'json'
 require 'spec_helper'
 
 RSpec.describe HTTParty::Logger::LogstashFormatter do

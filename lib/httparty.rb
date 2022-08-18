@@ -3,11 +3,6 @@
 require 'pathname'
 require 'net/http'
 require 'uri'
-require 'zlib'
-require 'multi_xml'
-require 'mini_mime'
-require 'json'
-require 'csv'
 
 require 'httparty/module_inheritable_attributes'
 require 'httparty/cookie_hash'
