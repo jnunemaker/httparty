@@ -12,14 +12,15 @@ module HTTParty
       new(req, resp, -> { parsed_resp }, body: resp_body)
     end
 
-    attr_reader :request, :response, :body, :headers
+    attr_reader :request, :response, :body, :headers, :response_time
 
     def initialize(request, response, parsed_block, options = {})
-      @request      = request
-      @response     = response
-      @body         = options[:body] || response.body
-      @parsed_block = parsed_block
-      @headers      = Headers.new(response.to_hash)
+      @request       = request
+      @response      = response
+      @body          = options[:body] || response.body
+      @parsed_block  = parsed_block
+      @headers       = Headers.new(response.to_hash)
+      @response_time = options[:response_time]
 
       if request.options[:logger]
         logger = ::HTTParty::Logger.build(

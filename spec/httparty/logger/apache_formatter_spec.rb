@@ -11,25 +11,27 @@ RSpec.describe HTTParty::Logger::ApacheFormatter do
   end
 
   describe "#format" do
-    let(:log_message) { "[HTTParty] [#{request_time}] 302 \"GET http://my.domain.com/my_path\" - " }
+    let(:log_message) { "[HTTParty] [#{request_time}] 302 \"GET http://my.domain.com/my_path\" - : 3" }
 
     it "formats a response in a style that resembles apache's access log" do
       response_double = double(
         code: 302,
-        :[] => nil
+        :[] => nil,
+        response_time: 3
       )
 
       subject.format(request_double, response_double)
     end
 
     context 'when there is a parsed response' do
-      let(:log_message) { "[HTTParty] [#{request_time}] 200 \"GET http://my.domain.com/my_path\" 512 "}
+      let(:log_message) { "[HTTParty] [#{request_time}] 200 \"GET http://my.domain.com/my_path\" 512 : 5"}
 
       it "can handle the Content-Length header" do
         # Simulate a parsed response that is an array, where accessing a string key will raise an error. See Issue #299.
         response_double = double(
             code: 200,
-            headers: { 'Content-Length' => 512 }
+            headers: { 'Content-Length' => 512 },
+            response_time: 5
         )
         allow(response_double).to receive(:[]).with('Content-Length').and_raise(TypeError.new('no implicit conversion of String into Integer'))
 

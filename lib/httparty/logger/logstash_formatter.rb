@@ -34,11 +34,12 @@ module HTTParty
           'response_code' => response.code,
           'severity' => level,
           'tags' => [TAG_NAME],
+          'response_time' => response_time
         }.to_json
       end
 
       def message
-        "[#{TAG_NAME}] #{response.code} \"#{http_method} #{path}\" #{content_length || '-'} "
+        "[#{TAG_NAME}] #{response.code} \"#{http_method} #{path}\" #{content_length || '-'} : #{response_time}"
       end
 
       def current_time
@@ -55,6 +56,10 @@ module HTTParty
 
       def content_length
         @content_length ||= response.respond_to?(:headers) ? response.headers['Content-Length'] : response['Content-Length']
+      end
+
+      def response_time
+        response.respond_to?(:response_time) ? response.response_time : nil
       end
     end
   end

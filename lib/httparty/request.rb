@@ -149,6 +149,7 @@ module HTTParty
       chunked_body = nil
       current_http = http
 
+      start_time = Time.now
       self.last_response = current_http.request(@raw_request) do |http_response|
         if block
           chunks = []
@@ -162,10 +163,11 @@ module HTTParty
           chunked_body = chunks.join
         end
       end
+      response_time = (Time.now - start_time).round(2)
 
       handle_host_redirection if response_redirects?
       result = handle_unauthorized
-      result ||= handle_response(chunked_body, &block)
+      result ||= handle_response(chunked_body, response_time, &block)
       result
     end
 
@@ -289,7 +291,7 @@ module HTTParty
       options[:assume_utf16_is_big_endian]
     end
 
-    def handle_response(raw_body, &block)
+    def handle_response(raw_body, response_time, &block)
       if response_redirects?
         options[:limit] -= 1
         if options[:logger]
@@ -323,7 +325,7 @@ module HTTParty
           end
         end
 
-        Response.new(self, last_response, lambda { parse_response(body) }, body: raw_body)
+        Response.new(self, last_response, lambda { parse_response(body) }, body: raw_body, response_time: response_time)
       end
     end
 

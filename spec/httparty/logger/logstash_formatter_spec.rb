@@ -18,6 +18,7 @@ RSpec.describe HTTParty::Logger::LogstashFormatter do
       'response_code' => response_code,
       'severity' => severity,
       'tags' => ['HTTParty'],
+      'response_time' => 4
     }.to_json
   end
 
@@ -30,12 +31,13 @@ RSpec.describe HTTParty::Logger::LogstashFormatter do
   describe "#format" do
     let(:response_code) { 302 }
     let(:content_length) { '-' }
-    let(:message) { "[HTTParty] #{response_code} \"#{http_method} #{path}\" #{content_length} " }
+    let(:message) { "[HTTParty] #{response_code} \"#{http_method} #{path}\" #{content_length} : 4" }
 
     it "formats a response to be compatible with Logstash" do
       response_double = double(
         code: response_code,
-        :[] => nil
+        :[] => nil,
+        response_time: 4
       )
 
       subject.format(request_double, response_double)

@@ -24,7 +24,7 @@ module HTTParty
       attr_reader :request, :response
 
       def message
-        "[#{TAG_NAME}] [#{current_time}] #{response.code} \"#{http_method} #{path}\" #{content_length || '-'} "
+        "[#{TAG_NAME}] [#{current_time}] #{response.code} \"#{http_method} #{path}\" #{content_length || '-'} : #{response_time}"
       end
 
       def current_time
@@ -41,6 +41,10 @@ module HTTParty
 
       def content_length
         response.respond_to?(:headers) ? response.headers['Content-Length'] : response['Content-Length']
+      end
+
+      def response_time
+        response.respond_to?(:response_time) ? response.response_time : nil
       end
     end
   end
