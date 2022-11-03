@@ -14,6 +14,20 @@ response = HTTParty.get('http://example.com', format: :plain)
 JSON.parse response, symbolize_names: true
 ```
 
+## Posting JSON
+When using Content Type `application/json` with `POST`, `PUT` or `PATCH` requests, the body should be a string of valid JSON:
+
+```ruby
+# With written JSON
+HTTParty.post('http://example.com', body: "{\"foo\":\"bar\"}", headers: { 'Content-Type' => 'application/json' })
+
+# Using JSON.generate
+HTTParty.post('http://example.com', body: JSON.generate({ foo: 'bar' }), headers: { 'Content-Type' => 'application/json' })
+
+# Using object.to_json
+HTTParty.post('http://example.com', body: { foo: 'bar' }.to_json, headers: { 'Content-Type' => 'application/json' })
+```
+
 ## Working with SSL
 
 You can use this guide to work with SSL certificates.
