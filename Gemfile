@@ -3,6 +3,7 @@ gemspec
 
 gem 'rake'
 gem 'mongrel',  '1.2.0.pre2'
+gem 'json'
 
 group :development do
   gem 'guard'
@@ -11,6 +12,7 @@ group :development do
 end
 
 group :test do
+  gem 'rexml'
   gem 'rspec',    '~> 3.4'
   gem 'simplecov', require: false
   gem 'aruba'
