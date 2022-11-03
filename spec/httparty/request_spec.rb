@@ -1511,10 +1511,28 @@ RSpec.describe HTTParty::Request do
 
   describe "marshalling" do
     it "properly marshals the request object" do
+      MarshalFakeResponse = Struct.new(:body) do
+        def marshal_dump
+          {
+            "body" => body,
+          }
+        end
+
+        def marshal_load(hash)
+          self.body = hash["body"]
+        end
+      end
+      @request.last_uri = URI("http://api.foo.com/v1")
+      @request.last_response = MarshalFakeResponse.new("body")
+      @request.instance_variable_set("@raw_request", @request.http_method.new(URI("http://api.foo.com/v1")))
       marshalled = Marshal.load(Marshal.dump(@request))
+
       expect(marshalled.http_method).to eq @request.http_method
       expect(marshalled.path).to eq @request.path
       expect(marshalled.options).to eq @request.options
+      expect(marshalled.last_response.body).to eq "body"
+      expect(marshalled.last_uri).to eq URI("http://api.foo.com/v1")
+      expect(marshalled.instance_variable_get("@raw_request").path).to eq "/v1"
     end
   end
 end

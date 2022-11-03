@@ -47,8 +47,12 @@ module HTTParty
     end
 
     def self._load(data)
-      http_method, path, options = Marshal.load(data)
-      new(http_method, path, options)
+      http_method, path, options, last_response, last_uri, raw_request = Marshal.load(data)
+      instance = new(http_method, path, options)
+      instance.last_response = last_response
+      instance.last_uri = last_uri
+      instance.instance_variable_set("@raw_request", raw_request)
+      instance
     end
 
     attr_accessor :http_method, :options, :last_response, :redirect, :last_uri
@@ -184,7 +188,7 @@ module HTTParty
       opts = options.dup
       opts.delete(:logger)
       opts.delete(:parser) if opts[:parser] && opts[:parser].is_a?(Proc)
-      Marshal.dump([http_method, path, opts])
+      Marshal.dump([http_method, path, opts, last_response, @last_uri, @raw_request])
     end
 
     private
