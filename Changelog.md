@@ -1,3 +1,7 @@
+## unreleased
+
+* Fix request marshaling (https://github.com/jnunemaker/httparty/pull/767)
+
 ## 0.20.0
 
 Breaking changes
