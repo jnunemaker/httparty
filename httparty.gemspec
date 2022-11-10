@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.required_ruby_version     = '>= 2.3.0'
 
   s.add_dependency 'multi_xml', ">= 0.5.2"
-  s.add_dependency('mime-types', "~> 3.0")
+  s.add_dependency 'mini_mime', ">= 1.0.0"
 
   # If this line is removed, all hard partying will cease.
   s.post_install_message = "When you HTTParty, you must party hard!"
