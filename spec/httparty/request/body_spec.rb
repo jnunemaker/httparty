@@ -105,6 +105,38 @@ RSpec.describe HTTParty::Request::Body do
 
           it { is_expected.to eq multipart_params }
         end
+
+        context 'when file name contains [ " \r \n ]' do
+          let(:options) { { force_multipart: true } }
+          let(:some_temp_file) { Tempfile.new(['basefile', '.txt']) }
+          let(:file_content) { 'test' }
+          let(:raw_filename) { "dummy=tampering.sh\"; \r\ndummy=a.txt" }
+          let(:expected_file_name) { 'dummy=tampering.sh%22; %0D%0Adummy=a.txt' }
+          let(:file) { double(:mocked_action_dispatch, path: some_temp_file.path, original_filename: raw_filename, read: file_content) }
+          let(:params) do
+            {
+              user: {
+                attachment_file: file,
+                enabled: true
+              }
+            }
+          end
+          let(:multipart_params) do
+            "--------------------------c772861a5109d5ef\r\n" \
+            "Content-Disposition: form-data; name=\"user[attachment_file]\"; filename=\"#{expected_file_name}\"\r\n" \
+            "Content-Type: text/plain\r\n" \
+            "\r\n" \
+            "test\r\n" \
+            "--------------------------c772861a5109d5ef\r\n" \
+            "Content-Disposition: form-data; name=\"user[enabled]\"\r\n" \
+            "\r\n" \
+            "true\r\n" \
+            "--------------------------c772861a5109d5ef--\r\n"
+          end
+
+          it { is_expected.to eq multipart_params }
+
+        end
       end
     end
   end
