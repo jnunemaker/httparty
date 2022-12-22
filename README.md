@@ -1,6 +1,6 @@
 # httparty
 
-[![Build Status](https://travis-ci.org/jnunemaker/httparty.svg?branch=master)](https://travis-ci.org/jnunemaker/httparty)
+[![CI](https://github.com/jnunemaker/httparty/actions/workflows/ci.yml/badge.svg)](https://github.com/jnunemaker/httparty/actions/workflows/ci.yml)
 
 Makes http fun again!  Ain't no party like a httparty, because a httparty don't stop.
 
