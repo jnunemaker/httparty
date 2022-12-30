@@ -11,3 +11,4 @@ pkg/
 coverage
 *.gem
 .idea
+.tool-versions
