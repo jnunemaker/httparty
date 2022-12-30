@@ -1,6 +1,7 @@
 ## unreleased
 
 * Fix request marshaling (https://github.com/jnunemaker/httparty/pull/767)
+* [Replace `mime-types` with `mini_mime`](https://github.com/jnunemaker/httparty/pull/769)
 
 ## 0.20.0
 

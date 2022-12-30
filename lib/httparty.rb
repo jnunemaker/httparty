@@ -5,7 +5,7 @@ require 'net/http'
 require 'uri'
 require 'zlib'
 require 'multi_xml'
-require 'mime/types'
+require 'mini_mime'
 require 'json'
 require 'csv'
 
