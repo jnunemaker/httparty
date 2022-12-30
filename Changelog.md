@@ -1,6 +1,7 @@
-## unreleased
+## 0.21.0
 
-* Fix request marshaling (https://github.com/jnunemaker/httparty/pull/767)
+* [escape filename in the multipart/form-data Content-Disposition header](https://github.com/jnunemaker/httparty/commit/cdb45a678c43e44570b4e73f84b1abeb5ec22b8e)
+* [Fix request marshaling](https://github.com/jnunemaker/httparty/pull/767)
 * [Replace `mime-types` with `mini_mime`](https://github.com/jnunemaker/httparty/pull/769)
 
 ## 0.20.0
