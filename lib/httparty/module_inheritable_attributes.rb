@@ -29,7 +29,7 @@ module HTTParty
         @mattr_inheritable_attrs += args
 
         args.each do |arg|
-          module_eval %(class << self; attr_accessor :#{arg} end)
+          singleton_class.attr_accessor(arg)
         end
 
         @mattr_inheritable_attrs
@@ -42,14 +42,12 @@ module HTTParty
           subclass.instance_variable_set(ivar, instance_variable_get(ivar).clone)
 
           if instance_variable_get(ivar).respond_to?(:merge)
-            method = <<-EOM
+            subclass.class_eval <<~RUBY, __FILE__, __LINE__ + 1
               def self.#{inheritable_attribute}
                 duplicate = ModuleInheritableAttributes.hash_deep_dup(#{ivar})
                 #{ivar} = superclass.#{inheritable_attribute}.merge(duplicate)
               end
-            EOM
-
-            subclass.class_eval method
+            RUBY
           end
         end
       end
