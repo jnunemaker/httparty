@@ -133,7 +133,7 @@ module HTTParty
     end
 
     def throw_exception
-      if @request.options[:raise_on] && @request.options[:raise_on].include?(code)
+      if @request.options[:raise_on].to_a.detect { |c| code.to_s.match(/#{c.to_s}/) }
         ::Kernel.raise ::HTTParty::ResponseError.new(@response), "Code #{code} - #{body}"
       end
     end

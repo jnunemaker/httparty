@@ -50,29 +50,50 @@ RSpec.describe HTTParty::Response do
       expect(unparseable_response.http_version).to eq(@response_object.http_version)
     end
 
-    context 'when raise_on is supplied' do
+    context 'test raise_on requests' do
       let(:request) { HTTParty::Request.new(Net::HTTP::Get, '/', raise_on: [404]) }
+      let(:body)     { 'Not Found' }
+      let(:response) { Net::HTTPNotFound.new('1.1', 404, body) }
 
-      context "and response's status code is in range" do
-        let(:body)     { 'Not Found' }
-        let(:response) { Net::HTTPNotFound.new('1.1', 404, body) }
+      subject { described_class.new(request, response, @parsed_response) }
 
-        before do
-          allow(response).to receive(:body).and_return(body)
+      before do
+        allow(response).to receive(:body).and_return(body)
+      end
+
+      context 'when raise_on is a number' do
+        let(:raise_on) { [404] }
+
+        context "and response's status code is in range" do
+          it 'throws exception' do
+            expect{ subject }.to raise_error(HTTParty::ResponseError, "Code 404 - #{body}")
+          end
         end
 
-        subject { described_class.new(request, response, @parsed_response) }
+        context "and response's status code is not in range" do
+          subject { described_class.new(request, @response_object, @parsed_response) }
 
-        it 'throws exception' do
-          expect{ subject }.to raise_error(HTTParty::ResponseError, "Code 404 - #{body}")
+          it 'does not throw exception' do
+            expect{ subject }.not_to raise_error
+          end
         end
       end
 
-      context "and response's status code is not in range" do
-        subject { described_class.new(request, @response_object, @parsed_response) }
+      context 'when raise_on is a regexpr' do
+        let(:raise_on) { ['4[0-9]*'] }
 
-        it 'does not throw exception' do
-          expect{ subject }.not_to raise_error
+        context "and response's status code is in range" do
+          it 'throws exception' do
+            expect{ subject }.to raise_error(HTTParty::ResponseError, "Code 404 - #{body}")
+          end
+        end
+
+        context "and response's status code is not in range" do
+          subject { described_class.new(request, @response_object, @parsed_response) }
+
+          it 'does not throw exception' do
+            expect{ subject }.not_to raise_error
+          end
         end
       end
     end
