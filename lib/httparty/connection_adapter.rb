@@ -222,7 +222,15 @@ module HTTParty
         # Client certificate authentication
         # Note: options[:pem] must contain the content of a PEM file having the private key appended
         if options[:pem]
-          http.cert = OpenSSL::X509::Certificate.new(options[:pem])
+          bundle_certs = options[:pem].to_s.scan(/-----BEGIN CERTIFICATE-----(?:.|\n)+?-----END CERTIFICATE-----/)
+
+          if bundle_certs.size > 1
+            http.cert = OpenSSL::X509::Certificate.new(bundle_certs.shift)
+            http.extra_chain_cert = bundle_certs.map { |cert| OpenSSL::X509::Certificate.new(cert) }
+          else
+            http.cert = OpenSSL::X509::Certificate.new(options[:pem])
+          end
+
           http.key = OpenSSL::PKey.read(options[:pem], options[:pem_password])
           http.verify_mode = verify_ssl_certificate? ? OpenSSL::SSL::VERIFY_PEER : OpenSSL::SSL::VERIFY_NONE
         end
