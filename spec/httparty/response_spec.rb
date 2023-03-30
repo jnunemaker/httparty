@@ -39,11 +39,11 @@ RSpec.describe HTTParty::Response do
     it "should set code" do
       expect(@response.code).to eq(@response_object.code)
     end
-        
+
     it "should set code as an Integer" do
       expect(@response.code).to be_a(Integer)
     end
-    
+
     it "should set http_version" do
       unparseable_body = lambda { raise "Unparseable" }
       unparseable_response = HTTParty::Response.new(@request_object, @response_object, unparseable_body)
@@ -100,7 +100,7 @@ RSpec.describe HTTParty::Response do
     expect(response['foo']).to eq('bar')
   end
 
-  it "response to request" do
+  it "responds to request" do
     response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
     expect(response.respond_to?(:request)).to be_truthy
   end
