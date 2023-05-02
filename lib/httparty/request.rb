@@ -376,6 +376,7 @@ module HTTParty
       options[:body] = nil
       @raw_request.body = nil
     end
+
     def capture_cookies(response)
       return unless response['Set-Cookie']
       cookies_hash = HTTParty::CookieHash.new
