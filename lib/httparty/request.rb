@@ -295,24 +295,7 @@ module HTTParty
 
     def handle_response(raw_body, &block)
       if response_redirects?
-        options[:limit] -= 1
-        if options[:logger]
-          logger = HTTParty::Logger.build(options[:logger], options[:log_level], options[:log_format])
-          logger.format(self, last_response)
-        end
-        self.path = last_response['location']
-        self.redirect = true
-        if last_response.class == Net::HTTPSeeOther
-          unless options[:maintain_method_across_redirects] && options[:resend_on_redirect]
-            self.http_method = Net::HTTP::Get
-          end
-        elsif last_response.code != '307' && last_response.code != '308'
-          unless options[:maintain_method_across_redirects]
-            self.http_method = Net::HTTP::Get
-          end
-        end
-        capture_cookies(last_response)
-        perform(&block)
+        handle_redirection(&block)
       else
         raw_body ||= last_response.body
 
@@ -329,6 +312,30 @@ module HTTParty
 
         Response.new(self, last_response, lambda { parse_response(body) }, body: raw_body)
       end
+    end
+
+    def handle_redirection(&block)
+      options[:limit] -= 1
+      if options[:logger]
+        logger = HTTParty::Logger.build(options[:logger], options[:log_level], options[:log_format])
+        logger.format(self, last_response)
+      end
+      self.path       = last_response['location']
+      self.redirect   = true
+      if last_response.class == Net::HTTPSeeOther
+        unless options[:maintain_method_across_redirects] && options[:resend_on_redirect]
+          self.http_method = Net::HTTP::Get
+        end
+      elsif last_response.code != '307' && last_response.code != '308'
+        unless options[:maintain_method_across_redirects]
+          self.http_method = Net::HTTP::Get
+        end
+      end
+      if http_method == Net::HTTP::Get
+        clear_body
+      end
+      capture_cookies(last_response)
+      perform(&block)
     end
 
     def handle_host_redirection
@@ -362,6 +369,13 @@ module HTTParty
       parser.call(body, format)
     end
 
+    # Some Web Application Firewalls reject incoming GET requests that have a body
+    # if we redirect, and the resulting verb is GET then we will clear the body that
+    # may be left behind from the initiating request
+    def clear_body
+      options[:body] = nil
+      @raw_request.body = nil
+    end
     def capture_cookies(response)
       return unless response['Set-Cookie']
       cookies_hash = HTTParty::CookieHash.new

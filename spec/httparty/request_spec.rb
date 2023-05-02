@@ -928,6 +928,14 @@ RSpec.describe HTTParty::Request do
           expect(@request.http_method).to eq(Net::HTTP::Delete)
         end
 
+        it 'should clear the body before resulting GET requests' do
+          @request.http_method = Net::HTTP::Post
+          @request.options[:body] = { text: 'something' }
+          expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+          expect(@request.http_method).to eq(Net::HTTP::Get)
+          expect(@request.options[:body]).to be_nil
+        end
+
         it 'should log the redirection' do
           logger_double = double
           expect(logger_double).to receive(:info).twice
