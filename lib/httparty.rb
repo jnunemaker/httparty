@@ -591,6 +591,13 @@ module HTTParty
       perform_request Net::HTTP::Unlock, path, options, &block
     end
 
+    def build_request(http_method, path, options = {})
+      options = ModuleInheritableAttributes.hash_deep_dup(default_options).merge(options)
+      HeadersProcessor.new(headers, options).call
+      process_cookies(options)
+      Request.new(http_method, path, options)
+    end
+
     attr_reader :default_options
 
     private
@@ -606,10 +613,7 @@ module HTTParty
     end
 
     def perform_request(http_method, path, options, &block) #:nodoc:
-      options = ModuleInheritableAttributes.hash_deep_dup(default_options).merge(options)
-      HeadersProcessor.new(headers, options).call
-      process_cookies(options)
-      Request.new(http_method, path, options).perform(&block)
+      build_request(http_method, path, options).perform(&block)
     end
 
     def process_cookies(options) #:nodoc:
@@ -675,6 +679,10 @@ module HTTParty
 
   def self.options(*args, &block)
     Basement.options(*args, &block)
+  end
+
+  def self.build_request(*args, &block)
+    Basement.build_request(*args, &block)
   end
 end
 
