@@ -970,4 +970,13 @@ RSpec.describe HTTParty do
       end.to raise_error(URI::InvalidURIError)
     end
   end
+
+  describe "#build_request" do
+    it "should build a request object" do
+      stub_http_response_with('example.html')
+      request = HTTParty.build_request(Net::HTTP::Get, "http://www.example.com")
+      expect(request).to be_a(HTTParty::Request)
+      expect(request.perform.parsed_response).to eq(file_fixture('example.html'))
+    end
+  end
 end
