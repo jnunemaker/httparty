@@ -91,6 +91,7 @@ module HTTParty
 
       def content_type(object)
         return object.content_type if object.respond_to?(:content_type)
+        require 'mini_mime'
         mime = MiniMime.lookup_by_filename(object.path)
         mime ? mime.content_type : 'application/octet-stream'
       end

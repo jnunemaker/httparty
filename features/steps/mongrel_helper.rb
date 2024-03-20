@@ -30,6 +30,7 @@ class DeflateHandler < BasicMongrelHandler
       reply_with(response, 406, 'No deflate accept encoding found in request')
     else
       response.start do |head, body|
+        require 'zlib'
         head['Content-Encoding'] = 'deflate'
         body.write Zlib::Deflate.deflate(response_body)
       end
@@ -53,6 +54,7 @@ class GzipHandler < BasicMongrelHandler
   protected
 
   def gzip(string)
+    require 'zlib'
     sio = StringIO.new('', 'r+')
     gz = Zlib::GzipWriter.new sio
     gz.write string

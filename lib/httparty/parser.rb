@@ -118,16 +118,19 @@ module HTTParty
     protected
 
     def xml
+      require 'multi_xml'
       MultiXml.parse(body)
     end
 
     UTF8_BOM = "\xEF\xBB\xBF"
 
     def json
+      require 'json'
       JSON.parse(body, :quirks_mode => true, :allow_nan => true)
     end
 
     def csv
+      require 'csv'
       CSV.parse(body)
     end
 
