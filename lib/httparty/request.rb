@@ -341,7 +341,7 @@ module HTTParty
     def handle_host_redirection
       check_duplicate_location_header
       redirect_path = options[:uri_adapter].parse(last_response['location']).normalize
-      return if redirect_path.relative? || path.host == redirect_path.host
+      return if redirect_path.relative? || path.host == redirect_path.host || uri.host == redirect_path.host
       @changed_hosts = true
     end
 

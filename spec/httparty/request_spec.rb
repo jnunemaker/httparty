@@ -1369,6 +1369,20 @@ RSpec.describe HTTParty::Request do
         @request.send(:setup_raw_request)
         expect(@request.instance_variable_get(:@raw_request)['authorization']).to eq(@authorization)
       end
+
+      context 'when uri path is a relative path' do
+        before do
+          @request.path = '/v1'
+          @request.options[:base_uri] = 'http://api.foo.com'
+        end
+
+        it "should send Authorization header when redirecting to the same host" do
+          @redirect['location'] = 'http://api.foo.com/v2'
+          @request.perform
+          @request.send(:setup_raw_request)
+          expect(@request.instance_variable_get(:@raw_request)['authorization']).to eq(@authorization)
+        end
+      end
     end
   end
 
