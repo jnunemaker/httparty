@@ -51,7 +51,8 @@ RSpec.describe HTTParty::Response do
     end
 
     context 'test raise_on requests' do
-      let(:request) { HTTParty::Request.new(Net::HTTP::Get, '/', raise_on: [404]) }
+      let(:raise_on) { [404] }
+      let(:request) { HTTParty::Request.new(Net::HTTP::Get, '/', raise_on: raise_on) }
       let(:body)     { 'Not Found' }
       let(:response) { Net::HTTPNotFound.new('1.1', 404, body) }
 
@@ -71,7 +72,7 @@ RSpec.describe HTTParty::Response do
         end
 
         context "and response's status code is not in range" do
-          subject { described_class.new(request, @response_object, @parsed_response) }
+          let(:response) { Net::HTTPNotFound.new('1.1', 200, body) }
 
           it 'does not throw exception' do
             expect{ subject }.not_to raise_error
@@ -89,7 +90,7 @@ RSpec.describe HTTParty::Response do
         end
 
         context "and response's status code is not in range" do
-          subject { described_class.new(request, @response_object, @parsed_response) }
+          let(:response) { Net::HTTPNotFound.new('1.1', 200, body) }
 
           it 'does not throw exception' do
             expect{ subject }.not_to raise_error
