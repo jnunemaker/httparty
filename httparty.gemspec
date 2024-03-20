@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.summary     = 'Makes http fun! Also, makes consuming restful web services dead easy.'
   s.description = 'Makes http fun! Also, makes consuming restful web services dead easy.'
 
-  s.required_ruby_version     = '>= 2.3.0'
+  s.required_ruby_version     = '>= 2.7.0'
 
   s.add_dependency 'csv'
   s.add_dependency 'multi_xml', ">= 0.5.2"

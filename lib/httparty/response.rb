@@ -67,12 +67,12 @@ module HTTParty
     end
 
     # Support old multiple_choice? method from pre 2.0.0 era.
-    if ::RUBY_VERSION >= '2.0.0' && ::RUBY_PLATFORM != 'java'
+    if ::RUBY_PLATFORM != 'java'
       alias_method :multiple_choice?, :multiple_choices?
     end
 
     # Support old status codes method from pre 2.6.0 era.
-    if ::RUBY_VERSION >= '2.6.0' && ::RUBY_PLATFORM != 'java'
+    if ::RUBY_PLATFORM != 'java'
       alias_method :gateway_time_out?,                :gateway_timeout?
       alias_method :request_entity_too_large?,        :payload_too_large?
       alias_method :request_time_out?,                :request_timeout?
