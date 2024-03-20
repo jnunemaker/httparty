@@ -102,7 +102,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
           it "sets ssl version" do
             expect(subject.ssl_version).to eq(:TLSv1)
           end
-        end if RUBY_VERSION > '1.9'
+        end
       end
 
       context "when dealing with IPv6" do
@@ -119,7 +119,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
         it "should set the ciphers on the connection" do
           expect(subject.ciphers).to eq('RC4-SHA')
         end
-      end if RUBY_VERSION > '1.9'
+      end
 
       context "when timeout is not set" do
         it "doesn't set the timeout" do
@@ -152,11 +152,9 @@ RSpec.describe HTTParty::ConnectionAdapter do
             it { is_expected.to eq(5) }
           end
 
-          if RUBY_VERSION >= '2.6.0'
-            describe '#write_timeout' do
-              subject { super().write_timeout }
-              it { is_expected.to eq(5) }
-            end
+          describe '#write_timeout' do
+            subject { super().write_timeout }
+            it { is_expected.to eq(5) }
           end
         end
 
@@ -223,11 +221,9 @@ RSpec.describe HTTParty::ConnectionAdapter do
           it { is_expected.to eq(5) }
         end
 
-        if RUBY_VERSION >= '2.6.0'
-          describe '#write_timeout' do
-            subject { super().write_timeout }
-            it { is_expected.to eq(5) }
-          end
+        describe '#write_timeout' do
+          subject { super().write_timeout }
+          it { is_expected.to eq(5) }
         end
 
         describe '#read_timeout' do
@@ -247,9 +243,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
           )
           expect(http).to receive(:open_timeout=)
           expect(http).to receive(:read_timeout=).twice
-          if RUBY_VERSION >= '2.6.0'
-            expect(http).to receive(:write_timeout=)
-          end
+          expect(http).to receive(:write_timeout=)
           allow(Net::HTTP).to receive_messages(new: http)
           adapter.connection
         end
@@ -298,11 +292,9 @@ RSpec.describe HTTParty::ConnectionAdapter do
           it { is_expected.to eq(7) }
         end
 
-        if RUBY_VERSION >= '2.6.0'
-          describe '#write_timeout' do
-            subject { super().write_timeout }
-            it { is_expected.to eq(5) }
-          end
+        describe '#write_timeout' do
+          subject { super().write_timeout }
+          it { is_expected.to eq(5) }
         end
 
         describe '#read_timeout' do
@@ -322,54 +314,50 @@ RSpec.describe HTTParty::ConnectionAdapter do
           )
           expect(http).to receive(:open_timeout=).twice
           expect(http).to receive(:read_timeout=)
-          if RUBY_VERSION >= '2.6.0'
-            expect(http).to receive(:write_timeout=)
-          end
+          expect(http).to receive(:write_timeout=)
           allow(Net::HTTP).to receive_messages(new: http)
           adapter.connection
         end
       end
 
-      if RUBY_VERSION >= '2.6.0'
-        context "when timeout is not set and write_timeout is set to 8 seconds" do
-          let(:options) { {write_timeout: 8} }
+      context "when timeout is not set and write_timeout is set to 8 seconds" do
+        let(:options) { {write_timeout: 8} }
 
-          describe '#write_timeout' do
-            subject { super().write_timeout }
-            it { is_expected.to eq(8) }
-          end
+        describe '#write_timeout' do
+          subject { super().write_timeout }
+          it { is_expected.to eq(8) }
+        end
 
-          it "should not set the open timeout" do
-            http = double(
-              "http",
-              :null_object => true,
-              :use_ssl= => false,
-              :use_ssl? => false,
-              :read_timeout= => 0,
-              :open_timeout= => 0,
-              :write_timeout= => 0,
+        it "should not set the open timeout" do
+          http = double(
+            "http",
+            :null_object => true,
+            :use_ssl= => false,
+            :use_ssl? => false,
+            :read_timeout= => 0,
+            :open_timeout= => 0,
+            :write_timeout= => 0,
 
-            )
-            expect(http).not_to receive(:open_timeout=)
-            allow(Net::HTTP).to receive_messages(new: http)
-            adapter.connection
-          end
+          )
+          expect(http).not_to receive(:open_timeout=)
+          allow(Net::HTTP).to receive_messages(new: http)
+          adapter.connection
+        end
 
-          it "should not set the read timeout" do
-            http = double(
-              "http",
-              :null_object => true,
-              :use_ssl= => false,
-              :use_ssl? => false,
-              :read_timeout= => 0,
-              :open_timeout= => 0,
-              :write_timeout= => 0,
+        it "should not set the read timeout" do
+          http = double(
+            "http",
+            :null_object => true,
+            :use_ssl= => false,
+            :use_ssl? => false,
+            :read_timeout= => 0,
+            :open_timeout= => 0,
+            :write_timeout= => 0,
 
-            )
-            expect(http).not_to receive(:read_timeout=)
-            allow(Net::HTTP).to receive_messages(new: http)
-            adapter.connection
-          end
+          )
+          expect(http).not_to receive(:read_timeout=)
+          allow(Net::HTTP).to receive_messages(new: http)
+          adapter.connection
         end
 
         context "when timeout is set and write_timeout is set to 8 seconds" do
@@ -415,21 +403,19 @@ RSpec.describe HTTParty::ConnectionAdapter do
       end
 
       context "when setting max_retries" do
-        if RUBY_VERSION >= '2.5.0'
-          context "to 5 times" do
-            let(:options) { {max_retries: 5} }
-            describe '#max_retries' do
-              subject { super().max_retries }
-              it { is_expected.to eq(5) }
-            end
+        context "to 5 times" do
+          let(:options) { {max_retries: 5} }
+          describe '#max_retries' do
+            subject { super().max_retries }
+            it { is_expected.to eq(5) }
           end
+        end
 
-          context "to 0 times" do
-            let(:options) { {max_retries: 0} }
-            describe '#max_retries' do
-              subject { super().max_retries }
-              it { is_expected.to eq(0) }
-            end
+        context "to 0 times" do
+          let(:options) { {max_retries: 0} }
+          describe '#max_retries' do
+            subject { super().max_retries }
+            it { is_expected.to eq(0) }
           end
         end
 
@@ -545,7 +531,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
           subject { super().local_port }
           it { is_expected.to eq(12345) }
         end
-      end if RUBY_VERSION >= '2.0'
+      end
 
       context "when providing PEM certificates" do
         let(:pem) { :pem_contents }

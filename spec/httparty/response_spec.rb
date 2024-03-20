@@ -305,13 +305,12 @@ RSpec.describe HTTParty::Response do
         version_not_supported?:           Net::HTTPVersionNotSupported
       }
 
-      # Ruby 2.0, new name for this response.
-      if RUBY_VERSION >= "2.0.0" && ::RUBY_PLATFORM != "java"
+      if ::RUBY_PLATFORM != "java"
         SPECIFIC_CODES[:multiple_choices?] = Net::HTTPMultipleChoices
       end
 
       # Ruby 2.6, those status codes have been updated.
-      if RUBY_VERSION >= "2.6.0" && ::RUBY_PLATFORM != "java"
+      if ::RUBY_PLATFORM != "java"
         SPECIFIC_CODES[:gateway_timeout?]       = Net::HTTPGatewayTimeout
         SPECIFIC_CODES[:payload_too_large?]     = Net::HTTPPayloadTooLarge
         SPECIFIC_CODES[:request_timeout?]       = Net::HTTPRequestTimeout

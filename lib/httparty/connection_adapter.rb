@@ -119,10 +119,7 @@ module HTTParty
       if add_timeout?(options[:timeout])
         http.open_timeout = options[:timeout]
         http.read_timeout = options[:timeout]
-
-        from_ruby_version('2.6.0', option: :write_timeout, warn: false) do
-          http.write_timeout = options[:timeout]
-        end
+        http.write_timeout = options[:timeout]
       end
 
       if add_timeout?(options[:read_timeout])
@@ -134,15 +131,11 @@ module HTTParty
       end
 
       if add_timeout?(options[:write_timeout])
-        from_ruby_version('2.6.0', option: :write_timeout) do
-          http.write_timeout = options[:write_timeout]
-        end
+        http.write_timeout = options[:write_timeout]
       end
 
       if add_max_retries?(options[:max_retries])
-        from_ruby_version('2.5.0', option: :max_retries) do
-          http.max_retries = options[:max_retries]
-        end
+        http.max_retries = options[:max_retries]
       end
 
       if options[:debug_output]
@@ -157,29 +150,17 @@ module HTTParty
       #
       # @see https://bugs.ruby-lang.org/issues/6617
       if options[:local_host]
-        from_ruby_version('2.0.0', option: :local_host) do
-          http.local_host = options[:local_host]
-        end
+        http.local_host = options[:local_host]
       end
 
       if options[:local_port]
-        from_ruby_version('2.0.0', option: :local_port) do
-          http.local_port = options[:local_port]
-        end
+        http.local_port = options[:local_port]
       end
 
       http
     end
 
     private
-
-    def from_ruby_version(ruby_version, option: nil, warn: true)
-      if RUBY_VERSION >= ruby_version
-        yield
-      elsif warn
-        Kernel.warn("Warning: option #{ option } requires Ruby version #{ ruby_version } or later")
-      end
-    end
 
     def add_timeout?(timeout)
       timeout && (timeout.is_a?(Integer) || timeout.is_a?(Float))
