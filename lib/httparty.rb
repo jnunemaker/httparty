@@ -83,7 +83,7 @@ module HTTParty
     #
     #   class Foo
     #     include HTTParty
-    #     raise_on [404, 500]
+    #     raise_on [404, 500, '5[0-9]*']
     #   end
     def raise_on(codes = [])
       default_options[:raise_on] = *codes
