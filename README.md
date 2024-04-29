@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/jnunemaker/httparty/actions/workflows/ci.yml/badge.svg)](https://github.com/jnunemaker/httparty/actions/workflows/ci.yml)
 
-Makes http fun again!  Ain't no party like a httparty, because a httparty don't stop.
+Makes http fun again! Ain't no party like a httparty, because a httparty don't stop.
 
 ## Install
 
@@ -12,9 +12,8 @@ gem install httparty
 
 ## Requirements
 
-* Ruby 2.3.0 or higher
-* multi_xml
-* You like to party!
+- Ruby 2.7.0 or higher
+- You like to party!
 
 ## Examples
 
@@ -48,6 +47,7 @@ puts stack_exchange.users
 ```
 
 See the [examples directory](http://github.com/jnunemaker/httparty/tree/master/examples) for even more goodies.
+
 ## Command Line Interface
 
 httparty also includes the executable `httparty` which can be
@@ -63,17 +63,17 @@ httparty "https://api.stackexchange.com/2.2/questions?site=stackoverflow"
 
 ## Help and Docs
 
-* [Docs](https://github.com/jnunemaker/httparty/tree/master/docs)
-* https://github.com/jnunemaker/httparty/discussions
-* https://www.rubydoc.info/github/jnunemaker/httparty
+- [Docs](https://github.com/jnunemaker/httparty/tree/master/docs)
+- https://github.com/jnunemaker/httparty/discussions
+- https://www.rubydoc.info/github/jnunemaker/httparty
 
 ## Contributing
 
-* Fork the project.
-* Run `bundle`
-* Run `bundle exec rake`
-* Make your feature addition or bug fix.
-* Add tests for it. This is important so I don't break it in a future version unintentionally.
-* Run `bundle exec rake` (No, REALLY :))
-* Commit, do not mess with rakefile, version, or history. (if you want to have your own version, that is fine but bump version in a commit by itself in another branch so I can ignore when I pull)
-* Send me a pull request. Bonus points for topic branches.
+- Fork the project.
+- Run `bundle`
+- Run `bundle exec rake`
+- Make your feature addition or bug fix.
+- Add tests for it. This is important so I don't break it in a future version unintentionally.
+- Run `bundle exec rake` (No, REALLY :))
+- Commit, do not mess with rakefile, version, or history. (if you want to have your own version, that is fine but bump version in a commit by itself in another branch so I can ignore when I pull)
+- Send me a pull request. Bonus points for topic branches.
