@@ -628,6 +628,15 @@ RSpec.describe HTTParty::ConnectionAdapter do
               expect(subject.verify_mode).to eq(OpenSSL::SSL::VERIFY_NONE)
             end
           end
+
+          context "when using extra_chain_cert and p12 on Ruby 3.0+" do
+            let(:options) { {p12: p12, p12_password: "password", extra_chain_cert: true} }
+
+            it "sets extra_chain_cert on http object" do
+              allow(pkcs12).to receive(:ca_certs).and_return([double("OpenSSL::X509::Certificate")])
+              expect(subject.extra_chain_cert).to eq([cert] + pkcs12.ca_certs)
+            end
+          end
         end
 
         context "when scheme is not https" do

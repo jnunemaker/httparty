@@ -233,7 +233,8 @@ module HTTParty
         end
 
         # Include full certificate chain
-        if options[:extra_chain_cert] && options[:p12]
+        # Only Ruby 3.0+
+        if options[:extra_chain_cert] && options[:p12] && http.respond_to?(:extra_chain_cert=)
           http.extra_chain_cert = [p12.certificate] + p12.ca_certs
         end
       end

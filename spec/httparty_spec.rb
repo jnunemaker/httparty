@@ -35,6 +35,13 @@ RSpec.describe HTTParty do
     end
   end
 
+  describe "extra_chain_cert" do
+    it 'should set the extra_chain_cert option' do
+      @klass.extra_chain_cert true
+      expect(@klass.default_options[:extra_chain_cert]).to eq(true)
+    end
+  end
+
   describe 'ssl_version' do
     it 'should set the ssl_version content' do
       @klass.ssl_version :SSLv3
