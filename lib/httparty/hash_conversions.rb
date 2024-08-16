@@ -54,9 +54,9 @@ module HTTParty
       stack.each do |parent, hash|
         hash.each do |child_key, child_value|
           if child_value.respond_to?(:to_hash)
-            normalized_keys << normalize_keys("#{parent}[#{child_key}]", child_value).flatten
+            normalized_keys += normalize_keys("#{parent}[#{child_key}]", child_value)
           elsif child_value.respond_to?(:to_ary)
-            normalized_keys << normalize_keys("#{parent}[#{child_key}]", child_value)
+            normalized_keys += normalize_keys("#{parent}[#{child_key}]", child_value)
           else
             normalized_keys << normalize_keys("#{parent}[#{child_key}]", child_value).flatten
           end
