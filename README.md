@@ -46,7 +46,7 @@ puts stack_exchange.questions
 puts stack_exchange.users
 ```
 
-See the [examples directory](http://github.com/jnunemaker/httparty/tree/master/examples) for even more goodies.
+See the [examples directory](http://github.com/jnunemaker/httparty/tree/main/examples) for even more goodies.
 
 ## Command Line Interface
 
@@ -63,7 +63,7 @@ httparty "https://api.stackexchange.com/2.2/questions?site=stackoverflow"
 
 ## Help and Docs
 
-- [Docs](https://github.com/jnunemaker/httparty/tree/master/docs)
+- [Docs](https://github.com/jnunemaker/httparty/tree/main/docs)
 - https://github.com/jnunemaker/httparty/discussions
 - https://www.rubydoc.info/github/jnunemaker/httparty
 
