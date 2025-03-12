@@ -36,6 +36,8 @@ You can use this guide to work with SSL certificates.
 
 ```ruby
 # Use this example if you are using a pem file
+# - cert.pem must contain the content of a PEM file having the private key appended (separated from the cert by a newline \n)
+# - Use an empty string for the password if the cert is not password protected
 
 class Client
   include HTTParty
