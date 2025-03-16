@@ -979,4 +979,88 @@ RSpec.describe HTTParty do
       expect(request.perform.parsed_response).to eq(file_fixture('example.html'))
     end
   end
+
+  describe "with foul error handling" do
+    let(:uri) { "http://api.foo.com/v1" }
+
+    it "wraps common net/http errors when foul option is enabled" do
+      stub_request(:get, uri).to_raise(Errno::ECONNREFUSED)
+
+      expect do
+        HTTParty.get(uri, foul: true)
+      end.to raise_error(HTTParty::Foul) do |error|
+        expect(error.original_error).to be_a(Errno::ECONNREFUSED)
+      end
+    end
+
+    it "does not wrap errors when foul option is disabled" do
+      stub_request(:get, uri).to_raise(Errno::ECONNREFUSED)
+
+      expect do
+        HTTParty.get(uri)
+      end.to raise_error(Errno::ECONNREFUSED)
+    end
+
+    context "with different network errors" do
+      network_errors = [
+        EOFError.new("end of file reached"),
+        Errno::ECONNABORTED.new("connection aborted"),
+        Errno::ECONNRESET.new("connection reset"),
+        Errno::EHOSTUNREACH.new("host unreachable"),
+        Net::ReadTimeout.new("read timeout"),
+        OpenSSL::SSL::SSLError.new("certificate verify failed"),
+        SocketError.new("failed to lookup hostname")
+      ]
+
+      network_errors.each do |error|
+        it "wraps #{error.class} with proper error information" do
+          stub_request(:get, uri).to_raise(error)
+
+          expect do
+            HTTParty.get(uri, foul: true)
+          end.to raise_error(HTTParty::Foul) do |foul|
+            expect(foul.original_error).to be_a(error.class)
+            expect(foul.message).to include(error.message)
+            expect(foul.message).to include(error.class.name)
+          end
+        end
+      end
+    end
+
+    context "with non-network errors" do
+      it "does not wrap standard errors" do
+        stub_request(:get, uri).to_raise(StandardError.new("regular error"))
+
+        expect do
+          HTTParty.get(uri, foul: true)
+        end.to raise_error(StandardError, "regular error")
+      end
+
+      it "does not wrap HTTParty::ResponseError" do
+        stub_request(:get, uri).to_return(status: 404)
+
+        expect do
+          HTTParty.get(uri, foul: true)
+        end.not_to raise_error
+      end
+    end
+
+    context "error message and access" do
+      let(:error) { Errno::ECONNREFUSED.new("connection refused") }
+
+      before do
+        stub_request(:get, uri).to_raise(error)
+      end
+
+      it "provides access to original error information" do
+        begin
+          HTTParty.get(uri, foul: true)
+        rescue HTTParty::Foul => e
+          expect(e.original_error).to eq(error)
+          expect(e.message).to include("ECONNREFUSED")
+          expect(e.message).to include("connection refused")
+        end
+      end
+    end
+  end
 end
