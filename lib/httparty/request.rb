@@ -153,24 +153,29 @@ module HTTParty
       chunked_body = nil
       current_http = http
 
-      self.last_response = current_http.request(@raw_request) do |http_response|
-        if block
-          chunks = []
+      begin
+        self.last_response = current_http.request(@raw_request) do |http_response|
+          if block
+            chunks = []
 
-          http_response.read_body do |fragment|
-            encoded_fragment = encode_text(fragment, http_response['content-type'])
-            chunks << encoded_fragment if !options[:stream_body]
-            block.call ResponseFragment.new(encoded_fragment, http_response, current_http)
+            http_response.read_body do |fragment|
+              encoded_fragment = encode_text(fragment, http_response['content-type'])
+              chunks << encoded_fragment if !options[:stream_body]
+              block.call ResponseFragment.new(encoded_fragment, http_response, current_http)
+            end
+
+            chunked_body = chunks.join
           end
-
-          chunked_body = chunks.join
         end
-      end
 
-      handle_host_redirection if response_redirects?
-      result = handle_unauthorized
-      result ||= handle_response(chunked_body, &block)
-      result
+        handle_host_redirection if response_redirects?
+        result = handle_unauthorized
+        result ||= handle_response(chunked_body, &block)
+        result
+      rescue *CommonErrors::NETWORK_ERRORS => e
+        raise e unless options[:foul]
+        raise HTTParty::Foul.new(e)
+      end
     end
 
     def handle_unauthorized(&block)
