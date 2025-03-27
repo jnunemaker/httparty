@@ -172,7 +172,7 @@ module HTTParty
         result = handle_unauthorized
         result ||= handle_response(chunked_body, &block)
         result
-      rescue *CommonErrors::NETWORK_ERRORS => e
+      rescue *FOUL_ERRORS => e
         raise options[:foul] ? HTTParty::Foul.new("#{e.class}: #{e.message}") : e
       end
     end
