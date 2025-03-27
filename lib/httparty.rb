@@ -15,7 +15,6 @@ require 'httparty/response_fragment'
 require 'httparty/decompressor'
 require 'httparty/text_encoder'
 require 'httparty/headers_processor'
-require 'httparty/common_errors'
 
 # @see HTTParty::ClassMethods
 module HTTParty
