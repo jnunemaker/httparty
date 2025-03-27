@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module HTTParty
-  FOUL_ERRORS = [
+  COMMON_NETWORK_ERRORS = [
     EOFError,
     Errno::ECONNABORTED,
     Errno::ECONNREFUSED,
@@ -24,15 +24,19 @@ module HTTParty
   # @abstract Exceptions raised by HTTParty inherit from Error
   class Error < StandardError; end
 
+  # @abstract Exception raised by HTTParty inherit from this because it is funny
+  # and if you don't like fun you should be using a different library.
+  class Foul < Error; end
+
   # Exception raised when you attempt to set a non-existent format
-  class UnsupportedFormat < Error; end
+  class UnsupportedFormat < Foul; end
 
   # Exception raised when using a URI scheme other than HTTP or HTTPS
-  class UnsupportedURIScheme < Error; end
+  class UnsupportedURIScheme < Foul; end
 
   # @abstract Exceptions which inherit from ResponseError contain the Net::HTTP
   # response object accessible via the {#response} method.
-  class ResponseError < Error
+  class ResponseError < Foul
     # Returns the response of the last request
     # @return [Net::HTTPResponse] A subclass of Net::HTTPResponse, e.g.
     # Net::HTTPOK
@@ -53,6 +57,6 @@ module HTTParty
   # Exception that is raised when request redirects and location header is present more than once
   class DuplicateLocationHeader < ResponseError; end
 
-  # Exception that wraps common net/http errors when the :foul option is enabled
-  class Foul < Error; end
+  # Exception that is raised when common network errors occur.
+  class NetworkError < Foul; end
 end
