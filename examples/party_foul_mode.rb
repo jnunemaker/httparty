@@ -17,7 +17,7 @@ class APIClient
   private
 
   def self.handle_network_error(error)
-    case error.original_error
+    case error.cause
     when Errno::ECONNREFUSED
       {
         error: :server_down,
@@ -85,6 +85,6 @@ begin
   HTTParty.get('https://api.example.com/users', foul: true)
 rescue HTTParty::Foul => e
   puts "Direct usage example:"
-  puts "Error type: #{e.original_error.class}"
+  puts "Error type: #{e.cause.class}"
   puts "Error message: #{e.message}"
 end
