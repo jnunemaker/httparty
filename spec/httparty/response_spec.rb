@@ -373,7 +373,7 @@ RSpec.describe HTTParty::Response do
     it "works" do
       inspect = @response.inspect
       expect(inspect).to include("HTTParty::Response:0x")
-      expect(inspect).to include("parsed_response={\"foo\"=>\"bar\"}")
+      expect(inspect).to match(/parsed_response=.*\{.*foo.*=>.*bar.*\}/)
       expect(inspect).to include("@response=#<Net::HTTPOK 200 OK readbody=false>")
       expect(inspect).to include("@headers={")
       expect(inspect).to include("last-modified")
