@@ -7,7 +7,7 @@ class APIClient
   def self.fetch_user(id)
     begin
       get("/users/#{id}", foul: true)
-    rescue HTTParty::Foul => e
+    rescue HTTParty::NetworkError => e
       handle_network_error(e)
     rescue HTTParty::ResponseError => e
       handle_api_error(e)
