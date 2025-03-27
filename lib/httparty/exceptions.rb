@@ -34,12 +34,5 @@ module HTTParty
   class DuplicateLocationHeader < ResponseError; end
 
   # Exception that wraps common net/http errors when the :foul option is enabled
-  class Foul < Error
-    attr_reader :original_error
-
-    def initialize(original_error)
-      @original_error = original_error
-      super("#{original_error.class}: #{original_error.message}")
-    end
-  end
+  class Foul < Error; end
 end
