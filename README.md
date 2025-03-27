@@ -44,24 +44,6 @@ end
 stack_exchange = StackExchange.new("stackoverflow", 1)
 puts stack_exchange.questions
 puts stack_exchange.users
-
-# Error Handling with :foul option
-# HTTParty provides a convenient way to handle common network errors using the :foul option
-begin
-  HTTParty.get('https://api.example.com/users', foul: true)
-rescue HTTParty::Foul => e
-  puts "Network error occurred: #{e.message}"
-  puts "Original error: #{e.original_error.class}"
-end
-
-# The :foul option wraps common network errors into HTTParty::Foul:
-# - Errno::ECONNREFUSED (Connection refused)
-# - Errno::ECONNRESET (Connection reset)
-# - Errno::EHOSTUNREACH (Host unreachable)
-# - EOFError (End of file error)
-# - Net::ReadTimeout (Read timeout)
-# - SocketError (DNS resolution errors)
-# - OpenSSL::SSL::SSLError (SSL certificate issues)
 ```
 
 See the [examples directory](http://github.com/jnunemaker/httparty/tree/main/examples) for even more goodies.
