@@ -173,8 +173,7 @@ module HTTParty
         result ||= handle_response(chunked_body, &block)
         result
       rescue *CommonErrors::NETWORK_ERRORS => e
-        raise e unless options[:foul]
-        raise HTTParty::Foul.new(e)
+        raise options[:foul] ? HTTParty::Foul.new("#{e.class}: #{e.message}") : e
       end
     end
 

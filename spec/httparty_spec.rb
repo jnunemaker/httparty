@@ -989,7 +989,7 @@ RSpec.describe HTTParty do
       expect do
         HTTParty.get(uri, foul: true)
       end.to raise_error(HTTParty::Foul) do |error|
-        expect(error.original_error).to be_a(Errno::ECONNREFUSED)
+        expect(error.cause).to be_a(Errno::ECONNREFUSED)
       end
     end
 
@@ -1013,13 +1013,13 @@ RSpec.describe HTTParty do
       ]
 
       network_errors.each do |error|
-        it "wraps #{error.class} with proper error information" do
+        it "wraps #{error.class} via cause" do
           stub_request(:get, uri).to_raise(error)
 
           expect do
             HTTParty.get(uri, foul: true)
           end.to raise_error(HTTParty::Foul) do |foul|
-            expect(foul.original_error).to be_a(error.class)
+            expect(foul.cause).to be_a(error.class)
             expect(foul.message).to include(error.message)
             expect(foul.message).to include(error.class.name)
           end
@@ -1052,11 +1052,11 @@ RSpec.describe HTTParty do
         stub_request(:get, uri).to_raise(error)
       end
 
-      it "provides access to original error information" do
+      it "provides access to original error via cause" do
         begin
           HTTParty.get(uri, foul: true)
         rescue HTTParty::Foul => e
-          expect(e.original_error).to eq(error)
+          expect(e.cause).to eq(error)
           expect(e.message).to include("ECONNREFUSED")
           expect(e.message).to include("connection refused")
         end
