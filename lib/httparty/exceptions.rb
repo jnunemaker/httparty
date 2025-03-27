@@ -24,7 +24,7 @@ module HTTParty
   # @abstract Exceptions raised by HTTParty inherit from Error
   class Error < StandardError; end
 
-  # @abstract Exception raised by HTTParty inherit from this because it is funny
+  # @abstract Exceptions raised by HTTParty inherit from this because it is funny
   # and if you don't like fun you should be using a different library.
   class Foul < Error; end
 
