@@ -993,6 +993,36 @@ RSpec.describe HTTParty do
       end
     end
 
+    it "works via inclusion of httparty when foul option is enabled" do
+      error = Errno::ECONNREFUSED.new("connection refused")
+      stub_request(:get, uri).to_raise(error)
+
+      klass = Class.new do
+        include HTTParty
+        foul true
+      end
+
+      expect do
+        klass.get(uri)
+      end.to raise_error(HTTParty::Foul) do |error|
+        expect(error.cause).to be_a(Errno::ECONNREFUSED)
+      end
+    end
+
+    it "skips via inclusion of httparty when foul option is disabled" do
+      error = Errno::ECONNREFUSED.new("connection refused")
+      stub_request(:get, uri).to_raise(error)
+
+      klass = Class.new do
+        include HTTParty
+        foul false
+      end
+
+      expect do
+        klass.get(uri)
+      end.to raise_error(Errno::ECONNREFUSED)
+    end
+
     it "does not wrap errors when foul option is disabled" do
       stub_request(:get, uri).to_raise(Errno::ECONNREFUSED)
 

@@ -62,6 +62,16 @@ module HTTParty
   # * :+ssl_ca_path+: see HTTParty::ClassMethods.ssl_ca_path.
 
   module ClassMethods
+    # Turns on or off the foul option.
+    #
+    #   class Foo
+    #     include HTTParty
+    #     foul true
+    #   end
+    def foul(bool)
+      default_options[:foul] = bool
+    end
+
     # Turns on logging
     #
     #   class Foo
