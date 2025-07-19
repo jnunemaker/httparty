@@ -12,6 +12,7 @@ Gem::Specification.new do |s|
   s.homepage    = "https://github.com/jnunemaker/httparty"
   s.summary     = 'Makes http fun! Also, makes consuming restful web services dead easy.'
   s.description = 'Makes http fun! Also, makes consuming restful web services dead easy.'
+  s.metadata["changelog_uri"] = 'https://github.com/jnunemaker/httparty/releases'
 
   s.required_ruby_version     = '>= 2.7.0'
 
