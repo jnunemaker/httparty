@@ -137,6 +137,19 @@ RSpec.describe HTTParty::Request::Body do
           it { is_expected.to eq multipart_params }
 
         end
+
+        context 'when file is binary data and params contain non-ascii characters' do
+          let(:file) { File.open('spec/fixtures/tiny.gif', 'rb') }
+          let(:params) do
+            {
+              user: "Jöhn Döé",
+              enabled: true,
+              avatar: file,
+            }
+          end
+
+          it { expect { subject }.not_to raise_error }
+        end
       end
     end
   end

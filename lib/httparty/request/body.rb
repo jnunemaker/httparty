@@ -83,6 +83,7 @@ module HTTParty
       def content_body(object)
         if file?(object)
           object = (file = object).read
+          object.force_encoding(Encoding::UTF_8) if object.respond_to?(:force_encoding)
           file.rewind if file.respond_to?(:rewind)
         end
 
