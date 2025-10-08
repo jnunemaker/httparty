@@ -228,6 +228,7 @@ module HTTParty
     def setup_raw_request
       if options[:headers].respond_to?(:to_hash)
         headers_hash = options[:headers].to_hash
+        headers_hash.delete('Authorization') if !send_authorization_header?
       else
         headers_hash = nil
       end
