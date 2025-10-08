@@ -42,20 +42,20 @@ module HTTParty
       def generate_multipart
         normalized_params = params.flat_map { |key, value| HashConversions.normalize_keys(key, value) }
 
-        multipart = normalized_params.inject(''.dup) do |memo, (key, value)|
-          memo << "--#{boundary}#{NEWLINE}"
-          memo << %(Content-Disposition: form-data; name="#{key}")
+        multipart = normalized_params.inject(''.b) do |memo, (key, value)|
+          memo << "--#{boundary}#{NEWLINE}".b
+          memo << %(Content-Disposition: form-data; name="#{key}").b
           # value.path is used to support ActionDispatch::Http::UploadedFile
           # https://github.com/jnunemaker/httparty/pull/585
-          memo << %(; filename="#{file_name(value).gsub(/["\r\n]/, MULTIPART_FORM_DATA_REPLACEMENT_TABLE)}") if file?(value)
-          memo << NEWLINE
-          memo << "Content-Type: #{content_type(value)}#{NEWLINE}" if file?(value)
-          memo << NEWLINE
+          memo << %(; filename="#{file_name(value).gsub(/["\r\n]/, MULTIPART_FORM_DATA_REPLACEMENT_TABLE)}").b if file?(value)
+          memo << NEWLINE.b
+          memo << "Content-Type: #{content_type(value)}#{NEWLINE}".b if file?(value)
+          memo << NEWLINE.b
           memo << content_body(value)
-          memo << NEWLINE
+          memo << NEWLINE.b
         end
 
-        multipart << "--#{boundary}--#{NEWLINE}"
+        multipart << "--#{boundary}--#{NEWLINE}".b
       end
 
       def has_file?(value)
@@ -83,11 +83,12 @@ module HTTParty
       def content_body(object)
         if file?(object)
           object = (file = object).read
-          object.force_encoding(Encoding::UTF_8) if object.respond_to?(:force_encoding)
+          object.force_encoding(Encoding::BINARY) if object.respond_to?(:force_encoding)
           file.rewind if file.respond_to?(:rewind)
+          object.to_s
+        else
+          object.to_s.b
         end
-
-        object.to_s
       end
 
       def content_type(object)
