@@ -40,7 +40,7 @@ RSpec.describe HTTParty::Request::Body do
         let(:expected_file_contents) { "GIF89a\u0001\u0000\u0001\u0000\u0000\xFF\u0000,\u0000\u0000\u0000\u0000\u0001\u0000\u0001\u0000\u0000\u0002\u0000;" }
         let(:expected_content_type) { 'image/gif' }
         let(:multipart_params) do
-          "--------------------------c772861a5109d5ef\r\n" \
+          ("--------------------------c772861a5109d5ef\r\n" \
           "Content-Disposition: form-data; name=\"user[avatar]\"; filename=\"#{expected_file_name}\"\r\n" \
           "Content-Type: #{expected_content_type}\r\n" \
           "\r\n" \
@@ -57,7 +57,7 @@ RSpec.describe HTTParty::Request::Body do
           "Content-Disposition: form-data; name=\"user[enabled]\"\r\n" \
           "\r\n" \
           "true\r\n" \
-          "--------------------------c772861a5109d5ef--\r\n"
+          "--------------------------c772861a5109d5ef--\r\n").b
         end
 
         it { is_expected.to eq multipart_params }
@@ -76,7 +76,7 @@ RSpec.describe HTTParty::Request::Body do
             }
           end
           let(:multipart_params) do
-            "--------------------------c772861a5109d5ef\r\n" \
+            ("--------------------------c772861a5109d5ef\r\n" \
             "Content-Disposition: form-data; name=\"user[first_name]\"\r\n" \
             "\r\n" \
             "John\r\n" \
@@ -88,7 +88,7 @@ RSpec.describe HTTParty::Request::Body do
             "Content-Disposition: form-data; name=\"user[enabled]\"\r\n" \
             "\r\n" \
             "true\r\n" \
-            "--------------------------c772861a5109d5ef--\r\n"
+            "--------------------------c772861a5109d5ef--\r\n").b
           end
 
           it { is_expected.to eq multipart_params }
@@ -122,7 +122,7 @@ RSpec.describe HTTParty::Request::Body do
             }
           end
           let(:multipart_params) do
-            "--------------------------c772861a5109d5ef\r\n" \
+            ("--------------------------c772861a5109d5ef\r\n" \
             "Content-Disposition: form-data; name=\"user[attachment_file]\"; filename=\"#{expected_file_name}\"\r\n" \
             "Content-Type: text/plain\r\n" \
             "\r\n" \
@@ -131,7 +131,7 @@ RSpec.describe HTTParty::Request::Body do
             "Content-Disposition: form-data; name=\"user[enabled]\"\r\n" \
             "\r\n" \
             "true\r\n" \
-            "--------------------------c772861a5109d5ef--\r\n"
+            "--------------------------c772861a5109d5ef--\r\n").b
           end
 
           it { is_expected.to eq multipart_params }
@@ -148,7 +148,24 @@ RSpec.describe HTTParty::Request::Body do
             }
           end
 
-          it { expect { subject }.not_to raise_error }
+          it 'does not raise encoding errors' do
+            expect { subject }.not_to raise_error
+          end
+
+          it 'produces valid binary multipart body' do
+            result = subject
+            expect(result.encoding).to eq(Encoding::BINARY)
+            expect(result).to include("Jöhn Döé".b)
+          end
+
+          it 'concatenates binary file data with UTF-8 text without corruption' do
+            result = subject
+            # Should contain both the UTF-8 user field and binary GIF data
+            expect(result).to include('Content-Disposition: form-data; name="user"'.b)
+            expect(result).to include("Jöhn Döé".b)
+            expect(result).to include('Content-Disposition: form-data; name="avatar"'.b)
+            expect(result).to include("GIF89a".b) # GIF file header
+          end
         end
       end
     end
