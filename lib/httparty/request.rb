@@ -242,11 +242,8 @@ module HTTParty
           force_multipart: options[:multipart]
         )
 
-        if body.multipart?
-          content_type = "multipart/form-data; boundary=#{body.boundary}"
-          @raw_request['Content-Type'] = content_type
-        end
         @raw_request.body = body.call
+        @raw_request['Content-Type'] ||= body.content_type
       end
 
       @raw_request.instance_variable_set(:@decode_content, decompress_content?)

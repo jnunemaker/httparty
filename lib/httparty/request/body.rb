@@ -16,7 +16,12 @@ module HTTParty
 
       def call
         if params.respond_to?(:to_hash)
-          multipart? ? generate_multipart : normalize_query(params)
+          if multipart?
+            @content_type = "multipart/form-data; boundary=#{boundary}"
+            generate_multipart
+          else
+            normalize_query_and_set_content_type(params)
+          end
         else
           params
         end
@@ -28,6 +33,13 @@ module HTTParty
 
       def multipart?
         params.respond_to?(:to_hash) && (force_multipart || has_file?(params))
+      end
+
+      def content_type
+        return @content_type if defined?(@content_type)
+        return "multipart/form-data; boundary=#{boundary}" if multipart?
+
+        "application/x-www-form-urlencoded"
       end
 
       private
@@ -54,7 +66,8 @@ module HTTParty
           memo << content_body(value)
           memo << NEWLINE.b
         end
-
+        
+        @content_type = "multipart/form-data; boundary=#{boundary}"
         multipart << "--#{boundary}--#{NEWLINE}".b
       end
 
@@ -72,10 +85,12 @@ module HTTParty
         object.respond_to?(:path) && object.respond_to?(:read)
       end
 
-      def normalize_query(query)
+      def normalize_query_and_set_content_type(query)
         if query_string_normalizer
-          query_string_normalizer.call(query)
+          query, @content_type = query_string_normalizer.call(query)
+          query
         else
+          @content_type = 'application/x-www-form-urlencoded'
           HashConversions.to_params(query)
         end
       end
@@ -91,8 +106,9 @@ module HTTParty
         end
       end
 
-      def content_type(object)
+      def object_content_type(object)
         return object.content_type if object.respond_to?(:content_type)
+        
         require 'mini_mime'
         mime = MiniMime.lookup_by_filename(object.path)
         mime ? mime.content_type : 'application/octet-stream'
