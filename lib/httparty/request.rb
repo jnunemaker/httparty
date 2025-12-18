@@ -245,6 +245,8 @@ module HTTParty
         if body.multipart?
           content_type = "multipart/form-data; boundary=#{body.boundary}"
           @raw_request['Content-Type'] = content_type
+        elsif options[:body].respond_to?(:to_hash) && !@raw_request['Content-Type']
+          @raw_request['Content-Type'] = 'application/x-www-form-urlencoded'
         end
         @raw_request.body = body.call
       end
