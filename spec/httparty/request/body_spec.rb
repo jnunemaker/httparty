@@ -226,4 +226,70 @@ RSpec.describe HTTParty::Request::Body do
       end
     end
   end
+
+  describe '#streaming?' do
+    let(:file) { File.open('spec/fixtures/tiny.gif') }
+
+    after { file.close }
+
+    context 'when params contains a file' do
+      let(:params) { { avatar: file } }
+      subject { described_class.new(params) }
+
+      it { expect(subject.streaming?).to be true }
+    end
+
+    context 'when force_multipart but no file' do
+      let(:params) { { name: 'John' } }
+      subject { described_class.new(params, force_multipart: true) }
+
+      it { expect(subject.streaming?).to be false }
+    end
+
+    context 'when params is a string' do
+      let(:params) { 'name=John' }
+      subject { described_class.new(params) }
+
+      it { expect(subject.streaming?).to be false }
+    end
+  end
+
+  describe '#to_stream' do
+    let(:file) { File.open('spec/fixtures/tiny.gif', 'rb') }
+
+    after { file.close }
+
+    context 'when streaming is possible' do
+      let(:params) { { avatar: file } }
+      subject { described_class.new(params) }
+
+      it 'returns a StreamingMultipartBody' do
+        expect(subject.to_stream).to be_a(HTTParty::Request::StreamingMultipartBody)
+      end
+
+      it 'produces equivalent content to call' do
+        allow(HTTParty::Request::MultipartBoundary).to receive(:generate).and_return('test-boundary')
+
+        stream = subject.to_stream
+        file.rewind
+        streamed_content = stream.read
+
+        file.rewind
+        body = described_class.new(params)
+        allow(HTTParty::Request::MultipartBoundary).to receive(:generate).and_return('test-boundary')
+        regular_content = body.call
+
+        expect(streamed_content).to eq(regular_content)
+      end
+    end
+
+    context 'when streaming is not possible' do
+      let(:params) { { name: 'John' } }
+      subject { described_class.new(params, force_multipart: true) }
+
+      it 'returns nil' do
+        expect(subject.to_stream).to be_nil
+      end
+    end
+  end
 end
