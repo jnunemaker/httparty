@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'multipart_boundary'
+require_relative 'streaming_multipart_body'
 
 module HTTParty
   class Request
@@ -28,6 +29,22 @@ module HTTParty
 
       def multipart?
         params.respond_to?(:to_hash) && (force_multipart || has_file?(params))
+      end
+
+      def streaming?
+        multipart? && has_file?(params)
+      end
+
+      def to_stream
+        return nil unless streaming?
+        StreamingMultipartBody.new(prepared_parts, boundary)
+      end
+
+      def prepared_parts
+        normalized_params = params.flat_map { |key, value| HashConversions.normalize_keys(key, value) }
+        normalized_params.map do |key, value|
+          [key, value, file?(value)]
+        end
       end
 
       private

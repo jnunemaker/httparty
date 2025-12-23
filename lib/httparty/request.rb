@@ -248,7 +248,14 @@ module HTTParty
         elsif options[:body].respond_to?(:to_hash) && !@raw_request['Content-Type']
           @raw_request['Content-Type'] = 'application/x-www-form-urlencoded'
         end
-        @raw_request.body = body.call
+
+        if body.streaming? && options[:stream_body] != false
+          stream = body.to_stream
+          @raw_request.body_stream = stream
+          @raw_request['Content-Length'] = stream.size.to_s
+        else
+          @raw_request.body = body.call
+        end
       end
 
       @raw_request.instance_variable_set(:@decode_content, decompress_content?)
