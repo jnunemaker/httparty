@@ -378,6 +378,29 @@ RSpec.describe HTTParty::Request do
         end
       end
     end
+
+    context "when body is a Hash" do
+      subject(:headers) do
+        @request.send(:setup_raw_request)
+        headers = @request.instance_variable_get(:@raw_request).each_header.to_a
+        Hash[*headers.flatten]
+      end
+
+      it "sets header Content-Type: application/x-www-form-urlencoded" do
+        @request.options[:body] = { foo: 'bar' }
+
+        expect(headers['content-type']).to eq('application/x-www-form-urlencoded')
+      end
+
+      context "and header Content-Type is provided" do
+        it "does not overwrite the provided Content-Type" do
+          @request.options[:body] = { foo: 'bar' }
+          @request.options[:headers] = { 'Content-Type' => 'application/json' }
+
+          expect(headers['content-type']).to eq('application/json')
+        end
+      end
+    end
   end
 
   describe 'http' do
