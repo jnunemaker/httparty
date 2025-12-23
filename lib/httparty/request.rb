@@ -113,6 +113,8 @@ module HTTParty
         new_uri = path.clone
       end
 
+      validate_uri_safety!(new_uri) unless redirect
+
       # avoid double query string on redirects [#12]
       unless redirect
         new_uri.query = query_string(new_uri)
@@ -441,6 +443,24 @@ module HTTParty
         content_type: content_type,
         assume_utf16_is_big_endian: assume_utf16_is_big_endian
       ).call
+    end
+
+    def validate_uri_safety!(new_uri)
+      return if options[:skip_uri_validation]
+
+      configured_base_uri = options[:base_uri]
+      return unless configured_base_uri
+
+      normalized_base = options[:uri_adapter].parse(
+        HTTParty.normalize_base_uri(configured_base_uri)
+      )
+
+      return if new_uri.host == normalized_base.host
+
+      raise UnsafeURIError,
+        "Requested URI '#{new_uri}' has host '#{new_uri.host}' but the " \
+        "configured base_uri '#{normalized_base}' has host '#{normalized_base.host}'. " \
+        "This request could send credentials to an unintended server."
     end
   end
 end

@@ -59,4 +59,8 @@ module HTTParty
 
   # Exception that is raised when common network errors occur.
   class NetworkError < Foul; end
+
+  # Exception that is raised when an absolute URI is used that doesn't match
+  # the configured base_uri, which could indicate an SSRF attempt.
+  class UnsafeURIError < Foul; end
 end

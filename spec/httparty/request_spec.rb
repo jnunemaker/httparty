@@ -384,6 +384,74 @@ RSpec.describe HTTParty::Request do
         end
       end
     end
+
+    context "URI safety validation" do
+      context "when base_uri is configured" do
+        it "raises UnsafeURIError when path is an absolute URL with different host" do
+          request = HTTParty::Request.new(
+            Net::HTTP::Get,
+            'http://evil.com/steal-data',
+            base_uri: 'http://trusted.com'
+          )
+          expect { request.uri }.to raise_error(
+            HTTParty::UnsafeURIError,
+            /has host 'evil.com' but the configured base_uri .* has host 'trusted.com'/
+          )
+        end
+
+        it "allows requests when path host matches base_uri host" do
+          request = HTTParty::Request.new(
+            Net::HTTP::Get,
+            'http://trusted.com/api/data',
+            base_uri: 'http://trusted.com'
+          )
+          expect { request.uri }.not_to raise_error
+          expect(request.uri.host).to eq('trusted.com')
+        end
+
+        it "allows relative paths" do
+          request = HTTParty::Request.new(
+            Net::HTTP::Get,
+            '/api/data',
+            base_uri: 'http://trusted.com'
+          )
+          expect { request.uri }.not_to raise_error
+          expect(request.uri.to_s).to eq('http://trusted.com/api/data')
+        end
+
+        it "raises UnsafeURIError for network-relative URLs with different host" do
+          @request.last_uri = URI.parse("https://trusted.com")
+          @request.path = URI.parse("//evil.com/steal")
+          @request.redirect = true
+          @request.options[:base_uri] = 'http://trusted.com'
+
+          # During redirects, URI safety is not checked to allow legitimate redirects
+          expect { @request.uri }.not_to raise_error
+        end
+
+        it "can be bypassed with skip_uri_validation option" do
+          request = HTTParty::Request.new(
+            Net::HTTP::Get,
+            'http://other.com/api/data',
+            base_uri: 'http://trusted.com',
+            skip_uri_validation: true
+          )
+          expect { request.uri }.not_to raise_error
+          expect(request.uri.host).to eq('other.com')
+        end
+      end
+
+      context "when base_uri is not configured" do
+        it "allows absolute URLs" do
+          request = HTTParty::Request.new(
+            Net::HTTP::Get,
+            'http://any-server.com/api/data'
+          )
+          expect { request.uri }.not_to raise_error
+          expect(request.uri.host).to eq('any-server.com')
+        end
+      end
+    end
   end
 
   describe "#setup_raw_request" do
