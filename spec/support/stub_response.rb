@@ -29,7 +29,9 @@ module HTTParty
 
     def stub_response(body, code = '200')
       code = code.to_s
-      @request.options[:base_uri] ||= 'http://localhost'
+      # Only set default base_uri if path is relative (has no host)
+      # This avoids triggering URI safety validation for absolute URLs in tests
+      @request.options[:base_uri] ||= 'http://localhost' if @request.path.relative?
       unless defined?(@http) && @http
         @http = Net::HTTP.new('localhost', 80)
         allow(@request).to receive(:http).and_return(@http)
