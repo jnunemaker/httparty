@@ -135,6 +135,8 @@ module HTTParty
           header << %(; filename="#{file_name(value).gsub(/["\r\n]/, replacement_table)}").b
           header << NEWLINE.b
           header << "Content-Type: #{content_type(value)}#{NEWLINE}".b
+        else
+          header << NEWLINE.b
         end
         header << NEWLINE.b
         header
