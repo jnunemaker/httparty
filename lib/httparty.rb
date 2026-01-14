@@ -41,7 +41,7 @@ module HTTParty
   # [:+local_host+:] Local address to bind to before connecting.
   # [:+local_port+:] Local port to bind to before connecting.
   # [:+body_stream+:] Allow streaming to a REST server to specify a body_stream.
-  # [:+stream_body+:] Allow for streaming large files without loading them into memory.
+  # [:+stream_body+:] When downloading with a block, avoids accumulating the response in memory. When uploading files, streams the request body to reduce memory usage (opt-in).
   # [:+multipart+:] Force content-type to be multipart
   #
   # There are also another set of options with names corresponding to various class methods. The methods in question are those that let you set a class-wide default, and the options override the defaults on a request-by-request basis. Those options are:

@@ -251,7 +251,7 @@ module HTTParty
           @raw_request['Content-Type'] = 'application/x-www-form-urlencoded'
         end
 
-        if body.streaming? && options[:stream_body] != false
+        if body.streaming? && options[:stream_body] == true
           stream = body.to_stream
           @raw_request.body_stream = stream
           @raw_request['Content-Length'] = stream.size.to_s

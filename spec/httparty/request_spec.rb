@@ -249,8 +249,18 @@ RSpec.describe HTTParty::Request do
       let(:file) { File.open('spec/fixtures/tiny.gif', 'rb') }
       after { file.close }
 
-      it 'should use body_stream for streaming multipart uploads by default' do
+      it 'should use non-streaming body by default for backwards compatibility' do
         request = HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', body: { avatar: file })
+        request.send(:setup_raw_request)
+        raw_request = request.instance_variable_get(:@raw_request)
+
+        expect(raw_request.body_stream).to be_nil
+        expect(raw_request.body).not_to be_nil
+        expect(raw_request.body).to be_a(String)
+      end
+
+      it 'should use body_stream when stream_body is true' do
+        request = HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', body: { avatar: file }, stream_body: true)
         request.send(:setup_raw_request)
         raw_request = request.instance_variable_get(:@raw_request)
 
@@ -260,7 +270,7 @@ RSpec.describe HTTParty::Request do
       end
 
       it 'should set correct Content-Length header from stream size' do
-        request = HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', body: { avatar: file })
+        request = HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', body: { avatar: file }, stream_body: true)
         request.send(:setup_raw_request)
         raw_request = request.instance_variable_get(:@raw_request)
 
@@ -268,28 +278,18 @@ RSpec.describe HTTParty::Request do
         expect(raw_request['Content-Length'].to_i).to eq(stream.size)
       end
 
-      it 'should fall back to non-streaming when stream_body is false' do
-        request = HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', body: { avatar: file }, stream_body: false)
-        request.send(:setup_raw_request)
-        raw_request = request.instance_variable_get(:@raw_request)
-
-        expect(raw_request.body_stream).to be_nil
-        expect(raw_request.body).not_to be_nil
-        expect(raw_request.body).to be_a(String)
-      end
-
       it 'streaming body produces same content as non-streaming' do
         allow(HTTParty::Request::MultipartBoundary).to receive(:generate).and_return('test-boundary-123')
 
         # Get streaming content
-        request1 = HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', body: { avatar: file, first_name: "John" })
+        request1 = HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', body: { avatar: file, first_name: "John" }, stream_body: true)
         request1.send(:setup_raw_request)
         streaming_content = request1.instance_variable_get(:@raw_request).body_stream.read
 
         file.rewind
 
         # Get non-streaming content
-        request2 = HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', body: { avatar: file, first_name: "John" }, stream_body: false)
+        request2 = HTTParty::Request.new(Net::HTTP::Post, 'http://api.foo.com/v1', body: { avatar: file, first_name: "John" })
         request2.send(:setup_raw_request)
         non_streaming_content = request2.instance_variable_get(:@raw_request).body
 

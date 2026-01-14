@@ -4,6 +4,7 @@ Makes http fun again!
 
 ## Table of contents
 - [Parsing JSON](#parsing-json)
+- [File Uploads (Multipart)](#file-uploads-multipart)
 - [Working with SSL](#working-with-ssl)
 
 ## Parsing JSON
@@ -27,6 +28,35 @@ HTTParty.post('http://example.com', body: JSON.generate({ foo: 'bar' }), headers
 # Using object.to_json
 HTTParty.post('http://example.com', body: { foo: 'bar' }.to_json, headers: { 'Content-Type' => 'application/json' })
 ```
+
+## File Uploads (Multipart)
+
+When you include a `File` object in the body, HTTParty automatically uses `multipart/form-data` encoding:
+
+```ruby
+HTTParty.post('http://example.com/upload',
+  body: {
+    name: 'Foo Bar',
+    avatar: File.open('/path/to/avatar.jpg')
+  }
+)
+```
+
+### Streaming Uploads for Large Files
+
+For large file uploads, you can enable streaming mode to reduce memory usage. Instead of loading the entire file into memory, HTTParty will stream the file in chunks:
+
+```ruby
+HTTParty.post('http://example.com/upload',
+  body: {
+    name: 'Foo Bar',
+    avatar: File.open('/path/to/large_file.zip')
+  },
+  stream_body: true
+)
+```
+
+**Note:** Some servers may not handle streaming uploads correctly. If you encounter issues (e.g., 400 errors), try without the `stream_body` option.
 
 ## Working with SSL
 

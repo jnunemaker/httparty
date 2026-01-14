@@ -78,6 +78,7 @@
 
 * [Multipart](multipart.rb)
   * Multipart data upload _(with and without file)_
+  * Streaming uploads for large files with `stream_body: true`
 
 * [Uploading File](body_stream.rb)
   * Uses `body_stream` to upload file
