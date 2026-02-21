@@ -661,6 +661,33 @@ RSpec.describe HTTParty::ConnectionAdapter do
           it { expect(subject.port).to be 443 }
         end
       end
+
+      context "when providing verify_callback" do
+        let(:verify_callback) { double("verify_callback") }
+        let(:options) { {verify_callback: verify_callback} }
+
+        context "when scheme is https" do
+          let(:uri) { URI 'https://google.com' }
+
+          it "uses the provided verify_callback" do
+            expect(subject.verify_callback).to be verify_callback
+          end
+        end
+
+        context "when scheme is not https" do
+          let(:uri) { URI 'http://google.com' }
+          let(:http) { Net::HTTP.new(uri) }
+
+          before do
+            allow(Net::HTTP).to receive_messages(new: http)
+            expect(http).not_to receive(:verify_callback=)
+          end
+
+          it "has no verify_callback " do
+            expect(subject.verify_callback).to be_nil
+          end
+        end
+      end
     end
   end
 end
