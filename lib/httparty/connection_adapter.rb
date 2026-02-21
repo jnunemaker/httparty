@@ -231,6 +231,12 @@ module HTTParty
         if options[:ssl_version] && http.respond_to?(:ssl_version=)
           http.ssl_version = options[:ssl_version]
         end
+
+        # Include full certificate chain
+        # Only Ruby 3.0+
+        if options[:extra_chain_cert] && options[:p12] && http.respond_to?(:extra_chain_cert=)
+          http.extra_chain_cert = [p12.certificate] + p12.ca_certs
+        end
       end
     end
   end
