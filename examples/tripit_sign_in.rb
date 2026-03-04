@@ -9,7 +9,7 @@ class TripIt
   def initialize(email, password)
     @email = email
     get_response = self.class.get('/account/login')
-    get_response_cookie = parse_cookie(get_response.headers['Set-Cookie'])
+    get_response_cookie = parse_cookie(get_response)
 
     post_response = self.class.post(
       '/account/login',
@@ -20,7 +20,7 @@ class TripIt
       headers: {'Cookie' => get_response_cookie.to_cookie_string }
     )
 
-    @cookie = parse_cookie(post_response.headers['Set-Cookie'])
+    @cookie = parse_cookie(post_response)
   end
 
   def account_settings
