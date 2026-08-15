@@ -504,6 +504,181 @@ RSpec.describe HTTParty do
     end
   end
 
+  describe "transport" do
+    let(:transport_instances) do
+      [double('first transport instance', close: nil), double('second transport instance', close: nil)]
+    end
+    let(:transport_instance) { transport_instances.first }
+    let(:transport_class) do
+      Class.new.tap do |transport|
+        allow(transport).to receive(:new).and_return(*transport_instances)
+      end
+    end
+
+    it "uses the Net::HTTP transport by default" do
+      expect(@klass.transport).to eq(HTTParty::Transport::NetHttp)
+    end
+
+    it "stores a custom transport and its options" do
+      @klass.transport transport_class, pool_size: 4
+
+      expect(@klass.transport).to eq(transport_class)
+      expect(@klass.default_options[:transport_options]).to eq(pool_size: 4)
+    end
+
+    it "resolves registered transport names" do
+      HTTParty::Transport.register(:custom, transport_class)
+
+      @klass.transport :custom
+
+      expect(@klass.transport).to eq(transport_class)
+    end
+
+    it "reuses one transport instance for requests owned by the class" do
+      @klass.transport transport_class, pool_size: 4
+
+      first = @klass.send(:build_request, Net::HTTP::Get, "http://example.com")
+      second = @klass.send(:build_request, Net::HTTP::Get, "http://example.com")
+
+      expect(transport_class).to have_received(:new).once.with(pool_size: 4)
+      expect(first.options[:transport_instance]).to equal(second.options[:transport_instance])
+    end
+
+    it "keeps inherited transport instances independent" do
+      @klass.transport transport_class
+      @klass.send(:build_request, Net::HTTP::Get, "http://example.com")
+      subclass = Class.new(@klass)
+
+      request = subclass.send(:build_request, Net::HTTP::Get, "http://example.com")
+
+      expect(transport_class).to have_received(:new).twice
+      expect(request.options[:transport_instance]).not_to(
+        equal(@klass.instance_variable_get(:@transport_instance))
+      )
+    end
+
+    it "closes the class-owned transport" do
+      @klass.transport transport_class
+      @klass.send(:build_request, Net::HTTP::Get, "http://example.com")
+
+      @klass.close
+
+      expect(transport_instance).to have_received(:close)
+      expect(@klass.instance_variable_get(:@transport_instance)).to be_nil
+    end
+
+    it "closes a request-owned transport when validation fails" do
+      request = @klass.send(
+        :build_request,
+        Net::HTTP::Post,
+        "http://example.com",
+        transport: transport_class,
+        query: "invalid"
+      )
+
+      expect { request.perform }.to raise_error(ArgumentError, ':query must be hash if using HTTP Post')
+      expect(transport_instance).to have_received(:close)
+    end
+  end
+
+  describe "persistent_connections" do
+    it "enables persistent connections with default options" do
+      @klass.persistent_connections
+
+      expect(@klass.default_options[:persistent_connections]).to eq({})
+    end
+
+    it "stores persistent connection options" do
+      options = {
+        pool_size: 4,
+        idle_timeout: 10,
+        max_requests: 100,
+        net_http_persistent_options: { reuse_ssl_sessions: false }
+      }
+
+      @klass.persistent_connections options
+
+      expect(@klass.default_options[:persistent_connections]).to eq(options)
+    end
+
+    it "can disable inherited persistent connections" do
+      @klass.persistent_connections false
+
+      expect(@klass.default_options[:persistent_connections]).to be(false)
+    end
+
+    it "rejects invalid options" do
+      expect do
+        @klass.persistent_connections(:invalid)
+      end.to raise_error(ArgumentError, "persistent_connections must be false or a hash")
+    end
+
+    it "validates options when configured" do
+      expect do
+        @klass.persistent_connections(pool_size: 0)
+      end.to raise_error(ArgumentError, "pool_size must be a positive integer")
+    end
+
+    it "merges request options with class defaults" do
+      @klass.persistent_connections(
+        pool_size: 4,
+        idle_timeout: 10,
+        net_http_persistent_options: { reuse_ssl_sessions: true }
+      )
+
+      request = @klass.send(
+        :build_request,
+        Net::HTTP::Get,
+        "http://example.com",
+        persistent_connections: {
+          idle_timeout: 20,
+          net_http_persistent_options: { ignore_eof: true }
+        }
+      )
+
+      expect(request.options[:persistent_connections]).to eq(
+        pool_size: 4,
+        idle_timeout: 20,
+        net_http_persistent_options: {
+          reuse_ssl_sessions: true,
+          ignore_eof: true
+        }
+      )
+    end
+
+    it "shuts down connections owned by the class" do
+      @klass.persistent_connections
+      registry = @klass.instance_variable_get(:@persistent_connection_registry)
+
+      expect(registry).to receive(:shutdown)
+
+      @klass.shutdown_persistent_connections
+    end
+
+    it "keeps inherited connection registries independent" do
+      @klass.persistent_connections
+      subclass = Class.new(@klass)
+      subclass.send(:build_request, Net::HTTP::Get, "http://example.com")
+
+      expect(subclass.instance_variable_get(:@persistent_connection_registry)).not_to(
+        equal(@klass.instance_variable_get(:@persistent_connection_registry))
+      )
+    end
+
+    it "shuts down connections owned by module-level requests" do
+      request = HTTParty.build_request(
+        Net::HTTP::Get,
+        "http://example.com",
+        persistent_connections: {}
+      )
+      registry = request.options[:persistent_connection_registry]
+
+      expect(registry).to receive(:shutdown)
+
+      HTTParty.shutdown_persistent_connections
+    end
+  end
+
   describe "format" do
     it "should allow xml" do
       @klass.format :xml

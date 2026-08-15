@@ -9,6 +9,8 @@ require 'httparty/cookie_hash'
 require 'httparty/net_digest_auth'
 require 'httparty/version'
 require 'httparty/connection_adapter'
+require 'httparty/exceptions'
+require 'httparty/transport'
 require 'httparty/logger/logger'
 require 'httparty/request/body'
 require 'httparty/response_fragment'
@@ -515,6 +517,65 @@ module HTTParty
       end
     end
 
+    # Selects the transport responsible for performing HTTP requests.
+    # Net::HTTP remains the default transport and continues to use the
+    # configured connection_adapter.
+    def transport(custom_transport = nil, options = nil)
+      if custom_transport.nil?
+        default_options[:transport] || Transport::NetHttp
+      else
+        resolved_transport = Transport.resolve(custom_transport)
+        unless resolved_transport.respond_to?(:new)
+          raise ArgumentError, 'transport must be a registered name or respond to .new'
+        end
+
+        close_transport
+        default_options[:transport] = resolved_transport
+        default_options[:transport_options] = options || {}
+      end
+    end
+
+    # Closes resources owned by this HTTParty class's transport.
+    def close
+      close_transport
+      shutdown_persistent_connections
+    end
+
+    # Reuses HTTP connections across requests. Persistent connections are
+    # opt-in and use net-http-persistent under the hood.
+    #
+    # @example enable persistent connections
+    #   class Foo
+    #     include HTTParty
+    #     persistent_connections pool_size: 4, idle_timeout: 10
+    #   end
+    #
+    # Pass false to disable persistent connections inherited from a parent
+    # class. Options may also be overridden for an individual request.
+    def persistent_connections(options = {})
+      unless options == false || options.is_a?(Hash)
+        raise ArgumentError, "persistent_connections must be false or a hash"
+      end
+
+      if options.is_a?(Hash)
+        require 'httparty/persistent_connection_adapter'
+        PersistentConnectionAdapter::Profile.new(persistent_connections: options)
+        persistent_connection_registry
+      end
+
+      default_options[:persistent_connections] = if options.is_a?(Hash)
+                                                   ModuleInheritableAttributes.hash_deep_dup(options)
+                                                 else
+                                                   options
+                                                 end
+    end
+
+    # Closes every persistent connection owned by this HTTParty class.
+    # Only call this after all concurrent requests have finished.
+    def shutdown_persistent_connections
+      @persistent_connection_registry&.shutdown
+    end
+
     # Allows making a get request to a url.
     #
     #   class Foo
@@ -597,7 +658,19 @@ module HTTParty
     end
 
     def build_request(http_method, path, options = {})
-      options = ModuleInheritableAttributes.hash_deep_dup(default_options).merge(options)
+      request_transport_override = options.key?(:transport) || options.key?(:transport_options)
+      defaults = ModuleInheritableAttributes.hash_deep_dup(default_options)
+      options = merge_persistent_connection_options(defaults, options)
+      if options[:persistent_connections]
+        options[:persistent_connection_registry] = persistent_connection_registry
+      end
+      options[:transport] ||= Transport::NetHttp
+      options[:transport_instance] ||= if request_transport_override
+                                         build_transport(options)
+                                       else
+                                         transport_instance(options)
+                                       end
+      options[:close_transport_after_request] = true if request_transport_override
       HeadersProcessor.new(headers, options).call
       process_cookies(options)
       Request.new(http_method, path, options)
@@ -606,6 +679,44 @@ module HTTParty
     attr_reader :default_options
 
     private
+
+    def build_transport(options)
+      transport_class = Transport.resolve(options[:transport] || Transport::NetHttp)
+      transport_class.new(options[:transport_options] || {})
+    end
+
+    def transport_instance(options)
+      @transport_instance ||= build_transport(options)
+    end
+
+    def close_transport
+      @transport_instance&.close
+      @transport_instance = nil
+    end
+
+    def persistent_connection_registry
+      require 'httparty/persistent_connection_adapter'
+      @persistent_connection_registry ||= PersistentConnectionAdapter::Registry.new
+    end
+
+    def merge_persistent_connection_options(defaults, request_options)
+      persistent_defaults = defaults[:persistent_connections]
+      persistent_overrides = request_options[:persistent_connections]
+
+      if persistent_defaults.is_a?(Hash) && persistent_overrides.is_a?(Hash)
+        persistent_options = persistent_defaults.merge(persistent_overrides)
+        raw_defaults = persistent_defaults[:net_http_persistent_options]
+        raw_overrides = persistent_overrides[:net_http_persistent_options]
+
+        if raw_defaults.is_a?(Hash) && raw_overrides.is_a?(Hash)
+          persistent_options[:net_http_persistent_options] = raw_defaults.merge(raw_overrides)
+        end
+
+        request_options = request_options.merge(persistent_connections: persistent_options)
+      end
+
+      defaults.merge(request_options)
+    end
 
     def validate_timeout_argument(timeout_type, value)
       raise ArgumentError, "#{ timeout_type } must be an integer or float" unless value && (value.is_a?(Integer) || value.is_a?(Float))
@@ -689,11 +800,18 @@ module HTTParty
   def self.build_request(*args, &block)
     Basement.build_request(*args, &block)
   end
+
+  def self.shutdown_persistent_connections
+    Basement.shutdown_persistent_connections
+  end
+
+  def self.close
+    Basement.close
+  end
 end
 
 require 'httparty/hash_conversions'
 require 'httparty/utils'
-require 'httparty/exceptions'
 require 'httparty/parser'
 require 'httparty/request'
 require 'httparty/response'

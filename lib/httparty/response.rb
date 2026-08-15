@@ -62,7 +62,11 @@ module HTTParty
       name = "#{underscore(name)}?".to_sym
 
       define_method(name) do
-        klass === response
+        if response.is_a?(Net::HTTPResponse)
+          klass === response
+        else
+          response_code.length == 1 ? code.to_s.start_with?(response_code) : code.to_s == response_code
+        end
       end
     end
 
@@ -82,12 +86,12 @@ module HTTParty
 
     def nil?
       warn_about_nil_deprecation
-      response.nil? || response.body.nil? || response.body.empty?
+      response.nil? || body.nil? || body.empty?
     end
 
     def to_s
-      if !response.nil? && !response.body.nil? && response.body.respond_to?(:to_s)
-        response.body.to_s
+      if !response.nil? && !body.nil? && body.respond_to?(:to_s)
+        body.to_s
       else
         inspect
       end
@@ -104,8 +108,8 @@ module HTTParty
     def display(port=$>)
       if !parsed_response.nil? && parsed_response.respond_to?(:display)
         parsed_response.display(port)
-      elsif !response.nil? && !response.body.nil? && response.body.respond_to?(:display)
-        response.body.display(port)
+      elsif !response.nil? && !body.nil? && body.respond_to?(:display)
+        body.display(port)
       else
         port.write(inspect)
       end

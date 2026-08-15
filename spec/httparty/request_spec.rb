@@ -78,9 +78,33 @@ RSpec.describe HTTParty::Request do
       expect(request.connection_adapter).to eq(HTTParty::ConnectionAdapter)
     end
 
+    it "sets transport to HTTParty::Transport::NetHttp" do
+      request = HTTParty::Request.new(Net::HTTP::Get, 'http://google.com')
+
+      expect(request.options[:transport]).to eq(HTTParty::Transport::NetHttp)
+    end
+
     it "sets connection_adapter to the optional connection_adapter" do
       my_adapter = lambda {}
       request = HTTParty::Request.new(Net::HTTP::Get, 'http://google.com', connection_adapter: my_adapter)
+      expect(request.connection_adapter).to eq(my_adapter)
+    end
+
+    it "uses the persistent connection adapter when enabled" do
+      request = HTTParty::Request.new(Net::HTTP::Get, 'http://google.com', persistent_connections: {})
+
+      expect(request.connection_adapter).to eq(HTTParty::PersistentConnectionAdapter)
+    end
+
+    it "uses the configured connection adapter when persistent connections are disabled" do
+      my_adapter = lambda {}
+      request = HTTParty::Request.new(
+        Net::HTTP::Get,
+        'http://google.com',
+        connection_adapter: my_adapter,
+        persistent_connections: false
+      )
+
       expect(request.connection_adapter).to eq(my_adapter)
     end
 
@@ -523,13 +547,26 @@ RSpec.describe HTTParty::Request do
     end
   end
 
-  describe 'http' do
-    it "should get a connection from the connection_adapter" do
-      http = Net::HTTP.new('google.com')
-      adapter = double('adapter')
-      request = HTTParty::Request.new(Net::HTTP::Get, 'https://api.foo.com/v1:443', connection_adapter: adapter)
-      expect(adapter).to receive(:call).with(request.uri, request.options).and_return(http)
-      expect(request.send(:http)).to be http
+  describe 'transport' do
+    it 'performs the prepared request through the configured transport' do
+      transport_response = HTTParty::Transport::Response.new(
+        code: 200,
+        headers: { 'Content-Type' => 'text/plain' },
+        body: 'transport body'
+      )
+      transport = double('transport', perform: transport_response, close: nil)
+      request = HTTParty::Request.new(
+        Net::HTTP::Get,
+        'https://api.foo.com/v1',
+        transport_instance: transport,
+        format: :plain
+      )
+
+      response = request.perform
+
+      expect(transport).to have_received(:perform).with(an_instance_of(HTTParty::Transport::Request))
+      expect(response.body).to eq('transport body')
+      expect(response.code).to eq(200)
     end
   end
 
@@ -1698,6 +1735,17 @@ RSpec.describe HTTParty::Request do
       expect(marshalled.last_response.body).to eq "body"
       expect(marshalled.last_uri).to eq URI("http://api.foo.com/v1")
       expect(marshalled.instance_variable_get("@raw_request").path).to eq "/v1"
+    end
+
+    it "does not marshal a transient transport instance" do
+      transport = Object.new
+      transport.instance_variable_set(:@unmarshalable, proc {})
+      @request.options[:transport_instance] = transport
+      @request.options[:close_transport_after_request] = true
+
+      marshalled = Marshal.load(Marshal.dump(@request))
+
+      expect(marshalled.options).not_to include(:transport_instance, :close_transport_after_request)
     end
   end
 end
