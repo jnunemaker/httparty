@@ -88,10 +88,10 @@ module HTTParty
     #
     #   class Foo
     #     include HTTParty
-    #     raise_on [404, 500, '5[0-9]*']
+    #     raise_on [404, 400..499, '5..']
     #   end
     def raise_on(codes = [])
-      default_options[:raise_on] = *codes
+      default_options[:raise_on] = codes.is_a?(Array) ? codes : [codes]
     end
 
     # Allows setting http proxy information to be used

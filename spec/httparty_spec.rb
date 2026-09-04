@@ -621,6 +621,20 @@ RSpec.describe HTTParty do
         expect(@klass.default_options[:raise_on]).to contain_exactly(404)
       end
     end
+
+    context 'when parameters is a range' do
+      it 'sets raise_on option without expanding the range' do
+        @klass.raise_on 400..499
+        expect(@klass.default_options[:raise_on]).to contain_exactly(400..499)
+      end
+    end
+
+    context 'when parameters is an array containing a range' do
+      it 'sets raise_on option without expanding the range' do
+        @klass.raise_on [404, 500...600]
+        expect(@klass.default_options[:raise_on]).to contain_exactly(404, 500...600)
+      end
+    end
   end
 
   describe "with explicit override of automatic redirect handling" do

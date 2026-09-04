@@ -97,6 +97,50 @@ RSpec.describe HTTParty::Response do
           end
         end
       end
+
+      context 'when raise_on is a range' do
+        let(:raise_on) { [400..499] }
+
+        context "and response's status code is in range" do
+          it 'throws exception' do
+            expect{ subject }.to raise_error(HTTParty::ResponseError, "Code 404 - #{body}")
+          end
+        end
+
+        context "and response's status code is not in range" do
+          let(:response) { Net::HTTPNotFound.new('1.1', 500, body) }
+
+          it 'does not throw exception' do
+            expect{ subject }.not_to raise_error
+          end
+        end
+
+        context "and the range is exclusive" do
+          let(:raise_on) { [400...404] }
+
+          it 'does not throw exception' do
+            expect{ subject }.not_to raise_error
+          end
+        end
+      end
+
+      context 'when raise_on is not wrapped in an array' do
+        context "and it is a number" do
+          let(:raise_on) { 404 }
+
+          it 'throws exception' do
+            expect{ subject }.to raise_error(HTTParty::ResponseError, "Code 404 - #{body}")
+          end
+        end
+
+        context "and it is a range" do
+          let(:raise_on) { 400..499 }
+
+          it 'throws exception' do
+            expect{ subject }.to raise_error(HTTParty::ResponseError, "Code 404 - #{body}")
+          end
+        end
+      end
     end
   end
 
