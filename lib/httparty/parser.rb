@@ -126,7 +126,11 @@ module HTTParty
 
     def json
       require 'json'
-      JSON.parse(body, :quirks_mode => true, :allow_nan => true)
+      if JSON::VERSION.to_i >= 3
+        JSON.parse(body, :allow_nan => true)
+      else
+        JSON.parse(body, :quirks_mode => true, :allow_nan => true)
+      end
     end
 
     def csv

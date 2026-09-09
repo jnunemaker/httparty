@@ -121,6 +121,16 @@ RSpec.describe HTTParty::Parser do
       parser = HTTParty::Parser.new('{"a":1}'.freeze, :json)
       expect(parser.parse).to eq("a" => 1)
     end
+
+    it "parses scalar JSON values" do
+      parser = HTTParty::Parser.new('true', :json)
+      expect(parser.parse).to be(true)
+    end
+
+    it "allows NaN in JSON" do
+      parser = HTTParty::Parser.new('NaN', :json)
+      expect(parser.parse).to be_nan
+    end
   end
 
   describe "#supports_format?" do
@@ -177,9 +187,20 @@ RSpec.describe HTTParty::Parser do
       subject.send(:xml)
     end
 
-    it "parses json with JSON" do
-      expect(JSON).to receive(:parse).with('body', :quirks_mode => true, :allow_nan => true)
-      subject.send(:json)
+    context "with JSON 3" do
+      it "parses json without quirks mode" do
+        stub_const('JSON::VERSION', '3.0.0')
+        expect(JSON).to receive(:parse).with('body', :allow_nan => true)
+        subject.send(:json)
+      end
+    end
+
+    context "with older JSON versions" do
+      it "parses json with quirks mode" do
+        stub_const('JSON::VERSION', '2.0.0')
+        expect(JSON).to receive(:parse).with('body', :quirks_mode => true, :allow_nan => true)
+        subject.send(:json)
+      end
     end
 
     it "parses html by simply returning the body" do
