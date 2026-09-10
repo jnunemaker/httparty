@@ -185,6 +185,17 @@ RSpec.describe HTTParty::Response do
     end
   end
 
+  it 'uses its normalized body for string conversion' do
+    response = HTTParty::Response.new(
+      @request_object,
+      @response_object,
+      @parsed_response,
+      body: 'normalized body'
+    )
+
+    expect(response.to_s).to eq('normalized body')
+  end
+
   it "allows headers to be accessed by mixed-case names in hash notation" do
     response = HTTParty::Response.new(@request_object, @response_object, @parsed_response)
     expect(response.headers['Content-LENGTH']).to eq(@content_length)
@@ -230,6 +241,19 @@ RSpec.describe HTTParty::Response do
     end
 
     context "major codes" do
+      it "works with transport-neutral responses" do
+        transport_response = HTTParty::Transport::Response.new(
+          code: 201,
+          headers: {},
+          body: ''
+        )
+        response = HTTParty::Response.new(@request_object, transport_response, '')
+
+        expect(response.success?).to be_truthy
+        expect(response.created?).to be_truthy
+        expect(response.redirection?).to be_falsey
+      end
+
       it "is information" do
         net_response = response_mock(Net::HTTPInformation)
         response = HTTParty::Response.new(@request_object, net_response, '')
