@@ -363,6 +363,11 @@ module HTTParty
       default_options[:p12_password] = password
     end
 
+    # Allow using a full certificate chain (http.extra_chain_cert)
+    def extra_chain_cert(value = false)
+      default_options[:extra_chain_cert] = value
+    end
+
     # Override the way query strings are normalized.
     # Helpful for overriding the default rails normalization of Array queries.
     #
