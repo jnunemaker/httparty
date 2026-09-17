@@ -1527,6 +1527,25 @@ RSpec.describe HTTParty::Request do
         end
       end
     end
+
+    context "when redirecting to a different host" do
+      before do
+        @redirect = stub_response("", 302)
+        @ok = stub_response('<hash><foo>bar</foo></hash>', 200)
+        @request.options[:headers] = {'Authorization' => 'Bearer xyz'}
+      end
+
+      before(:each) do
+        allow(@http).to receive(:request).and_return(@redirect, @ok)
+      end
+
+      it "should not send Authorization header" do
+        @redirect['location'] = 'http://example.com/v1'
+        @request.perform
+        @request.send(:setup_raw_request)
+        expect(@request.instance_variable_get(:@raw_request)['authorization']).to be_nil
+      end
+    end
   end
 
   context "with POST http method" do
