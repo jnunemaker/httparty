@@ -136,9 +136,9 @@ module HTTParty
       raise_on = @request.options[:raise_on]
       return if raise_on.nil?
 
-      raise_on = [raise_on] unless raise_on.is_a?(Array)
+      matchers = raise_on.is_a?(Range) ? [raise_on] : [*raise_on]
 
-      if raise_on.any? { |matcher| code_matches?(matcher) }
+      if matchers.any? { |matcher| code_matches?(matcher) }
         ::Kernel.raise ::HTTParty::ResponseError.new(@response), "Code #{code} - #{body}"
       end
     end
@@ -147,9 +147,10 @@ module HTTParty
 
     def code_matches?(matcher)
       case matcher
-      when Integer then matcher == code
-      when Range   then matcher.cover?(code)
-      else /#{matcher}/.match?(code.to_s)
+      when Range
+        matcher.cover?(code) || matcher.cover?(code.to_s)
+      else
+        /#{matcher}/.match?(code.to_s)
       end
     end
 

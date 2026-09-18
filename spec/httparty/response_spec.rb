@@ -78,6 +78,14 @@ RSpec.describe HTTParty::Response do
             expect{ subject }.not_to raise_error
           end
         end
+
+        context 'and the number partially matches the response status' do
+          let(:raise_on) { [40] }
+
+          it 'preserves the existing regular expression matching behavior' do
+            expect{ subject }.to raise_error(HTTParty::ResponseError, "Code 404 - #{body}")
+          end
+        end
       end
 
       context 'when raise_on is a regexpr' do
@@ -120,6 +128,14 @@ RSpec.describe HTTParty::Response do
 
           it 'does not throw exception' do
             expect{ subject }.not_to raise_error
+          end
+        end
+
+        context 'and the range has string endpoints' do
+          let(:raise_on) { ['400'..'499'] }
+
+          it 'preserves the existing string matching behavior' do
+            expect{ subject }.to raise_error(HTTParty::ResponseError, "Code 404 - #{body}")
           end
         end
       end
