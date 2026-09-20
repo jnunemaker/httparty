@@ -1,4 +1,5 @@
 require_relative 'spec_helper'
+require 'set'
 
 RSpec.describe HTTParty do
   before(:each) do
@@ -619,6 +620,27 @@ RSpec.describe HTTParty do
       it 'sets raise_on option' do
         @klass.raise_on 404
         expect(@klass.default_options[:raise_on]).to contain_exactly(404)
+      end
+    end
+
+    context 'when parameters is a range' do
+      it 'sets raise_on option without expanding the range' do
+        @klass.raise_on 400..499
+        expect(@klass.default_options[:raise_on]).to contain_exactly(400..499)
+      end
+    end
+
+    context 'when parameters is an array containing a range' do
+      it 'sets raise_on option without expanding the range' do
+        @klass.raise_on [404, 500...600]
+        expect(@klass.default_options[:raise_on]).to contain_exactly(404, 500...600)
+      end
+    end
+
+    context 'when parameters can be converted to an array' do
+      it 'preserves the existing conversion behavior' do
+        @klass.raise_on Set[404, 500]
+        expect(@klass.default_options[:raise_on]).to contain_exactly(404, 500)
       end
     end
   end
