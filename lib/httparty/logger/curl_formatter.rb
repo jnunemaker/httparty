@@ -41,7 +41,7 @@ module HTTParty
       def log_response
         log IN, "HTTP/#{response.http_version} #{response.code}"
         log_response_headers
-        log IN, "\n#{response.body}"
+        log IN, "\n#{encode_log(response.body)}"
         log IN
       end
 
@@ -86,16 +86,21 @@ module HTTParty
         messages << "[#{TAG_NAME}] [#{current_time}] #{direction} #{encode_log(line)}"
       end
 
-      # Logger lines are joined later, which raises if they mix encodings (a
-      # binary body next to a non-ASCII header). Binary is relabeled as UTF-8;
-      # other charsets are converted so their text survives.
+      # Logged values arrive in whatever encoding the request or response used.
+      # Mixing them with UTF-8 lines raises, which would fail the request just
+      # to write a log line. Binary and broken UTF-8 are relabeled and scrubbed
+      # so readable text survives; other charsets are converted.
       def encode_log(line)
         text = line.to_s
-        if text.encoding == Encoding::BINARY
+        return text if text.encoding == Encoding::UTF_8 && text.valid_encoding?
+
+        if text.encoding == Encoding::BINARY || text.encoding == Encoding::UTF_8
           text.dup.force_encoding(Encoding::UTF_8).scrub
         else
           text.encode(Encoding::UTF_8, invalid: :replace, undef: :replace)
         end
+      rescue Encoding::ConverterNotFoundError
+        text.dup.force_encoding(Encoding::UTF_8).scrub
       end
 
       def current_time
