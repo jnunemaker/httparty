@@ -134,6 +134,23 @@ RSpec.describe HTTParty::Parser do
       expect(parser.parse).to be_nil
     end
 
+    it "ignores utf-8 bom in ascii 8bit encoding for plain text" do
+      parser = HTTParty::Parser.new("\xEF\xBB\xBFhello".b, :plain)
+      expect(parser.parse).to eq("hello")
+    end
+
+    it "does not strip utf-8 bom bytes from ascii 8bit bodies in unsupported formats" do
+      body = "\xEF\xBB\xBF\x00\x01\x02\x03\x04".b
+      parser = HTTParty::Parser.new(body, nil)
+      expect(parser.parse).to eq(body)
+    end
+
+    it "does not strip a utf-8 bom from bodies declared in other encodings" do
+      body = "\xEF\xBB\xBFhello".force_encoding(Encoding::ISO_8859_1)
+      parser = HTTParty::Parser.new(body, :plain)
+      expect(parser.parse).to eq(body)
+    end
+
     it "does not strip a utf-8 bom from non ascii compatible encodings" do
       body = "\xEF\xBB\xBF".b.force_encoding(Encoding::UTF_16LE)
       parser = HTTParty::Parser.new(body, :plain)

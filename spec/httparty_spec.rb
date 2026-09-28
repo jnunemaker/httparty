@@ -932,6 +932,13 @@ RSpec.describe HTTParty do
       expect(HTTParty.get('http://example.com/bom.json').parsed_response).to eq({ "hi" => "yo" })
     end
 
+    it "should not strip utf-8 bom bytes from binary responses" do
+      body = "\xEF\xBB\xBF\x00\x01\x02\x03\x04".b
+      stub_request(:get, 'http://example.com/file.bin')
+        .to_return(body: body, headers: { 'Content-Type' => 'application/octet-stream' })
+      expect(HTTParty.get('http://example.com/file.bin').parsed_response).to eq(body)
+    end
+
     it "should be able parse response type xml automatically" do
       stub_http_response_with('twitter.xml')
       tweets = HTTParty.get('http://twitter.com/statuses/public_timeline.xml')
