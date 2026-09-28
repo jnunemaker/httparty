@@ -5,7 +5,7 @@ require "httparty"
 require 'webmock/rspec'
 
 def file_fixture(filename)
-  open(File.join(File.dirname(__FILE__), 'fixtures', "#{filename}")).read
+  File.binread(File.join(File.dirname(__FILE__), 'fixtures', filename))
 end
 
 Dir[File.expand_path(File.join(File.dirname(__FILE__), 'support', '**', '*.rb'))].each {|f| require f}
