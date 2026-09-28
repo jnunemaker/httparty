@@ -109,6 +109,16 @@ RSpec.describe HTTParty::Parser do
       expect(parser.parse).to eq({"hi"=>"yo"})
     end
 
+    it "returns nil for a body that is only a utf-8 bom" do
+      parser = HTTParty::Parser.new("\xEF\xBB\xBF", :json)
+      expect(parser.parse).to be_nil
+    end
+
+    it "returns nil for a body that is only a utf-8 bom followed by spaces" do
+      parser = HTTParty::Parser.new("\xEF\xBB\xBF  \n", :json)
+      expect(parser.parse).to be_nil
+    end
+
     it "parses ascii 8bit encoding" do
       parser = HTTParty::Parser.new(
         "{\"currency\":\"\xE2\x82\xAC\"}".force_encoding('ASCII-8BIT'),

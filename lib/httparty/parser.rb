@@ -103,11 +103,12 @@ module HTTParty
     # @return [nil] when the response body is nil, an empty string, spaces only or "null"
     def parse
       return nil if body.nil?
+      # The bom has to be removed before the blank body checks below, otherwise a
+      # body that is nothing but a bom is handed to the format parser as an
+      # empty string and blows up instead of being reported as nil.
+      @body = body.gsub(/\A#{UTF8_BOM}/, '') if body.valid_encoding? && body.encoding == Encoding::UTF_8
       return nil if body == 'null'
       return nil if body.valid_encoding? && body.strip.empty?
-      if body.valid_encoding? && body.encoding == Encoding::UTF_8
-        @body = body.gsub(/\A#{UTF8_BOM}/, '')
-      end
       if supports_format?
         parse_supported_format
       else
