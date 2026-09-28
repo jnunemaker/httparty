@@ -926,6 +926,12 @@ RSpec.describe HTTParty do
       })
     end
 
+    it "should strip a utf-8 bom from json responses without a charset" do
+      stub_request(:get, 'http://example.com/bom.json')
+        .to_return(body: "\xEF\xBB\xBF{\"hi\":\"yo\"}".b, headers: { 'Content-Type' => 'application/json' })
+      expect(HTTParty.get('http://example.com/bom.json').parsed_response).to eq({ "hi" => "yo" })
+    end
+
     it "should be able parse response type xml automatically" do
       stub_http_response_with('twitter.xml')
       tweets = HTTParty.get('http://twitter.com/statuses/public_timeline.xml')

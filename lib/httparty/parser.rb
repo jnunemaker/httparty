@@ -106,7 +106,7 @@ module HTTParty
       # The bom has to be removed before the blank body checks below, otherwise a
       # body that is nothing but a bom is handed to the format parser as an
       # empty string and blows up instead of being reported as nil.
-      @body = body.gsub(/\A#{UTF8_BOM}/, '') if body.valid_encoding? && body.encoding == Encoding::UTF_8
+      @body = strip_utf8_bom(body)
       return nil if body == 'null'
       return nil if body.valid_encoding? && body.strip.empty?
       if supports_format?
@@ -124,6 +124,16 @@ module HTTParty
     end
 
     UTF8_BOM = "\xEF\xBB\xBF"
+
+    # Compares bytes rather than characters because Net::HTTP hands bodies
+    # over as ASCII-8BIT when the response has no charset, and a UTF-8 regex
+    # would never match those.
+    def strip_utf8_bom(string)
+      return string unless string.encoding.ascii_compatible?
+      return string unless string.byteslice(0, UTF8_BOM.bytesize).b == UTF8_BOM.b
+
+      string.byteslice(UTF8_BOM.bytesize..-1)
+    end
 
     def json
       require 'json'

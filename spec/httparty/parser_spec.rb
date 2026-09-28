@@ -119,6 +119,27 @@ RSpec.describe HTTParty::Parser do
       expect(parser.parse).to be_nil
     end
 
+    it "ignores utf-8 bom in ascii 8bit encoding" do
+      parser = HTTParty::Parser.new("\xEF\xBB\xBF{\"hi\":\"yo\"}".b, :json)
+      expect(parser.parse).to eq({"hi"=>"yo"})
+    end
+
+    it "returns nil for an ascii 8bit body that is only a utf-8 bom" do
+      parser = HTTParty::Parser.new("\xEF\xBB\xBF".b, :json)
+      expect(parser.parse).to be_nil
+    end
+
+    it "returns nil for an ascii 8bit body that is a utf-8 bom followed by null" do
+      parser = HTTParty::Parser.new("\xEF\xBB\xBFnull".b, :json)
+      expect(parser.parse).to be_nil
+    end
+
+    it "does not strip a utf-8 bom from non ascii compatible encodings" do
+      body = "\xEF\xBB\xBF".b.force_encoding(Encoding::UTF_16LE)
+      parser = HTTParty::Parser.new(body, :plain)
+      expect(parser.parse).to eq(body)
+    end
+
     it "parses ascii 8bit encoding" do
       parser = HTTParty::Parser.new(
         "{\"currency\":\"\xE2\x82\xAC\"}".force_encoding('ASCII-8BIT'),
