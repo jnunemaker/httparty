@@ -4,9 +4,11 @@ RSpec.describe HTTParty::Logger::ApacheFormatter do
   let(:subject) { described_class.new(logger_double, :info) }
   let(:logger_double) { double('Logger') }
   let(:request_double) { double('Request', http_method: Net::HTTP::Get, path: "http://my.domain.com/my_path") }
-  let(:request_time) { Time.new.strftime("%Y-%m-%d %H:%M:%S %z") }
+  let(:frozen_time) { Time.new(2024, 1, 1, 12, 0, 0, "+00:00") }
+  let(:request_time) { frozen_time.strftime("%Y-%m-%d %H:%M:%S %z") }
 
   before do
+    allow(Time).to receive(:now).and_return(frozen_time)
     expect(logger_double).to receive(:info).with(log_message)
   end
 
