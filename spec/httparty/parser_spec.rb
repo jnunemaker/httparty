@@ -182,6 +182,28 @@ RSpec.describe HTTParty::Parser do
       expect(parsed).not_to be_frozen
     end
 
+    it "returns a copy of utf-8 html bodies" do
+      body = "<p>hi</p>"
+      parsed = HTTParty::Parser.new(body, :html).parse
+      expect(parsed).to eq("<p>hi</p>")
+      expect(parsed).not_to equal(body)
+    end
+
+    it "returns a copy of utf-8 bodies in unsupported formats" do
+      body = "hello"
+      parsed = HTTParty::Parser.new(body, nil).parse
+      expect(parsed).to eq("hello")
+      expect(parsed).not_to equal(body)
+    end
+
+    it "returns an unfrozen copy of frozen utf-8 bodies with a bom" do
+      body = "\xEF\xBB\xBFhello".freeze
+      parsed = HTTParty::Parser.new(body, :plain).parse
+      expect(parsed).to eq("hello")
+      expect(parsed).not_to equal(body)
+      expect(parsed).not_to be_frozen
+    end
+
     it "parses scalar JSON values" do
       parser = HTTParty::Parser.new('true', :json)
       expect(parser.parse).to be(true)

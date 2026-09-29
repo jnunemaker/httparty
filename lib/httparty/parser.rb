@@ -137,8 +137,10 @@ module HTTParty
         return string.byteslice(UTF8_BOM.bytesize..-1)
       end
 
-      # Valid UTF-8 bodies have always been handed back as a copy, so callers
-      # that mutate parsed_response don't also change response.body.
+      # Valid UTF-8 bodies have always been handed back as a copy, so mutating
+      # parsed_response doesn't also change response.body. Other encodings
+      # (ASCII-8BIT, US-ASCII, ISO-8859-1, invalid UTF-8) have always been
+      # handed back as the same object, and still are.
       string.encoding == Encoding::UTF_8 && string.valid_encoding? ? string.dup : string
     end
 
