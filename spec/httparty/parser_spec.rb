@@ -170,6 +170,18 @@ RSpec.describe HTTParty::Parser do
       expect(parser.parse).to eq("a" => 1)
     end
 
+    it "returns a copy of utf-8 bodies without a bom" do
+      body = "hello"
+      parsed = HTTParty::Parser.new(body, :plain).parse
+      expect(parsed).to eq("hello")
+      expect(parsed).not_to equal(body)
+    end
+
+    it "returns an unfrozen copy of frozen utf-8 bodies" do
+      parsed = HTTParty::Parser.new("hello".freeze, :plain).parse
+      expect(parsed).not_to be_frozen
+    end
+
     it "parses scalar JSON values" do
       parser = HTTParty::Parser.new('true', :json)
       expect(parser.parse).to be(true)
