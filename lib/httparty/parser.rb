@@ -133,9 +133,22 @@ module HTTParty
     def strip_utf8_bom(string)
       return string unless UTF8_BOM_ENCODINGS.include?(string.encoding)
       return string if string.encoding == Encoding::BINARY && !supports_format?
-      return string unless string.byteslice(0, UTF8_BOM.bytesize).b == UTF8_BOM.b
+      return string.byteslice(UTF8_BOM.bytesize..-1) if utf8_bom?(string)
 
-      string.byteslice(UTF8_BOM.bytesize..-1)
+      # Valid UTF-8 bodies have always been handed back as a copy, so mutating
+      # parsed_response doesn't also change response.body. Other encodings
+      # (ASCII-8BIT, US-ASCII, ISO-8859-1, invalid UTF-8) have always been
+      # handed back as the same object, and still are.
+      if string.encoding == Encoding::UTF_8 && string.valid_encoding?
+        string.dup
+      else
+        string
+      end
+    end
+
+    # Checks bytes one at a time so the common no-BOM case allocates nothing.
+    def utf8_bom?(string)
+      string.getbyte(0) == 0xEF && string.getbyte(1) == 0xBB && string.getbyte(2) == 0xBF
     end
 
     def json

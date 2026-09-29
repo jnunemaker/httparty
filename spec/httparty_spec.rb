@@ -939,6 +939,14 @@ RSpec.describe HTTParty do
       expect(HTTParty.get('http://example.com/file.bin').parsed_response).to eq(body)
     end
 
+    it "should not share the string between body and parsed_response for utf-8 text" do
+      stub_request(:get, 'http://example.com/hello.txt')
+        .to_return(body: "hello", headers: { 'Content-Type' => 'text/plain; charset=utf-8' })
+      response = HTTParty.get('http://example.com/hello.txt')
+      response.parsed_response << "!"
+      expect(response.body).to eq("hello")
+    end
+
     it "should be able parse response type xml automatically" do
       stub_http_response_with('twitter.xml')
       tweets = HTTParty.get('http://twitter.com/statuses/public_timeline.xml')
