@@ -5,6 +5,8 @@ Makes http fun again!
 ## Table of contents
 - [Parsing JSON](#parsing-json)
 - [File Uploads (Multipart)](#file-uploads-multipart)
+- [Transports](#transports)
+- [Persistent Connections](#persistent-connections)
 - [Working with SSL](#working-with-ssl)
 
 ## Parsing JSON
@@ -57,6 +59,156 @@ HTTParty.post('http://example.com/upload',
 ```
 
 **Note:** Some servers may not handle streaming uploads correctly. If you encounter issues (e.g., 400 errors), try without the `stream_body` option.
+
+## Transports
+
+HTTParty uses `HTTParty::Transport::NetHttp` by default. A client can select a
+registered transport by name or provide a transport class directly:
+
+```ruby
+class Client
+  include HTTParty
+
+  transport :net_http
+end
+
+class ClientWithCustomTransport
+  include HTTParty
+
+  transport MyTransport, pool_size: 4
+end
+```
+
+An adapter gem can register a short name before clients select it:
+
+```ruby
+HTTParty::Transport.register(:my_transport, MyTransport)
+
+class Client
+  include HTTParty
+  transport :my_transport
+end
+```
+
+Transport options are passed to the transport's constructor. A transport
+instance is owned and reused by the HTTParty class, so it must be safe for
+concurrent requests. Call `Client.close` when that client will no longer make
+requests. Request-level overrides are also supported and are closed after the
+request:
+
+```ruby
+Client.get('/resource', transport: MyTransport, transport_options: { pool_size: 1 })
+```
+
+### Curl
+
+The curl transport is optional. Add `curb` to your application's bundle, then
+select it on the client:
+
+```ruby
+# Gemfile
+gem 'curb'
+
+class Client
+  include HTTParty
+
+  transport :curl
+end
+```
+
+The curl transport supports HTTParty headers, bodies, streaming responses,
+timeouts, HTTP proxies, certificate verification, CA files, ciphers,
+debug output, and local address/port binding. Redirects, cookies, authentication,
+parsing, and decompression continue to be handled by HTTParty.
+
+`open_timeout` maps to libcurl's connection timeout. `read_timeout`,
+`write_timeout`, and the general `timeout` map to libcurl's total transfer
+timeout, so their timing semantics are not identical to Net::HTTP. Request body
+streams are currently buffered before the libcurl transfer; response streaming
+remains incremental.
+
+Options specific to `curb` can be namespaced under `curb_options`:
+
+```ruby
+transport :curl, curb_options: { dns_cache_timeout: 60 }
+```
+
+The curl transport rejects conflicting options it owns and Net::HTTP-specific
+features it cannot faithfully provide, including `persistent_connections`,
+`max_retries`, in-memory PEM/PKCS12 client certificates, OpenSSL certificate
+stores and CA directories, and Ruby OpenSSL version selectors.
+
+A transport implements this contract:
+
+- `new(options = {})` creates the transport.
+- `perform(request)` returns an `HTTParty::Transport::Response`.
+- `perform(request) { |chunk| ... }` yields ordered
+  `HTTParty::Transport::Chunk` objects and returns the response.
+- `close` releases resources and can safely be called more than once.
+
+The request exposes the HTTP method, URI, headers, body, body stream, and
+HTTParty request options. Its `native` value is an optional compatibility escape
+hatch and should not be required by portable transports. Responses expose an
+integer status code, case-insensitive headers, body, HTTP version, reason phrase,
+and an optional native response.
+
+## Persistent Connections
+
+Persistent connections are opt-in. Enable them on an HTTParty class to reuse
+HTTP connections across requests:
+
+```ruby
+class Client
+  include HTTParty
+
+  base_uri 'https://example.com'
+  persistent_connections(
+    pool_size: 4,
+    idle_timeout: 10,
+    max_requests: 100
+  )
+end
+```
+
+The normalized options are `pool_size`, `idle_timeout`, and `max_requests`.
+`pool_size` defaults to 4 concurrent HTTP transactions.
+Existing HTTParty options such as timeouts, proxies, and SSL configuration
+continue to work and remain request-overridable:
+
+```ruby
+Client.get(
+  '/slow-resource',
+  read_timeout: 30,
+  persistent_connections: { idle_timeout: 20 }
+)
+```
+
+Request-level persistent options merge with the class defaults. Pass
+`persistent_connections: false` to disable connection reuse for one request.
+
+Less common `net-http-persistent` settings can be passed through the namespaced
+escape hatch:
+
+```ruby
+persistent_connections(
+  net_http_persistent_options: {
+    reuse_ssl_sessions: false,
+    ignore_eof: true
+  }
+)
+```
+
+These advanced options follow `net-http-persistent` and are less stable than
+HTTParty's normalized options. Unknown settings and settings already owned by
+HTTParty raise `ArgumentError`.
+
+When a client will no longer make requests, its connections can be closed:
+
+```ruby
+Client.shutdown_persistent_connections
+```
+
+Only shut down a client after its concurrent requests have finished.
 
 ## Working with SSL
 

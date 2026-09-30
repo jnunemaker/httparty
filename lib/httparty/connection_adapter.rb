@@ -1,6 +1,19 @@
 # frozen_string_literal: true
 
 module HTTParty
+  module ConnectionOptionValidation
+    private
+
+    def valid_timeout?(value)
+      value.is_a?(Integer) || value.is_a?(Float)
+    end
+
+    def valid_max_retries?(value)
+      value.is_a?(Integer) && value >= 0
+    end
+  end
+  private_constant :ConnectionOptionValidation
+
   # Default connection adapter that returns a new Net::HTTP each time
   #
   # == Custom Connection Factories
@@ -67,6 +80,8 @@ module HTTParty
   # * :+clean_host+: Method used to sanitize host names
 
   class ConnectionAdapter
+    include ConnectionOptionValidation
+
     # Private: Regex used to strip brackets from IPv6 URIs.
     StripIpv6BracketsRegex = /\A\[(.*)\]\z/
 
@@ -163,11 +178,11 @@ module HTTParty
     private
 
     def add_timeout?(timeout)
-      timeout && (timeout.is_a?(Integer) || timeout.is_a?(Float))
+      valid_timeout?(timeout)
     end
 
     def add_max_retries?(max_retries)
-      max_retries && max_retries.is_a?(Integer) && max_retries >= 0
+      valid_max_retries?(max_retries)
     end
 
     def clean_host(host)

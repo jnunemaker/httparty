@@ -7,6 +7,7 @@ RSpec.describe HTTParty::Request do
     end
 
     after do
+      HTTParty::PersistentConnectionAdapter.shutdown if defined?(HTTParty::PersistentConnectionAdapter)
       WebMock.enable!
     end
 
@@ -36,6 +37,18 @@ RSpec.describe HTTParty::Request do
 
     it "should work when using ssl_ca_file with a certificate authority" do
       expect(ssl_verify_test(:ssl_ca_file, "ca.crt", "server.crt").parsed_response).to eq({'success' => true})
+    end
+
+    it "should work with persistent connections and a trusted certificate authority" do
+      options = { persistent_connections: {} }
+
+      expect(ssl_verify_test(:ssl_ca_file, "ca.crt", "server.crt", options).parsed_response).to eq({'success' => true})
+    end
+
+    it "should preserve request-level SSL verification overrides with persistent connections" do
+      options = { persistent_connections: {}, verify: false }
+
+      expect(ssl_verify_test(nil, nil, "selfsigned.crt", options).parsed_response).to eq({'success' => true})
     end
 
     it "should work when using ssl_ca_path with a certificate authority" do
