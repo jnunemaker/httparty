@@ -335,7 +335,7 @@ module HTTParty
         logger = HTTParty::Logger.build(options[:logger], options[:log_level], options[:log_format])
         logger.format(self, last_response)
       end
-      self.path       = last_response['location']
+      self.path       = redirect_location(last_response['location'])
       self.redirect   = true
       if last_response.class == Net::HTTPSeeOther
         unless options[:maintain_method_across_redirects] && options[:resend_on_redirect]
@@ -351,6 +351,19 @@ module HTTParty
       end
       capture_cookies(last_response)
       perform(&block)
+    end
+
+    # A Location with an empty path, such as "?page=2" or "#top", refers to
+    # the current resource (RFC 3986, section 5.2.2). Keep the path of the
+    # previous request so normalizing the reference does not turn it into "/".
+    def redirect_location(location)
+      return location unless @last_uri && String.try_convert(location)
+
+      reference = options[:uri_adapter].parse(location)
+      return location unless reference.relative? && reference.host.nil? && reference.path.to_s.empty?
+
+      query = reference.query || @last_uri.query
+      query ? "#{@last_uri.path}?#{query}" : @last_uri.path
     end
 
     def handle_host_redirection
