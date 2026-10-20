@@ -93,7 +93,7 @@ module HTTParty
       if uri.respond_to? :request_uri
         uri.request_uri
       else
-        uri.path
+        uri.query ? "#{uri.path}?#{uri.query}" : uri.path
       end
     end
 
