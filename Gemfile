@@ -18,6 +18,7 @@ group :test do
   gem 'simplecov', require: false
   gem 'aruba'
   gem 'cucumber', '~> 2.3'
+  gem 'curb', '~> 1.0', require: false
   gem 'webmock'
   gem 'addressable'
 end

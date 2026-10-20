@@ -70,7 +70,9 @@ module HTTParty
         follow_redirects: true,
         parser: Parser,
         uri_adapter: URI,
-        connection_adapter: ConnectionAdapter
+        connection_adapter: ConnectionAdapter,
+        transport: Transport::NetHttp,
+        transport_options: {}
       }.merge(o)
       self.path = path
       set_basic_auth_from_uri
@@ -138,7 +140,7 @@ module HTTParty
     end
 
     def format
-      options[:format] || (format_from_mimetype(last_response['content-type']) if last_response)
+      options[:format] || (format_from_mimetype(transport_response['content-type']) if transport_response)
     end
 
     def parser
@@ -146,36 +148,50 @@ module HTTParty
     end
 
     def connection_adapter
-      options[:connection_adapter]
+      if options[:persistent_connections]
+        require 'httparty/persistent_connection_adapter'
+        PersistentConnectionAdapter
+      else
+        options[:connection_adapter]
+      end
     end
 
     def perform(&block)
-      validate
-      setup_raw_request
+      @perform_depth = @perform_depth.to_i + 1
       chunked_body = nil
-      current_http = http
 
       begin
-        self.last_response = current_http.request(@raw_request) do |http_response|
-          if block
-            chunks = []
-
-            http_response.read_body do |fragment|
-              encoded_fragment = encode_text(fragment, http_response['content-type'])
-              chunks << encoded_fragment if !options[:stream_body]
-              block.call ResponseFragment.new(encoded_fragment, http_response, current_http)
-            end
-
-            chunked_body = chunks.join
-          end
-        end
+        validate
+        setup_raw_request
+        self.transport_response = if block
+                                    transport.perform(transport_request) do |chunk|
+                                      encoded_fragment = encode_text(chunk.bytes, chunk.response['content-type'])
+                                      block.call ResponseFragment.new(
+                                        encoded_fragment,
+                                        compatible_response(chunk.response),
+                                        chunk.connection_info
+                                      )
+                                      chunked_body ||= +''
+                                      chunked_body << encoded_fragment if !options[:stream_body]
+                                    end
+                                  else
+                                    transport.perform(transport_request)
+                                  end
+        chunked_body = +'' if block && chunked_body.nil?
+        self.last_response = compatible_response(transport_response)
 
         handle_host_redirection if response_redirects?
         result = handle_unauthorized
         result ||= handle_response(chunked_body, &block)
         result
-      rescue *COMMON_NETWORK_ERRORS => e
+      rescue *COMMON_NETWORK_ERRORS, Transport::NetworkError => e
         raise options[:foul] ? HTTParty::NetworkError.new("#{e.class}: #{e.message}") : e
+      ensure
+        @perform_depth -= 1
+        if @perform_depth.zero? && options[:close_transport_after_request]
+          transport.close
+          @transport = nil
+        end
       end
     end
 
@@ -194,13 +210,43 @@ module HTTParty
       opts = options.dup
       opts.delete(:logger)
       opts.delete(:parser) if opts[:parser] && opts[:parser].is_a?(Proc)
+      opts.delete(:transport_instance)
+      opts.delete(:close_transport_after_request)
       Marshal.dump([http_method, path, opts, last_response, @last_uri, @raw_request])
     end
 
     private
 
-    def http
-      connection_adapter.call(uri, options)
+    attr_writer :transport_response
+
+    def transport
+      @transport ||= options[:transport_instance] || begin
+        transport_class = Transport.resolve(options[:transport] || Transport::NetHttp)
+        options[:close_transport_after_request] = true
+        transport_class.new(options[:transport_options] || {})
+      end
+    end
+
+    def transport_request
+      Transport::Request.new(
+        method: http_method.const_get(:METHOD),
+        uri: uri,
+        headers: @raw_request.to_hash,
+        body: @raw_request.body,
+        body_stream: @raw_request.body_stream,
+        native: @raw_request,
+        options: options.merge(connection_adapter: connection_adapter)
+      )
+    end
+
+    def transport_response
+      @transport_response ||= if last_response
+                                Transport::Response.from_native(last_response)
+                              end
+    end
+
+    def compatible_response(response)
+      response.native.is_a?(Net::HTTPResponse) ? response.native : response
     end
 
     def credentials
@@ -278,11 +324,11 @@ module HTTParty
     end
 
     def response_unauthorized?
-      !!last_response && last_response.code == '401'
+      !!transport_response && transport_response.code == 401
     end
 
     def response_has_digest_auth_challenge?
-      !last_response['www-authenticate'].nil? && last_response['www-authenticate'].length > 0
+      !transport_response['www-authenticate'].nil? && transport_response['www-authenticate'].length > 0
     end
 
     def setup_digest_auth
@@ -312,15 +358,15 @@ module HTTParty
       if response_redirects?
         handle_redirection(&block)
       else
-        raw_body ||= last_response.body
+        raw_body ||= transport_response.body
 
-        body = decompress(raw_body, last_response['content-encoding']) unless raw_body.nil?
+        body = decompress(raw_body, transport_response['content-encoding']) unless raw_body.nil?
 
         unless body.nil?
-          body = encode_text(body, last_response['content-type'])
+          body = encode_text(body, transport_response['content-type'])
 
           if decompress_content?
-            last_response.delete('content-encoding')
+            transport_response.delete('content-encoding')
             raw_body = body
           end
         end
@@ -333,15 +379,15 @@ module HTTParty
       options[:limit] -= 1
       if options[:logger]
         logger = HTTParty::Logger.build(options[:logger], options[:log_level], options[:log_format])
-        logger.format(self, last_response)
+        logger.format(self, transport_response)
       end
-      self.path       = last_response['location']
+      self.path       = transport_response['location']
       self.redirect   = true
-      if last_response.class == Net::HTTPSeeOther
+      if transport_response.code == 303
         unless options[:maintain_method_across_redirects] && options[:resend_on_redirect]
           self.http_method = Net::HTTP::Get
         end
-      elsif last_response.code != '307' && last_response.code != '308'
+      elsif transport_response.code != 307 && transport_response.code != 308
         unless options[:maintain_method_across_redirects]
           self.http_method = Net::HTTP::Get
         end
@@ -349,19 +395,19 @@ module HTTParty
       if http_method == Net::HTTP::Get
         clear_body
       end
-      capture_cookies(last_response)
+      capture_cookies(transport_response)
       perform(&block)
     end
 
     def handle_host_redirection
       check_duplicate_location_header
-      redirect_path = options[:uri_adapter].parse(last_response['location']).normalize
+      redirect_path = options[:uri_adapter].parse(transport_response['location']).normalize
       return if redirect_path.relative? || path.host == redirect_path.host || uri.host == redirect_path.host
       @changed_hosts = true
     end
 
     def check_duplicate_location_header
-      location = last_response.get_fields('location')
+      location = transport_response.get_fields('location')
       if location.is_a?(Array) && location.count > 1
         raise DuplicateLocationHeader.new(last_response)
       end
@@ -372,12 +418,10 @@ module HTTParty
     end
 
     def response_redirects?
-      case last_response
-      when Net::HTTPNotModified # 304
-        false
-      when Net::HTTPRedirection
-        options[:follow_redirects] && last_response.key?('location')
-      end
+      return false if transport_response.code == 304
+
+      transport_response.code.between?(300, 399) &&
+        options[:follow_redirects] && transport_response.key?('location')
     end
 
     def parse_response(body)

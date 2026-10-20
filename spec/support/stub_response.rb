@@ -8,7 +8,8 @@ module HTTParty
       allow(response).to receive(:body).and_return(data)
 
       http_request = HTTParty::Request.new(Net::HTTP::Get, 'http://localhost', format: format)
-      allow(http_request).to receive_message_chain(:http, :request).and_return(response)
+      connection = double('connection', request: response)
+      http_request.options[:connection_adapter] = ->(_uri, _options) { connection }
 
       expect(HTTParty::Request).to receive(:new).and_return(http_request)
     end
@@ -22,7 +23,9 @@ module HTTParty
       yield(response) if block_given?
 
       http_request = HTTParty::Request.new(Net::HTTP::Get, 'http://localhost', options)
-      allow(http_request).to receive_message_chain(:http, :request).and_yield(response).and_return(response)
+      connection = double('connection')
+      allow(connection).to receive(:request).and_yield(response).and_return(response)
+      http_request.options[:connection_adapter] = ->(_uri, _options) { connection }
 
       expect(HTTParty::Request).to receive(:new).and_return(http_request)
     end
@@ -34,7 +37,7 @@ module HTTParty
       @request.options[:base_uri] ||= 'http://localhost' if @request.path.relative?
       unless defined?(@http) && @http
         @http = Net::HTTP.new('localhost', 80)
-        allow(@request).to receive(:http).and_return(@http)
+        @request.options[:connection_adapter] = ->(_uri, _options) { @http }
       end
 
       # CODE_TO_OBJ currently missing 308
