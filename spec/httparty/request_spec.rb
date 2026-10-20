@@ -455,6 +455,20 @@ RSpec.describe HTTParty::Request do
   end
 
   describe "#setup_raw_request" do
+    context "when the uri is a webcal uri" do
+      it "keeps the query string in the request path" do
+        request = HTTParty::Request.new(Net::HTTP::Get, 'webcal://example.com/calendar.ics?token=abc', query: { page: 2 })
+        request.send(:setup_raw_request)
+        expect(request.instance_variable_get(:@raw_request).path).to eq('/calendar.ics?token=abc&page=2')
+      end
+
+      it "uses / when the uri has no path" do
+        request = HTTParty::Request.new(Net::HTTP::Get, 'webcal://example.com?token=abc')
+        request.send(:setup_raw_request)
+        expect(request.instance_variable_get(:@raw_request).path).to eq('/?token=abc')
+      end
+    end
+
     context "when query_string_normalizer is set" do
       it "sets the body to the return value of the proc" do
         @request.options[:query_string_normalizer] = HTTParty::Request::NON_RAILS_QUERY_STRING_NORMALIZER
