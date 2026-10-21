@@ -26,7 +26,7 @@ RSpec.describe HTTParty::Request do
       end.to raise_error OpenSSL::SSL::SSLError
     end
 
-    it "should work when no trusted CA list is specified, even with a bogus hostname, when the verify option is set to true" do
+    it "should work when no trusted CA list is specified, even with a bogus hostname, when the verify option is set to false" do
       expect(ssl_verify_test(nil, nil, "bogushost.crt", verify: false).parsed_response).to eq({'success' => true})
     end
 
