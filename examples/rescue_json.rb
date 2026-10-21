@@ -1,8 +1,7 @@
 $LOAD_PATH.unshift(File.expand_path('../lib', __dir__))
 require 'httparty'
 
-# RubyGems answers with a plain text body here. format: :json tells HTTParty
-# to parse it as JSON anyway, so parsing raises.
+# RubyGems returns plain text here; format: :json forces a JSON parse, which raises.
 #
 # Take note of the "; 1" at the end of the following line. It's required only if
 # running this in IRB, because IRB will try to inspect the variable named
