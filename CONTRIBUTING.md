@@ -18,6 +18,4 @@
 
 ## Help and Docs
 
-* [Docs](https://github.com/jnunemaker/httparty/tree/main/docs)
-* https://github.com/jnunemaker/httparty/discussions
-* https://www.rubydoc.info/github/jnunemaker/httparty
+See [Help and Docs](README.md#help-and-docs) in the README.
