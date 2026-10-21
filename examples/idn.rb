@@ -8,4 +8,4 @@ class Idn
     uri_adapter Addressable::URI
 end
 
-pp Idn.get("https://i❤️.ws/emojidomain/💎?format=json")
+pp Idn.get("https://i❤.ws/emojidomain/💎?format=json")
