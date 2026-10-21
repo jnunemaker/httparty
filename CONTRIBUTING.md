@@ -1,7 +1,7 @@
 # Contributing
 
 * Contributions will not be accepted without tests.
-* Please post unconfirmed bugs to the mailing list first: https://groups.google.com/forum/#!forum/httparty-gem
+* Please post unconfirmed bugs to GitHub Discussions first: https://github.com/jnunemaker/httparty/discussions
 * Don't change the version. The maintainers will handle that when they release.
 * Always provide as much information and reproducibility as possible when filing an issue or submitting a pull request.
 
@@ -18,6 +18,6 @@
 
 ## Help and Docs
 
-* https://groups.google.com/forum/#!forum/httparty-gem
-* http://stackoverflow.com/questions/tagged/httparty
-* http://rdoc.info/projects/jnunemaker/httparty
+* [Docs](https://github.com/jnunemaker/httparty/tree/main/docs)
+* https://github.com/jnunemaker/httparty/discussions
+* https://www.rubydoc.info/github/jnunemaker/httparty
