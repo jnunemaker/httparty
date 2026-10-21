@@ -1,10 +1,13 @@
-dir = File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
-require File.join(dir, 'httparty')
+$LOAD_PATH.unshift(File.expand_path('../lib', __dir__))
+require 'httparty'
 
+# RubyGems answers with a plain text body here. format: :json tells HTTParty
+# to parse it as JSON anyway, so parsing raises.
+#
 # Take note of the "; 1" at the end of the following line. It's required only if
 # running this in IRB, because IRB will try to inspect the variable named
 # "request", triggering the exception.
-request = HTTParty.get 'https://rubygems.org/api/v1/versions/doesnotexist.json' ; 1
+request = HTTParty.get 'https://rubygems.org/api/v1/versions/doesnotexist.json', format: :json ; 1
 
 # Check an exception due to parsing the response
 # because HTTParty evaluate the response lazily

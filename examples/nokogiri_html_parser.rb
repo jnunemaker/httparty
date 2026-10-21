@@ -1,8 +1,8 @@
 require 'rubygems'
 require 'nokogiri'
 
-dir = File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
-require File.join(dir, 'httparty')
+$LOAD_PATH.unshift(File.expand_path('../lib', __dir__))
+require 'httparty'
 require 'pp'
 
 class HtmlParserIncluded < HTTParty::Parser
