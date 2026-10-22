@@ -3,8 +3,8 @@ require 'active_support'
 require 'active_support/core_ext/hash'
 require 'active_support/core_ext/string'
 
-dir = File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
-require File.join(dir, 'httparty')
+$LOAD_PATH.unshift(File.expand_path('../lib', __dir__))
+require 'httparty'
 require 'pp'
 config = YAML.load(File.read(File.join(ENV['HOME'], '.aaws')))
 

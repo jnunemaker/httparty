@@ -66,6 +66,10 @@
 * [Rescue Json Error](rescue_json.rb)
   * Rescue errors due to parsing response
 
+* [Party foul mode](party_foul_mode.rb)
+  * Uses `foul: true` to raise `HTTParty::NetworkError` for connection failures
+  * Rescues network errors by their `cause`
+
 * [Download file using stream mode](stream_download.rb)
   * Uses `get` requests
   * Uses `stream_body` mode

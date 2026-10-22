@@ -1,5 +1,5 @@
-dir = File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
-require File.join(dir, 'httparty')
+$LOAD_PATH.unshift(File.expand_path('../lib', __dir__))
+require 'httparty'
 require 'pp'
 
 # You can also use post, put, delete, head, options in the same fashion
