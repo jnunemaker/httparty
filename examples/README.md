@@ -1,10 +1,5 @@
 ## Examples
 
-* [Amazon Book Search](aaws.rb)
-    * Httparty included into poro class
-    * Uses `get` requests
-    * Transforms query params to uppercased params
-
 * [Google Search](google.rb)
   * Httparty included into poro class
   * Uses `get` requests
@@ -20,9 +15,9 @@
 * [More Custom Parsers](custom_parsers.rb)
   * Create an additional parser for atom or make it the ONLY parser
 
-* [Basic Auth, Delicious](delicious.rb)
-  * Basic Auth, shows how to merge those into options
-  * Uses `get` requests
+* [Basic Auth](basic_auth.rb)
+  * Sets `basic_auth` for every request from a class
+  * Passes `basic_auth` with a single request
 
 * [Passing Headers, User Agent](headers_and_user_agents.rb)
   * Use the class method of Httparty
@@ -33,10 +28,6 @@
     * Httparty included into poro class
     * Uses `post` requests
 
-* [Access Rubyurl Shortener](rubyurl.rb)
-  * Httparty included into poro class
-  * Uses `post` requests
-
 * [Add a custom log file](logging.rb)
   * create a log file and have httparty log requests
 
@@ -45,18 +36,12 @@
   * Creates methods for different endpoints
   * Uses `get` requests
 
-* [Accessing Tripit](tripit_sign_in.rb)
-  * Httparty included into poro class
-  * Example of using `debug_output` to see headers/urls passed
-  * Getting and using Cookies
-  * Uses `get` requests
+* [Cookies](cookies.rb)
+  * Sends `cookies` with every request from a class
+  * Collects the cookies a server sets with `HTTParty::CookieHash` and sends them back
 
-* [Accessing Twitter](twitter.rb)
-  * Httparty included into poro class
-  * Basic Auth
-  * Loads settings from a config file
-  * Uses `get` requests
-  * Uses `post` requests
+* [Debug Output](debug_output.rb)
+  * Uses `debug_output` to print each request and response, headers included
 
 * [Accessing WhoIsMyRep](whoismyrep.rb)
   * Httparty included into poro class
