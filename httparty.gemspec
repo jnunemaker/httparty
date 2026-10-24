@@ -25,8 +25,9 @@ Gem::Specification.new do |s|
 
   all_files = `git ls-files`.split("\n")
   test_files = `git ls-files -- {test,spec,features}/*`.split("\n")
+  dev_files = `git ls-files -- .github Gemfile Guardfile '.rubocop*' cucumber.yml script`.split("\n")
 
-  s.files         = all_files - test_files
+  s.files         = all_files - test_files - dev_files
   s.executables   = `git ls-files -- bin/*`.split("\n").map { |f| File.basename(f) }
   s.require_paths = ["lib"]
 end
