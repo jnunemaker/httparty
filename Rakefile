@@ -5,6 +5,8 @@ rescue LoadError
 end
 
 require 'cucumber/rake/task'
-Cucumber::Rake::Task.new(:features)
+Cucumber::Rake::Task.new(:features) do |t|
+  t.cucumber_opts = %w[--format progress]
+end
 
 task default: [:spec, :features]
