@@ -20,6 +20,7 @@ module HTTParty
     ]
 
     SupportedURISchemes  = ['http', 'https', 'webcal', nil]
+    CONTENT_HEADERS = %w[content-encoding content-language content-length content-location content-type].freeze
 
     NON_RAILS_QUERY_STRING_NORMALIZER = proc do |query|
       Array(query).sort_by { |a| a[0].to_s }.map do |key, value|
@@ -386,10 +387,16 @@ module HTTParty
 
     # Some Web Application Firewalls reject incoming GET requests that have a body
     # if we redirect, and the resulting verb is GET then we will clear the body that
-    # may be left behind from the initiating request
+    # may be left behind from the initiating request, along with the header fields
+    # that described it (RFC 9110, section 15.4)
     def clear_body
       options[:body] = nil
       @raw_request.body = nil
+      return unless options[:headers].respond_to?(:to_hash)
+
+      options[:headers] = options[:headers].to_hash.reject do |name, _|
+        CONTENT_HEADERS.include?(name.to_s.downcase)
+      end
     end
 
     def capture_cookies(response)
