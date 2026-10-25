@@ -589,10 +589,12 @@ module HTTParty
       perform_request Net::HTTP::Mkcol, path, options, &block
     end
 
+    # Perform a LOCK request to a path
     def lock(path, options = {}, &block)
       perform_request Net::HTTP::Lock, path, options, &block
     end
 
+    # Perform an UNLOCK request to a path
     def unlock(path, options = {}, &block)
       perform_request Net::HTTP::Unlock, path, options, &block
     end

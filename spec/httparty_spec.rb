@@ -714,6 +714,18 @@ RSpec.describe HTTParty do
     end
   end
 
+  describe "WebDAV lock requests" do
+    it "sends LOCK with #lock" do
+      stub_request(:lock, "http://example.com/doc").to_return(body: "locked")
+      expect(@klass.lock("http://example.com/doc").body).to eq("locked")
+    end
+
+    it "sends UNLOCK with #unlock" do
+      stub_request(:unlock, "http://example.com/doc").to_return(status: 204)
+      expect(@klass.unlock("http://example.com/doc").code).to eq(204)
+    end
+  end
+
   describe "head requests should follow redirects requesting HEAD only" do
     before do
       allow(HTTParty::Request).to receive(:new).
