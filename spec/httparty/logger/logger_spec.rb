@@ -39,5 +39,11 @@ RSpec.describe HTTParty::Logger do
       expect{ HTTParty::Logger.add_formatter(:custom2, CustomFormatter2) }.
         to raise_error HTTParty::Error
     end
+
+    it "raises error when a formatter with the same name given as a string exists" do
+      expect { HTTParty::Logger.add_formatter('curl', Class.new) }.
+        to raise_error HTTParty::Error
+      expect(subject.build(double, nil, :curl)).to be_an_instance_of(HTTParty::Logger::CurlFormatter)
+    end
   end
 end

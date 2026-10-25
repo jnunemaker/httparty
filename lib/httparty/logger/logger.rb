@@ -15,7 +15,7 @@ module HTTParty
     end
 
     def self.add_formatter(name, formatter)
-      raise HTTParty::Error.new("Log Formatter with name #{name} already exists") if formatters.include?(name)
+      raise HTTParty::Error.new("Log Formatter with name #{name} already exists") if formatters.include?(name.to_sym)
       formatters.merge!(name.to_sym => formatter)
     end
 
