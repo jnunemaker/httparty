@@ -1026,6 +1026,21 @@ RSpec.describe HTTParty do
     end
   end
 
+  describe "module-level request methods" do
+    [:post, :patch, :put, :delete, :move, :copy, :head, :options].each do |verb|
+      it "sends #{verb.to_s.upcase} with HTTParty.#{verb}" do
+        stub_request(verb, "http://example.com/resource").to_return(headers: { "X-Verb" => verb.to_s })
+        expect(HTTParty.public_send(verb, "http://example.com/resource").headers["x-verb"]).to eq(verb.to_s)
+      end
+    end
+
+    it "passes options through" do
+      stub_request(:post, "http://example.com/resource").with(body: "a=1", headers: { "X-Test" => "yes" })
+      response = HTTParty.post("http://example.com/resource", body: "a=1", headers: { "X-Test" => "yes" })
+      expect(response.code).to eq(200)
+    end
+  end
+
   describe "#build_request" do
     it "should build a request object" do
       stub_http_response_with('example.html')
