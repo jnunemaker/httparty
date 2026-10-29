@@ -103,6 +103,24 @@ RSpec.describe HTTParty::Logger::CurlFormatter do
       end
     end
 
+    it 'logs a binary body next to a non-ASCII header without raising' do
+      logger_double = double('Logger', info: nil)
+      response_object = Net::HTTPOK.new('1.1', 200, 'OK')
+      allow(response_object).to receive(:body).and_return("\xFF".b)
+      request = HTTParty::Request.new(Net::HTTP::Get, 'http://foo.bar.com/', headers: { 'X-Name' => 'café' })
+      allow(request).to receive(:raw_body).and_return(nil)
+      response = HTTParty::Response.new(request, response_object, -> { {} })
+      formatter = described_class.new(logger_double, :info)
+
+      expect { formatter.format(request, response) }.not_to raise_error
+
+      expect(logger_double).to have_received(:info) do |message|
+        expect(message.encoding).to eq(Encoding::UTF_8)
+        expect(message).to include('café')
+        expect(message.valid_encoding?).to eq(true)
+      end
+    end
+
     it "formats a response in a style that resembles a -v curl" do
       logger_double = double
       expect(logger_double).to receive(:info).with(
