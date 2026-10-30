@@ -98,11 +98,11 @@ module HTTParty
     end
 
     def uri
-      if redirect && path.relative? && path.path[0] != '/'
-        last_uri_host = @last_uri.path.gsub(/[^\/]+$/, '')
-
-        path.path = "/#{path.path}" if last_uri_host[-1] != '/'
-        path.path = "#{last_uri_host}#{path.path}"
+      if redirect && path.relative? && !path.host
+        # Resolve the location against the redirected URI (RFC 3986, section 5.2)
+        resolved = @last_uri + path
+        path.path = resolved.path
+        path.query = resolved.query
       end
 
       if path.relative? && path.host
@@ -335,7 +335,9 @@ module HTTParty
         logger = HTTParty::Logger.build(options[:logger], options[:log_level], options[:log_format])
         logger.format(self, last_response)
       end
-      self.path       = last_response['location']
+      location        = options[:uri_adapter].parse(last_response['location'])
+      # A relative location is resolved in #uri; normalizing it first would turn "?a" into "/?a"
+      self.path       = location.relative? ? location : location.normalize
       self.redirect   = true
       if last_response.class == Net::HTTPSeeOther
         unless options[:maintain_method_across_redirects] && options[:resend_on_redirect]
