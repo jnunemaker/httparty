@@ -12,3 +12,5 @@ coverage
 *.gem
 .idea
 .tool-versions
+config.bat
+node_modules
