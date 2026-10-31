@@ -13,6 +13,10 @@ Given /a remote service that returns a (\d+) status code/ do |code|
   @handler.response_code = code
 end
 
+Given /a remote service that echoes the '(.*)' request header/ do |name|
+  @handler = EchoRequestHeaderHandler.new(name)
+end
+
 Given /that service is accessed at the path '(.*)'/ do |path|
   @server.register(path, @handler)
 end

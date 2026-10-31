@@ -23,6 +23,17 @@ class BasicMongrelHandler < Mongrel::HttpHandler
   end
 end
 
+class EchoRequestHeaderHandler < BasicMongrelHandler
+  def initialize(header_name)
+    super()
+    @param_name = "HTTP_#{header_name.upcase.tr('-', '_')}"
+  end
+
+  def process(request, response)
+    reply_with(response, 200, request.params[@param_name])
+  end
+end
+
 class DeflateHandler < BasicMongrelHandler
   def process(request, response)
     accept_encoding = request.params["HTTP_ACCEPT_ENCODING"]

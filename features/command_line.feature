@@ -58,6 +58,22 @@ Feature: Command Line
     When I run `httparty http://0.0.0.0:4006/fun --user 'user:pass'`
     Then the output should contain "Successfull authentication"
 
+  Scenario: Use a basic authentication password that contains a colon
+    Given a remote deflate service on port '4011'
+    And the response from the service has a body of 'Successfull authentication'
+    And that service is accessed at the path '/fun'
+    And that service is protected by Basic Authentication
+    And that service requires the username 'user' with the password 'pa:ss'
+    When I run `httparty http://0.0.0.0:4011/fun --user 'user:pa:ss'`
+    Then the output should contain "Successfull authentication"
+
+  Scenario: Send a header whose value contains a colon
+    Given a remote deflate service on port '4012'
+    And a remote service that echoes the 'Referer' request header
+    And that service is accessed at the path '/fun'
+    When I run `httparty http://0.0.0.0:4012/fun --header 'Referer: http://example.com/a' --format plain`
+    Then the output should contain "http://example.com/a"
+
   Scenario: Get response in plain format
     Given a remote deflate service on port '4007'
     And the response from the service has a body of 'Some request'
