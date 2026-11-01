@@ -227,8 +227,7 @@ module HTTParty
           http.verify_mode = OpenSSL::SSL::VERIFY_PEER
         end
 
-        # This is only Ruby 1.9+
-        if options[:ssl_version] && http.respond_to?(:ssl_version=)
+        if options[:ssl_version]
           http.ssl_version = options[:ssl_version]
         end
       end

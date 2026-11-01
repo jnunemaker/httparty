@@ -396,7 +396,7 @@ module HTTParty
       default_options[:query_string_normalizer] = normalizer
     end
 
-    # Allows setting of SSL version to use. This only works in Ruby 1.9+.
+    # Allows setting of SSL version to use.
     # You can get a list of valid versions from OpenSSL::SSL::SSLContext::METHODS.
     #
     #   class Foo
@@ -423,7 +423,7 @@ module HTTParty
       default_options[:skip_decompression] = !!value
     end
 
-    # Allows setting of SSL ciphers to use.  This only works in Ruby 1.9+.
+    # Allows setting of SSL ciphers to use.
     # You can get a list of valid specific ciphers from OpenSSL::Cipher.ciphers.
     # You also can specify a cipher suite here, listed here at openssl.org:
     # http://www.openssl.org/docs/apps/ciphers.html#CIPHER_SUITE_NAMES
