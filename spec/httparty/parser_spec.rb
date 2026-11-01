@@ -43,6 +43,20 @@ RSpec.describe HTTParty::Parser do
     it "returns nil when the mimetype is not supported" do
       expect(HTTParty::Parser.format_from_mimetype("application/atom+xml")).to be_nil
     end
+
+    it "ignores the case of the mimetype" do
+      expect(HTTParty::Parser.format_from_mimetype("Application/JSON; charset=UTF-8")).to eq(:json)
+      expect(HTTParty::Parser.format_from_mimetype("TEXT/XML")).to eq(:xml)
+    end
+
+    it "ignores the case of a custom parser's mimetype" do
+      parser = Class.new(HTTParty::Parser) do
+        const_set(:SupportedFormats, { "application/X-Custom" => :custom })
+      end
+
+      expect(parser.format_from_mimetype("application/x-custom")).to eq(:custom)
+      expect(parser.format_from_mimetype("application/X-Custom")).to eq(:custom)
+    end
   end
 
   describe ".supported_formats" do
