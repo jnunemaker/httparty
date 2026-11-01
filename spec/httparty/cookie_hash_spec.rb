@@ -92,11 +92,12 @@ RSpec.describe HTTParty::CookieHash do
     end
 
     it "should not include Max-Age, whatever its case" do
-      @cookie_hash.add_cookies("session=abc; Max-Age=3600; Path=/")
-      expect(@cookie_hash.to_cookie_string).to eq("session=abc")
+      cookie_hash = HTTParty::CookieHash.new
+      cookie_hash.add_cookies("session=abc; Max-Age=3600; Path=/")
+      expect(cookie_hash.to_cookie_string).to eq("session=abc")
 
-      @cookie_hash.add_cookies("max-age" => "3600")
-      expect(@cookie_hash.to_cookie_string).to eq("session=abc")
+      cookie_hash.add_cookies("max-age" => "3600")
+      expect(cookie_hash.to_cookie_string).to eq("session=abc")
     end
 
     it "should not mutate the hash" do
