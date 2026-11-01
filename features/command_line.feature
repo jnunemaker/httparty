@@ -14,6 +14,12 @@ Feature: Command Line
     Then the output should contain "Version:"
     And the output should not contain "You need to provide a URL"
 
+  Scenario: Run without a URL
+    When I run `httparty`
+    Then the output should contain "You need to provide a URL"
+    And the output should not contain "bad argument"
+    And the exit status should be 1
+
   Scenario: Make a get request
     Given a remote deflate service on port '4001'
     And the response from the service has a body of 'GET request'
