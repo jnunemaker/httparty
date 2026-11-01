@@ -20,6 +20,22 @@ Feature: Command Line
     And the output should not contain "bad argument"
     And the exit status should be 1
 
+  Scenario Outline: Usage mistakes print a message, not a stack trace
+    When I run `httparty <arguments>`
+    Then the output should contain "<message>"
+    And the output should not contain "bin/httparty:"
+    And the exit status should be 1
+
+    Examples:
+      | arguments                            | message                |
+      | --bogus http://localhost:1/          | invalid option         |
+      | -a                                   | Unknown action         |
+      | -a bogus http://localhost:1/         | Unknown action         |
+      | -f                                   | --format needs a value |
+      | -d @/nonexistent http://localhost:1/ | Could not read         |
+      | ftp://localhost:1/                   | Invalid URL            |
+      | "http://exa mple/"                   | Invalid URL            |
+
   Scenario: Make a get request
     Given a remote deflate service on port '4001'
     And the response from the service has a body of 'GET request'
