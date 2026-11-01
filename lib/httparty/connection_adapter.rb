@@ -50,6 +50,7 @@ module HTTParty
   # * :+pem+: contains pem client certificate data. see method 'attach_ssl_certificates'
   # * :+p12+: contains PKCS12 client client certificate data.  see method 'attach_ssl_certificates'
   # * :+verify+: verify the server’s certificate against the ca certificate.
+  # * :+verify_callback+: a Proc that will be called to verify the server’s certificate. see method 'attach_ssl_certificates'
   # * :+verify_peer+: set to false to turn off server verification but still send client certificate
   # * :+ssl_ca_file+: see HTTParty::ClassMethods.ssl_ca_file.
   # * :+ssl_ca_path+: see HTTParty::ClassMethods.ssl_ca_path.
@@ -225,6 +226,10 @@ module HTTParty
         if options[:ssl_ca_path]
           http.ca_path = options[:ssl_ca_path]
           http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+        end
+
+        if options[:verify_callback]
+          http.verify_callback = options[:verify_callback]
         end
 
         # This is only Ruby 1.9+
