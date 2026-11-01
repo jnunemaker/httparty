@@ -10,6 +10,24 @@ RSpec.describe HTTParty::Request do
       WebMock.enable!
     end
 
+    it "keeps the test server serving after a client that can't complete a handshake" do
+      fixtures = File.expand_path("../../fixtures/ssl/generated", __FILE__)
+      server = SSLTestServer.new(
+        rsa_key: File.read("#{fixtures}/server.key"),
+        cert:    File.read("#{fixtures}/selfsigned.crt")
+      )
+      server.start
+
+      TCPSocket.open("localhost", server.port) do |plain_client|
+        plain_client.write("GET / HTTP/1.1\r\n\r\n")
+        plain_client.read rescue nil
+      end
+
+      response = HTTParty.get("https://localhost:#{server.port}/", format: :json, verify: false, timeout: 30)
+      expect(response.parsed_response).to eq("success" => true)
+      expect { server.stop }.not_to raise_error
+    end
+
     it "should fail when no trusted CA list is specified, by default" do
       expect do
         ssl_verify_test(nil, nil, "selfsigned.crt")
