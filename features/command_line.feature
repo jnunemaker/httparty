@@ -29,7 +29,7 @@ Feature: Command Line
     Examples:
       | arguments                            | message                |
       | --bogus http://localhost:1/          | invalid option         |
-      | -a                                   | Unknown action         |
+      | -a                                   | --action needs a value |
       | -a bogus http://localhost:1/         | Unknown action         |
       | -f                                   | --format needs a value |
       | -d @/nonexistent http://localhost:1/ | Could not read         |

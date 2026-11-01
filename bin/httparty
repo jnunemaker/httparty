@@ -32,7 +32,8 @@ parser = OptionParser.new do |o|
   o.on("-a",
        "--action [ACTION]",
        "HTTP action: get (default), post, patch, put, delete, head, options, move or copy") do |a|
-    action = a.to_s.downcase.to_sym
+    usage_error "--action needs a value: #{ACTIONS.join(', ')}" unless a
+    action = a.downcase.to_sym
     usage_error "Unknown action #{a.inspect}, should be one of: #{ACTIONS.join(', ')}" unless ACTIONS.include?(action)
     opts[:action] = action
   end
