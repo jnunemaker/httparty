@@ -80,7 +80,8 @@ module HTTParty
     # @return [Symbol]
     # @return [nil] mime type not supported
     def self.format_from_mimetype(mimetype)
-      formats[formats.keys.detect {|k| mimetype.include?(k)}]
+      mimetype = mimetype.downcase
+      formats[formats.keys.detect {|k| mimetype.include?(k.downcase)}]
     end
 
     # @return [Array<Symbol>] list of supported formats

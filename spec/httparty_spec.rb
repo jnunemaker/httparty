@@ -937,6 +937,15 @@ RSpec.describe HTTParty do
     end
   end
 
+  describe "parsing a response whose content type is capitalized" do
+    it "parses the body like any other json response" do
+      stub_request(:get, "http://example.com/")
+        .to_return(body: '{"a":1}', headers: { "Content-Type" => "Application/JSON; charset=UTF-8" })
+
+      expect(HTTParty.get("http://example.com/").parsed_response).to eq("a" => 1)
+    end
+  end
+
   describe "#get" do
     it "should be able to get html" do
       stub_http_response_with('example.html')
