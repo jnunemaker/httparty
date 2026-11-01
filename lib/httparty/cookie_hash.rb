@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class HTTParty::CookieHash < Hash #:nodoc:
-  CLIENT_COOKIES = %w(path expires domain path secure httponly samesite)
+  CLIENT_COOKIES = %w(path expires max-age domain secure httponly samesite)
 
   def add_cookies(data)
     case data
