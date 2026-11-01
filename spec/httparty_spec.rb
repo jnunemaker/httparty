@@ -473,9 +473,73 @@ RSpec.describe HTTParty do
     end
   end
 
+  describe "logger" do
+    let(:logger) { double('Logger') }
+
+    it "should set the logger with the default level and format" do
+      @klass.logger logger
+      expect(@klass.default_options).to include(logger: logger, log_level: :info, log_format: :apache)
+    end
+
+    it "should set the level and format when provided" do
+      @klass.logger logger, :debug, :curl
+      expect(@klass.default_options).to include(logger: logger, log_level: :debug, log_format: :curl)
+    end
+  end
+
+  [:open_timeout, :read_timeout, :write_timeout].each do |timeout|
+    describe timeout.to_s do
+      it "should set the value" do
+        @klass.public_send(timeout, 2.5)
+        expect(@klass.default_options[timeout]).to eq(2.5)
+      end
+
+      it "should raise when the value is not a number" do
+        expect { @klass.public_send(timeout, "5") }.to raise_error(ArgumentError, "#{timeout} must be an integer or float")
+      end
+
+      it "should reach the Net::HTTP connection" do
+        @klass.public_send(timeout, 7)
+        connection = HTTParty::ConnectionAdapter.call(URI("http://example.com"), @klass.default_options)
+        expect(connection.public_send(timeout)).to eq(7)
+      end
+    end
+  end
+
+  describe "skip_decompression" do
+    it "should default to true" do
+      @klass.skip_decompression
+      expect(@klass.default_options[:skip_decompression]).to be true
+    end
+
+    it "should coerce the value to a boolean" do
+      @klass.skip_decompression nil
+      expect(@klass.default_options[:skip_decompression]).to be false
+    end
+  end
+
+  describe "ssl_ca_file" do
+    it "should set the path" do
+      @klass.ssl_ca_file "/certs/ca.pem"
+      expect(@klass.default_options[:ssl_ca_file]).to eq("/certs/ca.pem")
+    end
+  end
+
+  describe "ssl_ca_path" do
+    it "should set the path" do
+      @klass.ssl_ca_path "/certs"
+      expect(@klass.default_options[:ssl_ca_path]).to eq("/certs")
+    end
+  end
+
   describe "connection_adapter" do
     let(:uri) { 'http://google.com/api.json' }
     let(:connection_adapter) { double('CustomConnectionAdapter') }
+
+    it "should return the connection_adapter when called without one" do
+      @klass.connection_adapter connection_adapter
+      expect(@klass.connection_adapter).to be connection_adapter
+    end
 
     it "should set the connection_adapter" do
       @klass.connection_adapter connection_adapter
