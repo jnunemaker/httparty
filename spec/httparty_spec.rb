@@ -790,30 +790,29 @@ RSpec.describe HTTParty do
     end
   end
 
-  describe "head requests should follow redirects requesting HEAD only" do
+  describe "#head" do
     before do
-      allow(HTTParty::Request).to receive(:new).
-        and_return(double("mock response", perform: nil))
+      @klass.base_uri 'http://example.com'
+      stub_request(:head, 'http://example.com/foo').to_return(status: 302, headers: { 'Location' => 'http://example.com/bar' })
     end
 
-    it "should remain HEAD request across redirects, unless specified otherwise" do
-      expect(@klass).to receive(:ensure_method_maintained_across_redirects).with({})
+    it "keeps the method across redirects if unspecified" do
+      followed = stub_request(:head, 'http://example.com/bar')
       @klass.head('/foo')
+      expect(followed).to have_been_requested
     end
 
-  end
-
-  describe "#ensure_method_maintained_across_redirects" do
-    it "should set maintain_method_across_redirects option if unspecified" do
-      options = {}
-      @klass.send(:ensure_method_maintained_across_redirects, options)
-      expect(options[:maintain_method_across_redirects]).to be_truthy
+    it "lets the caller turn that off" do
+      followed = stub_request(:get, 'http://example.com/bar')
+      @klass.head('/foo', maintain_method_across_redirects: false)
+      expect(followed).to have_been_requested
     end
 
-    it "should not set maintain_method_across_redirects option if value is present" do
-      options = { maintain_method_across_redirects: false }
-      @klass.send(:ensure_method_maintained_across_redirects, options)
-      expect(options[:maintain_method_across_redirects]).to be_falsey
+    it "leaves the caller's options hash alone" do
+      stub_request(:head, 'http://example.com/bar')
+      options = { timeout: 5 }
+      @klass.head('/foo', options)
+      expect(options).to eq(timeout: 5)
     end
   end
 

@@ -575,8 +575,7 @@ module HTTParty
 
     # Perform a HEAD request to a path
     def head(path, options = {}, &block)
-      ensure_method_maintained_across_redirects options
-      perform_request Net::HTTP::Head, path, options, &block
+      perform_request Net::HTTP::Head, path, { maintain_method_across_redirects: true }.merge(options), &block
     end
 
     # Perform an OPTIONS request to a path
@@ -612,12 +611,6 @@ module HTTParty
 
     def validate_timeout_argument(timeout_type, value)
       raise ArgumentError, "#{ timeout_type } must be an integer or float" unless value && (value.is_a?(Integer) || value.is_a?(Float))
-    end
-
-    def ensure_method_maintained_across_redirects(options)
-      unless options.key?(:maintain_method_across_redirects)
-        options[:maintain_method_across_redirects] = true
-      end
     end
 
     def perform_request(http_method, path, options, &block) #:nodoc:
