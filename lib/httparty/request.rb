@@ -191,9 +191,7 @@ module HTTParty
     end
 
     def _dump(_level)
-      opts = options.dup
-      opts.delete(:logger)
-      opts.delete(:parser) if opts[:parser] && opts[:parser].is_a?(Proc)
+      opts = options.reject { |key, value| value.is_a?(Proc) || %i[logger debug_output].include?(key) }
       Marshal.dump([http_method, path, opts, last_response, @last_uri, @raw_request])
     end
 
