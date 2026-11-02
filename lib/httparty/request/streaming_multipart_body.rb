@@ -110,6 +110,7 @@ module HTTParty
           if chunk
             return chunk
           else
+            value.rewind if value.respond_to?(:rewind)
             @current_file = nil
             @state = :newline
             return nil
