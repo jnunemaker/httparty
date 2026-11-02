@@ -872,6 +872,27 @@ RSpec.describe HTTParty::Request do
           expect(response.parsed_response).to eq({"hash" => {"foo" => "bar"}})
         end
 
+        context "when the location header has an empty path" do
+          before do
+            @request = HTTParty::Request.new(Net::HTTP::Get, 'http://api.foo.com/a/b/page?x=1', format: :xml)
+            stub_request(:get, /api\.foo\.com/).to_return(body: '<hash><foo>bar</foo></hash>')
+          end
+
+          {
+            '?page=2' => 'http://api.foo.com/a/b/page?page=2',
+            '?q=1#top' => 'http://api.foo.com/a/b/page?q=1'
+          }.each do |location, expected|
+            it "resolves #{location} against the current path" do
+              stub_request(:get, 'http://api.foo.com/a/b/page?x=1')
+                .to_return(status: [302, 'Found'], headers: { location: location })
+              response = @request.perform
+              expect(response.request.uri.to_s).to eq(expected)
+              expect(response.request.uri.to_s).to eq(URI.join('http://api.foo.com/a/b/page?x=1', location).to_s.sub(/#.*/, ''))
+              expect(response.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+            end
+          end
+        end
+
         it "handles multiple redirects and relative location headers on different hosts" do
           @request = HTTParty::Request.new(Net::HTTP::Get, 'http://test.com/redirect', format: :xml)
           stub_request(:get, 'http://test.com/redirect')
