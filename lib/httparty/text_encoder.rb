@@ -11,7 +11,7 @@ module HTTParty
     end
 
     def call
-      if can_encode?
+      if charset
         encoded_text
       else
         text
@@ -19,10 +19,6 @@ module HTTParty
     end
 
     private
-
-    def can_encode?
-      ''.respond_to?(:encoding) && charset
-    end
 
     def encoded_text
       if 'utf-16'.casecmp(charset) == 0
