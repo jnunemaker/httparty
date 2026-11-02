@@ -72,6 +72,8 @@ module Net
           non_quoted = $1.gsub(/(\w+)="(.*?)"/) { params[$1] = $2 }
           non_quoted.gsub(/(\w+)=([^,]*)/) { params[$1] = $2 }
         end
+        # The server can offer a list, but the client has to answer with one.
+        params['qop'] = 'auth' if params['qop'].to_s.split(',').map(&:strip).include?('auth')
         params
       end
 

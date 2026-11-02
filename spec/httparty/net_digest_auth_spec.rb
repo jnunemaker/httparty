@@ -133,6 +133,47 @@ RSpec.describe Net::HTTPHeader::DigestAuthenticator do
     end
   end
 
+  context "when the server offers more than one quality of protection (qop)" do
+    before do
+      @digest = setup_digest({
+        'www-authenticate' => 'Digest realm="myhost@testrealm.com", nonce="NONCE", qop="auth,auth-int"'
+      })
+    end
+
+    it "should answer with auth alone" do
+      expect(authorization_header).to include('qop="auth"')
+    end
+
+    it "should use auth in the request digest" do
+      request_digest = "md5(md5(Mufasa:myhost@testrealm.com:Circle Of Life):NONCE:00000001:md5(deadbeef):auth:md5(GET:/dir/index.html))"
+      expect(authorization_header).to include(%(response="#{request_digest}"))
+    end
+  end
+
+  context "when the server's qop list has spaces" do
+    before do
+      @digest = setup_digest({
+        'www-authenticate' => 'Digest realm="myhost@testrealm.com", nonce="NONCE", qop="auth-int, auth"'
+      })
+    end
+
+    it "should still answer with auth alone" do
+      expect(authorization_header).to include('qop="auth"')
+    end
+  end
+
+  context "when the server only offers auth-int" do
+    before do
+      @digest = setup_digest({
+        'www-authenticate' => 'Digest realm="myhost@testrealm.com", nonce="NONCE", qop="auth-int"'
+      })
+    end
+
+    it "should keep what the server offered" do
+      expect(authorization_header).to include('qop="auth-int"')
+    end
+  end
+
   context "when quality of protection (qop) is unquoted" do
     before do
       @digest = setup_digest({
