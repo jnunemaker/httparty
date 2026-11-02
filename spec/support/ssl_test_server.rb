@@ -53,7 +53,11 @@ class SSLTestServer
 
       next unless rr && rr.include?(@ssl_server.to_io)
 
-      socket = @ssl_server.accept
+      begin
+        socket = @ssl_server.accept
+      rescue OpenSSL::SSL::SSLError
+        next # A client that can't complete a handshake shouldn't stop the server.
+      end
 
       Thread.new {
         header = []
