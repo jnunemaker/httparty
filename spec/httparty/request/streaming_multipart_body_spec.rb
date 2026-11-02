@@ -23,6 +23,12 @@ RSpec.describe HTTParty::Request::StreamingMultipartBody do
         expect(result).to end_with("--#{boundary}--\r\n")
       end
 
+      it 'leaves the file rewound once it has been read, like the non-streaming body' do
+        subject.read
+
+        expect(file.pos).to eq(0)
+      end
+
       it 'returns same content as non-streaming body' do
         # Create equivalent Body for comparison
         body = HTTParty::Request::Body.new({ avatar: File.open('spec/fixtures/tiny.gif', 'rb') })
