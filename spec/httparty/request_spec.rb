@@ -1688,6 +1688,25 @@ RSpec.describe HTTParty::Request do
     end
   end
 
+  describe "digest auth with a streaming block" do
+    before do
+      stub_request(:get, 'http://api.foo.com/v1').to_return(
+        { status: 401, headers: { 'WWW-Authenticate' => 'Digest realm="r", nonce="n", qop="auth"' }, body: 'denied' },
+        { status: 200, body: 'secret' }
+      )
+    end
+
+    it "passes the authenticated response to the block" do
+      fragments = []
+      request = HTTParty::Request.new(Net::HTTP::Get, 'http://api.foo.com/v1', digest_auth: { username: 'foo', password: 'bar' })
+
+      response = request.perform { |fragment| fragments << [fragment.code, fragment.to_s] }
+
+      expect(fragments).to eq([[401, 'denied'], [200, 'secret']])
+      expect(response.body).to eq('secret')
+    end
+  end
+
   describe "marshalling" do
     it "properly marshals the request object" do
       MarshalFakeResponse = Struct.new(:body) do

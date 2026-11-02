@@ -171,7 +171,7 @@ module HTTParty
         end
 
         handle_host_redirection if response_redirects?
-        result = handle_unauthorized
+        result = handle_unauthorized(&block)
         result ||= handle_response(chunked_body, &block)
         result
       rescue *COMMON_NETWORK_ERRORS => e
