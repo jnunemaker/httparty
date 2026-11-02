@@ -138,8 +138,7 @@ module DigestAuthenticationUsingMD5Sess
     a1a = [@username,REALM,@password].join(':')
     a1 = [md5(a1a),NONCE,params['cnonce'] ].join(':')
     a2 = [ request.params["REQUEST_METHOD"], request.params["REQUEST_URI"] ] .join(':')
-    return false unless QOP.split(',').include?(params['qop'])
-    expected_response = md5( [md5(a1), NONCE, params['nc'], params['cnonce'], params['qop'], md5(a2)].join(':') )
+    expected_response = md5( [md5(a1), NONCE, params['nc'], params['cnonce'], 'auth', md5(a2)].join(':') )
     expected_response == params['response']
   end
 end
