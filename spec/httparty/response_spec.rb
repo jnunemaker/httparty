@@ -451,5 +451,17 @@ RSpec.describe HTTParty::Response do
       expect(marshalled.body).to eq @response.body
       expect(marshalled.code).to eq @response.code
     end
+
+    {
+      'a query string normalizer proc' => { query_string_normalizer: HTTParty::Request::NON_RAILS_QUERY_STRING_NORMALIZER },
+      'a debug output stream' => { debug_output: StringIO.new }
+    }.each do |description, options|
+      it "dumps a response whose request has #{description}" do
+        request = HTTParty::Request.new(Net::HTTP::Get, 'http://example.com/', options)
+        response = HTTParty::Response.new(request, @response_object, @parsed_response, body: 'body')
+
+        expect(Marshal.load(Marshal.dump(response)).code).to eq(response.code)
+      end
+    end
   end
 end
