@@ -60,6 +60,33 @@ RSpec.describe Net::HTTPHeader::DigestAuthenticator do
     end
   end
 
+  context "with cookie attributes in the response header" do
+    before do
+      @digest = setup_digest({
+        'www-authenticate' => 'Digest realm="myhost@testrealm.com"',
+        'Set-Cookie' => 'sid=1; Path=/; HttpOnly'
+      })
+    end
+
+    it "sends the cookie without its attributes" do
+      expect(cookie_header).to eq(['sid=1'])
+    end
+  end
+
+  context "with several Set-Cookie headers in the response" do
+    before do
+      response = Net::HTTPUnauthorized.new('1.1', '401', 'Unauthorized')
+      response['www-authenticate'] = 'Digest realm="myhost@testrealm.com"'
+      response.add_field('Set-Cookie', 'a=1; Path=/')
+      response.add_field('Set-Cookie', 'b=2; Expires=Wed, 21 Oct 2026 07:28:00 GMT; HttpOnly')
+      @digest = setup_digest(response)
+    end
+
+    it "sends every cookie in one header" do
+      expect(cookie_header).to eq(['a=1; b=2'])
+    end
+  end
+
   context "without a cookie value in the response header" do
     before do
       @digest = setup_digest({
