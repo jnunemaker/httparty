@@ -82,6 +82,16 @@ RSpec.describe HTTParty::Logger::CurlFormatter do
         end
       end
 
+      context 'and query is a string' do
+        let(:request) do
+          HTTParty::Request.new(Net::HTTP::Get, '/path', query: 'key=value&other=1')
+        end
+
+        it 'logs the query string as given' do
+          expect(logger).to have_received(:info).with(/Query: \n.*> key=value&other=1/)
+        end
+      end
+
       context 'when request raw_body is present' do
         it 'not logs request body' do
           expect(logger).to have_received(:info).with(/content/)

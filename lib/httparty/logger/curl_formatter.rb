@@ -67,7 +67,8 @@ module HTTParty
         return unless request.options[:query]
 
         log OUT, 'Query: '
-        log_hash request.options[:query]
+        query = request.options[:query]
+        query.respond_to?(:to_hash) ? log_hash(query.to_hash) : log(OUT, query)
       end
 
       def log_response_headers
