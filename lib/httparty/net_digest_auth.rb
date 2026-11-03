@@ -80,11 +80,7 @@ module Net
       # Send back each cookie's name=value only. Attributes like Path and
       # HttpOnly are for the client, and cookies share one header, split by "; ".
       def parse_cookies(response_header)
-        set_cookies = if response_header.respond_to?(:get_fields)
-          response_header.get_fields('Set-Cookie')
-        else
-          Array(response_header['Set-Cookie'])
-        end
+        set_cookies = response_header.respond_to?(:get_fields) ? response_header.get_fields('Set-Cookie') : response_header['Set-Cookie']
         cookies = Array(set_cookies).map { |cookie| cookie.split(';', 2).first.to_s.strip }.reject(&:empty?)
         cookies.empty? ? [] : [cookies.join('; ')]
       end
