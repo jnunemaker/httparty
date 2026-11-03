@@ -41,7 +41,7 @@ module HTTParty
       def log_response
         log IN, "HTTP/#{response.http_version} #{response.code}"
         log_response_headers
-        log IN, "\n#{response.body}"
+        log IN, "\n#{utf8(response.body)}"
         log IN
       end
 
@@ -82,7 +82,23 @@ module HTTParty
       end
 
       def log(direction, line = '')
-        messages << "[#{TAG_NAME}] [#{current_time}] #{direction} #{line}"
+        messages << "[#{TAG_NAME}] [#{current_time}] #{direction} #{utf8(line)}"
+      end
+
+      # Bodies, headers and query values arrive in whatever encoding the request
+      # or the response happened to use: BINARY for uploads and binary response
+      # bodies, or any charset a response declared. Mixing those with the UTF-8
+      # log lines raises Encoding::CompatibilityError, either here or in the
+      # final join, which takes the whole request down just to write a log line.
+      # Convert instead, replacing the bytes that do not survive the trip, so a
+      # binary body still shows whatever text it contains.
+      def utf8(line)
+        string = line.to_s
+        return string if string.encoding == Encoding::UTF_8 && string.valid_encoding?
+
+        string.encode(Encoding::UTF_8, invalid: :replace, undef: :replace)
+      rescue Encoding::ConverterNotFoundError
+        string.dup.force_encoding(Encoding::UTF_8).scrub
       end
 
       def current_time
