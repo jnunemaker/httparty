@@ -64,10 +64,10 @@ module HTTParty
       end
 
       def log_query
-        return unless request.options[:query]
+        query = request.options[:query]
+        return unless query
 
         log OUT, 'Query: '
-        query = request.options[:query]
         query.respond_to?(:to_hash) ? log_hash(query.to_hash) : log(OUT, query)
       end
 
