@@ -77,17 +77,12 @@ module Net
         params
       end
 
+      # Send back each cookie's name=value only. Attributes like Path and
+      # HttpOnly are for the client, and cookies share one header, split by "; ".
       def parse_cookies(response_header)
-        return [] unless response_header['Set-Cookie']
-
-        cookies = response_header['Set-Cookie'].split('; ')
-
-        cookies.reduce([]) do |ret, cookie|
-          ret << cookie
-          ret
-        end
-
-        cookies
+        set_cookies = response_header.respond_to?(:get_fields) ? response_header.get_fields('Set-Cookie') : response_header['Set-Cookie']
+        cookies = Array(set_cookies).map { |cookie| cookie.split(';', 2).first.to_s.strip }.reject(&:empty?)
+        cookies.empty? ? [] : [cookies.join('; ')]
       end
 
       def opaque_present?
