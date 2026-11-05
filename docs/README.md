@@ -225,7 +225,7 @@ JSON.parse(your_decompression_handling(res.body, encoding))
 
 ## Timeouts and Retries
 
-HTTParty doesn't set timeouts of its own, so a request uses Net::HTTP's defaults: 60 seconds to open the connection, and 60 seconds for each read and each write. Set shorter ones for anything a person is waiting on:
+HTTParty doesn't set timeouts of its own, so a request uses Net::HTTP's defaults: 60 seconds each to open the connection, read and write. Set shorter ones for anything a person is waiting on:
 
 ```ruby
 # One request
@@ -241,12 +241,17 @@ class Client
 end
 ```
 
-`open_timeout`, `read_timeout` and `write_timeout` take precedence over `timeout`. Values must be an Integer or a Float. The class methods raise `ArgumentError` for anything else, but a request option of another type, such as a String read from `ENV`, is ignored and the 60 second defaults apply, so convert it first (`Integer(ENV['API_TIMEOUT'])`).
+`open_timeout`, `read_timeout` and `write_timeout` take precedence over `timeout`. Timeouts must be an Integer or a Float, and `max_retries` an Integer. The timeout class methods raise `ArgumentError` for anything else, but a request option of another type is silently ignored, so convert values read from `ENV` first (`Integer(ENV['API_TIMEOUT'])`).
 
 A timeout raises `Net::OpenTimeout`, `Net::ReadTimeout` or `Net::WriteTimeout` (all `Timeout::Error`s), or `HTTParty::NetworkError` when `foul` is on.
 
-Net::HTTP retries a request once, right away, if reading the response times out or the connection drops, but only for idempotent methods (GET, HEAD, PUT, DELETE, OPTIONS and TRACE). So a GET with `read_timeout: 5` can take about 10 seconds before it raises. POST and PATCH aren't retried, and neither is a connection that fails to open. Use `max_retries` to change the number of retries:
+Net::HTTP retries a request once, right away, if it times out or the connection fails after it opens, but only for idempotent methods (GET, HEAD, PUT, DELETE, OPTIONS and TRACE). A connection that fails to open isn't retried. So a GET with `read_timeout: 5` can take about 10 seconds before it raises. Use `max_retries` to change the number of retries:
 
 ```ruby
-HTTParty.get('https://example.com', read_timeout: 5, max_retries: 0) # raises after about 5 seconds
+HTTParty.get('https://example.com', read_timeout: 5, max_retries: 0)
+
+class Client
+  include HTTParty
+  default_options[:max_retries] = 0
+end
 ```
