@@ -106,6 +106,26 @@ RSpec.describe HTTParty::Response do
         end
       end
 
+      context "when raise_on is the documented '3..' pattern" do
+        let(:raise_on) { ['3..'] }
+
+        context 'and the response is a 3xx' do
+          let(:response) { Net::HTTPMovedPermanently.new('1.1', 301, body) }
+
+          it 'throws exception' do
+            expect{ subject }.to raise_error(HTTParty::ResponseError, "Code 301 - #{body}")
+          end
+        end
+
+        context 'and the status only contains a 3' do
+          let(:response) { Net::HTTPForbidden.new('1.1', 403, body) }
+
+          it 'does not throw exception' do
+            expect{ subject }.not_to raise_error
+          end
+        end
+      end
+
       context 'when raise_on is a range' do
         let(:raise_on) { [400..499] }
 

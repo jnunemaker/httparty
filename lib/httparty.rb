@@ -85,11 +85,12 @@ module HTTParty
     end
 
     # Raises HTTParty::ResponseError if the response status matches a code,
-    # range, or regular expression string.
+    # range, or regular expression string. Codes and strings match anywhere
+    # in the status, so '3..' means any 3xx while '3[0-9]*' also matches 403.
     #
     #   class Foo
     #     include HTTParty
-    #     raise_on [404, 500..599, '3[0-9]*']
+    #     raise_on [404, 500..599, '3..']
     #   end
     def raise_on(codes = [])
       default_options[:raise_on] = codes.is_a?(Range) ? [codes] : [*codes]
