@@ -44,7 +44,8 @@ module HTTParty
   # * :+timeout+: timeout in seconds
   # * :+open_timeout+: http connection open_timeout in seconds, overrides timeout if set
   # * :+read_timeout+: http connection read_timeout in seconds, overrides timeout if set
-  # * :+write_timeout+: http connection write_timeout in seconds, overrides timeout if set (Ruby >= 2.6.0 required)
+  # * :+write_timeout+: http connection write_timeout in seconds, overrides timeout if set
+  # * :+max_retries+: http connection max_retries, the number of times Net::HTTP retries an idempotent request
   # * :+debug_output+: see HTTParty::ClassMethods.debug_output.
   # * :+cert_store+: contains certificate data. see method 'attach_ssl_certificates'
   # * :+pem+: contains pem client certificate data. see method 'attach_ssl_certificates'

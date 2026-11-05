@@ -6,6 +6,7 @@ Makes http fun again!
 - [Parsing JSON](#parsing-json)
 - [File Uploads (Multipart)](#file-uploads-multipart)
 - [Working with SSL](#working-with-ssl)
+- [Timeouts and Retries](#timeouts-and-retries)
 
 ## Parsing JSON
 If the response Content Type is `application/json`, HTTParty will parse the response and return Ruby objects such as a hash or array. The default behavior for parsing JSON will return keys as strings. This can be suppressed with the `format` option. To get hash keys as symbols:
@@ -220,4 +221,32 @@ end
 res = HTTParty.get('https://example.com/test.json', skip_decompression: true)
 encoding = res.headers['Content-Encoding']
 JSON.parse(your_decompression_handling(res.body, encoding))
+```
+
+## Timeouts and Retries
+
+HTTParty doesn't set timeouts of its own, so a request uses Net::HTTP's defaults: 60 seconds to open the connection, and 60 seconds for each read and each write. Set shorter ones for anything a person is waiting on:
+
+```ruby
+# One request
+HTTParty.get('https://example.com', timeout: 5) # open, read and write
+HTTParty.get('https://example.com', open_timeout: 2, read_timeout: 10)
+
+# Every request a class makes
+class Client
+  include HTTParty
+  base_uri 'https://example.com'
+  open_timeout 2
+  read_timeout 10
+end
+```
+
+`open_timeout`, `read_timeout` and `write_timeout` take precedence over `timeout`. Values must be an Integer or a Float. The class methods raise `ArgumentError` for anything else, but a request option of another type, such as a String read from `ENV`, is ignored and the 60 second defaults apply, so convert it first (`Integer(ENV['API_TIMEOUT'])`).
+
+A timeout raises `Net::OpenTimeout`, `Net::ReadTimeout` or `Net::WriteTimeout` (all `Timeout::Error`s), or `HTTParty::NetworkError` when `foul` is on.
+
+Net::HTTP retries a request once, right away, if reading the response times out or the connection drops, but only for idempotent methods (GET, HEAD, PUT, DELETE, OPTIONS and TRACE). So a GET with `read_timeout: 5` can take about 10 seconds before it raises. POST and PATCH aren't retried, and neither is a connection that fails to open. Use `max_retries` to change the number of retries:
+
+```ruby
+HTTParty.get('https://example.com', read_timeout: 5, max_retries: 0) # raises after about 5 seconds
 ```
