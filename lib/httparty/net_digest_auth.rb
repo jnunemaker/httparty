@@ -18,8 +18,9 @@ module Net
         add_field('Authorization', v)
       end
 
+      # Net::HTTP joins repeated fields with ", ", but cookies are split by "; ".
       authenticator.cookie_header.each do |v|
-        add_field('Cookie', v)
+        self['Cookie'] = [self['Cookie'], v].compact.join('; ')
       end
     end
 

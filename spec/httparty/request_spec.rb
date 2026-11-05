@@ -234,7 +234,7 @@ RSpec.describe HTTParty::Request do
         expect(response.code).to eq(200)
 
         raw_request = @request.instance_variable_get(:@raw_request)
-        expect(raw_request.get_fields('cookie')).to eql ['request-cookie=test', 'custom-cookie=1234567']
+        expect(raw_request.get_fields('cookie')).to eql ['request-cookie=test; custom-cookie=1234567']
       end
     end
 
