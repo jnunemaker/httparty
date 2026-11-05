@@ -8,7 +8,7 @@ Makes http fun again!
 - [Working with SSL](#working-with-ssl)
 
 ## Parsing JSON
-If the response Content Type is `application/json`, HTTParty will parse the response and return Ruby objects such as a hash or array. The default behavior for parsing JSON will return keys as strings. This can be supressed with the `format` option. To get hash keys as symbols:
+If the response Content Type is `application/json`, HTTParty will parse the response and return Ruby objects such as a hash or array. The default behavior for parsing JSON will return keys as strings. This can be suppressed with the `format` option. To get hash keys as symbols:
 
 ```ruby
 response = HTTParty.get('http://example.com', format: :plain)
@@ -93,7 +93,7 @@ end
 #### Using `ssl_ca_file` option
 
 ```ruby
-# Use this example if you are using a pkcs12 file
+# Use this example to verify the server against the CA certificates in a PEM file
 
 class Client
   include HTTParty
@@ -106,7 +106,7 @@ end
 #### Using `ssl_ca_path` option
 
 ```ruby
-# Use this example if you are using a pkcs12 file
+# Use this example to verify the server against a directory of CA certificates
 
 class Client
   include HTTParty
@@ -160,7 +160,7 @@ are used to control compression (gzip, etc.) over the wire. Refer to
 which is specified in the `Accept` and `Content-Type` headers.)
 
 Unless you have specific requirements otherwise, we recommend to **not** set
-set the `Accept-Encoding` header on HTTParty requests. In this case, `Net::HTTP`
+the `Accept-Encoding` header on HTTParty requests. In this case, `Net::HTTP`
 will set a sensible default compression scheme and automatically decompress the response.
 
 If you explicitly set `Accept-Encoding`, there be dragons:
