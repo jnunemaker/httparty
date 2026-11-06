@@ -37,7 +37,11 @@ module HTTParty
   # [:+http_proxypass+:] Password for proxy server authentication.
   # [:+limit+:] Maximum number of redirects to follow. Takes precedences over :+no_follow+.
   # [:+query+:] Query string, or an object that responds to #to_hash representing it. Normalized according to the same rules as :+body+. If you specify this on a POST, you must use an object which responds to #to_hash. See also HTTParty::ClassMethods.default_params.
-  # [:+timeout+:] Timeout for opening connection and reading data.
+  # [:+timeout+:] Timeout for opening the connection, reading and writing.
+  # [:+open_timeout+:] Timeout for opening the connection. Overrides :+timeout+.
+  # [:+read_timeout+:] Timeout for each read. Overrides :+timeout+.
+  # [:+write_timeout+:] Timeout for each write. Overrides :+timeout+.
+  # [:+max_retries+:] Number of times Net::HTTP retries an idempotent request that times out or fails after connecting. Net::HTTP's default is 1.
   # [:+local_host+:] Local address to bind to before connecting.
   # [:+local_port+:] Local port to bind to before connecting.
   # [:+body_stream+:] Allow streaming to a REST server to specify a body_stream.
@@ -211,7 +215,6 @@ module HTTParty
     end
 
     # Allows setting a default write_timeout for all HTTP calls in seconds
-    # Supported by Ruby > 2.6.0
     #
     #   class Foo
     #     include HTTParty
