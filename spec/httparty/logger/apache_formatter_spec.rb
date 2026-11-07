@@ -39,4 +39,19 @@ RSpec.describe HTTParty::Logger::ApacheFormatter do
       end
     end
   end
+
+  describe "control characters in the request path" do
+    let(:log_message) { "[HTTParty] [#{request_time}] 200 \"GET http://my.domain.com/report[HTTParty] forged 200 \" - " }
+
+    it "strips CR/LF so a crafted path cannot forge a second log line" do
+      request_double = double(
+        'Request',
+        http_method: Net::HTTP::Get,
+        path: "http://my.domain.com/report\r\n[HTTParty] forged 200 "
+      )
+      response_double = double(code: 200, :[] => nil)
+
+      subject.format(request_double, response_double)
+    end
+  end
 end
