@@ -8,19 +8,18 @@ module HTTParty
 
     # borrowed from Rails 3.2 ActiveSupport
     def self.hash_deep_dup(hash)
-      duplicate = hash.dup
-
-      duplicate.each_pair do |key, value|
-        if value.is_a?(Hash)
+      case hash
+      when Hash
+        hash.each_with_object(hash.dup) do |(key, value), duplicate|
           duplicate[key] = hash_deep_dup(value)
-        elsif value.is_a?(Proc)
-          duplicate[key] = value.dup
-        else
-          duplicate[key] = value
         end
+      when Array
+        hash.map { |value| hash_deep_dup(value) }
+      when Proc
+        hash.dup
+      else
+        hash
       end
-
-      duplicate
     end
 
     module ClassMethods #:nodoc:
