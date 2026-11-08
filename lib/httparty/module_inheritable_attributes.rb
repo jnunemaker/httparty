@@ -7,18 +7,19 @@ module HTTParty
     end
 
     # borrowed from Rails 3.2 ActiveSupport
-    def self.hash_deep_dup(hash)
-      case hash
+    def self.hash_deep_dup(object)
+      case object
       when Hash
-        hash.each_with_object(hash.dup) do |(key, value), duplicate|
+        object.each_with_object(object.dup) do |(key, value), duplicate|
           duplicate[key] = hash_deep_dup(value)
         end
       when Array
-        hash.map { |value| hash_deep_dup(value) }
+        copy = object.dup.map! { |value| hash_deep_dup(value) }
+        object.frozen? ? copy.freeze : copy
       when Proc
-        hash.dup
+        object.dup
       else
-        hash
+        object
       end
     end
 
@@ -43,8 +44,8 @@ module HTTParty
           if instance_variable_get(ivar).respond_to?(:merge)
             subclass.class_eval <<~RUBY, __FILE__, __LINE__ + 1
               def self.#{inheritable_attribute}
-                duplicate = ModuleInheritableAttributes.hash_deep_dup(#{ivar})
-                #{ivar} = superclass.#{inheritable_attribute}.merge(duplicate)
+                duplicate = superclass.#{inheritable_attribute}.merge(#{ivar})
+                #{ivar} = ModuleInheritableAttributes.hash_deep_dup(duplicate)
               end
             RUBY
           end
