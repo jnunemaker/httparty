@@ -19,7 +19,7 @@ RSpec.describe HTTParty::Request::Body, 'hash-like multipart input' do
   end
 
   it 'serializes and streams files in a hash-like object with identical bytes' do
-    File.open('spec/fixtures/tiny.gif', 'rb') do |file|
+    File.open(File.expand_path('../../fixtures/tiny.gif', __dir__), 'rb') do |file|
       body = described_class.new(wrapper.new({ avatar: file, name: 'Ada' }))
       expect(body.multipart?).to be true
       buffered = body.call
@@ -33,17 +33,17 @@ RSpec.describe HTTParty::Request::Body, 'hash-like multipart input' do
     normalizer = ->(value) { "custom:#{value.to_hash[:name]}" }
     expect(described_class.new(input, query_string_normalizer: normalizer).call).to eq('custom:Ada')
   end
+
   it 'normalizes a non-multipart hash-like input through the default normalizer' do
     expect(described_class.new(wrapper.new({ name: 'Ada' })).call).to eq('name=Ada')
   end
 
   it 'serializes files nested in another hash-like value' do
-    File.open('spec/fixtures/tiny.gif', 'rb') do |file|
+    File.open(File.expand_path('../../fixtures/tiny.gif', __dir__), 'rb') do |file|
       body = described_class.new(wrapper.new({ user: wrapper.new({ avatar: file }) }))
       buffered = body.call
       expect(buffered).to include('name="user[avatar]"', 'filename="tiny.gif"', 'GIF89a')
       expect(body.to_stream.read).to eq(buffered)
     end
   end
-
 end
