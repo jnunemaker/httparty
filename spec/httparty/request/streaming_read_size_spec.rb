@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'stringio'
 
 RSpec.describe HTTParty::Request::StreamingMultipartBody, 'bounded reads' do
   let(:boundary) { 'read-boundary' }
@@ -37,5 +38,26 @@ RSpec.describe HTTParty::Request::StreamingMultipartBody, 'bounded reads' do
     expect(stream.read(3, output)).to equal(output)
     expect(output).to eq(expected.byteslice(0, 3))
     expect(output + stream.read).to eq(expected)
+  end
+
+  it 'preserves text/file transitions and declared size with bounded reads' do
+    [1, 7, 64].each do |length|
+      file = StringIO.new("binary\x00\xFF".b)
+      def file.path
+        'upload.txt'
+      end
+      mixed = [['first', 'a' * 200, false], ['file', file, true], ['last', 'b' * 200, false]]
+      stream = described_class.new(mixed, boundary)
+      expected = stream.read
+      stream.rewind
+      chunks = []
+      while (chunk = stream.read(length))
+        expect(chunk.bytesize).to be <= length
+        chunks << chunk
+      end
+      expect(chunks.join).to eq(expected)
+      expect(chunks.join.bytesize).to eq(stream.size)
+      expect(file.pos).to eq(0)
+    end
   end
 end
