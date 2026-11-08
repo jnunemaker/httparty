@@ -30,6 +30,7 @@ RSpec.describe HTTParty::ModuleInheritableAttributes, 'array option isolation' d
     expect(child.default_options[:raise_on]).to eq([404])
     expect(grandchild.default_options[:raise_on]).to eq([404, 500])
   end
+
   it 'isolates arrays and nested hashes added to the parent after subclasses exist' do
     parent = Class.new { include HTTParty }
     child = Class.new(parent)
@@ -61,5 +62,4 @@ RSpec.describe HTTParty::ModuleInheritableAttributes, 'array option isolation' d
     expect(values[0][:tags]).to eq(['one'])
     expect { copy << 'more' }.to raise_error(FrozenError)
   end
-
 end
