@@ -18,6 +18,7 @@ module HTTParty
 
     private
 
+    # Callable values receive zero arguments or the positional request options hash.
     def process_dynamic_headers
       options[:headers].each_with_object({}) do |header, processed_headers|
         key, value = header
