@@ -34,7 +34,8 @@ module HTTParty
     end
 
     def parsed_response
-      @parsed_response ||= @parsed_block.call
+      return @parsed_response if defined?(@parsed_response)
+      @parsed_response = @parsed_block.call
     end
 
     def code
