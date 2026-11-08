@@ -41,7 +41,7 @@ module HTTParty
       end
 
       def prepared_parts
-        normalized_params = params.flat_map { |key, value| HashConversions.normalize_keys(key, value) }
+        normalized_params = params.to_hash.flat_map { |key, value| HashConversions.normalize_keys(key, value) }
         normalized_params.map do |key, value|
           [key, value, file?(value)]
         end
@@ -57,7 +57,7 @@ module HTTParty
       }.freeze
 
       def generate_multipart
-        normalized_params = params.flat_map { |key, value| HashConversions.normalize_keys(key, value) }
+        normalized_params = params.to_hash.flat_map { |key, value| HashConversions.normalize_keys(key, value) }
 
         multipart = normalized_params.inject(''.b) do |memo, (key, value)|
           memo << "--#{boundary}#{NEWLINE}".b
