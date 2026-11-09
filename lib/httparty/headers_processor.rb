@@ -18,11 +18,13 @@ module HTTParty
 
     private
 
+    # Callable values receive zero arguments or the positional request options hash.
     def process_dynamic_headers
       options[:headers].each_with_object({}) do |header, processed_headers|
         key, value = header
         processed_headers[key] = if value.respond_to?(:call)
-                                   value.arity == 0 ? value.call : value.call(options)
+                                   arity = value.respond_to?(:arity) ? value.arity : value.method(:call).arity
+                                   arity == 0 ? value.call : value.call(options)
                                  else
                                    value
                                  end
