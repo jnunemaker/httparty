@@ -334,6 +334,22 @@ RSpec.describe HTTParty::Request do
         end
       end
 
+      it "resolves a location header that is only a query against the redirected path" do
+        @request.last_uri = URI.parse("http://example.com/foo/bar")
+        @request.path = URI.parse("?foo=bar")
+        @request.redirect = true
+
+        expect(@request.uri).to eq(URI.parse("http://example.com/foo/bar?foo=bar"))
+      end
+
+      it "removes dot segments from the location header" do
+        @request.last_uri = URI.parse("http://example.com/foo/bar/baz")
+        @request.path = URI.parse("../qux/./quux")
+        @request.redirect = true
+
+        expect(@request.uri).to eq(URI.parse("http://example.com/foo/qux/quux"))
+      end
+
       it "returns correct path when the server sets the location header to a full uri" do
         @request.last_uri = URI.parse("http://example.com/foo/bar")
         @request.path = URI.parse("http://example.com/bar?foo=bar")
@@ -869,6 +885,16 @@ RSpec.describe HTTParty::Request do
           expect(response.request.path.to_s).to eq("/foo/bar")
           expect(response.request.uri.request_uri).to eq("/foo/bar")
           expect(response.request.uri.to_s).to eq("http://api.foo.com/foo/bar")
+          expect(response.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+        end
+
+        it "redirects if a 300 contains a location header that is only a query" do
+          redirect = stub_response '', 300
+          redirect['location'] = '?foo=bar'
+          ok = stub_response('<hash><foo>bar</foo></hash>', 200)
+          allow(@http).to receive(:request).and_return(redirect, ok)
+          response = @request.perform
+          expect(response.request.uri.to_s).to eq("http://api.foo.com/v1?foo=bar")
           expect(response.parsed_response).to eq({"hash" => {"foo" => "bar"}})
         end
 
