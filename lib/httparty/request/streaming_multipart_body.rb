@@ -15,6 +15,7 @@ module HTTParty
         @header_buffer = nil
         @header_offset = 0
         @footer_sent = false
+        @read_buffer = ''.b
       end
 
       def size
@@ -27,9 +28,11 @@ module HTTParty
         return read_all(outbuf) if length.nil?
 
         while outbuf.bytesize < length
-          chunk = read_chunk(length - outbuf.bytesize)
+          remaining = length - outbuf.bytesize
+          chunk = @read_buffer.empty? ? read_chunk(remaining) : @read_buffer
           break if chunk.nil?
-          outbuf << chunk
+          outbuf << chunk.byteslice(0, remaining)
+          @read_buffer = chunk.byteslice(remaining..-1) || ''.b
         end
 
         outbuf.empty? ? nil : outbuf
@@ -42,6 +45,7 @@ module HTTParty
         @header_buffer = nil
         @header_offset = 0
         @footer_sent = false
+        @read_buffer = ''.b
         @parts.each do |_key, value, _is_file|
           value.rewind if value.respond_to?(:rewind)
         end
@@ -50,6 +54,8 @@ module HTTParty
       private
 
       def read_all(outbuf)
+        outbuf << @read_buffer
+        @read_buffer = ''.b
         while (chunk = read_chunk(CHUNK_SIZE))
           outbuf << chunk
         end
