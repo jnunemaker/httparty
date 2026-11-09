@@ -1093,6 +1093,21 @@ RSpec.describe HTTParty::Request do
           expect(@request.options[:body]).to be_nil
         end
 
+        it 'should drop the content headers before resulting GET requests' do
+          requests = []
+          allow(@http).to receive(:request) do |request|
+            requests << request
+            requests.size == 1 ? @redirect : @ok
+          end
+          @request.http_method = Net::HTTP::Post
+          @request.options[:body] = '{"text":"something"}'
+          @request.options[:headers] = { 'Content-Type' => 'application/json', 'Accept' => 'application/xml' }
+          expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+          expect(requests.last).to be_a(Net::HTTP::Get)
+          expect(requests.last['Content-Type']).to be_nil
+          expect(requests.last['Accept']).to eq('application/xml')
+        end
+
         it 'should log the redirection' do
           logger_double = double
           expect(logger_double).to receive(:info).twice
