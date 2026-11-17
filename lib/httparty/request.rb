@@ -81,8 +81,14 @@ module HTTParty
 
       @path = if uri.is_a?(uri_adapter)
         uri
-      elsif String.try_convert(uri)
-        uri_adapter.parse(uri).normalize
+      elsif (uri_str = String.try_convert(uri))
+        # Normalizing an empty path with the default URI adapter turns it
+        # into "/", appending an unwanted trailing slash when combined with
+        # a base_uri (breaking e.g. SOAP endpoints). Skip normalization for
+        # empty paths and otherwise let the uri adapter normalize as before.
+        # See https://github.com/jnunemaker/httparty/issues/742
+        parsed_uri = uri_adapter.parse(uri_str)
+        uri_str.empty? ? parsed_uri : parsed_uri.normalize
       else
         raise ArgumentError,
           "bad argument (expected #{uri_adapter} object or URI string)"
