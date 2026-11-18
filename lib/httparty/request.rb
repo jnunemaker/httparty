@@ -340,7 +340,9 @@ module HTTParty
         logger = HTTParty::Logger.build(options[:logger], options[:log_level], options[:log_format])
         logger.format(self, last_response)
       end
-      self.path       = last_response['location']
+      # Redirect targets are normalized up front, as they always have been, so
+      # an empty or query-only Location keeps its existing behavior.
+      self.path       = options[:uri_adapter].parse(last_response['location']).normalize
       self.redirect   = true
       if last_response.class == Net::HTTPSeeOther
         unless options[:maintain_method_across_redirects] && options[:resend_on_redirect]

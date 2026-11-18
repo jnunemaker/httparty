@@ -407,6 +407,20 @@ RSpec.describe HTTParty::Request do
       end
     end
 
+    context "when a redirect Location refers to the current resource" do
+      # Redirect targets keep their 0.24 handling: they are normalized before
+      # being resolved, so these go to the host root.
+      ["", "?page=2"].each do |location|
+        it "follows Location #{location.inspect} as before (unchanged)" do
+          stub_request(:get, "http://example.com/foo/bar")
+            .to_return(status: 302, headers: { "Location" => location })
+          target = stub_request(:get, "http://example.com/#{location}").to_return(body: "ok")
+          HTTParty::Request.new(Net::HTTP::Get, "http://example.com/foo/bar").perform
+          expect(target).to have_been_requested
+        end
+      end
+    end
+
     context "redirects" do
       it "returns correct path when the server sets the location header to a filename" do
         @request.last_uri = URI.parse("http://example.com/foo/bar")
