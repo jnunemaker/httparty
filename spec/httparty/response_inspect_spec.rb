@@ -19,6 +19,12 @@ RSpec.describe HTTParty::Response, 'with a body that fails to parse' do
     expect(inspect).to include('@response=#<Net::HTTPBadGateway 502 Bad Gateway')
   end
 
+  it 'escapes control characters from the parse error message' do
+    allow(raw).to receive(:body).and_return("\e[2J")
+
+    expect(response.inspect).not_to include("\e")
+  end
+
   it 'pretty prints without raising' do
     expect(response.pretty_inspect).to include('parsed_response=#<JSON::ParserError')
   end

@@ -154,7 +154,7 @@ module HTTParty
     def inspect_parsed_response
       "parsed_response=#{parsed_response.inspect}"
     rescue StandardError => e
-      "parsed_response=#<#{e.class}: #{e.message}>, body=#{body.inspect}"
+      "parsed_response=#<#{e.class}: #{e.message.inspect}>, body=#{body.inspect}"
     end
 
     def code_matches?(matcher)
