@@ -307,6 +307,73 @@ RSpec.describe HTTParty::Request do
   end
 
   describe "#uri" do
+    context "when an empty path gains a trailing slash" do
+      def request_for(path, **options)
+        HTTParty::Request.new(Net::HTTP::Get, path, base_uri: "http://example.com/api/articles", **options)
+      end
+
+      it "keeps the trailing slash for an empty path and warns about the upcoming change" do
+        request = request_for("")
+        expect { request.uri }.to output(%r{\[DEPRECATION\].*\(/api/articles/\).*pass "/" as the path}m).to_stderr
+        expect(request.uri.to_s).to eq("http://example.com/api/articles/")
+      end
+
+      it "keeps the trailing slash for a query-only path and warns" do
+        request = request_for("?a=1")
+        expect { request.uri }.to output(/\[DEPRECATION\]/).to_stderr
+        expect(request.uri.to_s).to eq("http://example.com/api/articles/?a=1")
+      end
+
+      it "keeps the trailing slash for a fragment-only path and warns" do
+        request = request_for("#top")
+        expect { request.uri }.to output(/\[DEPRECATION\]/).to_stderr
+        expect(request.uri.to_s).to eq("http://example.com/api/articles/#top")
+      end
+
+      it "warns when the base_uri was given with a trailing slash" do
+        request = HTTParty::Request.new(Net::HTTP::Get, "", base_uri: "http://example.com/api/")
+        expect { request.uri }.to output(/\[DEPRECATION\]/).to_stderr
+        expect(request.uri.to_s).to eq("http://example.com/api/")
+      end
+
+      it "warns only once per request" do
+        request = request_for("")
+        expect { 3.times { request.uri } }.to output(satisfy { |err| err.scan("[DEPRECATION]").size == 1 }).to_stderr
+      end
+
+      it "does not include credentials or query values in the warning" do
+        request = HTTParty::Request.new(Net::HTTP::Get, "?token=secret", base_uri: "http://user:pass@example.com/api")
+        expect { request.uri }.not_to output(/secret|user:pass/).to_stderr
+      end
+
+      it "does not warn for an explicit slash" do
+        expect { request_for("/").uri }.not_to output.to_stderr
+      end
+
+      it "does not warn for a non-empty path" do
+        expect { request_for("/comments").uri }.not_to output.to_stderr
+      end
+
+      it "does not warn when the base_uri has no path" do
+        request = HTTParty::Request.new(Net::HTTP::Get, "", base_uri: "http://example.com")
+        expect { request.uri }.not_to output.to_stderr
+        expect(request.uri.to_s).to eq("http://example.com/")
+      end
+
+      it "does not warn with the Addressable adapter, which does not add the slash" do
+        request = request_for("", uri_adapter: Addressable::URI)
+        expect { request.uri }.not_to output.to_stderr
+        expect(request.uri.to_s).to eq("http://example.com/api/articles")
+      end
+
+      it "does not warn when following a redirect" do
+        request = request_for("")
+        request.last_uri = URI.parse("http://example.com/api/articles")
+        request.redirect = true
+        expect { request.uri }.not_to output.to_stderr
+      end
+    end
+
     context "redirects" do
       it "returns correct path when the server sets the location header to a filename" do
         @request.last_uri = URI.parse("http://example.com/foo/bar")
