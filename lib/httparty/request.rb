@@ -411,7 +411,7 @@ module HTTParty
 
     def validate
       raise HTTParty::RedirectionTooDeep.new(last_response), 'HTTP redirects too deep' if options[:limit].to_i <= 0
-      raise ArgumentError, 'only get, post, patch, put, delete, move, copy, head, options, mkcol, lock, and unlock methods are supported' unless SupportedHTTPMethods.include?(http_method)
+      raise ArgumentError, "only #{SupportedHTTPMethods.map { |m| m::METHOD.downcase }.join(', ')} methods are supported" unless SupportedHTTPMethods.include?(http_method)
       raise ArgumentError, ':headers must be a hash' if options[:headers] && !options[:headers].respond_to?(:to_hash)
       raise ArgumentError, 'only one authentication method, :basic_auth or :digest_auth may be used at a time' if options[:basic_auth] && options[:digest_auth]
       raise ArgumentError, ':basic_auth must be a hash' if options[:basic_auth] && !options[:basic_auth].respond_to?(:to_hash)
