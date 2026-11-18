@@ -85,11 +85,16 @@ module HTTParty
         messages << "[#{TAG_NAME}] [#{current_time}] #{direction} #{encode_log(line)}"
       end
 
-      # Logger lines are joined later. A binary response body is ASCII-8BIT, and
-      # joining that with a UTF-8 line (a non-ASCII URL or header) raises.
+      # Logger lines are joined later, which raises if they mix encodings (a
+      # binary body next to a non-ASCII header). Binary is relabeled as UTF-8;
+      # other charsets are converted so their text survives.
       def encode_log(line)
-        text = line.to_s.dup.force_encoding(Encoding::UTF_8)
-        text.valid_encoding? ? text : text.scrub
+        text = line.to_s
+        if text.encoding == Encoding::BINARY
+          text.dup.force_encoding(Encoding::UTF_8).scrub
+        else
+          text.encode(Encoding::UTF_8, invalid: :replace, undef: :replace)
+        end
       end
 
       def current_time
