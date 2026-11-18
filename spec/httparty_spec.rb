@@ -155,6 +155,14 @@ RSpec.describe HTTParty do
       expect(@klass.headers).to eq(init_headers)
     end
 
+    it "sends one-off headers from an object that responds to #to_hash" do
+      request_headers = double(to_hash: { 'X-Token' => 'abc' })
+
+      stub_request(:get, "http://example.com/").with(headers: { 'X-Token' => 'abc' })
+
+      @klass.get('http://example.com/', headers: request_headers)
+    end
+
     it "should pass options as argument to header block value" do
       init_headers = { 'foo' => lambda { |options| options[:body] } }
       @klass.headers init_headers
@@ -260,6 +268,13 @@ RSpec.describe HTTParty do
       expect do
         @klass.cookies("nonsense")
       end.to raise_error(ArgumentError)
+    end
+
+    it "accepts an object that responds to #to_hash at the class level" do
+      @klass.cookies(double(to_hash: { type: "snickerdoodle" }))
+
+      expect_cookie_header "type=snickerdoodle"
+      @klass.get("")
     end
 
     it "should allow a cookie to be specified with a one-off request" do
