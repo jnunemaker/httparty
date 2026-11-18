@@ -28,7 +28,7 @@ module HTTParty
   end
 
   # == Common Request Options
-  # Request methods (get, post, patch, put, delete, head, options) all take a common set of options. These are:
+  # Request methods (get, post, patch, put, delete, move, copy, head, options, mkcol, lock, unlock) all take a common set of options. These are:
   #
   # [:+body+:] Body of the request. If passed an object that responds to #to_hash, will try to normalize it first, by default passing it to ActiveSupport::to_params. Any other kind of object will get used as-is.
   # [:+http_proxyaddr+:] Address of proxy server to use.
@@ -684,6 +684,18 @@ module HTTParty
 
   def self.options(*args, &block)
     Basement.options(*args, &block)
+  end
+
+  def self.mkcol(*args, &block)
+    Basement.mkcol(*args, &block)
+  end
+
+  def self.lock(*args, &block)
+    Basement.lock(*args, &block)
+  end
+
+  def self.unlock(*args, &block)
+    Basement.unlock(*args, &block)
   end
 
   def self.build_request(*args, &block)

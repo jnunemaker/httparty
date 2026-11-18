@@ -1114,7 +1114,7 @@ RSpec.describe HTTParty do
   end
 
   describe "module-level request methods" do
-    [:post, :patch, :put, :delete, :move, :copy, :head, :options].each do |verb|
+    [:post, :patch, :put, :delete, :move, :copy, :head, :options, :mkcol, :lock, :unlock].each do |verb|
       it "sends #{verb.to_s.upcase} with HTTParty.#{verb}" do
         stub_request(verb, "http://example.com/resource").to_return(headers: { "X-Verb" => verb.to_s })
         expect(HTTParty.public_send(verb, "http://example.com/resource").headers["x-verb"]).to eq(verb.to_s)
