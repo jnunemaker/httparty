@@ -39,6 +39,22 @@ RSpec.describe HTTParty::HeadersProcessor do
     end
   end
 
+  context 'when request specific headers respond to #to_hash' do
+    let(:request_headers) do
+      Class.new do
+        def to_hash
+          { accept: 'text/html', 'x-version' => -> { 'abc'.reverse } }
+        end
+      end.new
+    end
+
+    let(:options) { { headers: request_headers } }
+
+    it 'returns stringified and processed request specific headers' do
+      expect(headers).to eq('accept' => 'text/html', 'x-version' => 'cba')
+    end
+  end
+
   context 'when headers are dynamic' do
     let(:global_headers) { {'x-version' => -> { 'abc'.reverse } } }
 
