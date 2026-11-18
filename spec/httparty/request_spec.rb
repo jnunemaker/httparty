@@ -307,6 +307,52 @@ RSpec.describe HTTParty::Request do
   end
 
   describe "#uri" do
+    context "when the path is an empty string" do
+      it "does not append a trailing slash to the base_uri path" do
+        request = HTTParty::Request.new(
+          Net::HTTP::Get,
+          "",
+          base_uri: "http://example.com/api/articles"
+        )
+        expect(request.uri.to_s).to eq("http://example.com/api/articles")
+      end
+
+      it "leaves normalization of the path to the uri adapter" do
+        request = HTTParty::Request.new(
+          Net::HTTP::Get,
+          "",
+          base_uri: "http://example.com/api/articles",
+          uri_adapter: Addressable::URI
+        )
+        expect(request.uri.to_s).to eq("http://example.com/api/articles")
+      end
+
+      it "accepts path objects that convert to strings with to_str" do
+        string_like = Object.new
+        def string_like.to_str
+          ""
+        end
+        request = HTTParty::Request.new(
+          Net::HTTP::Get,
+          string_like,
+          base_uri: "http://example.com/api/articles"
+        )
+        expect(request.uri.to_s).to eq("http://example.com/api/articles")
+      end
+
+      it "sends the request without a trailing slash" do
+        stub = stub_request(:post, "http://example.com/LDBSVWS/ldbsv12.asmx")
+        request = HTTParty::Request.new(
+          Net::HTTP::Post,
+          "",
+          base_uri: "http://example.com/LDBSVWS/ldbsv12.asmx",
+          body: "x"
+        )
+        request.perform
+        expect(stub).to have_been_requested
+      end
+    end
+
     context "redirects" do
       it "returns correct path when the server sets the location header to a filename" do
         @request.last_uri = URI.parse("http://example.com/foo/bar")
