@@ -82,13 +82,14 @@ module HTTParty
       @path = if uri.is_a?(uri_adapter)
         uri
       elsif (uri_str = String.try_convert(uri))
-        # Normalizing an empty path with the default URI adapter turns it
-        # into "/", appending an unwanted trailing slash when combined with
-        # a base_uri (breaking e.g. SOAP endpoints). Skip normalization for
-        # empty paths and otherwise let the uri adapter normalize as before.
+        # Normalizing an empty path ("", "?query" or "#fragment") with the
+        # default URI adapter turns it into "/", which appends an unwanted
+        # trailing slash to the base_uri path (breaking e.g. SOAP endpoints).
+        # Such a reference means the base_uri itself (RFC 3986 section 5.2.2),
+        # so leave it alone and let the uri adapter normalize everything else.
         # See https://github.com/jnunemaker/httparty/issues/742
         parsed_uri = uri_adapter.parse(uri_str)
-        uri_str.empty? ? parsed_uri : parsed_uri.normalize
+        empty_path_reference?(parsed_uri) ? parsed_uri : parsed_uri.normalize
       else
         raise ArgumentError,
           "bad argument (expected #{uri_adapter} object or URI string)"
@@ -447,6 +448,12 @@ module HTTParty
         content_type: content_type,
         assume_utf16_is_big_endian: assume_utf16_is_big_endian
       ).call
+    end
+
+    # A reference with no scheme, host or path ("", "?query" or "#fragment")
+    # refers to the base URI itself (RFC 3986 section 5.2.2).
+    def empty_path_reference?(uri)
+      uri.scheme.nil? && uri.host.nil? && uri.path.to_s.empty?
     end
 
     def validate_uri_safety!(new_uri)

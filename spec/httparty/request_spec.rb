@@ -317,7 +317,9 @@ RSpec.describe HTTParty::Request do
         expect(request.uri.to_s).to eq("http://example.com/api/articles")
       end
 
-      it "leaves normalization of the path to the uri adapter" do
+      it "requests the same URL as before with the Addressable adapter" do
+        # Addressable never added the slash, so this only guards against a
+        # regression for that adapter.
         request = HTTParty::Request.new(
           Net::HTTP::Get,
           "",
@@ -350,6 +352,58 @@ RSpec.describe HTTParty::Request do
         )
         request.perform
         expect(stub).to have_been_requested
+      end
+    end
+
+    # One example per behavior in the 0.25 release notes. Rows marked
+    # "unchanged" request the same URL as 0.24.
+    context "when the path refers to the base_uri itself" do
+      def uri_for(path, base_uri: "http://example.com/api/articles", **options)
+        HTTParty::Request.new(Net::HTTP::Get, path, base_uri: base_uri, **options).uri.to_s
+      end
+
+      it "does not add a trailing slash for an empty path" do
+        expect(uri_for("")).to eq("http://example.com/api/articles")
+      end
+
+      it "does not add a trailing slash for a query-only path" do
+        expect(uri_for("?a=1")).to eq("http://example.com/api/articles?a=1")
+      end
+
+      it "does not add a trailing slash for a fragment-only path" do
+        expect(uri_for("#top")).to eq("http://example.com/api/articles#top")
+      end
+
+      it "does not add a trailing slash when the base_uri was given with one, since base_uri drops it" do
+        expect(uri_for("", base_uri: "http://example.com/api/")).to eq("http://example.com/api")
+      end
+
+      it "merges the query option into the base_uri without a slash" do
+        expect(uri_for("", query: { a: 1 })).to eq("http://example.com/api/articles?a=1")
+      end
+
+      it "keeps the trailing slash for an explicit slash (unchanged)" do
+        expect(uri_for("/")).to eq("http://example.com/api/articles/")
+      end
+
+      it "still requests the root for a base_uri without a path (unchanged)" do
+        expect(uri_for("", base_uri: "http://example.com")).to eq("http://example.com/")
+      end
+
+      it "still appends non-empty paths (unchanged)" do
+        expect(uri_for("/comments")).to eq("http://example.com/api/articles/comments")
+      end
+
+      it "still uses absolute paths as given (unchanged)" do
+        expect(uri_for("http://example.com/other")).to eq("http://example.com/other")
+      end
+
+      it "still normalizes non-empty paths through the uri adapter (unchanged)" do
+        expect(uri_for("HTTP://EXAMPLE.COM/other")).to eq("http://example.com/other")
+      end
+
+      it "accepts an empty URI object (unchanged)" do
+        expect(uri_for(URI(""))).to eq("http://example.com/api/articles")
       end
     end
 
