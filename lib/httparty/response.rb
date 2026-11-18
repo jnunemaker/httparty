@@ -95,12 +95,10 @@ module HTTParty
     end
 
     def pretty_print(pp)
-      parsed = begin
-        parsed_response
-      rescue StandardError
-        return super
-      end
-
+      parsed = parsed_response
+    rescue StandardError
+      super
+    else
       if !parsed.nil? && parsed.respond_to?(:pretty_print)
         parsed.pretty_print(pp)
       else
