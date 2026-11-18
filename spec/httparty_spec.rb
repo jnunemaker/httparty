@@ -156,11 +156,7 @@ RSpec.describe HTTParty do
     end
 
     it "sends one-off headers from an object that responds to #to_hash" do
-      request_headers = Class.new do
-        def to_hash
-          { 'X-Token' => 'abc' }
-        end
-      end.new
+      request_headers = double(to_hash: { 'X-Token' => 'abc' })
 
       stub_request(:get, "http://example.com/").with(headers: { 'X-Token' => 'abc' })
 
@@ -275,13 +271,7 @@ RSpec.describe HTTParty do
     end
 
     it "accepts an object that responds to #to_hash at the class level" do
-      cookies = Class.new do
-        def to_hash
-          { type: "snickerdoodle" }
-        end
-      end.new
-
-      @klass.cookies(cookies)
+      @klass.cookies(double(to_hash: { type: "snickerdoodle" }))
 
       expect_cookie_header "type=snickerdoodle"
       @klass.get("")
