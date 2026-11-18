@@ -255,7 +255,7 @@ module HTTParty
 
     def cookies(h = {})
       raise ArgumentError, 'Cookies must be an object which responds to #to_hash' unless h.respond_to?(:to_hash)
-      default_cookies.add_cookies(h)
+      default_cookies.add_cookies(h.to_hash)
     end
 
     # Proceed to the location header when an HTTP response dictates a redirect.
