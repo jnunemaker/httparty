@@ -78,11 +78,15 @@ module HTTParty
 
     def path=(uri)
       uri_adapter = options[:uri_adapter]
+      @slash_added_to_empty_path = false
 
       @path = if uri.is_a?(uri_adapter)
         uri
       elsif String.try_convert(uri)
-        uri_adapter.parse(uri).normalize
+        parsed_uri = uri_adapter.parse(uri)
+        normalized_uri = parsed_uri.normalize
+        @slash_added_to_empty_path = empty_path_reference?(parsed_uri) && normalized_uri.path == '/'
+        normalized_uri
       else
         raise ArgumentError,
           "bad argument (expected #{uri_adapter} object or URI string)"
@@ -109,6 +113,7 @@ module HTTParty
         new_uri = options[:uri_adapter].parse("#{@last_uri.scheme}:#{path}").normalize
       elsif path.relative?
         new_uri = options[:uri_adapter].parse("#{base_uri}#{path}").normalize
+        warn_about_empty_path_trailing_slash(new_uri) if !redirect && @slash_added_to_empty_path && new_uri.path != '/'
       else
         new_uri = path.clone
       end
@@ -441,6 +446,26 @@ module HTTParty
         content_type: content_type,
         assume_utf16_is_big_endian: assume_utf16_is_big_endian
       ).call
+    end
+
+    # A reference with no scheme, host or path ("", "?query" or "#fragment")
+    # refers to the base URI itself (RFC 3986 section 5.2.2).
+    def empty_path_reference?(uri)
+      uri.scheme.nil? && uri.host.nil? && uri.path.to_s.empty?
+    end
+
+    def warn_about_empty_path_trailing_slash(new_uri)
+      @slash_added_to_empty_path = false # warn once per request
+      trace_line = caller.reject { |line| line.include?('httparty') }.first
+      warning = "[DEPRECATION] HTTParty added a trailing slash to the request path " \
+        "(#{new_uri.path}) because the path passed to the request was empty. " \
+        "In HTTParty 0.25, an empty, query-only (\"?a=1\") or fragment-only path " \
+        "will request the base_uri path as-is, without a trailing slash, matching " \
+        "RFC 3986 and other HTTP clients. To keep the trailing slash, pass \"/\" as the path. " \
+        "For more info refer to: https://github.com/jnunemaker/httparty/issues/742\n" \
+        "#{trace_line}"
+
+      warn(warning)
     end
 
     def validate_uri_safety!(new_uri)
