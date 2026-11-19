@@ -11,6 +11,7 @@ module HTTParty
 
     def call
       return unless options[:headers]
+      raise ArgumentError, ':headers must be a hash' unless options[:headers].respond_to?(:to_hash)
 
       options[:headers] = headers.merge(options[:headers]) if headers.any?
       options[:headers] = Utils.stringify_keys(process_dynamic_headers)
