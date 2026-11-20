@@ -41,7 +41,7 @@ module HTTParty
       def log_response
         log IN, "HTTP/#{response.http_version} #{response.code}"
         log_response_headers
-        log IN, "\n#{response.body}"
+        log IN, "\n", response.body
         log IN
       end
 
@@ -53,7 +53,7 @@ module HTTParty
                 request.path.to_s
               end
 
-        log OUT, "#{http_method} #{uri}"
+        log OUT, http_method, ' ', uri
       end
 
       def log_headers
@@ -74,28 +74,39 @@ module HTTParty
       def log_response_headers
         headers = response.respond_to?(:headers) ? response.headers : response
         response.each_header do |response_header|
-          log IN, "#{response_header.capitalize}: #{headers[response_header]}"
+          log IN, response_header.capitalize, ': ', headers[response_header]
         end
       end
 
       def log_hash(hash)
-        hash.each { |k, v| log(OUT, "#{k}: #{v}") }
+        hash.each { |k, v| log(OUT, k, ': ', v) }
       end
 
-      def log(direction, line = '')
-        messages << "[#{TAG_NAME}] [#{current_time}] #{direction} #{encode_log(line)}"
+      # Each part is converted before it is joined, so values in mixed
+      # encodings can't raise and fail the request just to write a log line.
+      def log(direction, *parts)
+        line = parts.map { |part| encode_log(part) }.join
+        messages << "[#{TAG_NAME}] [#{current_time}] #{direction} #{line}"
       end
 
-      # Logger lines are joined later, which raises if they mix encodings (a
-      # binary body next to a non-ASCII header). Binary is relabeled as UTF-8;
-      # other charsets are converted so their text survives.
-      def encode_log(line)
-        text = line.to_s
-        if text.encoding == Encoding::BINARY
-          text.dup.force_encoding(Encoding::UTF_8).scrub
+      # Binary and broken UTF-8 are relabeled and scrubbed so readable text
+      # survives; other charsets are converted.
+      def encode_log(part)
+        text = part.to_s
+        return text if text.encoding == Encoding::UTF_8 && text.valid_encoding?
+
+        if text.encoding == Encoding::BINARY || text.encoding == Encoding::UTF_8
+          relabel_utf8(text)
         else
           text.encode(Encoding::UTF_8, invalid: :replace, undef: :replace)
         end
+      rescue Encoding::ConverterNotFoundError
+        relabel_utf8(text)
+      end
+
+      def relabel_utf8(text)
+        utf8 = text.dup.force_encoding(Encoding::UTF_8)
+        utf8.valid_encoding? ? utf8 : utf8.scrub
       end
 
       def current_time

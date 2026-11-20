@@ -162,4 +162,53 @@ RSpec.describe HTTParty::Logger::CurlFormatter do
       subject.format(response.request, response)
     end
   end
+
+  describe "#format with non UTF-8 data" do
+    let(:logger)          { double('Logger') }
+    let(:response_object) { Net::HTTPOK.new('1.1', 200, 'OK') }
+    let(:parsed_response) { lambda { nil } }
+    let(:binary_body)     { "\x89PNG\r\n\x1a\n\xff\xd8\xff".b }
+
+    let(:response) do
+      HTTParty::Response.new(request, response_object, parsed_response)
+    end
+
+    let(:request) do
+      HTTParty::Request.new(Net::HTTP::Get, 'http://foo.bar.com/', headers: { 'X-Note' => 'café' })
+    end
+
+    subject { described_class.new(logger, :info) }
+
+    before do
+      allow(logger).to receive(:info)
+      allow(request).to receive(:raw_body).and_return(nil)
+      allow(response_object).to receive_messages(body: binary_body)
+    end
+
+    it 'does not raise when the request body is binary' do
+      allow(request).to receive(:raw_body).and_return("\xff\xfe\x00binary".b)
+      allow(response_object).to receive_messages(body: 'ok')
+
+      expect { subject.format request, response }.not_to raise_error
+    end
+
+    it 'does not raise when the response body is in a non ASCII compatible encoding' do
+      allow(response_object).to receive_messages(body: 'hello'.encode(Encoding::UTF_16LE))
+
+      expect { subject.format request, response }.not_to raise_error
+    end
+
+    it 'does not raise when the response body claims an encoding with no converter' do
+      allow(response_object).to receive_messages(body: binary_body.dup.force_encoding(Encoding::UTF_7))
+
+      expect { subject.format request, response }.not_to raise_error
+    end
+
+    it 'does not raise when a non-ASCII header has a binary value' do
+      request.options[:headers] = { 'X-Café' => "\xFF".b }
+
+      expect { subject.format request, response }.not_to raise_error
+      expect(logger).to have_received(:info).with(include('X-Café: �'))
+    end
+  end
 end
