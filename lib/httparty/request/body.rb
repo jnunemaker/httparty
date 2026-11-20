@@ -91,7 +91,9 @@ module HTTParty
 
       def normalize_query(query)
         if query_string_normalizer
-          query_string_normalizer.call(query)
+          # Normalizers may return an array of pairs, which the query string joins with '&'
+          normalized = query_string_normalizer.call(query)
+          normalized.respond_to?(:to_ary) ? normalized.to_ary.join('&') : normalized
         else
           HashConversions.to_params(query)
         end
