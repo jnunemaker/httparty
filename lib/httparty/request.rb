@@ -341,7 +341,8 @@ module HTTParty
       self.path       = last_response['location']
       self.redirect   = true
       if last_response.class == Net::HTTPSeeOther
-        unless options[:maintain_method_across_redirects] && options[:resend_on_redirect]
+        # A 303 turns the request into a GET, but a HEAD stays a HEAD (RFC 9110)
+        unless options[:maintain_method_across_redirects] && (options[:resend_on_redirect] || http_method == Net::HTTP::Head)
           self.http_method = Net::HTTP::Get
         end
       elsif last_response.code != '307' && last_response.code != '308'
