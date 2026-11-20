@@ -823,18 +823,22 @@ RSpec.describe HTTParty do
       expect(followed).to have_been_requested
     end
 
-    it "keeps the method across a 303 redirect" do
-      stub_request(:head, 'http://example.com/see-other').to_return(status: 303, headers: { 'Location' => 'http://example.com/bar' })
-      followed = stub_request(:head, 'http://example.com/bar')
-      @klass.head('/see-other')
-      expect(followed).to have_been_requested
-    end
+    context "after a 303" do
+      before do
+        stub_request(:head, 'http://example.com/see-other').to_return(status: 303, headers: { 'Location' => 'http://example.com/bar' })
+      end
 
-    it "follows a 303 redirect with GET when the caller turns that off" do
-      stub_request(:head, 'http://example.com/see-other').to_return(status: 303, headers: { 'Location' => 'http://example.com/bar' })
-      followed = stub_request(:get, 'http://example.com/bar')
-      @klass.head('/see-other', maintain_method_across_redirects: false)
-      expect(followed).to have_been_requested
+      it "keeps the method" do
+        followed = stub_request(:head, 'http://example.com/bar')
+        @klass.head('/see-other')
+        expect(followed).to have_been_requested
+      end
+
+      it "follows with GET when the caller turns that off" do
+        followed = stub_request(:get, 'http://example.com/bar')
+        @klass.head('/see-other', maintain_method_across_redirects: false)
+        expect(followed).to have_been_requested
+      end
     end
 
     it "leaves the caller's options hash alone" do

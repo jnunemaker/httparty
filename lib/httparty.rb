@@ -332,8 +332,9 @@ module HTTParty
     # even on redirects that should logically become GET requests.
     # A 303 redirect in HTTP signifies that the redirected url should normally
     # retrieved using a GET request, for instance, it is the output of a previous
-    # POST. maintain_method_across_redirects respects this behavior, but you
-    # can force HTTParty to resend_on_redirect even on 303 responses.
+    # POST. maintain_method_across_redirects respects this behavior (a HEAD
+    # request stays a HEAD), but you can force HTTParty to resend_on_redirect
+    # even on 303 responses.
     #
     # @example
     #   class Foo
