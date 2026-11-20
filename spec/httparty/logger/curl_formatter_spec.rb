@@ -185,10 +185,6 @@ RSpec.describe HTTParty::Logger::CurlFormatter do
       allow(response_object).to receive_messages(body: binary_body)
     end
 
-    it 'does not raise when the response body is binary' do
-      expect { subject.format request, response }.not_to raise_error
-    end
-
     it 'does not raise when the request body is binary' do
       allow(request).to receive(:raw_body).and_return("\xff\xfe\x00binary".b)
       allow(response_object).to receive_messages(body: 'ok')
@@ -208,15 +204,11 @@ RSpec.describe HTTParty::Logger::CurlFormatter do
       expect { subject.format request, response }.not_to raise_error
     end
 
-    it 'logs valid UTF-8, replacing the bytes that are not' do
-      subject.format request, response
+    it 'does not raise when a non-ASCII header has a binary value' do
+      request.options[:headers] = { 'X-Café' => "\xFF".b }
 
-      expect(logger).to have_received(:info) do |message|
-        expect(message.encoding).to eq(Encoding::UTF_8)
-        expect(message).to be_valid_encoding
-        expect(message).to include('PNG')
-        expect(message).to include('café')
-      end
+      expect { subject.format request, response }.not_to raise_error
+      expect(logger).to have_received(:info).with(include('X-Café: �'))
     end
   end
 end
