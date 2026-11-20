@@ -307,70 +307,166 @@ RSpec.describe HTTParty::Request do
   end
 
   describe "#uri" do
-    context "when an empty path gains a trailing slash" do
-      def request_for(path, **options)
-        HTTParty::Request.new(Net::HTTP::Get, path, base_uri: "http://example.com/api/articles", **options)
-      end
-
-      it "keeps the trailing slash for an empty path and warns about the upcoming change" do
-        request = request_for("")
-        expect { request.uri }.to output(%r{\[DEPRECATION\].*\(/api/articles/\).*pass "/" as the path}m).to_stderr
-        expect(request.uri.to_s).to eq("http://example.com/api/articles/")
-      end
-
-      it "keeps the trailing slash for a query-only path and warns" do
-        request = request_for("?a=1")
-        expect { request.uri }.to output(/\[DEPRECATION\]/).to_stderr
-        expect(request.uri.to_s).to eq("http://example.com/api/articles/?a=1")
-      end
-
-      it "keeps the trailing slash for a fragment-only path and warns" do
-        request = request_for("#top")
-        expect { request.uri }.to output(/\[DEPRECATION\]/).to_stderr
-        expect(request.uri.to_s).to eq("http://example.com/api/articles/#top")
-      end
-
-      it "warns when the base_uri was given with a trailing slash" do
-        request = HTTParty::Request.new(Net::HTTP::Get, "", base_uri: "http://example.com/api/")
-        expect { request.uri }.to output(/\[DEPRECATION\]/).to_stderr
-        expect(request.uri.to_s).to eq("http://example.com/api/")
-      end
-
-      it "warns only once per request" do
-        request = request_for("")
-        expect { 3.times { request.uri } }.to output(satisfy { |err| err.scan("[DEPRECATION]").size == 1 }).to_stderr
-      end
-
-      it "does not include credentials or query values in the warning" do
-        request = HTTParty::Request.new(Net::HTTP::Get, "?token=secret", base_uri: "http://user:pass@example.com/api")
-        expect { request.uri }.not_to output(/secret|user:pass/).to_stderr
-      end
-
-      it "does not warn for an explicit slash" do
-        expect { request_for("/").uri }.not_to output.to_stderr
-      end
-
-      it "does not warn for a non-empty path" do
-        expect { request_for("/comments").uri }.not_to output.to_stderr
-      end
-
-      it "does not warn when the base_uri has no path" do
-        request = HTTParty::Request.new(Net::HTTP::Get, "", base_uri: "http://example.com")
-        expect { request.uri }.not_to output.to_stderr
-        expect(request.uri.to_s).to eq("http://example.com/")
-      end
-
-      it "does not warn with the Addressable adapter, which does not add the slash" do
-        request = request_for("", uri_adapter: Addressable::URI)
-        expect { request.uri }.not_to output.to_stderr
+    context "when the path is an empty string" do
+      it "does not append a trailing slash to the base_uri path" do
+        request = HTTParty::Request.new(
+          Net::HTTP::Get,
+          "",
+          base_uri: "http://example.com/api/articles"
+        )
         expect(request.uri.to_s).to eq("http://example.com/api/articles")
       end
 
-      it "does not warn when following a redirect" do
-        request = request_for("")
-        request.last_uri = URI.parse("http://example.com/api/articles")
+      it "requests the same URL as before with the Addressable adapter" do
+        # Addressable never added the slash, so this only guards against a
+        # regression for that adapter.
+        request = HTTParty::Request.new(
+          Net::HTTP::Get,
+          "",
+          base_uri: "http://example.com/api/articles",
+          uri_adapter: Addressable::URI
+        )
+        expect(request.uri.to_s).to eq("http://example.com/api/articles")
+      end
+
+      it "accepts path objects that convert to strings with to_str" do
+        string_like = Object.new
+        def string_like.to_str
+          ""
+        end
+        request = HTTParty::Request.new(
+          Net::HTTP::Get,
+          string_like,
+          base_uri: "http://example.com/api/articles"
+        )
+        expect(request.uri.to_s).to eq("http://example.com/api/articles")
+      end
+
+      it "sends the request without a trailing slash" do
+        stub = stub_request(:post, "http://example.com/LDBSVWS/ldbsv12.asmx")
+        request = HTTParty::Request.new(
+          Net::HTTP::Post,
+          "",
+          base_uri: "http://example.com/LDBSVWS/ldbsv12.asmx",
+          body: "x"
+        )
+        request.perform
+        expect(stub).to have_been_requested
+      end
+    end
+
+    # One example per behavior in the 0.25 release notes. Rows marked
+    # "unchanged" request the same URL as 0.24.
+    context "when the path refers to the base_uri itself" do
+      def uri_for(path, base_uri: "http://example.com/api/articles", **options)
+        HTTParty::Request.new(Net::HTTP::Get, path, base_uri: base_uri, **options).uri.to_s
+      end
+
+      it "does not add a trailing slash for an empty path" do
+        expect(uri_for("")).to eq("http://example.com/api/articles")
+      end
+
+      it "does not add a trailing slash for a query-only path" do
+        expect(uri_for("?a=1")).to eq("http://example.com/api/articles?a=1")
+      end
+
+      it "does not add a trailing slash for a fragment-only path" do
+        expect(uri_for("#top")).to eq("http://example.com/api/articles#top")
+      end
+
+      it "does not add a trailing slash when the base_uri was given with one, since base_uri drops it" do
+        expect(uri_for("", base_uri: "http://example.com/api/")).to eq("http://example.com/api")
+      end
+
+      it "merges the query option into the base_uri without a slash" do
+        expect(uri_for("", query: { a: 1 })).to eq("http://example.com/api/articles?a=1")
+      end
+
+      it "keeps the trailing slash for an explicit slash (unchanged)" do
+        expect(uri_for("/")).to eq("http://example.com/api/articles/")
+      end
+
+      it "still requests the root for a base_uri without a path (unchanged)" do
+        expect(uri_for("", base_uri: "http://example.com")).to eq("http://example.com/")
+      end
+
+      it "still appends non-empty paths (unchanged)" do
+        expect(uri_for("/comments")).to eq("http://example.com/api/articles/comments")
+      end
+
+      it "still uses absolute paths as given (unchanged)" do
+        expect(uri_for("http://example.com/other")).to eq("http://example.com/other")
+      end
+
+      it "still normalizes non-empty paths through the uri adapter (unchanged)" do
+        expect(uri_for("HTTP://EXAMPLE.COM/other")).to eq("http://example.com/other")
+      end
+
+      it "accepts an empty URI object (unchanged)" do
+        expect(uri_for(URI(""))).to eq("http://example.com/api/articles")
+      end
+    end
+
+    # A relative Location resolves against the URL that redirected, as in
+    # RFC 3986 section 5.2 and every browser, curl and URL library.
+    context "when following a relative redirect Location" do
+      {
+        "" => "/foo/start?a=1",
+        "?page=2" => "/foo/start?page=2",
+        "#top" => "/foo/start?a=1",
+        "baz" => "/foo/baz",
+        "./baz" => "/foo/baz",
+        "../baz" => "/baz",
+        "baz/../qux" => "/foo/qux",
+        "../../../baz" => "/baz",
+        "/x" => "/x",
+        "/a/../x" => "/x",
+        "/x?b=2" => "/x?b=2"
+      }.each do |location, expected|
+        [URI, Addressable::URI].each do |adapter|
+          it "requests #{expected} for Location #{location.inspect} with #{adapter}" do
+            stub_request(:get, "http://example.com/foo/start?a=1")
+              .to_return(status: 302, headers: { "Location" => location })
+              .then.to_return(body: "ok")
+            stub_request(:get, %r{\Ahttp://example\.com/(?!foo/start\?a=1\z)}).to_return(body: "ok")
+
+            request = HTTParty::Request.new(Net::HTTP::Get, "http://example.com/foo/start?a=1", uri_adapter: adapter)
+            request.perform
+
+            expect(request.last_uri.to_s).to eq("http://example.com#{expected}")
+            expect(request.path.to_s).to eq(expected)
+          end
+        end
+      end
+
+      it "resolves against the URL of the latest redirect in a chain" do
+        stub_request(:get, "http://example.com/a/b").to_return(status: 302, headers: { "Location" => "c/d" })
+        stub_request(:get, "http://example.com/a/c/d").to_return(status: 302, headers: { "Location" => "../e" })
+        stub_request(:get, "http://example.com/a/e").to_return(body: "ok")
+
+        request = HTTParty::Request.new(Net::HTTP::Get, "http://example.com/a/b")
+        request.perform
+
+        expect(request.last_uri.to_s).to eq("http://example.com/a/e")
+      end
+
+      it "returns the same URL from repeated calls to uri" do
+        request = HTTParty::Request.new(Net::HTTP::Get, "a/b", base_uri: "http://example.com")
+        request.last_uri = URI.parse("http://example.com/foo/bar")
         request.redirect = true
-        expect { request.uri }.not_to output.to_stderr
+
+        expect([request.uri.to_s, request.uri.to_s]).to eq(["http://example.com/foo/a/b"] * 2)
+      end
+
+      it "still uses a Location with a host as given" do
+        stub_request(:get, "http://example.com/foo/start").to_return(status: 302, headers: { "Location" => "//other.example.com/x" })
+        stub_request(:get, "http://other.example.com/x").to_return(body: "ok")
+
+        request = HTTParty::Request.new(Net::HTTP::Get, "http://example.com/foo/start")
+        request.perform
+
+        expect(request.last_uri.to_s).to eq("http://other.example.com/x")
+        expect(request.path.to_s).to eq("//other.example.com/x")
       end
     end
 

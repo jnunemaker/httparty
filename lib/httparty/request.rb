@@ -78,15 +78,18 @@ module HTTParty
 
     def path=(uri)
       uri_adapter = options[:uri_adapter]
-      @slash_added_to_empty_path = false
 
       @path = if uri.is_a?(uri_adapter)
         uri
-      elsif String.try_convert(uri)
-        parsed_uri = uri_adapter.parse(uri)
-        normalized_uri = parsed_uri.normalize
-        @slash_added_to_empty_path = empty_path_reference?(parsed_uri) && normalized_uri.path == '/'
-        normalized_uri
+      elsif (uri_str = String.try_convert(uri))
+        # Normalizing an empty path ("", "?query" or "#fragment") with the
+        # default URI adapter turns it into "/", which appends an unwanted
+        # trailing slash to the base_uri path (breaking e.g. SOAP endpoints).
+        # Such a reference means the base_uri itself (RFC 3986 section 5.2.2),
+        # so leave it alone and let the uri adapter normalize everything else.
+        # See https://github.com/jnunemaker/httparty/issues/742
+        parsed_uri = uri_adapter.parse(uri_str)
+        empty_path_reference?(parsed_uri) ? parsed_uri : parsed_uri.normalize
       else
         raise ArgumentError,
           "bad argument (expected #{uri_adapter} object or URI string)"
@@ -102,18 +105,18 @@ module HTTParty
     end
 
     def uri
-      if redirect && path.relative? && path.path[0] != '/'
-        last_uri_host = @last_uri.path.gsub(/[^\/]+$/, '')
-
-        path.path = "/#{path.path}" if last_uri_host[-1] != '/'
-        path.path = "#{last_uri_host}#{path.path}"
+      # Resolve a relative redirect Location ("baz", "../baz", "?page=2", "")
+      # against the URL that redirected (RFC 3986 section 5.2). Keep it as an
+      # absolute path so later calls resolve it to the same URL. A Location
+      # with a host is used as given below.
+      if redirect && path.relative? && path.host.nil?
+        @path = options[:uri_adapter].parse(request_uri((@last_uri + path).normalize))
       end
 
       if path.relative? && path.host
         new_uri = options[:uri_adapter].parse("#{@last_uri.scheme}:#{path}").normalize
       elsif path.relative?
         new_uri = options[:uri_adapter].parse("#{base_uri}#{path}").normalize
-        warn_about_empty_path_trailing_slash(new_uri) if !redirect && @slash_added_to_empty_path && new_uri.path != '/'
       else
         new_uri = path.clone
       end
@@ -338,7 +341,10 @@ module HTTParty
         logger = HTTParty::Logger.build(options[:logger], options[:log_level], options[:log_format])
         logger.format(self, last_response)
       end
-      self.path       = last_response['location']
+      # A relative Location is resolved against the current URL in #uri, so
+      # it isn't normalized first: Addressable would drop the "../" in it.
+      location        = options[:uri_adapter].parse(last_response['location'])
+      self.path       = location.relative? && location.host.nil? ? location : location.normalize
       self.redirect   = true
       if last_response.class == Net::HTTPSeeOther
         # A 303 turns the request into a GET, but a HEAD stays a HEAD (RFC 9110)
@@ -453,20 +459,6 @@ module HTTParty
     # refers to the base URI itself (RFC 3986 section 5.2.2).
     def empty_path_reference?(uri)
       uri.scheme.nil? && uri.host.nil? && uri.path.to_s.empty?
-    end
-
-    def warn_about_empty_path_trailing_slash(new_uri)
-      @slash_added_to_empty_path = false # warn once per request
-      trace_line = caller.reject { |line| line.include?('httparty') }.first
-      warning = "[DEPRECATION] HTTParty added a trailing slash to the request path " \
-        "(#{new_uri.path}) because the path passed to the request was empty. " \
-        "In HTTParty 0.25, an empty, query-only (\"?a=1\") or fragment-only path " \
-        "will request the base_uri path as-is, without a trailing slash, matching " \
-        "RFC 3986 and other HTTP clients. To keep the trailing slash, pass \"/\" as the path. " \
-        "For more info refer to: https://github.com/jnunemaker/httparty/issues/742\n" \
-        "#{trace_line}"
-
-      warn(warning)
     end
 
     def validate_uri_safety!(new_uri)
