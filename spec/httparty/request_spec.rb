@@ -544,6 +544,13 @@ RSpec.describe HTTParty::Request do
         body = @request.instance_variable_get(:@raw_request).body
         expect(CGI.unescape(body)).to eq("foo=bar&foo=baz&page=1")
       end
+
+      it "joins an array returned by the proc with &, as it does for the query" do
+        @request.options[:query_string_normalizer] = proc { |params| params.map { |key, value| "#{key}=#{value}" } }
+        @request.options[:body] = {page: 1, foo: 'bar'}
+        @request.send(:setup_raw_request)
+        expect(@request.instance_variable_get(:@raw_request).body).to eq("page=1&foo=bar")
+      end
     end
 
     context "when multipart" do
