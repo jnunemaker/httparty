@@ -105,11 +105,12 @@ module HTTParty
     end
 
     def uri
-      if redirect && path.relative? && path.path[0] != '/'
-        last_uri_host = @last_uri.path.gsub(/[^\/]+$/, '')
-
-        path.path = "/#{path.path}" if last_uri_host[-1] != '/'
-        path.path = "#{last_uri_host}#{path.path}"
+      # Resolve a relative redirect Location ("baz", "../baz", "?page=2", "")
+      # against the URL that redirected (RFC 3986 section 5.2). Keep it as an
+      # absolute path so later calls resolve it to the same URL. A Location
+      # with a host is used as given below.
+      if redirect && path.relative? && path.host.nil?
+        @path = options[:uri_adapter].parse(request_uri((@last_uri + path).normalize))
       end
 
       if path.relative? && path.host
@@ -340,9 +341,10 @@ module HTTParty
         logger = HTTParty::Logger.build(options[:logger], options[:log_level], options[:log_format])
         logger.format(self, last_response)
       end
-      # Redirect targets are normalized up front, as they always have been, so
-      # an empty or query-only Location keeps its existing behavior.
-      self.path       = options[:uri_adapter].parse(last_response['location']).normalize
+      # A relative Location is resolved against the current URL in #uri, so
+      # it isn't normalized first: Addressable would drop the "../" in it.
+      location        = options[:uri_adapter].parse(last_response['location'])
+      self.path       = location.relative? && location.host.nil? ? location : location.normalize
       self.redirect   = true
       if last_response.class == Net::HTTPSeeOther
         unless options[:maintain_method_across_redirects] && options[:resend_on_redirect]

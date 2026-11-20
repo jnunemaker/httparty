@@ -407,17 +407,66 @@ RSpec.describe HTTParty::Request do
       end
     end
 
-    context "when a redirect Location refers to the current resource" do
-      # Redirect targets keep their 0.24 handling: they are normalized before
-      # being resolved, so these go to the host root.
-      ["", "?page=2"].each do |location|
-        it "follows Location #{location.inspect} as before (unchanged)" do
-          stub_request(:get, "http://example.com/foo/bar")
-            .to_return(status: 302, headers: { "Location" => location })
-          target = stub_request(:get, "http://example.com/#{location}").to_return(body: "ok")
-          HTTParty::Request.new(Net::HTTP::Get, "http://example.com/foo/bar").perform
-          expect(target).to have_been_requested
+    # A relative Location resolves against the URL that redirected, as in
+    # RFC 3986 section 5.2 and every browser, curl and URL library.
+    context "when following a relative redirect Location" do
+      {
+        "" => "/foo/start?a=1",
+        "?page=2" => "/foo/start?page=2",
+        "#top" => "/foo/start?a=1",
+        "baz" => "/foo/baz",
+        "./baz" => "/foo/baz",
+        "../baz" => "/baz",
+        "baz/../qux" => "/foo/qux",
+        "../../../baz" => "/baz",
+        "/x" => "/x",
+        "/a/../x" => "/x",
+        "/x?b=2" => "/x?b=2"
+      }.each do |location, expected|
+        [URI, Addressable::URI].each do |adapter|
+          it "requests #{expected} for Location #{location.inspect} with #{adapter}" do
+            stub_request(:get, "http://example.com/foo/start?a=1")
+              .to_return(status: 302, headers: { "Location" => location })
+              .then.to_return(body: "ok")
+            stub_request(:get, %r{\Ahttp://example\.com/(?!foo/start\?a=1\z)}).to_return(body: "ok")
+
+            request = HTTParty::Request.new(Net::HTTP::Get, "http://example.com/foo/start?a=1", uri_adapter: adapter)
+            request.perform
+
+            expect(request.last_uri.to_s).to eq("http://example.com#{expected}")
+            expect(request.path.to_s).to eq(expected)
+          end
         end
+      end
+
+      it "resolves against the URL of the latest redirect in a chain" do
+        stub_request(:get, "http://example.com/a/b").to_return(status: 302, headers: { "Location" => "c/d" })
+        stub_request(:get, "http://example.com/a/c/d").to_return(status: 302, headers: { "Location" => "../e" })
+        stub_request(:get, "http://example.com/a/e").to_return(body: "ok")
+
+        request = HTTParty::Request.new(Net::HTTP::Get, "http://example.com/a/b")
+        request.perform
+
+        expect(request.last_uri.to_s).to eq("http://example.com/a/e")
+      end
+
+      it "returns the same URL from repeated calls to uri" do
+        request = HTTParty::Request.new(Net::HTTP::Get, "a/b", base_uri: "http://example.com")
+        request.last_uri = URI.parse("http://example.com/foo/bar")
+        request.redirect = true
+
+        expect([request.uri.to_s, request.uri.to_s]).to eq(["http://example.com/foo/a/b"] * 2)
+      end
+
+      it "still uses a Location with a host as given" do
+        stub_request(:get, "http://example.com/foo/start").to_return(status: 302, headers: { "Location" => "//other.example.com/x" })
+        stub_request(:get, "http://other.example.com/x").to_return(body: "ok")
+
+        request = HTTParty::Request.new(Net::HTTP::Get, "http://example.com/foo/start")
+        request.perform
+
+        expect(request.last_uri.to_s).to eq("http://other.example.com/x")
+        expect(request.path.to_s).to eq("//other.example.com/x")
       end
     end
 
