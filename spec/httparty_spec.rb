@@ -823,6 +823,24 @@ RSpec.describe HTTParty do
       expect(followed).to have_been_requested
     end
 
+    context "after a 303" do
+      before do
+        stub_request(:head, 'http://example.com/see-other').to_return(status: 303, headers: { 'Location' => 'http://example.com/bar' })
+      end
+
+      it "keeps the method" do
+        followed = stub_request(:head, 'http://example.com/bar')
+        @klass.head('/see-other')
+        expect(followed).to have_been_requested
+      end
+
+      it "follows with GET when the caller turns that off" do
+        followed = stub_request(:get, 'http://example.com/bar')
+        @klass.head('/see-other', maintain_method_across_redirects: false)
+        expect(followed).to have_been_requested
+      end
+    end
+
     it "leaves the caller's options hash alone" do
       stub_request(:head, 'http://example.com/bar')
       options = { timeout: 5 }
@@ -1114,7 +1132,7 @@ RSpec.describe HTTParty do
   end
 
   describe "module-level request methods" do
-    [:post, :patch, :put, :delete, :move, :copy, :head, :options].each do |verb|
+    [:post, :patch, :put, :delete, :move, :copy, :head, :options, :mkcol, :lock, :unlock].each do |verb|
       it "sends #{verb.to_s.upcase} with HTTParty.#{verb}" do
         stub_request(verb, "http://example.com/resource").to_return(headers: { "X-Verb" => verb.to_s })
         expect(HTTParty.public_send(verb, "http://example.com/resource").headers["x-verb"]).to eq(verb.to_s)

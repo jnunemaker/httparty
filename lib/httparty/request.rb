@@ -347,7 +347,8 @@ module HTTParty
       self.path       = location.relative? && location.host.nil? ? location : location.normalize
       self.redirect   = true
       if last_response.class == Net::HTTPSeeOther
-        unless options[:maintain_method_across_redirects] && options[:resend_on_redirect]
+        # A 303 turns the request into a GET, but a HEAD stays a HEAD (RFC 9110)
+        unless options[:maintain_method_across_redirects] && (options[:resend_on_redirect] || http_method == Net::HTTP::Head)
           self.http_method = Net::HTTP::Get
         end
       elsif last_response.code != '307' && last_response.code != '308'
@@ -422,7 +423,7 @@ module HTTParty
 
     def validate
       raise HTTParty::RedirectionTooDeep.new(last_response), 'HTTP redirects too deep' if options[:limit].to_i <= 0
-      raise ArgumentError, 'only get, post, patch, put, delete, head, and options methods are supported' unless SupportedHTTPMethods.include?(http_method)
+      raise ArgumentError, "only #{SupportedHTTPMethods.map { |m| m::METHOD.downcase }.join(', ')} methods are supported" unless SupportedHTTPMethods.include?(http_method)
       raise ArgumentError, ':headers must be a hash' if options[:headers] && !options[:headers].respond_to?(:to_hash)
       raise ArgumentError, 'only one authentication method, :basic_auth or :digest_auth may be used at a time' if options[:basic_auth] && options[:digest_auth]
       raise ArgumentError, ':basic_auth must be a hash' if options[:basic_auth] && !options[:basic_auth].respond_to?(:to_hash)

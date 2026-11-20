@@ -640,6 +640,13 @@ RSpec.describe HTTParty::Request do
         body = @request.instance_variable_get(:@raw_request).body
         expect(CGI.unescape(body)).to eq("foo=bar&foo=baz&page=1")
       end
+
+      it "joins an array returned by the proc with &, as it does for the query" do
+        @request.options[:query_string_normalizer] = proc { |params| params.map { |key, value| "#{key}=#{value}" } }
+        @request.options[:body] = {page: 1, foo: 'bar'}
+        @request.send(:setup_raw_request)
+        expect(@request.instance_variable_get(:@raw_request).body).to eq("page=1&foo=bar")
+      end
     end
 
     context "when multipart" do
@@ -1742,7 +1749,7 @@ RSpec.describe HTTParty::Request do
     it "should raise argument error if options method is not http accepted method" do
       expect {
         HTTParty::Request.new('SuperPost', 'http://api.foo.com/v1').perform
-      }.to raise_error(ArgumentError, "only get, post, patch, put, delete, head, and options methods are supported")
+      }.to raise_error(ArgumentError, "only get, post, patch, put, delete, head, options, move, copy, mkcol, lock, unlock methods are supported")
     end
 
     it "should raise argument error if http method is post and query is not hash" do

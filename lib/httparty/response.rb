@@ -53,7 +53,7 @@ module HTTParty
 
     def inspect
       inspect_id = ::Kernel::format '%x', (object_id * 2)
-      %(#<#{self.class}:0x#{inspect_id} parsed_response=#{parsed_response.inspect}, @response=#{response.inspect}, @headers=#{headers.inspect}>)
+      %(#<#{self.class}:0x#{inspect_id} #{inspect_parsed_response}, @response=#{response.inspect}, @headers=#{headers.inspect}>)
     end
 
     CODES_TO_OBJ = ::Net::HTTPResponse::CODE_CLASS_TO_OBJ.merge ::Net::HTTPResponse::CODE_TO_OBJ
@@ -95,8 +95,12 @@ module HTTParty
     end
 
     def pretty_print(pp)
-      if !parsed_response.nil? && parsed_response.respond_to?(:pretty_print)
-        parsed_response.pretty_print(pp)
+      parsed = parsed_response
+    rescue StandardError
+      super
+    else
+      if !parsed.nil? && parsed.respond_to?(:pretty_print)
+        parsed.pretty_print(pp)
       else
         super
       end
@@ -145,6 +149,13 @@ module HTTParty
     end
 
     private
+
+    # Debugging output must not raise, so show a parse error and the raw body.
+    def inspect_parsed_response
+      "parsed_response=#{parsed_response.inspect}"
+    rescue StandardError => e
+      "parsed_response=#<#{e.class}: #{e.message.inspect}>, body=#{body.inspect}"
+    end
 
     def code_matches?(matcher)
       case matcher
