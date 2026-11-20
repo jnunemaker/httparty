@@ -823,6 +823,20 @@ RSpec.describe HTTParty do
       expect(followed).to have_been_requested
     end
 
+    it "keeps the method across a 303 redirect" do
+      stub_request(:head, 'http://example.com/see-other').to_return(status: 303, headers: { 'Location' => 'http://example.com/bar' })
+      followed = stub_request(:head, 'http://example.com/bar')
+      @klass.head('/see-other')
+      expect(followed).to have_been_requested
+    end
+
+    it "follows a 303 redirect with GET when the caller turns that off" do
+      stub_request(:head, 'http://example.com/see-other').to_return(status: 303, headers: { 'Location' => 'http://example.com/bar' })
+      followed = stub_request(:get, 'http://example.com/bar')
+      @klass.head('/see-other', maintain_method_across_redirects: false)
+      expect(followed).to have_been_requested
+    end
+
     it "leaves the caller's options hash alone" do
       stub_request(:head, 'http://example.com/bar')
       options = { timeout: 5 }
