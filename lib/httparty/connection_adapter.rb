@@ -17,7 +17,7 @@ module HTTParty
   #     def connection
   #       puts uri
   #       puts options
-  #       Net::HTTP.new(uri)
+  #       super
   #     end
   #   end
   #
@@ -25,12 +25,12 @@ module HTTParty
   #   class CountingConnectionAdapter < HTTParty::ConnectionAdapter
   #     @@count = 0
   #
-  #     self.count
+  #     def self.count
   #       @@count
   #     end
   #
   #     def connection
-  #       self.count += 1
+  #       @@count += 1
   #       super
   #     end
   #   end
