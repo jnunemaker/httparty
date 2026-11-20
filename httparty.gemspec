@@ -24,7 +24,9 @@ Gem::Specification.new do |s|
   s.post_install_message = "When you HTTParty, you must party hard!"
 
   all_files = `git ls-files`.split("\n")
-  test_files = `git ls-files -- {test,spec,features}/*`.split("\n")
+  # Separate pathspecs, not {test,spec,features}/*: backticks run /bin/sh,
+  # and dash (the /bin/sh on Debian and Ubuntu) doesn't expand braces.
+  test_files = `git ls-files -- test spec features`.split("\n")
   dev_files = `git ls-files -- .github Gemfile Guardfile '.rubocop*' script`.split("\n")
 
   s.files         = all_files - test_files - dev_files
