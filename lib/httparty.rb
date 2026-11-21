@@ -80,7 +80,7 @@ module HTTParty
     #
     #   class Foo
     #     include HTTParty
-    #     logger Logger.new('http_logger'), :info, :apache
+    #     logger ::Logger.new('http_logger'), :info, :apache
     #   end
     def logger(logger, level = :info, format = :apache)
       default_options[:logger]     = logger
@@ -104,7 +104,7 @@ module HTTParty
     #
     #   class Foo
     #     include HTTParty
-    #     http_proxy 'http://foo.com', 80, 'user', 'pass'
+    #     http_proxy 'foo.com', 80, 'user', 'pass'
     #   end
     def http_proxy(addr = nil, port = nil, user = nil, pass = nil)
       default_options[:http_proxyaddr] = addr
@@ -381,6 +381,8 @@ module HTTParty
     # Let's change it to this:
     #  /?selected_ids=1&selected_ids=2&selected_ids=3
     #
+    # (For exactly this format, call disable_rails_query_string_format.)
+    #
     # Pass a Proc to the query normalizer which accepts the yielded query.
     #
     # @example Modifying Array query strings
@@ -388,9 +390,7 @@ module HTTParty
     #     include HTTParty
     #
     #     query_string_normalizer proc { |query|
-    #       query.map do |key, value|
-    #         value.map {|v| "#{key}=#{v}"}
-    #       end.join('&')
+    #       URI.encode_www_form(query)
     #     }
     #   end
     #
