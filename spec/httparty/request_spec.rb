@@ -1717,11 +1717,13 @@ RSpec.describe HTTParty::Request do
         expect(@request.instance_variable_get(:@raw_request)['authorization']).to eq(@authorization)
       end
 
-      it "should send Authorization header when redirecting to a different port on the same host" do
+      # Since curl 7.83 (CVE-2022-27776), curl only sends credentials to the same
+      # host, port and scheme, and so does HTTParty.
+      it "should not send Authorization header when redirecting to a different port on the same host" do
         @redirect['location'] = 'http://api.foo.com:3000/v3'
         @request.perform
         @request.send(:setup_raw_request)
-        expect(@request.instance_variable_get(:@raw_request)['authorization']).to eq(@authorization)
+        expect(@request.instance_variable_get(:@raw_request)['authorization']).to be_nil
       end
 
       context 'when uri path is a relative path' do
