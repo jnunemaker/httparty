@@ -20,6 +20,7 @@ module HTTParty
     ]
 
     SupportedURISchemes  = ['http', 'https', 'webcal', nil]
+    DEFAULT_PORTS = { 'http' => 80, 'https' => 443 }.freeze
     CONTENT_HEADERS = %w[content-encoding content-language content-length content-location content-type].freeze
 
     NON_RAILS_QUERY_STRING_NORMALIZER = proc do |query|
@@ -189,7 +190,7 @@ module HTTParty
     end
 
     def handle_unauthorized(&block)
-      return unless digest_auth? && response_unauthorized? && response_has_digest_auth_challenge?
+      return unless digest_auth? && send_authorization_header? && response_unauthorized? && response_has_digest_auth_challenge?
       return if @credentials_sent
       @credentials_sent = true
       perform(&block)
@@ -237,6 +238,10 @@ module HTTParty
     def setup_raw_request
       if options[:headers].respond_to?(:to_hash)
         headers_hash = options[:headers].to_hash
+        unless send_authorization_header?
+          # Header names are case-insensitive, and reject leaves the caller's hash alone
+          headers_hash = headers_hash.reject { |name, _| name.to_s.casecmp?('authorization') }
+        end
       else
         headers_hash = nil
       end
@@ -273,7 +278,7 @@ module HTTParty
         @raw_request.basic_auth(username, password)
         @credentials_sent = true
       end
-      setup_digest_auth if digest_auth? && response_unauthorized? && response_has_digest_auth_challenge?
+      setup_digest_auth if digest_auth? && send_authorization_header? && response_unauthorized? && response_has_digest_auth_challenge?
     end
 
     def digest_auth?
@@ -367,8 +372,25 @@ module HTTParty
     def handle_host_redirection
       check_duplicate_location_header
       redirect_path = options[:uri_adapter].parse(last_response['location']).normalize
-      return if redirect_path.relative? || path.host == redirect_path.host || uri.host == redirect_path.host
-      @changed_hosts = true
+      # A Location without a host ("/x", "../x", "?a") stays on the same origin.
+      # A scheme-relative one ("//other.example.com/x") has a host to compare.
+      return if redirect_path.relative? && redirect_path.host.nil?
+      @changed_hosts = true if cross_origin_redirect?(@last_uri, redirect_path)
+    end
+
+    # Credentials only follow a redirect to the same scheme, host and port, as
+    # in curl and Python requests. An http -> https upgrade on the default
+    # ports keeps them, and once dropped they stay dropped for the request.
+    def cross_origin_redirect?(from, to)
+      return true unless from.host.to_s.casecmp?(to.host.to_s)
+
+      to_scheme = (to.scheme || from.scheme).to_s.downcase
+      from_scheme = from.scheme.to_s.downcase
+      from_port = from.port || DEFAULT_PORTS[from_scheme]
+      to_port = to.port || DEFAULT_PORTS[to_scheme]
+      return false if from_scheme == to_scheme && from_port == to_port
+
+      !(from_scheme == 'http' && from_port == 80 && to_scheme == 'https' && to_port == 443)
     end
 
     def check_duplicate_location_header
