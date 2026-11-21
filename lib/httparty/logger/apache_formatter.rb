@@ -4,6 +4,7 @@ module HTTParty
   module Logger
     class ApacheFormatter #:nodoc:
       TAG_NAME = HTTParty.name
+      LOG_ESCAPES = /[[:cntrl:]"\\]/
 
       attr_accessor :level, :logger
 
@@ -39,13 +40,16 @@ module HTTParty
         request.path.to_s
       end
 
-      # Strip control characters (e.g. CR/LF) from the request path before it is
-      # interpolated into the single-line log entry, so a crafted path cannot
-      # forge or split log lines (CWE-117). This matters when the application
-      # uses a permissive URI adapter (such as Addressable) that accepts such
-      # characters; the default URI adapter rejects them.
+      # Escape the request path the way Apache's own access log does: control
+      # characters (e.g. CR/LF) become \xhh, and " and \ get a backslash. A
+      # crafted path then can't split or forge a log line (CWE-117), and the
+      # attempt stays visible. This matters with a permissive URI adapter
+      # such as Addressable; the default URI adapter rejects these characters.
+      # Invalid bytes are scrubbed first so the regex can't raise.
       def sanitize(value)
-        value.to_s.gsub(/[[:cntrl:]]/, '')
+        value.to_s.scrub.gsub(LOG_ESCAPES) do |char|
+          char == '"' || char == '\\' ? "\\#{char}" : '\\x%02x' % char.ord
+        end
       end
 
       def content_length

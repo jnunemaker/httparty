@@ -40,18 +40,42 @@ RSpec.describe HTTParty::Logger::ApacheFormatter do
     end
   end
 
-  describe "control characters in the request path" do
-    let(:log_message) { "[HTTParty] [#{request_time}] 200 \"GET http://my.domain.com/report[HTTParty] forged 200 \" - " }
+  describe "unsafe characters in the request path" do
+    def format_path(path)
+      request_double = double('Request', http_method: Net::HTTP::Get, path: path)
+      subject.format(request_double, double(code: 200, :[] => nil))
+    end
 
-    it "strips CR/LF so a crafted path cannot forge a second log line" do
-      request_double = double(
-        'Request',
-        http_method: Net::HTTP::Get,
-        path: "http://my.domain.com/report\r\n[HTTParty] forged 200 "
-      )
-      response_double = double(code: 200, :[] => nil)
+    context "with CR/LF" do
+      let(:log_message) { "[HTTParty] [#{request_time}] 200 \"GET http://my.domain.com/report\\x0d\\x0a[HTTParty] forged 200 \" - " }
 
-      subject.format(request_double, response_double)
+      it "escapes them as \\xhh, like Apache, so a crafted path can't forge a second log line" do
+        format_path("http://my.domain.com/report\r\n[HTTParty] forged 200 ")
+      end
+    end
+
+    context "with a terminal escape sequence" do
+      let(:log_message) { "[HTTParty] [#{request_time}] 200 \"GET /a\\x1b[31mred\" - " }
+
+      it "escapes the control character" do
+        format_path("/a\e[31mred")
+      end
+    end
+
+    context "with a double quote or backslash" do
+      let(:log_message) { "[HTTParty] [#{request_time}] 200 \"GET /a\\\"b\\\\x0a\" - " }
+
+      it "backslash-escapes them, so the quoted field can't be closed early and escapes stay unambiguous" do
+        format_path("/a\"b\\x0a")
+      end
+    end
+
+    context "with bytes that aren't valid UTF-8" do
+      let(:log_message) { "[HTTParty] [#{request_time}] 200 \"GET /caf�\" - " }
+
+      it "logs the path instead of raising" do
+        format_path("/caf\xE9".dup.force_encoding(Encoding::UTF_8))
+      end
     end
   end
 end
