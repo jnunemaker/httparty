@@ -390,9 +390,7 @@ module HTTParty
     #     include HTTParty
     #
     #     query_string_normalizer proc { |query|
-    #       query.map do |key, value|
-    #         Array(value).map {|v| "#{key}=#{v}"}
-    #       end.join('&')
+    #       URI.encode_www_form(query)
     #     }
     #   end
     #
