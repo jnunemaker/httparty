@@ -1290,6 +1290,21 @@ RSpec.describe HTTParty::Request do
           expect(requests.last['Accept']).to eq('application/xml')
         end
 
+        it 'should drop a body_stream before resulting GET requests' do
+          requests = []
+          allow(@http).to receive(:request) do |request|
+            requests << request
+            requests.size == 1 ? @redirect : @ok
+          end
+          @request.http_method = Net::HTTP::Post
+          @request.options[:body_stream] = StringIO.new('something')
+          @request.options[:headers] = { 'Transfer-Encoding' => 'chunked' }
+          expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
+          expect(requests.last).to be_a(Net::HTTP::Get)
+          expect(requests.last.body_stream).to be_nil
+          expect(requests.last['Transfer-Encoding']).to be_nil
+        end
+
         it 'should log the redirection' do
           logger_double = double
           expect(logger_double).to receive(:info).twice
