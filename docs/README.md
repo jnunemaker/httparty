@@ -147,7 +147,7 @@ class Client
   def self.fetch
     get("/resources", verify: false)
     # You can also use something like:
-    # get("resources", verify_peer: false)
+    # get("/resources", verify_peer: false)
   end
 end
 ```
