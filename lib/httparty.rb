@@ -381,6 +381,8 @@ module HTTParty
     # Let's change it to this:
     #  /?selected_ids=1&selected_ids=2&selected_ids=3
     #
+    # (For exactly this format, call disable_rails_query_string_format.)
+    #
     # Pass a Proc to the query normalizer which accepts the yielded query.
     #
     # @example Modifying Array query strings
