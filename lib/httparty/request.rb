@@ -63,6 +63,7 @@ module HTTParty
 
     def initialize(http_method, path, o = {})
       @changed_hosts = false
+      @cross_origin_redirect = false
       @credentials_sent = false
 
       self.http_method = http_method
@@ -366,7 +367,10 @@ module HTTParty
       if http_method == Net::HTTP::Get
         clear_body
       end
-      capture_cookies(last_response)
+      # Cookies stay with the origin they came from. HTTParty doesn't track the
+      # Set-Cookie Domain attribute, so a redirect to another origin gets none
+      # of them; that origin's own Set-Cookie cookies are collected from here on.
+      @cross_origin_redirect ? drop_cookies : capture_cookies(last_response)
       perform(&block)
     end
 
@@ -375,8 +379,9 @@ module HTTParty
       redirect_path = options[:uri_adapter].parse(last_response['location']).normalize
       # A Location without a host ("/x", "../x", "?a") stays on the same origin.
       # A scheme-relative one ("//other.example.com/x") has a host to compare.
-      return if redirect_path.relative? && redirect_path.host.nil?
-      @changed_hosts = true if cross_origin_redirect?(@last_uri, redirect_path)
+      @cross_origin_redirect = !(redirect_path.relative? && redirect_path.host.nil?) &&
+        cross_origin_redirect?(@last_uri, redirect_path)
+      @changed_hosts = true if @cross_origin_redirect
     end
 
     # Credentials only follow a redirect to the same scheme, host and port, as
@@ -435,12 +440,20 @@ module HTTParty
 
     def capture_cookies(response)
       return unless response['Set-Cookie']
+      headers = options[:headers].respond_to?(:to_hash) ? options[:headers].to_hash : {}
+      # Class and request cookies are stored as "cookie", so match any case
+      cookie_names = headers.keys.select { |name| name.to_s.casecmp?('cookie') }
       cookies_hash = HTTParty::CookieHash.new
-      cookies_hash.add_cookies(options[:headers].to_hash['Cookie']) if options[:headers] && options[:headers].to_hash['Cookie']
+      cookie_names.each { |name| cookies_hash.add_cookies(headers[name]) }
       response.get_fields('Set-Cookie').each { |cookie| cookies_hash.add_cookies(cookie) }
 
-      options[:headers] ||= {}
-      options[:headers]['Cookie'] = cookies_hash.to_cookie_string
+      options[:headers] = headers.reject { |name, _| cookie_names.include?(name) }
+                                 .merge('Cookie' => cookies_hash.to_cookie_string)
+    end
+
+    def drop_cookies
+      return unless options[:headers].respond_to?(:to_hash)
+      options[:headers] = options[:headers].to_hash.reject { |name, _| name.to_s.casecmp?('cookie') }
     end
 
     # Uses the HTTP Content-Type header to determine the format of the
