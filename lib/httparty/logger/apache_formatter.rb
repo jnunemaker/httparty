@@ -24,7 +24,7 @@ module HTTParty
       attr_reader :request, :response
 
       def message
-        "[#{TAG_NAME}] [#{current_time}] #{response.code} \"#{http_method} #{path}\" #{content_length || '-'} "
+        "[#{TAG_NAME}] [#{current_time}] #{response.code} \"#{http_method} #{sanitize(path)}\" #{content_length || '-'} "
       end
 
       def current_time
@@ -37,6 +37,15 @@ module HTTParty
 
       def path
         request.path.to_s
+      end
+
+      # Strip control characters (e.g. CR/LF) from the request path before it is
+      # interpolated into the single-line log entry, so a crafted path cannot
+      # forge or split log lines (CWE-117). This matters when the application
+      # uses a permissive URI adapter (such as Addressable) that accepts such
+      # characters; the default URI adapter rejects them.
+      def sanitize(value)
+        value.to_s.gsub(/[[:cntrl:]]/, '')
       end
 
       def content_length
