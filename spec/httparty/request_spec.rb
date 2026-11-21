@@ -907,6 +907,18 @@ RSpec.describe HTTParty::Request do
           expect(resp.body.encoding).to eq(Encoding.find("UTF-8"))
         end
 
+        # Ruby's dummy encodings can't be used for strip, regexes or parsing.
+        %w[utf-7 utf-32 iso-2022-jp].each do |charset|
+          it "leaves the body unlabeled for the #{charset} charset so it still parses" do
+            @request.options[:format] = :plain
+            response.initialize_http_header("Content-Type" => "text/plain; charset=#{charset}")
+            resp = @request.perform
+
+            expect(resp.body.encoding).to eq(Encoding::BINARY)
+            expect(resp.parsed_response).to eq("Content")
+          end
+        end
+
         context 'when stubed body is frozen' do
           let(:response) do
             stub_response "Content".force_encoding('ascii-8bit').freeze

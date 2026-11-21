@@ -48,7 +48,11 @@ module HTTParty
       # NOTE: This will raise an argument error if the
       # charset does not exist
       encoding = Encoding.find(charset)
-      text.force_encoding(encoding.to_s)
+      # Dummy encodings (UTF-7, UTF-32, ISO-2022-JP) raise on strip, regexes
+      # and parsing, so the body keeps the bytes it arrived with.
+      return text if encoding.dummy?
+
+      text.force_encoding(encoding)
     rescue ArgumentError
       text
     end
