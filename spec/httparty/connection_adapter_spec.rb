@@ -320,6 +320,30 @@ RSpec.describe HTTParty::ConnectionAdapter do
         end
       end
 
+      context "when continue_timeout is set" do
+        let(:options) { {continue_timeout: 3} }
+
+        it "sets it on the connection" do
+          expect(subject.continue_timeout).to eq(3)
+        end
+
+        context "along with timeout" do
+          let(:options) { {timeout: 10, continue_timeout: 3} }
+
+          it "keeps its own value" do
+            expect(subject.continue_timeout).to eq(3)
+          end
+        end
+      end
+
+      context "when only timeout is set" do
+        let(:options) { {timeout: 10} }
+
+        it "does not set continue_timeout, so Expect: 100-continue requests aren't delayed" do
+          expect(subject.continue_timeout).to be_nil
+        end
+      end
+
       context "when timeout is not set and write_timeout is set to 8 seconds" do
         let(:options) { {write_timeout: 8} }
 

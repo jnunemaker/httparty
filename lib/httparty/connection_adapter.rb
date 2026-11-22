@@ -46,8 +46,8 @@ module HTTParty
   # * :+read_timeout+: http connection read_timeout in seconds, overrides timeout if set
   # * :+write_timeout+: http connection write_timeout in seconds, overrides timeout if set
   # * :+max_retries+: http connection max_retries (retries of idempotent requests)
-  # * :+continue_timeout+: http connection continue_timeout in seconds, overrides timeout if set
-  # * :+ssl_timeout+: http connection ssl_timeout in seconds, overrides timeout if set
+  # * :+continue_timeout+: seconds to wait for a 100 Continue response before sending the body of a request
+  #   with an Expect: 100-continue header. Not set by timeout.
   # * :+debug_output+: see HTTParty::ClassMethods.debug_output.
   # * :+cert_store+: contains certificate data. see method 'attach_ssl_certificates'
   # * :+pem+: contains pem client certificate data. see method 'attach_ssl_certificates'
@@ -123,8 +123,6 @@ module HTTParty
         http.open_timeout = options[:timeout]
         http.read_timeout = options[:timeout]
         http.write_timeout = options[:timeout]
-        http.continue_timeout = options[:timeout]
-        http.ssl_timeout = options[:timeout]
       end
 
       if add_timeout?(options[:read_timeout])
@@ -139,12 +137,9 @@ module HTTParty
         http.write_timeout = options[:write_timeout]
       end
 
+      # Only for requests sent with Expect: 100-continue, so timeout doesn't set it
       if add_timeout?(options[:continue_timeout])
         http.continue_timeout = options[:continue_timeout]
-      end
-
-      if add_timeout?(options[:ssl_timeout])
-        http.ssl_timeout = options[:ssl_timeout]
       end
 
       if add_max_retries?(options[:max_retries])

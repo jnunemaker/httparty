@@ -241,7 +241,7 @@ class Client
 end
 ```
 
-`open_timeout`, `read_timeout` and `write_timeout` take precedence over `timeout`. Timeouts must be an Integer or a Float, and `max_retries` an Integer. The timeout class methods raise `ArgumentError` for anything else, but a request option of another type is silently ignored, so convert values read from `ENV` first (`Integer(ENV['API_TIMEOUT'])`).
+`open_timeout`, `read_timeout` and `write_timeout` take precedence over `timeout`. `continue_timeout` is separate: for a request with an `Expect: 100-continue` header, it's how long to wait for the server's `100 Continue` before sending the body anyway, and `timeout` doesn't set it. Timeouts must be an Integer or a Float, and `max_retries` an Integer. The timeout class methods raise `ArgumentError` for anything else, but a request option of another type is silently ignored, so convert values read from `ENV` first (`Integer(ENV['API_TIMEOUT'])`).
 
 A timeout raises `Net::OpenTimeout`, `Net::ReadTimeout` or `Net::WriteTimeout` (all `Timeout::Error`s), or `HTTParty::NetworkError` when `foul` is on.
 

@@ -225,28 +225,21 @@ module HTTParty
       default_options[:write_timeout] = value
     end
 
-    # Allows setting a default continue_timeout for all HTTP calls in seconds
+    # Allows setting how many seconds to wait for a 100 Continue response
+    # before sending the body of a request that has an Expect: 100-continue
+    # header. Without it, Net::HTTP sends the body right away. The timeout
+    # option doesn't set it.
     #
     #   class Foo
     #     include HTTParty
-    #     continue_timeout 10
+    #     headers 'Expect' => '100-continue'
+    #     continue_timeout 2
     #   end
     def continue_timeout(value)
       validate_timeout_argument(__method__, value)
       default_options[:continue_timeout] = value
     end
 
-    # Allows setting a default ssl_timeout for all HTTP calls in seconds
-    #
-    #   class Foo
-    #     include HTTParty
-    #     ssl_timeout 10
-    #   end
-    def ssl_timeout(value)
-      validate_timeout_argument(__method__, value)
-      default_options[:ssl_timeout] = value
-    end
-    
     # Set an output stream for debugging, defaults to $stderr.
     # The output stream is passed on to Net::HTTP#set_debug_output.
     #
