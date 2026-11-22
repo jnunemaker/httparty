@@ -1290,6 +1290,22 @@ RSpec.describe HTTParty::Request do
           expect(requests.last['Accept']).to eq('application/xml')
         end
 
+        it 'should drop an Expect: 100-continue header before resulting GET requests' do
+          requests = []
+          allow(@http).to receive(:request) do |request|
+            requests << request
+            requests.size == 1 ? @redirect : @ok
+          end
+          @request.http_method = Net::HTTP::Post
+          @request.options[:body] = 'data'
+          @request.options[:headers] = { 'Expect' => '100-continue', 'Accept' => 'application/xml' }
+          @request.perform
+          expect(requests.first['Expect']).to eq('100-continue')
+          expect(requests.last).to be_a(Net::HTTP::Get)
+          expect(requests.last['Expect']).to be_nil
+          expect(requests.last['Accept']).to eq('application/xml')
+        end
+
         it 'should drop a body_stream before resulting GET requests' do
           requests = []
           allow(@http).to receive(:request) do |request|

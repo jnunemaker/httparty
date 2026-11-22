@@ -22,7 +22,9 @@ module HTTParty
     SupportedURISchemes  = ['http', 'https', 'webcal', nil]
     DEFAULT_PORTS = { 'http' => 80, 'https' => 443 }.freeze
     # Headers that describe a request body, and so are dropped along with it
-    CONTENT_HEADERS = %w[content-encoding content-language content-length content-location content-type transfer-encoding].freeze
+    # Dropped when a redirect turns the request into a GET: they describe the
+    # body, and a request without content must not send Expect: 100-continue.
+    CONTENT_HEADERS = %w[content-encoding content-language content-length content-location content-type transfer-encoding expect].freeze
 
     NON_RAILS_QUERY_STRING_NORMALIZER = proc do |query|
       Array(query).sort_by { |a| a[0].to_s }.map do |key, value|
