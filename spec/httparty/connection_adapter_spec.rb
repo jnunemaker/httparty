@@ -631,18 +631,27 @@ RSpec.describe HTTParty::ConnectionAdapter do
 
           context "when using extra_chain_cert and p12" do
             let(:options) { { p12: p12, p12_password: "password", extra_chain_cert: true } }
+            let(:ca_cert) { double("OpenSSL::X509::Certificate") }
 
-            before { allow(pkcs12).to receive(:ca_certs).and_return([double("OpenSSL::X509::Certificate")]) }
+            before { allow(pkcs12).to receive(:ca_certs).and_return([ca_cert]) }
 
-            it "does not set extra_chain_cert on unsupported ruby versions" do
-              if !(subject.respond_to?(:extra_chain_cert=))
-                expect(subject).to_not receive(:extra_chain_cert=)
+            it "sends the p12's CA certificates, without repeating the client certificate", if: Net::HTTP.method_defined?(:extra_chain_cert=) do
+              expect(subject.extra_chain_cert).to eq([ca_cert])
+            end
+
+            context "when the p12 has no CA certificates" do
+              before { allow(pkcs12).to receive(:ca_certs).and_return(nil) }
+
+              it "connects without an extra chain instead of raising", if: Net::HTTP.method_defined?(:extra_chain_cert=) do
+                expect(subject.extra_chain_cert).to be_nil
               end
             end
 
-            it "sets extra_chain_cert on http object in Ruby 3.0+" do
-              if subject.respond_to?(:extra_chain_cert=)
-                expect(subject.extra_chain_cert).to eq([cert] + pkcs12.ca_certs)
+            context "when extra_chain_cert is not set" do
+              let(:options) { { p12: p12, p12_password: "password" } }
+
+              it "sends no extra chain", if: Net::HTTP.method_defined?(:extra_chain_cert=) do
+                expect(subject.extra_chain_cert).to be_nil
               end
             end
           end

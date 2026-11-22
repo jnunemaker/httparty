@@ -37,9 +37,14 @@ RSpec.describe HTTParty do
   end
 
   describe "extra_chain_cert" do
-    it 'should set the extra_chain_cert option' do
-      @klass.extra_chain_cert true
+    it 'turns the extra_chain_cert option on when called without an argument' do
+      @klass.extra_chain_cert
       expect(@klass.default_options[:extra_chain_cert]).to eq(true)
+    end
+
+    it 'can turn it back off' do
+      @klass.extra_chain_cert false
+      expect(@klass.default_options[:extra_chain_cert]).to eq(false)
     end
   end
 

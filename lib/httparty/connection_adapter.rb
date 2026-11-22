@@ -232,10 +232,13 @@ module HTTParty
           http.ssl_version = options[:ssl_version]
         end
 
-        # Include full certificate chain
-        # Only Ruby 3.0+
+        # Send the p12 file's intermediate CA certificates along with the client
+        # certificate, for servers that need the full chain. The client
+        # certificate is already set above, so it isn't repeated here.
+        # Net::HTTP#extra_chain_cert= needs Ruby 3.0+.
         if options[:extra_chain_cert] && options[:p12] && http.respond_to?(:extra_chain_cert=)
-          http.extra_chain_cert = [p12.certificate] + p12.ca_certs
+          ca_certs = p12.ca_certs
+          http.extra_chain_cert = ca_certs if ca_certs && !ca_certs.empty?
         end
       end
     end
