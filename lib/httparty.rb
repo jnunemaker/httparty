@@ -371,7 +371,8 @@ module HTTParty
 
     # Sends the intermediate CA certificates from a pkcs12 file along with
     # the client certificate, for servers that require the full chain.
-    # Needs Ruby 3.0+.
+    # Only applies to pkcs12, not pem. Needs Ruby 3.0+; on older Rubies it
+    # warns once and sends only the client certificate.
     #
     #   class Foo
     #     include HTTParty

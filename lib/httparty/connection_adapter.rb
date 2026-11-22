@@ -50,6 +50,8 @@ module HTTParty
   # * :+cert_store+: contains certificate data. see method 'attach_ssl_certificates'
   # * :+pem+: contains pem client certificate data. see method 'attach_ssl_certificates'
   # * :+p12+: contains PKCS12 client client certificate data.  see method 'attach_ssl_certificates'
+  # * :+extra_chain_cert+: with :+p12+, also send the p12's CA certificates so the server gets the full chain.
+  #   PKCS12 only (Ruby 3.0+). see HTTParty::ClassMethods.extra_chain_cert.
   # * :+verify+: verify the server’s certificate against the ca certificate.
   # * :+verify_peer+: set to false to turn off server verification but still send client certificate
   # * :+ssl_ca_file+: see HTTParty::ClassMethods.ssl_ca_file.
@@ -187,6 +189,13 @@ module HTTParty
       !(options[:verify] == false || options[:verify_peer] == false)
     end
 
+    # Warn once per process instead of silently sending no chain
+    def warn_extra_chain_cert_unsupported
+      return if self.class.instance_variable_get(:@extra_chain_cert_warned)
+      self.class.instance_variable_set(:@extra_chain_cert_warned, true)
+      warn "[HTTParty] extra_chain_cert is ignored: this Net::HTTP has no extra_chain_cert= (Ruby 3.0+ is needed), so only the client certificate is sent"
+    end
+
     def attach_ssl_certificates(http, options)
       if http.use_ssl?
         if options.fetch(:verify, true)
@@ -236,9 +245,13 @@ module HTTParty
         # certificate, for servers that need the full chain. The client
         # certificate is already set above, so it isn't repeated here.
         # Net::HTTP#extra_chain_cert= needs Ruby 3.0+.
-        if options[:extra_chain_cert] && options[:p12] && http.respond_to?(:extra_chain_cert=)
-          ca_certs = p12.ca_certs
-          http.extra_chain_cert = ca_certs if ca_certs && !ca_certs.empty?
+        if options[:extra_chain_cert] && options[:p12]
+          if http.respond_to?(:extra_chain_cert=)
+            ca_certs = p12.ca_certs
+            http.extra_chain_cert = ca_certs if ca_certs && !ca_certs.empty?
+          else
+            warn_extra_chain_cert_unsupported
+          end
         end
       end
     end

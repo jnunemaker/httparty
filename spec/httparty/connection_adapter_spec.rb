@@ -647,6 +647,20 @@ RSpec.describe HTTParty::ConnectionAdapter do
               end
             end
 
+            context "when Net::HTTP can't send an extra chain" do
+              before do
+                allow_any_instance_of(Net::HTTP).to receive(:respond_to?).and_call_original
+                allow_any_instance_of(Net::HTTP).to receive(:respond_to?).with(:extra_chain_cert=).and_return(false)
+                described_class.instance_variable_set(:@extra_chain_cert_warned, nil)
+              end
+              after { described_class.instance_variable_set(:@extra_chain_cert_warned, nil) }
+
+              it "warns once instead of silently sending no chain" do
+                expect { subject; adapter.send(:warn_extra_chain_cert_unsupported) }
+                  .to output(/\A\[HTTParty\] extra_chain_cert is ignored[^\n]*\n\z/).to_stderr
+              end
+            end
+
             context "when extra_chain_cert is not set" do
               let(:options) { { p12: p12, p12_password: "password" } }
 
