@@ -180,6 +180,21 @@ RSpec.describe HTTParty::Request::Body do
         ['user[pets][][name]', 'b'], ['user[pets][][age]', '2']
       ])
     end
+
+    it 'sends a file that is not the first field of its hash, buffered and streamed' do
+      file = File.open('spec/fixtures/tiny.gif')
+      body = described_class.new({ user: { files: [{ note: 'n', file: file }] } }, force_multipart: true)
+
+      expect(body.call.scan(/form-data; name="([^"]+)"/).flatten).to eq(['user[files][][note]', 'user[files][][file]'])
+      expect(body.prepared_parts.map { |key, _value, is_file| [key, is_file] }).to eq([
+        ['user[files][][note]', false], ['user[files][][file]', true]
+      ])
+    end
+
+    it 'adds no part for an empty hash in the array' do
+      body = described_class.new({ user: { items: [{}], name: 'n' } }, force_multipart: true).call
+      expect(body.scan(/form-data; name="([^"]*)"/).flatten).to eq(['user[name]'])
+    end
   end
 
   describe '#multipart?' do
