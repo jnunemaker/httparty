@@ -676,7 +676,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
 
         context "when scheme is not https" do
           let(:uri) { URI 'http://google.com' }
-          let(:http) { Net::HTTP.new(uri) }
+          let(:http) { Net::HTTP.new(uri.host, uri.port) }
 
           before do
             allow(Net::HTTP).to receive_messages(new: http)

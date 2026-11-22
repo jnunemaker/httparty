@@ -104,6 +104,27 @@ class Client
 end
 ```
 
+#### Using `verify_callback` option
+
+```ruby
+# Use this example to log which certificate in the server's chain failed
+# verification. The callback's return value is the verification result, so
+# return preverify_ok to keep OpenSSL's decision.
+
+class Client
+  include HTTParty
+
+  base_uri "https://example.com"
+  verify_callback ->(preverify_ok, store_context) {
+    unless preverify_ok
+      cert = store_context.current_cert
+      warn "SSL verification failed: #{cert.subject} (issuer #{cert.issuer}): #{store_context.error_string}"
+    end
+    preverify_ok
+  }
+end
+```
+
 #### Using `ssl_ca_path` option
 
 ```ruby

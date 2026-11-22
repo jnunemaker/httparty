@@ -51,7 +51,9 @@ module HTTParty
   # * :+pem+: contains pem client certificate data. see method 'attach_ssl_certificates'
   # * :+p12+: contains PKCS12 client client certificate data.  see method 'attach_ssl_certificates'
   # * :+verify+: verify the server’s certificate against the ca certificate.
-  # * :+verify_callback+: a Proc that will be called to verify the server’s certificate. see method 'attach_ssl_certificates'
+  # * :+verify_callback+: a Proc or lambda called with (preverify_ok, store_context) for each certificate in the
+  #   server's chain. Its return value is the verification result, so return preverify_ok to keep OpenSSL's
+  #   decision; returning true accepts a certificate that failed verification. See HTTParty::ClassMethods.verify_callback.
   # * :+verify_peer+: set to false to turn off server verification but still send client certificate
   # * :+ssl_ca_file+: see HTTParty::ClassMethods.ssl_ca_file.
   # * :+ssl_ca_path+: see HTTParty::ClassMethods.ssl_ca_path.

@@ -36,6 +36,18 @@ RSpec.describe HTTParty do
     end
   end
 
+  describe "verify_callback" do
+    it "sets the verify_callback option" do
+      callback = ->(preverify_ok, _store_context) { preverify_ok }
+      @klass.verify_callback callback
+      expect(@klass.default_options[:verify_callback]).to be(callback)
+    end
+
+    it "requires a Proc so responses can still be marshaled" do
+      expect { @klass.verify_callback(Object.new.method(:to_s)) }.to raise_error(ArgumentError, /Proc or lambda/)
+    end
+  end
+
   describe 'ssl_version' do
     it 'should set the ssl_version content' do
       @klass.ssl_version :SSLv3

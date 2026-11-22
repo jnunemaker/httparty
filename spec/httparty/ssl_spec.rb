@@ -28,6 +28,25 @@ RSpec.describe HTTParty::Request do
       expect { server.stop }.not_to raise_error
     end
 
+    context "with a verify_callback" do
+      it "calls it for each certificate in the server's chain during the handshake" do
+        seen = []
+        callback = ->(preverify_ok, store_context) { seen << [preverify_ok, store_context.current_cert.subject.to_s]; preverify_ok }
+
+        response = ssl_verify_test(:ssl_ca_file, "ca.crt", "server.crt", verify_callback: callback)
+
+        expect(response.parsed_response).to eq({'success' => true})
+        expect(seen).not_to be_empty
+        expect(seen.map(&:first)).to all(be true)
+      end
+
+      it "fails the handshake when the callback returns false" do
+        expect do
+          ssl_verify_test(:ssl_ca_file, "ca.crt", "server.crt", verify_callback: ->(_ok, _ctx) { false })
+        end.to raise_error(OpenSSL::SSL::SSLError)
+      end
+    end
+
     it "should fail when no trusted CA list is specified, by default" do
       expect do
         ssl_verify_test(nil, nil, "selfsigned.crt")
