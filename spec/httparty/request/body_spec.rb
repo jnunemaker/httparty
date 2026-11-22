@@ -171,6 +171,17 @@ RSpec.describe HTTParty::Request::Body do
     end
   end
 
+  describe 'a multipart body with an array of hashes' do
+    it 'sends every field of every hash' do
+      body = described_class.new({ user: { pets: [{ name: 'a', age: 1 }, { name: 'b', age: 2 }] } }, force_multipart: true).call
+      parts = body.scan(/name="([^"]+)"\r\n\r\n([^\r]*)\r\n/)
+      expect(parts).to eq([
+        ['user[pets][][name]', 'a'], ['user[pets][][age]', '1'],
+        ['user[pets][][name]', 'b'], ['user[pets][][age]', '2']
+      ])
+    end
+  end
+
   describe '#multipart?' do
     let(:force_multipart) { false }
     let(:file) { File.open('spec/fixtures/tiny.gif') }

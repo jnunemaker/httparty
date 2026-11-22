@@ -54,9 +54,14 @@ module HTTParty
       stack.each do |parent, hash|
         hash.each do |child_key, child_value|
           if child_value.respond_to?(:to_hash)
-            normalized_keys += normalize_keys("#{parent}[#{child_key}]", child_value)
+            stack << ["#{parent}[#{child_key}]", child_value.to_hash]
           elsif child_value.respond_to?(:to_ary)
-            normalized_keys += normalize_keys("#{parent}[#{child_key}]", child_value)
+            # Each element can expand to several [key, value] pairs (a hash or
+            # an array), so add them as pairs rather than flattening them
+            # into one array. An empty array adds nothing, as before.
+            child_value.to_ary.each do |v|
+              normalized_keys.concat(normalize_keys("#{parent}[#{child_key}][]", v))
+            end
           else
             normalized_keys << normalize_keys("#{parent}[#{child_key}]", child_value).flatten
           end
