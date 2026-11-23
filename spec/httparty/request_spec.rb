@@ -1966,5 +1966,12 @@ RSpec.describe HTTParty::Request do
       expect(marshalled.last_uri).to eq URI("http://api.foo.com/v1")
       expect(marshalled.instance_variable_get("@raw_request").path).to eq "/v1"
     end
+
+    it "leaves out a verify_callback, even one that isn't a Proc" do
+      @request.options[:verify_callback] = method(:puts)
+      @request.instance_variable_set("@raw_request", @request.http_method.new(URI("http://api.foo.com/v1")))
+      marshalled = Marshal.load(Marshal.dump(@request))
+      expect(marshalled.options).not_to have_key(:verify_callback)
+    end
   end
 end

@@ -36,6 +36,14 @@ RSpec.describe HTTParty do
     end
   end
 
+  describe "verify_callback" do
+    it "sets the verify_callback option" do
+      callback = ->(preverify_ok, _store_context) { preverify_ok }
+      @klass.verify_callback callback
+      expect(@klass.default_options[:verify_callback]).to be(callback)
+    end
+  end
+
   describe "extra_chain_cert" do
     it 'turns the extra_chain_cert option on when called without an argument' do
       @klass.extra_chain_cert

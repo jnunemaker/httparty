@@ -386,6 +386,23 @@ module HTTParty
       default_options[:p12_password] = password
     end
 
+    # Allows setting a callback that OpenSSL calls for each certificate in the
+    # server's chain while verifying it, for example to log which certificate
+    # failed. It receives (preverify_ok, store_context) and its return value is
+    # the verification result: return preverify_ok to keep OpenSSL's decision.
+    # Returning true accepts a certificate that failed verification.
+    #
+    #   class Foo
+    #     include HTTParty
+    #     verify_callback ->(preverify_ok, store_context) {
+    #       warn "untrusted: #{store_context.current_cert.subject}" unless preverify_ok
+    #       preverify_ok
+    #     }
+    #   end
+    def verify_callback(callback)
+      default_options[:verify_callback] = callback
+    end
+
     # Sends the intermediate CA certificates from a pkcs12 file along with
     # the client certificate, for servers that require the full chain.
     # Only applies to pkcs12, not pem. Needs Ruby 3.0+; on older Rubies it
