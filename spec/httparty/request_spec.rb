@@ -1283,10 +1283,11 @@ RSpec.describe HTTParty::Request do
           end
           @request.http_method = Net::HTTP::Post
           @request.options[:body] = '{"text":"something"}'
-          @request.options[:headers] = { 'Content-Type' => 'application/json', 'Accept' => 'application/xml' }
+          @request.options[:headers] = { 'Content-Type' => 'application/json', 'Expect' => '100-continue', 'Accept' => 'application/xml' }
           expect(@request.perform.parsed_response).to eq({"hash" => {"foo" => "bar"}})
           expect(requests.last).to be_a(Net::HTTP::Get)
           expect(requests.last['Content-Type']).to be_nil
+          expect(requests.last['Expect']).to be_nil
           expect(requests.last['Accept']).to eq('application/xml')
         end
 

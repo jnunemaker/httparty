@@ -88,6 +88,10 @@ class Client
 
   base_uri "https://example.com"
   pkcs12 File.read("#{File.expand_path('.')}/path/to/certs/cert.p12"), "123456"
+
+  # Also send the p12 file's intermediate CA certificates, for servers that
+  # require the full chain (pkcs12 only, Ruby 3.0+)
+  extra_chain_cert
 end
 ```
 
@@ -262,7 +266,7 @@ class Client
 end
 ```
 
-`open_timeout`, `read_timeout` and `write_timeout` take precedence over `timeout`. Timeouts must be an Integer or a Float, and `max_retries` an Integer. The timeout class methods raise `ArgumentError` for anything else, but a request option of another type is silently ignored, so convert values read from `ENV` first (`Integer(ENV['API_TIMEOUT'])`).
+`open_timeout`, `read_timeout` and `write_timeout` take precedence over `timeout`. `continue_timeout` is separate: for a request with an `Expect: 100-continue` header, it's how long to wait for the server's `100 Continue` before sending the body anyway, and `timeout` doesn't set it. Timeouts must be an Integer or a Float, and `max_retries` an Integer. The timeout class methods raise `ArgumentError` for anything else, but a request option of another type is silently ignored, so convert values read from `ENV` first (`Integer(ENV['API_TIMEOUT'])`).
 
 A timeout raises `Net::OpenTimeout`, `Net::ReadTimeout` or `Net::WriteTimeout` (all `Timeout::Error`s), or `HTTParty::NetworkError` when `foul` is on.
 

@@ -41,6 +41,7 @@ module HTTParty
   # [:+open_timeout+:] Timeout for opening the connection. Overrides :+timeout+.
   # [:+read_timeout+:] Timeout for each read. Overrides :+timeout+.
   # [:+write_timeout+:] Timeout for each write. Overrides :+timeout+.
+  # [:+continue_timeout+:] Seconds to wait for a 100 Continue response before sending the body of a request with an Expect: 100-continue header. Not set by :+timeout+.
   # [:+max_retries+:] Number of times Net::HTTP retries an idempotent request that times out or fails after connecting. Net::HTTP's default is 1.
   # [:+local_host+:] Local address to bind to before connecting.
   # [:+local_port+:] Local port to bind to before connecting.
@@ -225,6 +226,22 @@ module HTTParty
       default_options[:write_timeout] = value
     end
 
+    # Allows setting how many seconds to wait for a 100 Continue response
+    # before sending the body of a request that has an Expect: 100-continue
+    # header. Without it, Net::HTTP sends the body right away. The timeout
+    # option doesn't set it.
+    #
+    #   class Foo
+    #     include HTTParty
+    #     continue_timeout 2
+    #   end
+    #
+    #   # Only send Expect: 100-continue on requests with a body
+    #   Foo.post('/upload', body: File.read('big.csv'), headers: { 'Expect' => '100-continue' })
+    def continue_timeout(value)
+      validate_timeout_argument(__method__, value)
+      default_options[:continue_timeout] = value
+    end
 
     # Set an output stream for debugging, defaults to $stderr.
     # The output stream is passed on to Net::HTTP#set_debug_output.
@@ -384,6 +401,20 @@ module HTTParty
     #   end
     def verify_callback(callback)
       default_options[:verify_callback] = callback
+    end
+
+    # Sends the intermediate CA certificates from a pkcs12 file along with
+    # the client certificate, for servers that require the full chain.
+    # Only applies to pkcs12, not pem. Needs Ruby 3.0+; on older Rubies it
+    # warns once and sends only the client certificate.
+    #
+    #   class Foo
+    #     include HTTParty
+    #     pkcs12 File.read('/home/user/my.p12'), "password"
+    #     extra_chain_cert
+    #   end
+    def extra_chain_cert(enabled = true)
+      default_options[:extra_chain_cert] = enabled
     end
 
     # Override the way query strings are normalized.

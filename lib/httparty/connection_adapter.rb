@@ -46,10 +46,14 @@ module HTTParty
   # * :+read_timeout+: http connection read_timeout in seconds, overrides timeout if set
   # * :+write_timeout+: http connection write_timeout in seconds, overrides timeout if set
   # * :+max_retries+: http connection max_retries (retries of idempotent requests)
+  # * :+continue_timeout+: seconds to wait for a 100 Continue response before sending the body of a request
+  #   with an Expect: 100-continue header. Not set by timeout.
   # * :+debug_output+: see HTTParty::ClassMethods.debug_output.
   # * :+cert_store+: contains certificate data. see method 'attach_ssl_certificates'
   # * :+pem+: contains pem client certificate data. see method 'attach_ssl_certificates'
   # * :+p12+: contains PKCS12 client client certificate data.  see method 'attach_ssl_certificates'
+  # * :+extra_chain_cert+: with :+p12+, also send the p12's CA certificates so the server gets the full chain.
+  #   PKCS12 only (Ruby 3.0+). see HTTParty::ClassMethods.extra_chain_cert.
   # * :+verify+: verify the server’s certificate against the ca certificate.
   # * :+verify_callback+: see HTTParty::ClassMethods.verify_callback.
   # * :+verify_peer+: set to false to turn off server verification but still send client certificate
@@ -136,6 +140,10 @@ module HTTParty
         http.write_timeout = options[:write_timeout]
       end
 
+      if add_timeout?(options[:continue_timeout])
+        http.continue_timeout = options[:continue_timeout]
+      end
+
       if add_max_retries?(options[:max_retries])
         http.max_retries = options[:max_retries]
       end
@@ -188,6 +196,17 @@ module HTTParty
       !(options[:verify] == false || options[:verify_peer] == false)
     end
 
+    # Net::HTTP#extra_chain_cert= needs Ruby 3.0+
+    EXTRA_CHAIN_CERT_SUPPORTED = Net::HTTP.method_defined?(:extra_chain_cert=)
+
+    # Warn once per process, for every adapter subclass, instead of silently
+    # sending no chain
+    def warn_extra_chain_cert_unsupported
+      return if ConnectionAdapter.instance_variable_get(:@extra_chain_cert_warned)
+      ConnectionAdapter.instance_variable_set(:@extra_chain_cert_warned, true)
+      warn "[HTTParty] extra_chain_cert is ignored: this Net::HTTP has no extra_chain_cert= (Ruby 3.0+ is needed), so only the client certificate is sent"
+    end
+
     def attach_ssl_certificates(http, options)
       if http.use_ssl?
         if options.fetch(:verify, true)
@@ -216,6 +235,15 @@ module HTTParty
           http.cert = p12.certificate
           http.key = p12.key
           http.verify_mode = verify_ssl_certificate? ? OpenSSL::SSL::VERIFY_PEER : OpenSSL::SSL::VERIFY_NONE
+
+          # Also send the p12's CA certificates, for servers that need the full chain
+          if options[:extra_chain_cert]
+            if EXTRA_CHAIN_CERT_SUPPORTED
+              http.extra_chain_cert = p12.ca_certs
+            else
+              warn_extra_chain_cert_unsupported
+            end
+          end
         end
 
         # SSL certificate authority file and/or directory
