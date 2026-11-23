@@ -189,10 +189,14 @@ module HTTParty
       !(options[:verify] == false || options[:verify_peer] == false)
     end
 
-    # Warn once per process instead of silently sending no chain
+    # Net::HTTP#extra_chain_cert= needs Ruby 3.0+
+    EXTRA_CHAIN_CERT_SUPPORTED = Net::HTTP.method_defined?(:extra_chain_cert=)
+
+    # Warn once per process, for every adapter subclass, instead of silently
+    # sending no chain
     def warn_extra_chain_cert_unsupported
-      return if self.class.instance_variable_get(:@extra_chain_cert_warned)
-      self.class.instance_variable_set(:@extra_chain_cert_warned, true)
+      return if ConnectionAdapter.instance_variable_get(:@extra_chain_cert_warned)
+      ConnectionAdapter.instance_variable_set(:@extra_chain_cert_warned, true)
       warn "[HTTParty] extra_chain_cert is ignored: this Net::HTTP has no extra_chain_cert= (Ruby 3.0+ is needed), so only the client certificate is sent"
     end
 
@@ -224,6 +228,15 @@ module HTTParty
           http.cert = p12.certificate
           http.key = p12.key
           http.verify_mode = verify_ssl_certificate? ? OpenSSL::SSL::VERIFY_PEER : OpenSSL::SSL::VERIFY_NONE
+
+          # Also send the p12's CA certificates, for servers that need the full chain
+          if options[:extra_chain_cert]
+            if EXTRA_CHAIN_CERT_SUPPORTED
+              http.extra_chain_cert = p12.ca_certs
+            else
+              warn_extra_chain_cert_unsupported
+            end
+          end
         end
 
         # SSL certificate authority file and/or directory
@@ -239,19 +252,6 @@ module HTTParty
 
         if options[:ssl_version]
           http.ssl_version = options[:ssl_version]
-        end
-
-        # Send the p12 file's intermediate CA certificates along with the client
-        # certificate, for servers that need the full chain. The client
-        # certificate is already set above, so it isn't repeated here.
-        # Net::HTTP#extra_chain_cert= needs Ruby 3.0+.
-        if options[:extra_chain_cert] && options[:p12]
-          if http.respond_to?(:extra_chain_cert=)
-            ca_certs = p12.ca_certs
-            http.extra_chain_cert = ca_certs if ca_certs && !ca_certs.empty?
-          else
-            warn_extra_chain_cert_unsupported
-          end
         end
       end
     end

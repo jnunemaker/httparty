@@ -635,25 +635,23 @@ RSpec.describe HTTParty::ConnectionAdapter do
 
             before { allow(pkcs12).to receive(:ca_certs).and_return([ca_cert]) }
 
-            it "sends the p12's CA certificates, without repeating the client certificate", if: Net::HTTP.method_defined?(:extra_chain_cert=) do
-              expect(subject.extra_chain_cert).to eq([ca_cert])
-            end
+            context "on a Ruby whose Net::HTTP supports it", if: HTTParty::ConnectionAdapter::EXTRA_CHAIN_CERT_SUPPORTED do
+              it "sends the p12's CA certificates, without repeating the client certificate" do
+                expect(subject.extra_chain_cert).to eq([ca_cert])
+              end
 
-            context "when the p12 has no CA certificates" do
-              before { allow(pkcs12).to receive(:ca_certs).and_return(nil) }
-
-              it "connects without an extra chain instead of raising", if: Net::HTTP.method_defined?(:extra_chain_cert=) do
+              it "connects without an extra chain when the p12 has no CA certificates" do
+                allow(pkcs12).to receive(:ca_certs).and_return(nil)
                 expect(subject.extra_chain_cert).to be_nil
               end
             end
 
             context "when Net::HTTP can't send an extra chain" do
               before do
-                allow_any_instance_of(Net::HTTP).to receive(:respond_to?).and_call_original
-                allow_any_instance_of(Net::HTTP).to receive(:respond_to?).with(:extra_chain_cert=).and_return(false)
-                described_class.instance_variable_set(:@extra_chain_cert_warned, nil)
+                stub_const("HTTParty::ConnectionAdapter::EXTRA_CHAIN_CERT_SUPPORTED", false)
+                HTTParty::ConnectionAdapter.instance_variable_set(:@extra_chain_cert_warned, nil)
               end
-              after { described_class.instance_variable_set(:@extra_chain_cert_warned, nil) }
+              after { HTTParty::ConnectionAdapter.instance_variable_set(:@extra_chain_cert_warned, nil) }
 
               it "warns once instead of silently sending no chain" do
                 expect { subject; adapter.send(:warn_extra_chain_cert_unsupported) }
@@ -664,7 +662,7 @@ RSpec.describe HTTParty::ConnectionAdapter do
             context "when extra_chain_cert is not set" do
               let(:options) { { p12: p12, p12_password: "password" } }
 
-              it "sends no extra chain", if: Net::HTTP.method_defined?(:extra_chain_cert=) do
+              it "sends no extra chain", if: HTTParty::ConnectionAdapter::EXTRA_CHAIN_CERT_SUPPORTED do
                 expect(subject.extra_chain_cert).to be_nil
               end
             end
