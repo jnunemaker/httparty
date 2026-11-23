@@ -137,7 +137,6 @@ module HTTParty
         http.write_timeout = options[:write_timeout]
       end
 
-      # Only for requests sent with Expect: 100-continue, so timeout doesn't set it
       if add_timeout?(options[:continue_timeout])
         http.continue_timeout = options[:continue_timeout]
       end
