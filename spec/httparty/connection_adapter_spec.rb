@@ -653,9 +653,9 @@ RSpec.describe HTTParty::ConnectionAdapter do
               end
               after { HTTParty::ConnectionAdapter.instance_variable_set(:@extra_chain_cert_warned, nil) }
 
-              it "warns once instead of silently sending no chain" do
-                expect { subject; adapter.send(:warn_extra_chain_cert_unsupported) }
-                  .to output(/\A\[HTTParty\] extra_chain_cert is ignored[^\n]*\n\z/).to_stderr
+              it "warns from the connection instead of silently sending no chain, and only once" do
+                expect { subject }.to output(/\A\[HTTParty\] extra_chain_cert is ignored[^\n]*\n\z/).to_stderr
+                expect { adapter.send(:warn_extra_chain_cert_unsupported) }.not_to output.to_stderr
               end
             end
 
