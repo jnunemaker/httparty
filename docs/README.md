@@ -88,6 +88,10 @@ class Client
 
   base_uri "https://example.com"
   pkcs12 File.read("#{File.expand_path('.')}/path/to/certs/cert.p12"), "123456"
+
+  # Also send the p12 file's intermediate CA certificates, for servers that
+  # require the full chain (pkcs12 only, Ruby 3.0+)
+  extra_chain_cert
 end
 ```
 

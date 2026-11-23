@@ -386,6 +386,20 @@ module HTTParty
       default_options[:p12_password] = password
     end
 
+    # Sends the intermediate CA certificates from a pkcs12 file along with
+    # the client certificate, for servers that require the full chain.
+    # Only applies to pkcs12, not pem. Needs Ruby 3.0+; on older Rubies it
+    # warns once and sends only the client certificate.
+    #
+    #   class Foo
+    #     include HTTParty
+    #     pkcs12 File.read('/home/user/my.p12'), "password"
+    #     extra_chain_cert
+    #   end
+    def extra_chain_cert(enabled = true)
+      default_options[:extra_chain_cert] = enabled
+    end
+
     # Override the way query strings are normalized.
     # Helpful for overriding the default rails normalization of Array queries.
     #

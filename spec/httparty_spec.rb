@@ -36,6 +36,18 @@ RSpec.describe HTTParty do
     end
   end
 
+  describe "extra_chain_cert" do
+    it 'turns the extra_chain_cert option on when called without an argument' do
+      @klass.extra_chain_cert
+      expect(@klass.default_options[:extra_chain_cert]).to eq(true)
+    end
+
+    it 'can turn it back off' do
+      @klass.extra_chain_cert false
+      expect(@klass.default_options[:extra_chain_cert]).to eq(false)
+    end
+  end
+
   describe 'ssl_version' do
     it 'should set the ssl_version content' do
       @klass.ssl_version :SSLv3

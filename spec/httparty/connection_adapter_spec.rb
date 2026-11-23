@@ -652,6 +652,45 @@ RSpec.describe HTTParty::ConnectionAdapter do
               expect(subject.verify_mode).to eq(OpenSSL::SSL::VERIFY_NONE)
             end
           end
+
+          context "when using extra_chain_cert and p12" do
+            let(:options) { { p12: p12, p12_password: "password", extra_chain_cert: true } }
+            let(:ca_cert) { double("OpenSSL::X509::Certificate") }
+
+            before { allow(pkcs12).to receive(:ca_certs).and_return([ca_cert]) }
+
+            context "on a Ruby whose Net::HTTP supports it", if: HTTParty::ConnectionAdapter::EXTRA_CHAIN_CERT_SUPPORTED do
+              it "sends the p12's CA certificates, without repeating the client certificate" do
+                expect(subject.extra_chain_cert).to eq([ca_cert])
+              end
+
+              it "connects without an extra chain when the p12 has no CA certificates" do
+                allow(pkcs12).to receive(:ca_certs).and_return(nil)
+                expect(subject.extra_chain_cert).to be_nil
+              end
+            end
+
+            context "when Net::HTTP can't send an extra chain" do
+              before do
+                stub_const("HTTParty::ConnectionAdapter::EXTRA_CHAIN_CERT_SUPPORTED", false)
+                HTTParty::ConnectionAdapter.instance_variable_set(:@extra_chain_cert_warned, nil)
+              end
+              after { HTTParty::ConnectionAdapter.instance_variable_set(:@extra_chain_cert_warned, nil) }
+
+              it "warns from the connection instead of silently sending no chain, and only once" do
+                expect { subject }.to output(/\A\[HTTParty\] extra_chain_cert is ignored[^\n]*\n\z/).to_stderr
+                expect { adapter.send(:warn_extra_chain_cert_unsupported) }.not_to output.to_stderr
+              end
+            end
+
+            context "when extra_chain_cert is not set" do
+              let(:options) { { p12: p12, p12_password: "password" } }
+
+              it "sends no extra chain", if: HTTParty::ConnectionAdapter::EXTRA_CHAIN_CERT_SUPPORTED do
+                expect(subject.extra_chain_cert).to be_nil
+              end
+            end
+          end
         end
 
         context "when scheme is not https" do
