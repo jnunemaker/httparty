@@ -457,10 +457,10 @@ RSpec.describe HTTParty do
       end
 
       it 'handles international domains' do
-        uri = 'http://xn--i-7iqv272g.ws/'
+        uri = 'http://xn--bcher-kva.example/'
         stub_request(:get, uri).to_return(body: 'stuff')
 
-        response = @klass.get('http://i❤️.ws')
+        response = @klass.get('http://bücher.example')
         expect(response.parsed_response).to eq('stuff')
         expect(response.request.uri.to_s).to eq(uri)
       end
