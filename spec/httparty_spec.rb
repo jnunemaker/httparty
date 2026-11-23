@@ -502,7 +502,7 @@ RSpec.describe HTTParty do
     end
   end
 
-  [:open_timeout, :read_timeout, :write_timeout].each do |timeout|
+  [:open_timeout, :read_timeout, :write_timeout, :continue_timeout].each do |timeout|
     describe timeout.to_s do
       it "should set the value" do
         @klass.public_send(timeout, 2.5)

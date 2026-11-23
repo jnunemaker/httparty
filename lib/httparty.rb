@@ -41,6 +41,7 @@ module HTTParty
   # [:+open_timeout+:] Timeout for opening the connection. Overrides :+timeout+.
   # [:+read_timeout+:] Timeout for each read. Overrides :+timeout+.
   # [:+write_timeout+:] Timeout for each write. Overrides :+timeout+.
+  # [:+continue_timeout+:] Seconds to wait for a 100 Continue response before sending the body of a request with an Expect: 100-continue header. Not set by :+timeout+.
   # [:+max_retries+:] Number of times Net::HTTP retries an idempotent request that times out or fails after connecting. Net::HTTP's default is 1.
   # [:+local_host+:] Local address to bind to before connecting.
   # [:+local_port+:] Local port to bind to before connecting.
@@ -225,6 +226,22 @@ module HTTParty
       default_options[:write_timeout] = value
     end
 
+    # Allows setting how many seconds to wait for a 100 Continue response
+    # before sending the body of a request that has an Expect: 100-continue
+    # header. Without it, Net::HTTP sends the body right away. The timeout
+    # option doesn't set it.
+    #
+    #   class Foo
+    #     include HTTParty
+    #     continue_timeout 2
+    #   end
+    #
+    #   # Only send Expect: 100-continue on requests with a body
+    #   Foo.post('/upload', body: File.read('big.csv'), headers: { 'Expect' => '100-continue' })
+    def continue_timeout(value)
+      validate_timeout_argument(__method__, value)
+      default_options[:continue_timeout] = value
+    end
 
     # Set an output stream for debugging, defaults to $stderr.
     # The output stream is passed on to Net::HTTP#set_debug_output.

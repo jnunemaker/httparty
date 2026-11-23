@@ -46,6 +46,8 @@ module HTTParty
   # * :+read_timeout+: http connection read_timeout in seconds, overrides timeout if set
   # * :+write_timeout+: http connection write_timeout in seconds, overrides timeout if set
   # * :+max_retries+: http connection max_retries (retries of idempotent requests)
+  # * :+continue_timeout+: seconds to wait for a 100 Continue response before sending the body of a request
+  #   with an Expect: 100-continue header. Not set by timeout.
   # * :+debug_output+: see HTTParty::ClassMethods.debug_output.
   # * :+cert_store+: contains certificate data. see method 'attach_ssl_certificates'
   # * :+pem+: contains pem client certificate data. see method 'attach_ssl_certificates'
@@ -133,6 +135,10 @@ module HTTParty
 
       if add_timeout?(options[:write_timeout])
         http.write_timeout = options[:write_timeout]
+      end
+
+      if add_timeout?(options[:continue_timeout])
+        http.continue_timeout = options[:continue_timeout]
       end
 
       if add_max_retries?(options[:max_retries])
