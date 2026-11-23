@@ -28,7 +28,7 @@ module HTTParty
     def self.normalize_param(key, value)
       normalized_keys = normalize_keys(key, value)
 
-      normalized_keys.flatten.each_slice(2).inject(''.dup) do |string, (k, v)|
+      normalized_keys.inject(''.dup) do |string, (k, v)|
         string << "#{ERB::Util.url_encode(k)}=#{ERB::Util.url_encode(v.to_s)}&"
       end
     end
@@ -56,11 +56,10 @@ module HTTParty
           if child_value.respond_to?(:to_hash)
             stack << ["#{parent}[#{child_key}]", child_value.to_hash]
           elsif child_value.respond_to?(:to_ary)
-            child_value.to_ary.each do |v|
-              normalized_keys << normalize_keys("#{parent}[#{child_key}][]", v).flatten
-            end
+            # A nested empty array adds nothing, unlike a top-level one
+            normalized_keys.concat(child_value.to_ary.flat_map { |v| normalize_keys("#{parent}[#{child_key}][]", v) })
           else
-            normalized_keys << normalize_keys("#{parent}[#{child_key}]", child_value).flatten
+            normalized_keys << ["#{parent}[#{child_key}]", child_value]
           end
         end
       end

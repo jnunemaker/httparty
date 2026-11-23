@@ -22,6 +22,31 @@ RSpec.describe HTTParty::HashConversions do
     end
   end
 
+  describe ".normalize_keys" do
+    def pairs(hash)
+      hash.flat_map { |key, value| HTTParty::HashConversions.normalize_keys(key, value) }
+    end
+
+    it "returns one [key, value] pair per field for an array of hashes with several keys" do
+      expect(pairs(user: { pets: [{ name: "a", age: 1 }, { name: "b", age: 2 }] })).to eq([
+        ["user[pets][][name]", "a"], ["user[pets][][age]", 1],
+        ["user[pets][][name]", "b"], ["user[pets][][age]", 2]
+      ])
+    end
+
+    it "returns one [key, value] pair per value for an array of arrays" do
+      expect(pairs(m: { grid: [[1, 2], [3]] })).to eq([["m[grid][][]", 1], ["m[grid][][]", 2], ["m[grid][][]", 3]])
+    end
+
+    it "keeps sibling fields before nested hash fields, as before" do
+      expect(pairs(user: { address: { city: "x" }, name: "n" })).to eq([["user[name]", "n"], ["user[address][city]", "x"]])
+    end
+
+    it "still leaves out an empty nested array" do
+      expect(pairs(user: { tags: [], name: "n" })).to eq([["user[name]", "n"]])
+    end
+  end
+
   describe ".normalize_param" do
     context "value is an array" do
       it "creates a params string" do
