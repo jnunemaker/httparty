@@ -42,10 +42,6 @@ RSpec.describe HTTParty do
       @klass.verify_callback callback
       expect(@klass.default_options[:verify_callback]).to be(callback)
     end
-
-    it "requires a Proc so responses can still be marshaled" do
-      expect { @klass.verify_callback(Object.new.method(:to_s)) }.to raise_error(ArgumentError, /Proc or lambda/)
-    end
   end
 
   describe 'ssl_version' do

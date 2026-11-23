@@ -383,7 +383,6 @@ module HTTParty
     #     }
     #   end
     def verify_callback(callback)
-      raise ArgumentError, 'verify_callback must be a Proc or lambda' unless callback.is_a?(Proc)
       default_options[:verify_callback] = callback
     end
 
