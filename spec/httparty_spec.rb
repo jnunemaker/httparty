@@ -457,10 +457,12 @@ RSpec.describe HTTParty do
       end
 
       it 'handles international domains' do
-        uri = 'http://xn--i-7iqv272g.ws/'
+        # No emoji variation selector (U+FE0F): Addressable 2.10 drops it, as
+        # UTS 46 does, so the punycode would depend on the Addressable version.
+        uri = 'http://xn--i-7iq.ws/'
         stub_request(:get, uri).to_return(body: 'stuff')
 
-        response = @klass.get('http://i❤️.ws')
+        response = @klass.get('http://i❤.ws')
         expect(response.parsed_response).to eq('stuff')
         expect(response.request.uri.to_s).to eq(uri)
       end
