@@ -87,6 +87,11 @@ RSpec.describe HTTParty::ConnectionAdapter do
             HTTParty::ConnectionAdapter.new(uri, options).connection.cert_store
           end
 
+          # These only check which store is used, so skip loading the system certs
+          before do
+            allow(HTTParty::ConnectionAdapter).to receive(:system_cert_store) { OpenSSL::X509::Store.new }
+          end
+
           it "uses a store of its own, not the shared default one" do
             store = cert_store_for(ssl_ca_file: "ca.crt")
             expect(store).to be_an(OpenSSL::X509::Store)
@@ -108,13 +113,11 @@ RSpec.describe HTTParty::ConnectionAdapter do
             expect(stores.map(&:object_id).uniq.size).to eq(4)
           end
 
-          it "keeps a bounded number of stores" do
-            # Skip loading the system certs 33 times
-            allow(HTTParty::ConnectionAdapter).to receive(:system_cert_store) { OpenSSL::X509::Store.new }
-            first = cert_store_for(ssl_ca_file: "0.crt")
-            32.times { |i| cert_store_for(ssl_ca_file: "#{i + 1}.crt") }
-            expect(HTTParty::ConnectionAdapter.const_get(:CA_CERT_STORES).size).to be <= 32
-            expect(cert_store_for(ssl_ca_file: "0.crt")).not_to be(first)
+          it "keeps the 8 most recently added stores" do
+            stores = (0..8).map { |i| cert_store_for(ssl_ca_file: "#{i}.crt") }
+            expect(cert_store_for(ssl_ca_file: "8.crt")).to be(stores[8])
+            expect(cert_store_for(ssl_ca_file: "1.crt")).to be(stores[1])
+            expect(cert_store_for(ssl_ca_file: "0.crt")).not_to be(stores[0])
           end
 
           it "uses the given cert_store over its own" do

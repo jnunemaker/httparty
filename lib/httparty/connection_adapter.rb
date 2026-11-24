@@ -96,15 +96,22 @@ module HTTParty
     # system ca certs, built once because loading those takes a while.
     CA_CERT_STORES = {}
     CA_CERT_STORES_LOCK = Mutex.new
-    CA_CERT_STORES_LIMIT = 32
+    CA_CERT_STORES_LIMIT = 8
     private_constant :CA_CERT_STORES, :CA_CERT_STORES_LOCK, :CA_CERT_STORES_LIMIT
 
     def self.ca_cert_store(ca_file, ca_path)
       key = [ca_file, ca_path]
+      cached = CA_CERT_STORES_LOCK.synchronize { CA_CERT_STORES[key] }
+      return cached if cached
+
+      # Built outside the lock, so requests with a cached store don't wait on it
+      store = system_cert_store
       CA_CERT_STORES_LOCK.synchronize do
-        # Don't grow without bound if every request uses a new file
-        CA_CERT_STORES.clear if !CA_CERT_STORES.key?(key) && CA_CERT_STORES.size >= CA_CERT_STORES_LIMIT
-        CA_CERT_STORES[key] ||= system_cert_store
+        CA_CERT_STORES[key] ||= begin
+          # Each store holds the system certs, so keep a few and drop the oldest
+          CA_CERT_STORES.shift if CA_CERT_STORES.size >= CA_CERT_STORES_LIMIT
+          store
+        end
       end
     end
 
@@ -237,8 +244,7 @@ module HTTParty
           if options[:cert_store]
             http.cert_store = options[:cert_store]
           elsif options[:ssl_ca_file] || options[:ssl_ca_path]
-            # Not the default store: OpenSSL adds these ca certs to it
-            http.cert_store = ConnectionAdapter.ca_cert_store(options[:ssl_ca_file], options[:ssl_ca_path])
+            http.cert_store = self.class.ca_cert_store(options[:ssl_ca_file], options[:ssl_ca_path])
           else
             # Use the default cert store by default, i.e. system ca certs
             http.cert_store = self.class.default_cert_store

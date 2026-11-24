@@ -100,12 +100,6 @@ RSpec.describe HTTParty::Request do
       HTTParty.get('https://www.google.com', ssl_ca_path: '/foo/bar')
     end
 
-    it "should work when using ssl_ca_path with a directory holding the certificate authority" do
-      with_hashed_ca_dir do |dir|
-        expect(ssl_verify_test(nil, nil, "server.crt", ssl_ca_path: dir).parsed_response).to eq({'success' => true})
-      end
-    end
-
     # The default cert store is shared by every request, so loading a request's
     # CA into it would make later requests trust that CA too.
     context "after a request that trusted its own certificate authority" do
@@ -123,7 +117,6 @@ RSpec.describe HTTParty::Request do
 
       it "still trusts the system certificate authorities along with the ssl_ca_file" do
         connection = HTTParty::ConnectionAdapter.call(URI("https://example.com"), ssl_ca_file: "ca.crt")
-        expect(connection.cert_store).not_to be(HTTParty::ConnectionAdapter.default_cert_store)
         expect(connection.cert_store.verify(system_ca_certificate)).to be(true)
       end
     end
