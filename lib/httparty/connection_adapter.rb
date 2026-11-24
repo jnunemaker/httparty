@@ -87,10 +87,33 @@ module HTTParty
     end
 
     def self.default_cert_store
-      @default_cert_store ||= OpenSSL::X509::Store.new.tap do |cert_store|
+      @default_cert_store ||= system_cert_store
+    end
+
+    # OpenSSL loads a connection's ssl_ca_file and ssl_ca_path into its cert
+    # store, so a store that has them must not be shared with requests that
+    # don't. Each ssl_ca_file/ssl_ca_path pair gets its own store with the
+    # system ca certs, built once because loading those takes a while.
+    CA_CERT_STORES = {}
+    CA_CERT_STORES_LOCK = Mutex.new
+    CA_CERT_STORES_LIMIT = 32
+    private_constant :CA_CERT_STORES, :CA_CERT_STORES_LOCK, :CA_CERT_STORES_LIMIT
+
+    def self.ca_cert_store(ca_file, ca_path)
+      key = [ca_file, ca_path]
+      CA_CERT_STORES_LOCK.synchronize do
+        # Don't grow without bound if every request uses a new file
+        CA_CERT_STORES.clear if !CA_CERT_STORES.key?(key) && CA_CERT_STORES.size >= CA_CERT_STORES_LIMIT
+        CA_CERT_STORES[key] ||= system_cert_store
+      end
+    end
+
+    def self.system_cert_store
+      OpenSSL::X509::Store.new.tap do |cert_store|
         cert_store.set_default_paths
       end
     end
+    private_class_method :system_cert_store
 
     attr_reader :uri, :options
 
@@ -213,6 +236,9 @@ module HTTParty
           http.verify_mode = OpenSSL::SSL::VERIFY_PEER
           if options[:cert_store]
             http.cert_store = options[:cert_store]
+          elsif options[:ssl_ca_file] || options[:ssl_ca_path]
+            # Not the default store: OpenSSL adds these ca certs to it
+            http.cert_store = ConnectionAdapter.ca_cert_store(options[:ssl_ca_file], options[:ssl_ca_path])
           else
             # Use the default cert store by default, i.e. system ca certs
             http.cert_store = self.class.default_cert_store

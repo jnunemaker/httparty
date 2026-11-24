@@ -40,6 +40,7 @@ RSpec.configure do |config|
   config.before(:each) do
     # Reset default_cert_store cache
     HTTParty::ConnectionAdapter.instance_variable_set(:@default_cert_store, nil)
+    HTTParty::ConnectionAdapter.const_get(:CA_CERT_STORES).clear
   end
 
   Kernel.srand config.seed
