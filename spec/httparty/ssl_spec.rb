@@ -1,4 +1,6 @@
 require 'spec_helper'
+require 'fileutils'
+require 'tmpdir'
 
 RSpec.describe HTTParty::Request do
   context "SSL certificate verification" do
@@ -8,6 +10,22 @@ RSpec.describe HTTParty::Request do
 
     after do
       WebMock.enable!
+    end
+
+    # A c_rehash-style directory holding the test CA, for ssl_ca_path
+    def with_hashed_ca_dir
+      ca_file = File.expand_path("../../fixtures/ssl/generated/ca.crt", __FILE__)
+      ca = OpenSSL::X509::Certificate.new(File.read(ca_file))
+      Dir.mktmpdir do |dir|
+        FileUtils.cp(ca_file, File.join(dir, format("%08x.0", ca.subject.hash)))
+        yield dir
+      end
+    end
+
+    # A root certificate from the system's default CA bundle
+    def system_ca_certificate
+      bundle = File.read(OpenSSL::X509::DEFAULT_CERT_FILE)
+      OpenSSL::X509::Certificate.new(bundle[/-----BEGIN CERTIFICATE-----.+?-----END CERTIFICATE-----/m])
     end
 
     it "keeps the test server serving after a client that can't complete a handshake" do
@@ -82,6 +100,28 @@ RSpec.describe HTTParty::Request do
       expect(Net::HTTP).to receive(:new).with('www.google.com', 443).and_return(http)
       expect(http).to receive(:ca_path=).with('/foo/bar')
       HTTParty.get('https://www.google.com', ssl_ca_path: '/foo/bar')
+    end
+
+    # The default cert store is shared by every request, so loading a request's
+    # CA into it would make later requests trust that CA too.
+    context "after a request that trusted its own certificate authority" do
+      it "does not trust an ssl_ca_file for requests without it" do
+        expect(ssl_verify_test(:ssl_ca_file, "ca.crt", "server.crt").parsed_response).to eq({'success' => true})
+        expect { ssl_verify_test(nil, nil, "server.crt") }.to raise_error(OpenSSL::SSL::SSLError)
+      end
+
+      it "does not trust an ssl_ca_path for requests without it" do
+        with_hashed_ca_dir do |dir|
+          expect(ssl_verify_test(nil, nil, "server.crt", ssl_ca_path: dir).parsed_response).to eq({'success' => true})
+        end
+        expect { ssl_verify_test(nil, nil, "server.crt") }.to raise_error(OpenSSL::SSL::SSLError)
+      end
+
+      it "still trusts the system certificate authorities along with the ssl_ca_file" do
+        skip "no system CA bundle at #{OpenSSL::X509::DEFAULT_CERT_FILE}" unless File.exist?(OpenSSL::X509::DEFAULT_CERT_FILE)
+        connection = HTTParty::ConnectionAdapter.call(URI("https://example.com"), ssl_ca_file: "ca.crt")
+        expect(connection.cert_store.verify(system_ca_certificate)).to be(true)
+      end
     end
 
     it "should fail when using ssl_ca_file and the server uses an unrecognized certificate authority" do

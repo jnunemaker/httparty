@@ -82,6 +82,50 @@ RSpec.describe HTTParty::ConnectionAdapter do
           it { is_expected.to use_cert_store(custom_cert_store) }
         end
 
+        context "with ssl_ca_file or ssl_ca_path" do
+          def cert_store_for(options)
+            HTTParty::ConnectionAdapter.new(uri, options).connection.cert_store
+          end
+
+          # These only check which store is used, so skip loading the system certs
+          before do
+            allow(HTTParty::ConnectionAdapter).to receive(:system_cert_store) { OpenSSL::X509::Store.new }
+          end
+
+          it "uses a store of its own, not the shared default one" do
+            store = cert_store_for(ssl_ca_file: "ca.crt")
+            expect(store).to be_an(OpenSSL::X509::Store)
+            expect(store).not_to be(HTTParty::ConnectionAdapter.default_cert_store)
+          end
+
+          it "reuses the store for the same file and path" do
+            expect(cert_store_for(ssl_ca_file: "ca.crt")).to be(cert_store_for(ssl_ca_file: "ca.crt"))
+            expect(cert_store_for(ssl_ca_path: "certs")).to be(cert_store_for(ssl_ca_path: "certs"))
+          end
+
+          it "uses separate stores for different files and paths" do
+            stores = [
+              cert_store_for(ssl_ca_file: "ca.crt"),
+              cert_store_for(ssl_ca_file: "other.crt"),
+              cert_store_for(ssl_ca_path: "certs"),
+              cert_store_for(ssl_ca_file: "ca.crt", ssl_ca_path: "certs")
+            ]
+            expect(stores.map(&:object_id).uniq.size).to eq(4)
+          end
+
+          it "keeps the 8 most recently added stores" do
+            stores = (0..8).map { |i| cert_store_for(ssl_ca_file: "#{i}.crt") }
+            expect(cert_store_for(ssl_ca_file: "8.crt")).to be(stores[8])
+            expect(cert_store_for(ssl_ca_file: "1.crt")).to be(stores[1])
+            expect(cert_store_for(ssl_ca_file: "0.crt")).not_to be(stores[0])
+          end
+
+          it "uses the given cert_store over its own" do
+            custom_cert_store = OpenSSL::X509::Store.new
+            expect(cert_store_for(cert_store: custom_cert_store, ssl_ca_file: "ca.crt")).to be(custom_cert_store)
+          end
+        end
+
         context "using port 443 for ssl" do
           let(:uri) { URI 'https://api.foo.com/v1:443' }
           it { is_expected.to use_ssl }
