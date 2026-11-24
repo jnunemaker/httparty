@@ -197,6 +197,76 @@ RSpec.describe HTTParty::Request::Body do
     end
   end
 
+  describe 'a multipart field name containing [ " \r \n ]' do
+    let(:name) { "note\"; filename=\"x.sh\"\r\nContent-Type: text/html\r\n\r\nhi" }
+    let(:escaped) { 'note%22; filename=%22x.sh%22%0D%0AContent-Type: text/html%0D%0A%0D%0Ahi' }
+
+    def dispositions(body)
+      body.scan(/^Content-Disposition: .*$/).map(&:chomp)
+    end
+
+    it 'is escaped in the buffered body, on its own and inside a nested key' do
+      body = described_class.new({ name => 'v', user: { name => 'v' } }, force_multipart: true).call
+      expect(dispositions(body)).to eq([
+        %(Content-Disposition: form-data; name="#{escaped}"),
+        %(Content-Disposition: form-data; name="user[#{escaped}]")
+      ])
+    end
+
+    it 'is escaped in the streamed body, for the file and the other fields' do
+      file = File.open('spec/fixtures/tiny.gif', 'rb')
+      body = described_class.new({ name => 'v', "#{name}2" => file })
+      expect(body).to be_streaming
+      streamed = body.to_stream.read
+
+      expect(dispositions(streamed)).to eq([
+        %(Content-Disposition: form-data; name="#{escaped}"),
+        %(Content-Disposition: form-data; name="#{escaped}2"; filename="tiny.gif")
+      ])
+      expect(streamed.bytesize).to eq(body.to_stream.size)
+    ensure
+      file&.close
+    end
+
+    it 'leaves other names alone, even ones that are not valid in their encoding' do
+      file = File.open('spec/fixtures/tiny.gif', 'rb')
+      params = { :note => 'v', "caf\u00e9" => 'v', "a\xFFb" => 'v', 'f' => file }
+      body = described_class.new(params)
+      streamed = body.to_stream.read
+      buffered = body.call
+
+      expect(buffered.scan(/form-data; name="([^"]*)"/n).flatten).to eq(['note', "caf\u00e9".b, "a\xFFb".b, 'f'])
+      expect(streamed.sub(/filename="tiny.gif".*/m, '')).to eq(buffered.sub(/filename="tiny.gif".*/m, ''))
+    ensure
+      file&.close
+    end
+  end
+
+  describe "a file part's own content_type" do
+    let(:upload_class) do
+      Struct.new(:content_type) do
+        def path; 'a.txt'; end
+        def original_filename; 'a.txt'; end
+        def read(*); 'data'; end
+        def rewind; end
+        def size; 4; end
+      end
+    end
+
+    it 'is sent as the part Content-Type' do
+      body = described_class.new({ file: upload_class.new('text/csv') }, force_multipart: true).call
+      expect(body).to include("filename=\"a.txt\"\r\nContent-Type: text/csv\r\n\r\ndata")
+    end
+
+    it 'raises when it would add header lines to the part, buffered and streamed' do
+      upload = upload_class.new("text/plain\r\nContent-Disposition: form-data; name=\"admin\"")
+      body = described_class.new({ file: upload })
+
+      expect { body.call }.to raise_error(ArgumentError, /cannot include CR\/LF/)
+      expect { body.to_stream.size }.to raise_error(ArgumentError, /cannot include CR\/LF/)
+    end
+  end
+
   describe '#multipart?' do
     let(:force_multipart) { false }
     let(:file) { File.open('spec/fixtures/tiny.gif') }

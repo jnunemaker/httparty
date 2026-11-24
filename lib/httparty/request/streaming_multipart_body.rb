@@ -137,11 +137,11 @@ module HTTParty
 
       def build_part_header(key, value, is_file)
         header = "--#{@boundary}#{NEWLINE}".b
-        header << %(Content-Disposition: form-data; name="#{key}").b
+        header << %(Content-Disposition: form-data; name="#{Body.escape_form_data(key)}").b
         if is_file
-          header << %(; filename="#{file_name(value).gsub(/["\r\n]/, replacement_table)}").b
+          header << %(; filename="#{Body.escape_form_data(file_name(value))}").b
           header << NEWLINE.b
-          header << "Content-Type: #{content_type(value)}#{NEWLINE}".b
+          header << "Content-Type: #{Body.part_content_type(value)}#{NEWLINE}".b
         else
           header << NEWLINE.b
         end
@@ -174,23 +174,8 @@ module HTTParty
         end
       end
 
-      def content_type(object)
-        return object.content_type if object.respond_to?(:content_type)
-        require 'mini_mime'
-        mime = MiniMime.lookup_by_filename(object.path)
-        mime ? mime.content_type : 'application/octet-stream'
-      end
-
       def file_name(object)
         object.respond_to?(:original_filename) ? object.original_filename : File.basename(object.path)
-      end
-
-      def replacement_table
-        @replacement_table ||= {
-          '"'  => '%22',
-          "\r" => '%0D',
-          "\n" => '%0A'
-        }.freeze
       end
     end
   end
