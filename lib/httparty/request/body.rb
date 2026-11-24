@@ -48,9 +48,10 @@ module HTTParty
       end
 
       # Escapes a multipart field name or filename as browsers do, so it can't
-      # end its quoted string or add a header line to its part.
+      # end its quoted string or add a header line to its part. Works on the
+      # bytes, so a name that isn't valid in its encoding is still sent as is.
       def self.escape_form_data(value)
-        value.to_s.gsub(/["\r\n]/, MULTIPART_FORM_DATA_REPLACEMENT_TABLE)
+        value.to_s.b.gsub(/["\r\n]/, MULTIPART_FORM_DATA_REPLACEMENT_TABLE)
       end
 
       # The Content-Type of a file part. One from the object's own
@@ -59,7 +60,7 @@ module HTTParty
       def self.part_content_type(object)
         if object.respond_to?(:content_type)
           type = object.content_type
-          raise ArgumentError, "multipart Content-Type #{type.inspect} cannot include CR/LF" if type.to_s.match?(/[\r\n]/)
+          raise ArgumentError, "multipart Content-Type #{type.inspect} cannot include CR/LF" if type.to_s.b.match?(/[\r\n]/)
           return type
         end
 

@@ -227,6 +227,19 @@ RSpec.describe HTTParty::Request::Body do
     ensure
       file&.close
     end
+
+    it 'leaves other names alone, even ones that are not valid in their encoding' do
+      file = File.open('spec/fixtures/tiny.gif', 'rb')
+      params = { :note => 'v', "caf\u00e9" => 'v', "a\xFFb" => 'v', 'f' => file }
+      body = described_class.new(params)
+      streamed = body.to_stream.read
+      buffered = body.call
+
+      expect(buffered.scan(/form-data; name="([^"]*)"/n).flatten).to eq(['note', "caf\u00e9".b, "a\xFFb".b, 'f'])
+      expect(streamed.sub(/filename="tiny.gif".*/m, '')).to eq(buffered.sub(/filename="tiny.gif".*/m, ''))
+    ensure
+      file&.close
+    end
   end
 
   describe "a file part's own content_type" do
@@ -250,7 +263,7 @@ RSpec.describe HTTParty::Request::Body do
       body = described_class.new({ file: upload })
 
       expect { body.call }.to raise_error(ArgumentError, /cannot include CR\/LF/)
-      expect { body.to_stream.read }.to raise_error(ArgumentError, /cannot include CR\/LF/)
+      expect { body.to_stream.size }.to raise_error(ArgumentError, /cannot include CR\/LF/)
     end
   end
 
