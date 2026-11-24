@@ -1,4 +1,6 @@
 require 'spec_helper'
+require 'fileutils'
+require 'tmpdir'
 
 RSpec.describe HTTParty::Request do
   context "SSL certificate verification" do
@@ -116,6 +118,7 @@ RSpec.describe HTTParty::Request do
       end
 
       it "still trusts the system certificate authorities along with the ssl_ca_file" do
+        skip "no system CA bundle at #{OpenSSL::X509::DEFAULT_CERT_FILE}" unless File.exist?(OpenSSL::X509::DEFAULT_CERT_FILE)
         connection = HTTParty::ConnectionAdapter.call(URI("https://example.com"), ssl_ca_file: "ca.crt")
         expect(connection.cert_store.verify(system_ca_certificate)).to be(true)
       end
