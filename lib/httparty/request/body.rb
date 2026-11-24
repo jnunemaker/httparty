@@ -56,15 +56,21 @@ module HTTParty
         "\n" => '%0A'
       }.freeze
 
+      # Escapes a multipart field name or filename as browsers do, so it can't
+      # end its quoted string or add a header line to its part.
+      def self.escape_form_data(value)
+        value.to_s.gsub(/["\r\n]/, MULTIPART_FORM_DATA_REPLACEMENT_TABLE)
+      end
+
       def generate_multipart
         normalized_params = params.to_hash.flat_map { |key, value| HashConversions.normalize_keys(key, value) }
 
         multipart = normalized_params.inject(''.b) do |memo, (key, value)|
           memo << "--#{boundary}#{NEWLINE}".b
-          memo << %(Content-Disposition: form-data; name="#{key}").b
+          memo << %(Content-Disposition: form-data; name="#{Body.escape_form_data(key)}").b
           # value.path is used to support ActionDispatch::Http::UploadedFile
           # https://github.com/jnunemaker/httparty/pull/585
-          memo << %(; filename="#{file_name(value).gsub(/["\r\n]/, MULTIPART_FORM_DATA_REPLACEMENT_TABLE)}").b if file?(value)
+          memo << %(; filename="#{Body.escape_form_data(file_name(value))}").b if file?(value)
           memo << NEWLINE.b
           memo << "Content-Type: #{content_type(value)}#{NEWLINE}".b if file?(value)
           memo << NEWLINE.b
