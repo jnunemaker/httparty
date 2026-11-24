@@ -101,16 +101,11 @@ module HTTParty
 
     def self.ca_cert_store(ca_file, ca_path)
       key = [ca_file, ca_path]
-      cached = CA_CERT_STORES_LOCK.synchronize { CA_CERT_STORES[key] }
-      return cached if cached
-
-      # Built outside the lock, so requests with a cached store don't wait on it
-      store = system_cert_store
       CA_CERT_STORES_LOCK.synchronize do
         CA_CERT_STORES[key] ||= begin
           # Each store holds the system certs, so keep a few and drop the oldest
           CA_CERT_STORES.shift if CA_CERT_STORES.size >= CA_CERT_STORES_LIMIT
-          store
+          system_cert_store
         end
       end
     end
