@@ -229,6 +229,31 @@ RSpec.describe HTTParty::Request::Body do
     end
   end
 
+  describe "a file part's own content_type" do
+    let(:upload_class) do
+      Struct.new(:content_type) do
+        def path; 'a.txt'; end
+        def original_filename; 'a.txt'; end
+        def read(*); 'data'; end
+        def rewind; end
+        def size; 4; end
+      end
+    end
+
+    it 'is sent as the part Content-Type' do
+      body = described_class.new({ file: upload_class.new('text/csv') }, force_multipart: true).call
+      expect(body).to include("filename=\"a.txt\"\r\nContent-Type: text/csv\r\n\r\ndata")
+    end
+
+    it 'raises when it would add header lines to the part, buffered and streamed' do
+      upload = upload_class.new("text/plain\r\nContent-Disposition: form-data; name=\"admin\"")
+      body = described_class.new({ file: upload })
+
+      expect { body.call }.to raise_error(ArgumentError, /cannot include CR\/LF/)
+      expect { body.to_stream.read }.to raise_error(ArgumentError, /cannot include CR\/LF/)
+    end
+  end
+
   describe '#multipart?' do
     let(:force_multipart) { false }
     let(:file) { File.open('spec/fixtures/tiny.gif') }

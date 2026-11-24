@@ -141,7 +141,7 @@ module HTTParty
         if is_file
           header << %(; filename="#{Body.escape_form_data(file_name(value))}").b
           header << NEWLINE.b
-          header << "Content-Type: #{content_type(value)}#{NEWLINE}".b
+          header << "Content-Type: #{Body.part_content_type(value)}#{NEWLINE}".b
         else
           header << NEWLINE.b
         end
@@ -172,13 +172,6 @@ module HTTParty
         else
           value.to_s.b.bytesize
         end
-      end
-
-      def content_type(object)
-        return object.content_type if object.respond_to?(:content_type)
-        require 'mini_mime'
-        mime = MiniMime.lookup_by_filename(object.path)
-        mime ? mime.content_type : 'application/octet-stream'
       end
 
       def file_name(object)

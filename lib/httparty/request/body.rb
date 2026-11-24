@@ -53,6 +53,21 @@ module HTTParty
         value.to_s.gsub(/["\r\n]/, MULTIPART_FORM_DATA_REPLACEMENT_TABLE)
       end
 
+      # The Content-Type of a file part. One from the object's own
+      # content_type can't hold a line break, which would add header lines to
+      # the part, so that raises like Net::HTTP does for any header.
+      def self.part_content_type(object)
+        if object.respond_to?(:content_type)
+          type = object.content_type
+          raise ArgumentError, "multipart Content-Type #{type.inspect} cannot include CR/LF" if type.to_s.match?(/[\r\n]/)
+          return type
+        end
+
+        require 'mini_mime'
+        mime = MiniMime.lookup_by_filename(object.path)
+        mime ? mime.content_type : 'application/octet-stream'
+      end
+
       private
 
       # https://html.spec.whatwg.org/#multipart-form-data
@@ -72,7 +87,7 @@ module HTTParty
           # https://github.com/jnunemaker/httparty/pull/585
           memo << %(; filename="#{Body.escape_form_data(file_name(value))}").b if file?(value)
           memo << NEWLINE.b
-          memo << "Content-Type: #{content_type(value)}#{NEWLINE}".b if file?(value)
+          memo << "Content-Type: #{Body.part_content_type(value)}#{NEWLINE}".b if file?(value)
           memo << NEWLINE.b
           memo << content_body(value)
           memo << NEWLINE.b
@@ -114,13 +129,6 @@ module HTTParty
         else
           object.to_s.b
         end
-      end
-
-      def content_type(object)
-        return object.content_type if object.respond_to?(:content_type)
-        require 'mini_mime'
-        mime = MiniMime.lookup_by_filename(object.path)
-        mime ? mime.content_type : 'application/octet-stream'
       end
 
       def file_name(object)
