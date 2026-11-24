@@ -47,6 +47,12 @@ module HTTParty
         end
       end
 
+      # Escapes a multipart field name or filename as browsers do, so it can't
+      # end its quoted string or add a header line to its part.
+      def self.escape_form_data(value)
+        value.to_s.gsub(/["\r\n]/, MULTIPART_FORM_DATA_REPLACEMENT_TABLE)
+      end
+
       private
 
       # https://html.spec.whatwg.org/#multipart-form-data
@@ -55,12 +61,6 @@ module HTTParty
         "\r" => '%0D',
         "\n" => '%0A'
       }.freeze
-
-      # Escapes a multipart field name or filename as browsers do, so it can't
-      # end its quoted string or add a header line to its part.
-      def self.escape_form_data(value)
-        value.to_s.gsub(/["\r\n]/, MULTIPART_FORM_DATA_REPLACEMENT_TABLE)
-      end
 
       def generate_multipart
         normalized_params = params.to_hash.flat_map { |key, value| HashConversions.normalize_keys(key, value) }

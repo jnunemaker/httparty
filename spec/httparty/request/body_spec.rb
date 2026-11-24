@@ -197,8 +197,6 @@ RSpec.describe HTTParty::Request::Body do
     end
   end
 
-  # Field names are escaped like filenames, as browsers do: a name can't end
-  # the quoted string or add header lines to its part.
   describe 'a multipart field name containing [ " \r \n ]' do
     let(:name) { "note\"; filename=\"x.sh\"\r\nContent-Type: text/html\r\n\r\nhi" }
     let(:escaped) { 'note%22; filename=%22x.sh%22%0D%0AContent-Type: text/html%0D%0A%0D%0Ahi' }
@@ -207,15 +205,12 @@ RSpec.describe HTTParty::Request::Body do
       body.scan(/^Content-Disposition: .*$/).map(&:chomp)
     end
 
-    it 'is escaped in the buffered body' do
-      body = described_class.new({ name => 'v' }, force_multipart: true).call
-      expect(dispositions(body)).to eq([%(Content-Disposition: form-data; name="#{escaped}")])
-      expect(body).not_to include("\r\nContent-Type: text/html")
-    end
-
-    it 'is escaped inside a nested key' do
-      body = described_class.new({ user: { name => 'v' } }, force_multipart: true).call
-      expect(dispositions(body)).to eq([%(Content-Disposition: form-data; name="user[#{escaped}]")])
+    it 'is escaped in the buffered body, on its own and inside a nested key' do
+      body = described_class.new({ name => 'v', user: { name => 'v' } }, force_multipart: true).call
+      expect(dispositions(body)).to eq([
+        %(Content-Disposition: form-data; name="#{escaped}"),
+        %(Content-Disposition: form-data; name="user[#{escaped}]")
+      ])
     end
 
     it 'is escaped in the streamed body, for the file and the other fields' do
