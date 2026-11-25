@@ -7,14 +7,15 @@ module HTTParty
     # @return <String> This hash as a query string
     #
     # @example
-    #   { name: "Bob",
+    #   HTTParty::HashConversions.to_params(
+    #     name: "Bob",
     #     address: {
     #       street: '111 Ruby Ave.',
     #       city: 'Ruby Central',
     #       phones: ['111-111-1111', '222-222-2222']
     #     }
-    #   }.to_params
-    #     #=> "name=Bob&address[city]=Ruby Central&address[phones][]=111-111-1111&address[phones][]=222-222-2222&address[street]=111 Ruby Ave."
+    #   )
+    #     #=> "name=Bob&address%5Bstreet%5D=111%20Ruby%20Ave.&address%5Bcity%5D=Ruby%20Central&address%5Bphones%5D%5B%5D=111-111-1111&address%5Bphones%5D%5B%5D=222-222-2222"
     def self.to_params(hash)
       hash.to_hash.map { |k, v| normalize_param(k, v) }.join.chop
     end

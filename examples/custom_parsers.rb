@@ -7,7 +7,8 @@ class ParseAtom
 
   # Support Atom along with the default parsers: xml, json, etc.
   class Parser::Atom < HTTParty::Parser
-    SupportedFormats.merge!({"application/atom+xml" => :atom})
+    # merge, not merge!, so HTTParty::Parser itself doesn't gain the format
+    SupportedFormats = HTTParty::Parser::SupportedFormats.merge({"application/atom+xml" => :atom})
 
     protected
 
