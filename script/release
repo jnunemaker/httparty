@@ -1,7 +1,8 @@
 #!/bin/sh
 #/ Usage: release
 #/
-#/ Tag the version in the repo and push the gem.
+#/ Tag the version and push the tag. GitHub Actions (.github/workflows/release.yml)
+#/ builds the gem and publishes it to RubyGems via trusted publishing.
 #/
 
 set -e
@@ -37,6 +38,9 @@ git fetch -t origin
   exit 1
 }
 
-# Tag it and bag it.
-gem push $gem_name-*.gem && git tag "$tag" &&
+# Tag it and push it. The release workflow publishes the gem.
+rm -f $gem_name-*.gem
+git tag "$tag" &&
   git push origin main && git push origin "$tag"
+
+echo "Pushed $tag. GitHub Actions publishes the gem: gh run list --workflow release.yml"

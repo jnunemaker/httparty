@@ -1,0 +1,49 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write   # RubyGems trusted publishing (OIDC)
+      contents: write   # Create GitHub Releases
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+
+      - name: Build gem
+        id: build
+        run: |
+          mkdir -p pkg
+          gem build httparty.gemspec --output pkg/gem.gem
+          version=$(ruby -rrubygems/package -e 'puts Gem::Package.new("pkg/gem.gem").spec.version')
+          mv pkg/gem.gem "pkg/httparty-$version.gem"
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match gem version $version"
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Configure RubyGems credentials
+        uses: rubygems/configure-rubygems-credentials@v2.1.0
+
+      - name: Publish gem
+        run: |
+          if curl -sf "https://rubygems.org/api/v2/rubygems/httparty/versions/${{ steps.build.outputs.version }}.json" > /dev/null; then
+            echo "httparty ${{ steps.build.outputs.version }} is already on RubyGems, skipping push"
+          else
+            gem push pkg/*.gem
+          fi
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v3
+        with:
+          generate_release_notes: true
+          files: pkg/*.gem
