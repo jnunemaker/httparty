@@ -17,9 +17,10 @@ module HTTParty
   #     end
   #   end
   #
-  # @example Add the atom format and parsing method to the default parser
+  # @example Support the atom format along with the default formats
   #   class AtomParsingIncluded < HTTParty::Parser
-  #     SupportedFormats.merge!(
+  #     # merge, not merge!, so HTTParty::Parser itself doesn't gain the format
+  #     SupportedFormats = HTTParty::Parser::SupportedFormats.merge(
   #       {"application/atom+xml" => :atom}
   #     )
   #
